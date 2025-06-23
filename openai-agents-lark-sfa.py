@@ -43,9 +43,12 @@ def main():
         "Use the provided tools to create the base, tables, and fields step by step, "
         "and return a summary of each step."
     )
-    tools = [create_base, create_table, create_field]
+    # Register the subprocess-based CLI executor and creation tools
+    tools = [run_mcp_cli, create_base, create_table, create_field]
     agent = Agent(name="Lark SFA Agent", instructions=instructions, tools=tools)
-    Runner.run_sync(agent, "Create the SFA-System in Lark Base")
+    result = Runner.run_sync(agent, "Create the SFA-System in Lark Base")
+    # Output the result and any tool responses
+    print(result)
 
 if __name__ == "__main__":
     main()

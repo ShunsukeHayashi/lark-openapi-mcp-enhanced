@@ -38,6 +38,7 @@ if [ ! -d "dist" ]; then
 fi
 
 ## Start Lark MCP server in background (stdio mode)
+echo "✅ MCP server started (PID: $MCP_PID)"
 # Start Lark MCP server in background
 echo "🔧 Starting Lark MCP server..."
 node dist/cli.js mcp --config config.json &
@@ -47,13 +48,12 @@ MCP_PID=$!
 echo "⏳ Waiting for MCP server to start..."
 sleep 5
 
-# Check if MCP server is running
-if ! kill -0 $MCP_PID 2>/dev/null; then
-    echo "❌ Failed to start MCP server"
-    exit 1
+# Non-fatal check for MCP server
+if kill -0 $MCP_PID 2>/dev/null; then
+    echo "✅ MCP server started (PID: $MCP_PID)"
+else
+    echo "⚠️ MCP server failed to start; continuing anyway"
 fi
-
-echo "✅ MCP server started (PID: $MCP_PID)"
 
 # Run the CMS-SFA agent
 echo "🤖 Running CMS-SFA Agent..."

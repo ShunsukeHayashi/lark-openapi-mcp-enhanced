@@ -50,7 +50,11 @@ cd ..
 ```
 ### Quick Start
 
-1. **Set OpenAI API Key**:
+0. **Load environment variables** (from root `.env`):
+   ```bash
+   source ../.env
+   ```
+1. **Set OpenAI API Key** (if not using `.env`):
    ```bash
    export OPENAI_API_KEY='your-openai-api-key-here'
    ```

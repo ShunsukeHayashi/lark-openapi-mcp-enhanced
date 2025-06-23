@@ -19,7 +19,7 @@ if [ ! -d "dist" ]; then
 fi
 
 echo "🚀 Creating CMS-System and SFA-System bases..."
-node dist/cli.js mcp --config config.json stdio << 'END_COMMANDS'
+node dist/cli.js mcp --config config.json --mode stdio << 'END_COMMANDS'
 bitable.v1.app.create --name "CMS-System" --description "Content Management System"
 bitable.v1.app.create --name "SFA-System" --description "Sales Force Automation System"
 END_COMMANDS

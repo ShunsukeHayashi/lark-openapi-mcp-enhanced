@@ -25,10 +25,10 @@ if [ -f "../.env" ]; then
     set +o allexport
 fi
 
-python3 -c "import openai, requests" 2>/dev/null || {
+python3 -c "import openai, requests, agents" 2>/dev/null || {
     echo "❌ Required Python packages not found"
     echo "Installing dependencies..."
-    pip3 install openai requests
+    pip3 install openai-agents openai requests
 }
 
 # Check if Lark MCP is built
@@ -37,9 +37,7 @@ if [ ! -d "dist" ]; then
     yarn build
 fi
 
-## Start Lark MCP server in background (stdio mode)
-echo "✅ MCP server started (PID: $MCP_PID)"
-# Start Lark MCP server in background
+## Start Lark MCP server in background
 echo "🔧 Starting Lark MCP server..."
 node dist/cli.js mcp --config config.json &
 MCP_PID=$!
@@ -55,9 +53,10 @@ else
     echo "⚠️ MCP server failed to start; continuing anyway"
 fi
 
-# Run the CMS-SFA agent
 echo "🤖 Running CMS-SFA Agent..."
-python3 cms-sfa-agent.py
+	# Run the CMS-SFA agent (Agents SDK version)
+	echo "🤖 Running CMS-SFA Agent with Agents SDK..."
+	python3 openai-agents-lark-sfa.py
 
 # Stop MCP server
 echo "🛑 Stopping MCP server..."

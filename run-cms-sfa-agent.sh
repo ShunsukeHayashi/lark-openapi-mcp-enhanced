@@ -37,9 +37,9 @@ if [ ! -d "dist" ]; then
     yarn build
 fi
 
-# Start Lark MCP server in background
-echo "🔧 Starting Lark MCP server..."
-node dist/cli.js mcp --config config.json &
+## Start Lark MCP server in background (stdio mode)
+echo "🔧 Starting Lark MCP server (stdio mode)..."
+node dist/cli.js stdio --config config.json &
 MCP_PID=$!
 
 # Wait for MCP server to start

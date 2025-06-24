@@ -7,7 +7,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a TypeScript-based MCP (Model Context Protocol) tool that provides comprehensive access to Feishu/Lark OpenAPI for AI assistant integration. The project supports both English and Chinese, with auto-generated tools from OpenAPI specifications.
 
 **npm Package**: `@larksuiteoapi/lark-mcp` (Beta v0.3.1)  
-**Repository**: Official Feishu/Lark OpenAPI MCP implementation
+**Repository**: Official Feishu/Lark OpenAPI MCP implementation  
+**Node.js**: Requires Node.js >=16.20.0
 
 ## Key Commands
 
@@ -35,6 +36,18 @@ yarn test path/to/test.spec.ts
 
 # Clean build artifacts
 rm -rf dist/
+```
+
+### Bot/Agent Development
+```bash
+# Deploy Lark workspace bot
+yarn bot:deploy
+
+# Run bot in development mode
+yarn bot:dev
+
+# Test chat agent
+yarn test:agent
 ```
 
 ### Running the MCP Server
@@ -74,8 +87,9 @@ yarn build && node dist/cli.js mcp --mode stdio --disable-rate-limit
   - `builtin-tools/` - Custom-implemented tools
   - `document-tool/` - Documentation recall feature
 - `src/genesis/` - Genesis system for Lark Base application generation
-- `src/utils/` - Shared utilities
+- `src/utils/` - Shared utilities (HTTP client, rate limiting, version)
 - `tests/` - Jest test suite mirroring source structure
+- `prompt-management/` - Systematic prompt management and versioning system
 
 ### Tool System Architecture
 
@@ -130,12 +144,15 @@ The Genesis system (`src/genesis/`) is an AI-powered Lark Base application gener
 
 ## Testing Conventions
 
-- Use Jest with TypeScript support
+- Use Jest with TypeScript support (`ts-jest` preset)
 - Mock external dependencies in `/tests/setup.ts`
-- Follow the existing test structure patterns
-- Exclude generated tools from coverage
+- Follow the existing test structure patterns (mirror source directory)
+- Exclude generated tools from coverage (CLI and generated tools excluded)
 - Tests use Chinese comments (bilingual project)
 - Mock Lark SDK client in test setup
+- Test files: `**/tests/**/*.test.ts` pattern
+- Coverage reports: text and lcov formats
+- Path alias: `@/` maps to `src/`
 
 ## Error Handling
 
@@ -233,6 +250,29 @@ yarn build && node dist/genesis/cli/genesis-cli.js generate -t crm -o crm-base.j
 yarn build && node dist/genesis/cli/genesis-cli.js generate -r requirements.md -v
 ```
 
+## Prompt Management System
+
+The project includes a sophisticated prompt management system in `prompt-management/`:
+
+### Structure
+- `prompts/categories/` - Categorized prompts (analysis, generation, planning, transformation, troubleshooting)
+- `prompts/templates/` - Reusable prompt templates
+- `metadata/` - Index, tags, and changelog management
+- `tools/` - Python utilities for prompt generation, validation, and search
+- `chains/` - Prompt chaining definitions
+
+### Management Tools
+```bash
+# Search prompts by category and tags
+python prompt-management/tools/search.py --category analysis --tag tech:python
+
+# Generate new prompt from template
+python prompt-management/tools/prompt-generator.py --template base --category analysis
+
+# Validate prompt format
+python prompt-management/tools/validator.py --file prompts/categories/analysis/code-review.md
+```
+
 ## Important Notes
 
 - The project uses minimal logging by design (disabled in production)
@@ -244,6 +284,7 @@ yarn build && node dist/genesis/cli/genesis-cli.js generate -r requirements.md -
 - Bilingual support is core to the project - maintain both English and Chinese documentation
 - Tool documentation is auto-generated in `docs/tools-en.md` and `docs/tools-zh.md`
 - **Rate limiting is enabled by default** to protect against API quota exhaustion
+- Prompts follow semantic versioning and must include metadata headers
 
 ## TypeScript and Module System
 

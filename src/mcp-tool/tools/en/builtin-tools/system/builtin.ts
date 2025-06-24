@@ -1,8 +1,16 @@
 import { McpTool } from '../../../../types';
 import { z } from 'zod';
+import { systemBotMenuTools, SystemBotMenuToolName } from './bot-menu-handler';
+import { chatAgentTools, ChatAgentToolName } from './chat-agent';
+import { larkChatAgentTools, LarkChatAgentToolName } from './lark-chat-agent';
 
 // Tool name type
-export type systemBuiltinToolName = 'system.builtin.info' | 'system.builtin.time';
+export type systemBuiltinToolName = 
+  | 'system.builtin.info' 
+  | 'system.builtin.time' 
+  | SystemBotMenuToolName 
+  | ChatAgentToolName 
+  | LarkChatAgentToolName;
 
 export const larkSystemBuiltinInfoTool: McpTool = {
   project: 'system',
@@ -121,4 +129,10 @@ export const larkSystemBuiltinTimeTool: McpTool = {
   },
 };
 
-export const systemBuiltinTools = [larkSystemBuiltinInfoTool, larkSystemBuiltinTimeTool];
+export const systemBuiltinTools = [
+  larkSystemBuiltinInfoTool, 
+  larkSystemBuiltinTimeTool, 
+  ...systemBotMenuTools,
+  ...chatAgentTools,
+  ...larkChatAgentTools
+];

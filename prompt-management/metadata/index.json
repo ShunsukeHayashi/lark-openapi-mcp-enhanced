@@ -27,6 +27,34 @@
       "status": "active",
       "complexity": "advanced",
       "estimated_tokens": 2500
+    },
+    {
+      "id": "generation-003",
+      "title": "Lark Base Application Genesis Prompt",
+      "category": "generation",
+      "tags": ["lark-base", "application-design", "database-design", "er-diagram", "automation", "genesis", "system-architecture"],
+      "version": "1.0.0",
+      "path": "prompts/categories/generation/lark-base-application-genesis.md",
+      "author": "AI Assistant",
+      "created": "2025-01-24",
+      "updated": "2025-01-24",
+      "status": "active",
+      "complexity": "expert",
+      "estimated_tokens": 3500
+    },
+    {
+      "id": "generation-004",
+      "title": "Document Genesis Blueprint Generator v3.0",
+      "category": "generation",
+      "tags": ["meta-prompt", "document-generation", "command-stack", "blueprint-generator", "reconstruction", "advanced"],
+      "version": "3.0.0",
+      "path": "prompts/categories/generation/document-genesis-blueprint-v3.md",
+      "author": "AI Assistant",
+      "created": "2025-01-24",
+      "updated": "2025-01-24",
+      "status": "active",
+      "complexity": "expert",
+      "estimated_tokens": 3000
     }
   ],
   "categories": {
@@ -37,8 +65,8 @@
     },
     "generation": {
       "description": "コード生成、ドキュメント生成、テンプレート生成、アイデア生成",
-      "count": 2,
-      "prompts": ["generation-001", "generation-002"]
+      "count": 4,
+      "prompts": ["generation-001", "generation-002", "generation-003", "generation-004"]
     },
     "planning": {
       "description": "プロジェクト計画、アーキテクチャ設計、戦略策定、ロードマップ作成",
@@ -57,9 +85,9 @@
     }
   },
   "stats": {
-    "total_prompts": 2,
-    "active_prompts": 2,
+    "total_prompts": 4,
+    "active_prompts": 4,
     "deprecated_prompts": 0,
-    "last_updated": "2025-01-XX"
+    "last_updated": "2025-01-24"
   }
 }

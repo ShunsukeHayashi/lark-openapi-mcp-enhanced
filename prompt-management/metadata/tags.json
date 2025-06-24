@@ -1,0 +1,84 @@
+{
+  "tag_categories": {
+    "技術領域": {
+      "prefix": "tech",
+      "tags": {
+        "tech:python": "Python関連",
+        "tech:javascript": "JavaScript関連", 
+        "tech:lark-api": "Lark API関連",
+        "tech:mcp": "MCP (Model Context Protocol)関連",
+        "tech:ai": "AI・機械学習関連",
+        "tech:database": "データベース関連",
+        "tech:web": "Web開発関連"
+      }
+    },
+    "難易度": {
+      "prefix": "level",
+      "tags": {
+        "level:beginner": "初級者向け",
+        "level:intermediate": "中級者向け",
+        "level:advanced": "上級者向け",
+        "level:expert": "エキスパート向け"
+      }
+    },
+    "用途": {
+      "prefix": "purpose",
+      "tags": {
+        "purpose:automation": "自動化",
+        "purpose:documentation": "ドキュメント作成",
+        "purpose:analysis": "分析",
+        "purpose:debugging": "デバッグ",
+        "purpose:optimization": "最適化",
+        "purpose:planning": "計画策定",
+        "purpose:learning": "学習・教育"
+      }
+    },
+    "出力形式": {
+      "prefix": "output",
+      "tags": {
+        "output:markdown": "Markdown形式",
+        "output:json": "JSON形式", 
+        "output:code": "コード",
+        "output:report": "レポート",
+        "output:diagram": "図表",
+        "output:template": "テンプレート"
+      }
+    },
+    "対象者": {
+      "prefix": "audience",
+      "tags": {
+        "audience:developer": "開発者",
+        "audience:business": "ビジネス担当者",
+        "audience:general": "一般ユーザー",
+        "audience:manager": "マネージャー",
+        "audience:analyst": "アナリスト"
+      }
+    },
+    "特殊タグ": {
+      "prefix": "special",
+      "tags": {
+        "meta-prompt": "メタプロンプト",
+        "template": "テンプレート",
+        "blueprint": "設計図",
+        "workflow": "ワークフロー",
+        "interactive": "インタラクティブ",
+        "batch": "バッチ処理",
+        "real-time": "リアルタイム"
+      }
+    }
+  },
+  "tag_usage": {
+    "generation": 2,
+    "meta-prompt": 2,
+    "documentation": 2,
+    "blueprint": 2,
+    "advanced": 2,
+    "command-stack": 1,
+    "crm-design": 1
+  },
+  "tag_relations": {
+    "meta-prompt": ["generation", "advanced", "template"],
+    "blueprint": ["planning", "documentation", "template"],
+    "advanced": ["expert", "complex-logic"]
+  }
+}

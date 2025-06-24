@@ -1,6 +1,7 @@
 import * as lark from '@larksuiteoapi/node-sdk';
 import { ProjectName, ToolName } from '../tools';
 import { CallToolResult } from '@modelcontextprotocol/sdk/types';
+import { RateLimiterConfig } from '../../utils/rate-limiter';
 
 export type ToolNameCase = 'snake' | 'camel' | 'kebab' | 'dot';
 
@@ -64,6 +65,19 @@ export interface ToolsFilterOptions {
 
 export type LarkClientOptions = Partial<ConstructorParameters<typeof lark.Client>[0]>;
 
+export interface RateLimitingOptions {
+  /** Enable rate limiting (default: true) */
+  enabled?: boolean;
+  /** Custom rate limiting configurations for different tiers */
+  rateLimits?: Record<string, RateLimiterConfig>;
+  /** Logger for rate limiting events */
+  logger?: {
+    warn: (message: string) => void;
+    info: (message: string) => void;
+    debug: (message: string) => void;
+  };
+}
+
 export interface LarkMcpToolOptions extends LarkClientOptions {
   client?: lark.Client;
   appId?: string;
@@ -71,4 +85,6 @@ export interface LarkMcpToolOptions extends LarkClientOptions {
   // 工具选项
   toolsOptions?: ToolsFilterOptions;
   tokenMode?: TokenMode;
+  // 速率限制选项
+  rateLimiting?: RateLimitingOptions;
 }

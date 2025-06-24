@@ -30,6 +30,9 @@ program
   .option('--host <host>', 'Host to listen (default: "localhost")')
   .option('-p, --port <port>', 'Port to listen in sse mode (default: "3000")')
   .option('--config <configPath>', 'Config file path (JSON)')
+  .option('--disable-rate-limit', 'Disable rate limiting (not recommended for production)')
+  .option('--rate-limit-requests <requests>', 'Maximum requests per minute (default: 50)', '50')
+  .option('--rate-limit-writes <writes>', 'Maximum write operations per minute (default: 10)', '10')
   .action(async (options) => {
     let fileOptions = {};
     if (options.config) {

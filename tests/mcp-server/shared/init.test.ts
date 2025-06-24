@@ -74,7 +74,11 @@ describe('initMcpServer', () => {
     process.env.APP_ID = 'env-app-id';
     process.env.APP_SECRET = 'env-app-secret';
 
+    // initMcpServer expects credentials to be passed in options
+    // Environment variables are handled by the CLI layer
     const options = {
+      appId: process.env.APP_ID,
+      appSecret: process.env.APP_SECRET,
       host: 'localhost',
       port: 3000,
     };

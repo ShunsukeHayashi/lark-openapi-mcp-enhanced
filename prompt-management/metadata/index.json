@@ -1,0 +1,65 @@
+{
+  "prompts": [
+    {
+      "id": "generation-001",
+      "title": "Document Genesis Blueprint Generator",
+      "category": "generation",
+      "tags": ["generation", "meta-prompt", "documentation", "blueprint", "advanced"],
+      "version": "1.0.0",
+      "path": "prompts/categories/generation/document-genesis-blueprint.md",
+      "author": "User",
+      "created": "2025-01-XX",
+      "updated": "2025-01-XX",
+      "status": "active",
+      "complexity": "advanced",
+      "estimated_tokens": 1500
+    },
+    {
+      "id": "generation-002",
+      "title": "Document Genesis Blueprint Generator v2.0",
+      "category": "generation",
+      "tags": ["generation", "meta-prompt", "documentation", "blueprint", "advanced", "command-stack", "crm-design"],
+      "version": "2.0.0",
+      "path": "prompts/categories/generation/document-genesis-blueprint-v2.md",
+      "author": "User",
+      "created": "2025-01-XX",
+      "updated": "2025-01-XX",
+      "status": "active",
+      "complexity": "advanced",
+      "estimated_tokens": 2500
+    }
+  ],
+  "categories": {
+    "analysis": {
+      "description": "データ分析、コード分析、要件分析、問題分析",
+      "count": 0,
+      "prompts": []
+    },
+    "generation": {
+      "description": "コード生成、ドキュメント生成、テンプレート生成、アイデア生成",
+      "count": 2,
+      "prompts": ["generation-001", "generation-002"]
+    },
+    "planning": {
+      "description": "プロジェクト計画、アーキテクチャ設計、戦略策定、ロードマップ作成",
+      "count": 0,
+      "prompts": []
+    },
+    "transformation": {
+      "description": "データ変換、コードリファクタリング、フォーマット変換、構造化",
+      "count": 0,
+      "prompts": []
+    },
+    "troubleshooting": {
+      "description": "エラー診断、パフォーマンス改善、デバッグ支援、最適化",
+      "count": 0,
+      "prompts": []
+    }
+  },
+  "stats": {
+    "total_prompts": 2,
+    "active_prompts": 2,
+    "deprecated_prompts": 0,
+    "last_updated": "2025-01-XX"
+  }
+}

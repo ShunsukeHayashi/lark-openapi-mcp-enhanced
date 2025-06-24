@@ -10,4 +10,8 @@ export interface McpServerOptions {
   tokenMode?: larkmcp.TokenMode;
   host: string;
   port: number;
+  // Rate limiting options
+  disableRateLimit?: boolean;
+  rateLimitRequests?: string;
+  rateLimitWrites?: string;
 }

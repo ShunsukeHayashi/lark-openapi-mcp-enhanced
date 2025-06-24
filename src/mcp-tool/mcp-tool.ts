@@ -7,6 +7,7 @@ import { defaultToolNames } from './constants';
 import { larkOapiHandler } from './utils/handler';
 import { caseTransf } from './utils/case-transf';
 import { getShouldUseUAT } from './utils/get-should-use-uat';
+import { createRateLimitedHttpInstance, RateLimitedHttpInstance } from '../utils/rate-limited-http';
 
 /**
  * Feishu/Lark MCP
@@ -24,17 +25,29 @@ export class LarkMcpTool {
   // All Tools
   private allTools: McpTool[] = [];
 
+  // Rate-limited HTTP instance
+  private rateLimitedHttp: RateLimitedHttpInstance;
+
   /**
    * Feishu/Lark MCP
    * @param options Feishu/Lark Client Options
    */
   constructor(options: LarkMcpToolOptions) {
+    // Initialize rate-limited HTTP instance
+    this.rateLimitedHttp = createRateLimitedHttpInstance({
+      enableRateLimit: options.rateLimiting?.enabled !== false,
+      rateLimits: options.rateLimiting?.rateLimits,
+      logger: options.rateLimiting?.logger,
+    });
+
     if (options.client) {
       this.client = options.client;
     } else if (options.appId && options.appSecret) {
       this.client = new Client({
         appId: options.appId,
         appSecret: options.appSecret,
+        // Use rate-limited HTTP instance
+        httpInstance: this.rateLimitedHttp.getAxiosInstance(),
         ...options,
       });
     }
@@ -63,6 +76,29 @@ export class LarkMcpTool {
    */
   getTools(): McpTool[] {
     return this.allTools;
+  }
+
+  /**
+   * Get rate limiting metrics
+   * @returns Rate limiting metrics for all tiers
+   */
+  getRateLimitMetrics() {
+    return this.rateLimitedHttp.getRateLimitMetrics();
+  }
+
+  /**
+   * Reset rate limiters
+   */
+  resetRateLimiters(): void {
+    this.rateLimitedHttp.resetRateLimiters();
+  }
+
+  /**
+   * Enable or disable rate limiting
+   * @param enabled Whether to enable rate limiting
+   */
+  setRateLimitEnabled(enabled: boolean): void {
+    this.rateLimitedHttp.setRateLimitEnabled(enabled);
   }
 
   /**

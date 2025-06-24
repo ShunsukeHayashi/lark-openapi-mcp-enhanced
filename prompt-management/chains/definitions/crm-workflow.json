@@ -1,0 +1,293 @@
+{
+  "chain_id": "crm-complete-design-v1",
+  "name": "CRM Base完全設計ワークフロー",
+  "version": "1.0.0",
+  "description": "ビジネス要件のヒアリングからLark Base作成、ER図生成、運用開始まで",
+  "metadata": {
+    "author": "System",
+    "created": "2025-01-XX",
+    "category": "database-design",
+    "tags": ["crm", "base-design", "automation", "workflow"],
+    "estimated_duration": "30-45分",
+    "difficulty": "intermediate"
+  },
+  "config": {
+    "timeout": 3600,
+    "retry_policy": "exponential_backoff",
+    "max_retries": 3,
+    "parallel_execution": false,
+    "notification_channels": ["lark_message", "email"]
+  },
+  "variables": {
+    "base_domain": "https://open.feishu.cn",
+    "default_language": "ja",
+    "template_base_id": "template_crm_v1"
+  },
+  "steps": [
+    {
+      "step_id": "requirements-gathering",
+      "name": "ビジネス要件ヒアリング",
+      "description": "CRM設計のための要件ヒアリングシート生成・記入",
+      "prompt_id": "generation-002",
+      "input_source": "user",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "business_type": {"type": "string", "description": "業種・事業タイプ"},
+          "team_size": {"type": "string", "description": "チームサイズ"},
+          "current_tools": {"type": "array", "description": "現在使用中のツール"},
+          "pain_points": {"type": "array", "description": "現在の課題"}
+        },
+        "required": ["business_type", "team_size"]
+      },
+      "output_target": "design-phase",
+      "transformations": [
+        {
+          "type": "extract_requirements",
+          "mapping": {
+            "business_requirements": "$.requirements.business",
+            "data_entities": "$.requirements.entities",
+            "workflows": "$.requirements.processes"
+          }
+        }
+      ],
+      "validation": {
+        "required_fields": ["business_requirements", "data_entities"],
+        "min_entities": 3
+      },
+      "timeout": 600,
+      "retry_count": 2
+    },
+    {
+      "step_id": "design-phase",
+      "name": "データベース設計",
+      "description": "要件を基にしたBase構造設計（テーブル、フィールド、リレーション）",
+      "prompt_id": "planning-001",
+      "input_source": "requirements-gathering",
+      "input_mapping": {
+        "requirements": "business_requirements",
+        "entities": "data_entities",
+        "processes": "workflows"
+      },
+      "output_target": "validation-phase",
+      "transformations": [
+        {
+          "type": "generate_schema",
+          "output_format": "lark_base_schema"
+        }
+      ],
+      "validation": {
+        "schema_validation": true,
+        "relationship_check": true,
+        "naming_convention": "snake_case"
+      },
+      "timeout": 900
+    },
+    {
+      "step_id": "validation-phase",
+      "name": "設計検証",
+      "description": "設計されたスキーマの妥当性検証とユーザー確認",
+      "prompt_id": "validation-001",
+      "input_source": "design-phase",
+      "output_target": "implementation-phase",
+      "user_interaction": {
+        "type": "confirmation",
+        "message": "設計されたBase構造を確認してください。続行しますか？",
+        "show_preview": true,
+        "allow_modifications": true
+      },
+      "conditions": {
+        "skip_if": "auto_approve=true",
+        "retry_if": "validation_failed=true"
+      },
+      "timeout": 1800
+    },
+    {
+      "step_id": "implementation-phase",
+      "name": "Lark Base実装",
+      "description": "設計に基づいたLark Baseの実際の作成",
+      "prompt_id": "mcp-base-creator",
+      "input_source": "validation-phase",
+      "output_target": "data-setup-phase",
+      "mcp_integration": {
+        "enabled": true,
+        "tools": [
+          {
+            "tool": "bitable.v1.app.create",
+            "parameters": {
+              "name": "{{business_type}} CRM System",
+              "folder_token": "{{target_folder}}"
+            }
+          },
+          {
+            "tool": "bitable.v1.table.create",
+            "loop": "tables",
+            "parameters": {
+              "app_token": "{{created_base_id}}",
+              "table": "{{current_table}}"
+            }
+          },
+          {
+            "tool": "bitable.v1.field.create",
+            "loop": "fields",
+            "parameters": {
+              "app_token": "{{created_base_id}}",
+              "table_id": "{{current_table_id}}",
+              "field": "{{current_field}}"
+            }
+          }
+        ]
+      },
+      "error_handling": {
+        "on_api_error": "retry_with_delay",
+        "on_permission_error": "notify_admin",
+        "rollback_on_failure": true
+      },
+      "timeout": 1200
+    },
+    {
+      "step_id": "data-setup-phase",
+      "name": "サンプルデータ投入",
+      "description": "Base運用開始のためのサンプルデータとビューの設定",
+      "prompt_id": "data-setup-001",
+      "input_source": "implementation-phase",
+      "output_target": "documentation-phase",
+      "mcp_integration": {
+        "enabled": true,
+        "tools": [
+          {
+            "tool": "bitable.v1.record.batch_create",
+            "parameters": {
+              "app_token": "{{created_base_id}}",
+              "table_id": "{{table_id}}",
+              "records": "{{sample_data}}"
+            }
+          },
+          {
+            "tool": "bitable.v1.view.create",
+            "loop": "views",
+            "parameters": {
+              "app_token": "{{created_base_id}}",
+              "table_id": "{{table_id}}",
+              "view": "{{current_view}}"
+            }
+          }
+        ]
+      },
+      "timeout": 600
+    },
+    {
+      "step_id": "documentation-phase",
+      "name": "設計書・ER図生成",
+      "description": "作成されたBaseのER図と運用ドキュメント生成",
+      "prompt_id": "generation-004",
+      "input_source": "data-setup-phase",
+      "output_target": "final",
+      "transformations": [
+        {
+          "type": "generate_er_diagram",
+          "format": "mermaid"
+        },
+        {
+          "type": "generate_documentation",
+          "format": "markdown"
+        }
+      ],
+      "mcp_integration": {
+        "enabled": true,
+        "tools": [
+          {
+            "tool": "docx.v1.document.create",
+            "parameters": {
+              "title": "{{business_type}} CRM 設計書",
+              "content": "{{documentation}}"
+            }
+          }
+        ]
+      },
+      "timeout": 600
+    },
+    {
+      "step_id": "finalization-phase",
+      "name": "運用開始準備",
+      "description": "権限設定、通知設定、チームへの共有",
+      "prompt_id": "finalization-001",
+      "input_source": "documentation-phase",
+      "output_target": "final",
+      "mcp_integration": {
+        "enabled": true,
+        "tools": [
+          {
+            "tool": "im.v1.message.create",
+            "parameters": {
+              "receive_id": "{{team_chat_id}}",
+              "msg_type": "interactive",
+              "content": "{{completion_card}}"
+            }
+          }
+        ]
+      },
+      "cleanup": {
+        "temporary_files": true,
+        "cache_data": true
+      },
+      "timeout": 300
+    }
+  ],
+  "error_handling": {
+    "global": {
+      "on_failure": "rollback_and_notify",
+      "notification_template": "crm_workflow_error",
+      "escalation": {
+        "threshold": 3,
+        "notify": ["admin", "user"]
+      }
+    },
+    "step_specific": {
+      "implementation-phase": {
+        "rollback_actions": [
+          "delete_created_base",
+          "restore_backup"
+        ]
+      }
+    }
+  },
+  "notifications": {
+    "start": {
+      "enabled": true,
+      "template": "workflow_started",
+      "channels": ["lark_message"]
+    },
+    "progress": {
+      "enabled": true,
+      "interval": "per_step",
+      "template": "step_completed"
+    },
+    "completion": {
+      "enabled": true,
+      "template": "crm_ready",
+      "channels": ["lark_message", "email"],
+      "include_summary": true
+    },
+    "error": {
+      "enabled": true,
+      "template": "error_occurred",
+      "immediate": true
+    }
+  },
+  "outputs": {
+    "base_url": "{{created_base_url}}",
+    "base_id": "{{created_base_id}}",
+    "documentation_url": "{{documentation_doc_url}}",
+    "er_diagram": "{{mermaid_diagram}}",
+    "setup_summary": "{{completion_summary}}"
+  },
+  "prerequisites": [
+    "bitable:app - Base作成権限",
+    "bitable:table - テーブル作成権限", 
+    "bitable:record - レコード作成権限",
+    "docx:document - ドキュメント作成権限",
+    "im:message:send_as_bot - メッセージ送信権限"
+  ],
+  "tags": ["automated", "crm", "database-design", "business-process"]
+}

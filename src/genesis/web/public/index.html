@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genesis Architect Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .status-indicators {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #27ae60;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            height: calc(100vh - 80px);
+        }
+
+        .sidebar {
+            background: white;
+            border-right: 1px solid #e1e8ed;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .sidebar h3 {
+            margin-bottom: 1rem;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            margin: 0.25rem 0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .nav-item:hover {
+            background: #f8f9fa;
+        }
+
+        .nav-item.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .content {
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #e1e8ed;
+        }
+
+        .card h3 {
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+
+        .stat-card {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .session-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .session-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid #e1e8ed;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .session-item:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .session-info h4 {
+            margin-bottom: 0.25rem;
+            color: #2c3e50;
+        }
+
+        .session-meta {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+        }
+
+        .session-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #d5f4e6;
+            color: #27ae60;
+        }
+
+        .status-paused {
+            background: #fef9e7;
+            color: #f39c12;
+        }
+
+        .status-completed {
+            background: #e8f4f8;
+            color: #3498db;
+        }
+
+        .status-failed {
+            background: #fadbd8;
+            color: #e74c3c;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #3498db;
+            transition: width 0.3s ease;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            color: #2c3e50;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e1e8ed;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e1e8ed;
+            border-radius: 4px;
+            font-size: 1rem;
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .notification {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            padding: 1rem 1.5rem;
+            border-radius: 6px;
+            color: white;
+            font-weight: 500;
+            z-index: 2000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: #27ae60;
+        }
+
+        .notification.error {
+            background: #e74c3c;
+        }
+
+        .notification.info {
+            background: #3498db;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .error-list {
+            max-height: 200px;
+            overflow-y: auto;
+            background: #fadbd8;
+            border-radius: 4px;
+            padding: 1rem;
+        }
+
+        .error-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f1c0bd;
+            color: #c0392b;
+            font-size: 0.9rem;
+        }
+
+        .error-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">🚀 Genesis Architect</div>
+        <div class="status-indicators">
+            <div class="status-indicator">
+                <div class="status-dot" id="connection-status"></div>
+                <span id="connection-text">Connected</span>
+            </div>
+            <div class="status-indicator">
+                <span id="client-count">0 clients</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <h3>Navigation</h3>
+            <div class="nav-item active" data-view="dashboard">📊 Dashboard</div>
+            <div class="nav-item" data-view="sessions">📋 Sessions</div>
+            <div class="nav-item" data-view="templates">📝 Templates</div>
+            <div class="nav-item" data-view="monitoring">📈 Monitoring</div>
+            <div class="nav-item" data-view="settings">⚙️ Settings</div>
+        </div>
+
+        <div class="content">
+            <!-- Dashboard View -->
+            <div id="dashboard-view">
+                <h2>Dashboard Overview</h2>
+                <div class="dashboard-grid">
+                    <div class="card stat-card">
+                        <div class="stat-number" id="total-sessions">0</div>
+                        <div class="stat-label">Total Sessions</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-number" id="active-sessions">0</div>
+                        <div class="stat-label">Active Sessions</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-number" id="completed-sessions">0</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-number" id="failed-sessions">0</div>
+                        <div class="stat-label">Failed</div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3>Recent Sessions</h3>
+                        <div class="session-list" id="recent-sessions">
+                            <div class="session-item">
+                                <div class="session-info">
+                                    <h4>Loading sessions...</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>System Status</h3>
+                        <div class="status-indicator">
+                            <div class="status-dot"></div>
+                            <span>Services Running</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 85%" id="cpu-usage"></div>
+                        </div>
+                        <div class="session-meta">CPU: <span id="cpu-percent">85%</span></div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 62%" id="memory-usage"></div>
+                        </div>
+                        <div class="session-meta">Memory: <span id="memory-percent">62%</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sessions View -->
+            <div id="sessions-view" class="hidden">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h2>Sessions Management</h2>
+                    <button class="btn btn-primary" onclick="showCreateSessionModal()">
+                        ➕ New Session
+                    </button>
+                </div>
+                <div class="card">
+                    <div class="session-list" id="all-sessions">
+                        <div class="loading"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Templates View -->
+            <div id="templates-view" class="hidden">
+                <h2>Project Templates</h2>
+                <div class="dashboard-grid" id="templates-grid">
+                    <div class="card">
+                        <h3>CRM System</h3>
+                        <p>Customer Relationship Management system template</p>
+                        <button class="btn btn-primary">Use Template</button>
+                    </div>
+                    <div class="card">
+                        <h3>Project Management</h3>
+                        <p>Project management system template</p>
+                        <button class="btn btn-primary">Use Template</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monitoring View -->
+            <div id="monitoring-view" class="hidden">
+                <h2>System Monitoring</h2>
+                <div class="card">
+                    <h3>Performance Metrics</h3>
+                    <p>Real-time system performance monitoring</p>
+                </div>
+            </div>
+
+            <!-- Settings View -->
+            <div id="settings-view" class="hidden">
+                <h2>Settings</h2>
+                <div class="card">
+                    <h3>System Configuration</h3>
+                    <p>Configure Genesis Architect settings</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Session Modal -->
+    <div id="create-session-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Create New Session</h3>
+                <button class="close-btn" onclick="hideCreateSessionModal()">×</button>
+            </div>
+            <form id="create-session-form">
+                <div class="form-group">
+                    <label class="form-label">Session Name</label>
+                    <input type="text" class="form-input" id="session-name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Requirements</label>
+                    <textarea class="form-textarea" id="session-requirements" required 
+                              placeholder="Describe your project requirements..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">User ID</label>
+                    <input type="text" class="form-input" id="session-user" value="admin">
+                </div>
+                <div style="text-align: right; margin-top: 1.5rem;">
+                    <button type="button" class="btn btn-secondary" onclick="hideCreateSessionModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Session</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notification" class="notification"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // WebSocket connection
+        const socket = io();
+        let currentView = 'dashboard';
+
+        // Connection status
+        socket.on('connect', () => {
+            updateConnectionStatus(true);
+            socket.emit('subscribe_stats');
+        });
+
+        socket.on('disconnect', () => {
+            updateConnectionStatus(false);
+        });
+
+        // Stats updates
+        socket.on('stats_update', (stats) => {
+            updateDashboardStats(stats);
+        });
+
+        // Session events
+        socket.on('session_created', (session) => {
+            showNotification('New session created: ' + session.name, 'success');
+            if (currentView === 'sessions') loadSessions();
+        });
+
+        socket.on('session_updated', (session) => {
+            if (currentView === 'sessions') loadSessions();
+        });
+
+        socket.on('progress_update', (data) => {
+            updateSessionProgress(data.sessionId, data.progress, data.currentStep);
+        });
+
+        socket.on('error_occurred', (data) => {
+            showNotification('Error in session: ' + data.error, 'error');
+        });
+
+        // Navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const view = item.dataset.view;
+                switchView(view);
+                
+                // Update active nav item
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+
+        // Create session form
+        document.getElementById('create-session-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const sessionData = {
+                name: document.getElementById('session-name').value,
+                requirements: document.getElementById('session-requirements').value,
+                userId: document.getElementById('session-user').value
+            };
+
+            try {
+                const response = await fetch('/api/sessions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(sessionData)
+                });
+
+                if (response.ok) {
+                    hideCreateSessionModal();
+                    showNotification('Session created successfully!', 'success');
+                    if (currentView === 'sessions') loadSessions();
+                } else {
+                    showNotification('Failed to create session', 'error');
+                }
+            } catch (error) {
+                showNotification('Error: ' + error.message, 'error');
+            }
+        });
+
+        // Utility functions
+        function updateConnectionStatus(connected) {
+            const statusDot = document.getElementById('connection-status');
+            const statusText = document.getElementById('connection-text');
+            
+            if (connected) {
+                statusDot.style.background = '#27ae60';
+                statusText.textContent = 'Connected';
+            } else {
+                statusDot.style.background = '#e74c3c';
+                statusText.textContent = 'Disconnected';
+            }
+        }
+
+        function updateDashboardStats(stats) {
+            document.getElementById('total-sessions').textContent = stats.totalSessions;
+            document.getElementById('active-sessions').textContent = stats.activeSessions;
+            document.getElementById('completed-sessions').textContent = stats.completedSessions;
+            document.getElementById('failed-sessions').textContent = stats.failedSessions;
+            
+            // Update resource utilization
+            document.getElementById('cpu-percent').textContent = stats.resourceUtilization.cpu + '%';
+            document.getElementById('memory-percent').textContent = stats.resourceUtilization.memory + '%';
+            document.getElementById('cpu-usage').style.width = stats.resourceUtilization.cpu + '%';
+            document.getElementById('memory-usage').style.width = stats.resourceUtilization.memory + '%';
+        }
+
+        function switchView(view) {
+            currentView = view;
+            
+            // Hide all views
+            document.querySelectorAll('[id$="-view"]').forEach(v => v.classList.add('hidden'));
+            
+            // Show selected view
+            document.getElementById(view + '-view').classList.remove('hidden');
+            
+            // Load view-specific data
+            if (view === 'sessions') {
+                loadSessions();
+            } else if (view === 'templates') {
+                loadTemplates();
+            }
+        }
+
+        async function loadSessions() {
+            try {
+                const response = await fetch('/api/sessions');
+                const sessions = await response.json();
+                
+                const container = document.getElementById('all-sessions');
+                container.innerHTML = '';
+                
+                sessions.forEach(session => {
+                    const sessionElement = createSessionElement(session);
+                    container.appendChild(sessionElement);
+                });
+            } catch (error) {
+                showNotification('Failed to load sessions', 'error');
+            }
+        }
+
+        async function loadTemplates() {
+            try {
+                const response = await fetch('/api/templates');
+                const templates = await response.json();
+                
+                const container = document.getElementById('templates-grid');
+                container.innerHTML = '';
+                
+                templates.forEach(template => {
+                    const templateElement = createTemplateElement(template);
+                    container.appendChild(templateElement);
+                });
+            } catch (error) {
+                showNotification('Failed to load templates', 'error');
+            }
+        }
+
+        function createSessionElement(session) {
+            const div = document.createElement('div');
+            div.className = 'session-item';
+            div.innerHTML = `
+                <div class="session-info">
+                    <h4>${session.name}</h4>
+                    <div class="session-meta">
+                        User: ${session.userId} | Step: ${session.currentStep}
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${session.progress}%"></div>
+                    </div>
+                </div>
+                <div class="session-status">
+                    <span class="status-badge status-${session.status}">${session.status}</span>
+                    <button class="btn btn-secondary" onclick="viewSession('${session.id}')">View</button>
+                </div>
+            `;
+            return div;
+        }
+
+        function createTemplateElement(template) {
+            const div = document.createElement('div');
+            div.className = 'card';
+            div.innerHTML = `
+                <h3>${template.name}</h3>
+                <p>${template.description}</p>
+                <button class="btn btn-primary" onclick="useTemplate('${template.id}')">Use Template</button>
+            `;
+            return div;
+        }
+
+        function updateSessionProgress(sessionId, progress, currentStep) {
+            // Update progress in the UI if visible
+            const sessionElements = document.querySelectorAll('.session-item');
+            // Implementation for updating specific session progress
+        }
+
+        function showCreateSessionModal() {
+            document.getElementById('create-session-modal').style.display = 'block';
+        }
+
+        function hideCreateSessionModal() {
+            document.getElementById('create-session-modal').style.display = 'none';
+            document.getElementById('create-session-form').reset();
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
+        }
+
+        async function viewSession(sessionId) {
+            // Navigate to session detail view
+            console.log('Viewing session:', sessionId);
+        }
+
+        async function useTemplate(templateId) {
+            console.log('Using template:', templateId);
+            showNotification('Template feature coming soon!', 'info');
+        }
+
+        // Initialize dashboard
+        loadSessions();
+    </script>
+</body>
+</html>

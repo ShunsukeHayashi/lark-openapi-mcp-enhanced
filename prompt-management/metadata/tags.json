@@ -9,7 +9,8 @@
         "tech:mcp": "MCP (Model Context Protocol)関連",
         "tech:ai": "AI・機械学習関連",
         "tech:database": "データベース関連",
-        "tech:web": "Web開発関連"
+        "tech:web": "Web開発関連",
+        "tech:lark-base": "Lark Base関連"
       }
     },
     "難易度": {
@@ -63,18 +64,38 @@
         "workflow": "ワークフロー",
         "interactive": "インタラクティブ",
         "batch": "バッチ処理",
-        "real-time": "リアルタイム"
+        "real-time": "リアルタイム",
+        "application-design": "アプリケーション設計",
+        "database-design": "データベース設計",
+        "er-diagram": "ER図",
+        "automation": "自動化",
+        "genesis": "創世・生成",
+        "system-architecture": "システムアーキテクチャ",
+        "document-generation": "ドキュメント生成",
+        "command-stack": "コマンドスタック",
+        "blueprint-generator": "設計図生成器",
+        "reconstruction": "再構築"
       }
     }
   },
   "tag_usage": {
     "generation": 2,
-    "meta-prompt": 2,
+    "meta-prompt": 3,
     "documentation": 2,
     "blueprint": 2,
-    "advanced": 2,
-    "command-stack": 1,
-    "crm-design": 1
+    "advanced": 3,
+    "command-stack": 2,
+    "crm-design": 1,
+    "lark-base": 1,
+    "application-design": 1,
+    "database-design": 1,
+    "er-diagram": 1,
+    "automation": 1,
+    "genesis": 1,
+    "system-architecture": 1,
+    "document-generation": 1,
+    "blueprint-generator": 1,
+    "reconstruction": 1
   },
   "tag_relations": {
     "meta-prompt": ["generation", "advanced", "template"],

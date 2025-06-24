@@ -26,7 +26,17 @@
     "prepare": "yarn build",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "bot:deploy": "./quick-deploy.sh",
+    "bot:start": "node deploy-lark-workspace-bot.js",
+    "bot:dev": "NODE_ENV=development node deploy-lark-workspace-bot.js",
+    "bot:prod": "NODE_ENV=production node deploy-lark-workspace-bot.js",
+    "test:integration": "node -e \"require('./lark-workspace-integration').testWorkspaceIntegration()\"",
+    "test:agent": "node test-chat-agent.js",
+    "test:agent-tools": "node test-agent-with-tools.js",
+    "login": "./lark-cli-login.js",
+    "setup": "source setup-env.sh",
+    "status": "./lark-cli-login.js"
   },
   "keywords": [
     "feishu",

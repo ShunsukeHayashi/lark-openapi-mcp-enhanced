@@ -141,7 +141,8 @@ Monitor progress and handle task dependencies.
     const taskId = `task_${Date.now()}`;
     const agentType = this.determineAgentType(taskDescription);
 
-    await this.executeFunction('assign_task', {
+    const tool = this.tools.get('assign_task');
+    await tool?.execute({
       taskId,
       agentType,
       context: {

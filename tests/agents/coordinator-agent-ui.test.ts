@@ -21,7 +21,8 @@ describe('Coordinator Agent UI/UX Tests', () => {
       expect(taskId).toMatch(/^task_\d+$/);
       
       // Verify task was assigned to correct agent type
-      const status = await coordinator.executeFunction('get_task_status', { taskId });
+      const tool = coordinator.tools.get('get_task_status');
+      const status = await tool?.execute({ taskId });
       expect(status.success).toBe(true);
       expect(status.task.priority).toBe('high');
     });
@@ -36,7 +37,8 @@ describe('Coordinator Agent UI/UX Tests', () => {
 
       for (const testCase of testCases) {
         const taskId = await coordinator.assignTask(testCase.description);
-        const status = await coordinator.executeFunction('get_task_status', { taskId });
+        const tool = coordinator.tools.get('get_task_status');
+        const status = await tool?.execute({ taskId });
         
         expect(status.success).toBe(true);
         expect(status.task.name).toBe('Unnamed Task');
@@ -47,7 +49,8 @@ describe('Coordinator Agent UI/UX Tests', () => {
   describe('Task Status Display', () => {
     test('should display task status in readable format', async () => {
       const taskId = await coordinator.assignTask('Test task for status display');
-      const status = await coordinator.executeFunction('get_task_status', { taskId });
+      const tool = coordinator.tools.get('get_task_status');
+      const status = await tool?.execute({ taskId });
 
       expect(status).toMatchObject({
         success: true,
@@ -62,7 +65,8 @@ describe('Coordinator Agent UI/UX Tests', () => {
     });
 
     test('should handle non-existent task gracefully', async () => {
-      const status = await coordinator.executeFunction('get_task_status', { 
+      const tool = coordinator.tools.get('get_task_status');
+      const status = await tool?.execute({ 
         taskId: 'non_existent_task' 
       });
 
@@ -81,7 +85,8 @@ describe('Coordinator Agent UI/UX Tests', () => {
       await coordinator.assignTask('Task 2', 'medium');
       await coordinator.assignTask('Task 3', 'low');
 
-      const taskList = await coordinator.executeFunction('list_active_tasks');
+      const listTool = coordinator.tools.get('list_active_tasks');
+      const taskList = await listTool?.execute({});
 
       expect(taskList.success).toBe(true);
       expect(taskList.activeTasks).toHaveLength(3);
@@ -98,7 +103,8 @@ describe('Coordinator Agent UI/UX Tests', () => {
     });
 
     test('should handle empty task list', async () => {
-      const taskList = await coordinator.executeFunction('list_active_tasks');
+      const listTool = coordinator.tools.get('list_active_tasks');
+      const taskList = await listTool?.execute({});
 
       expect(taskList).toMatchObject({
         success: true,
@@ -110,9 +116,11 @@ describe('Coordinator Agent UI/UX Tests', () => {
 
   describe('User Experience Features', () => {
     test('should provide consistent response format', async () => {
+      const listTool = coordinator.tools.get('list_active_tasks');
+      const statusTool = coordinator.tools.get('get_task_status');
       const responses = [
-        await coordinator.executeFunction('list_active_tasks'),
-        await coordinator.executeFunction('get_task_status', { taskId: 'fake_id' }),
+        await listTool?.execute({}),
+        await statusTool?.execute({ taskId: 'fake_id' }),
       ];
 
       responses.forEach(response => {
@@ -123,7 +131,8 @@ describe('Coordinator Agent UI/UX Tests', () => {
 
     test('should include helpful timestamps', async () => {
       const taskId = await coordinator.assignTask('Timestamp test task');
-      const status = await coordinator.executeFunction('get_task_status', { taskId });
+      const tool = coordinator.tools.get('get_task_status');
+      const status = await tool?.execute({ taskId });
 
       expect(status.task.createdAt).toBeInstanceOf(Date);
       expect(status.task.createdAt.getTime()).toBeLessThanOrEqual(Date.now());
@@ -134,7 +143,8 @@ describe('Coordinator Agent UI/UX Tests', () => {
       
       for (const priority of priorities) {
         const taskId = await coordinator.assignTask(`Priority ${priority} task`, priority);
-        const status = await coordinator.executeFunction('get_task_status', { taskId });
+        const tool = coordinator.tools.get('get_task_status');
+        const status = await tool?.execute({ taskId });
         
         expect(status.task.priority).toBe(priority);
       }
@@ -143,7 +153,8 @@ describe('Coordinator Agent UI/UX Tests', () => {
 
   describe('Error Handling UX', () => {
     test('should provide clear error messages', async () => {
-      const errorResponse = await coordinator.executeFunction('get_task_status', { 
+      const tool = coordinator.tools.get('get_task_status');
+      const errorResponse = await tool?.execute({ 
         taskId: 'invalid_task_id' 
       });
 
@@ -153,8 +164,9 @@ describe('Coordinator Agent UI/UX Tests', () => {
     });
 
     test('should handle missing parameters gracefully', async () => {
+      const tool = coordinator.tools.get('get_task_status');
       try {
-        await coordinator.executeFunction('get_task_status', {});
+        await tool?.execute({});
       } catch (error) {
         expect(error).toBeDefined();
       }
@@ -174,7 +186,8 @@ describe('Coordinator Agent UI/UX Tests', () => {
         expect(id).toMatch(/^task_\d+$/);
       });
 
-      const taskList = await coordinator.executeFunction('list_active_tasks');
+      const listTool = coordinator.tools.get('list_active_tasks');
+      const taskList = await listTool?.execute({});
       expect(taskList.count).toBe(5);
     });
 
@@ -182,7 +195,8 @@ describe('Coordinator Agent UI/UX Tests', () => {
       const taskId = await coordinator.assignTask('Performance test task');
       
       const startTime = Date.now();
-      await coordinator.executeFunction('get_task_status', { taskId });
+      const tool = coordinator.tools.get('get_task_status');
+      await tool?.execute({ taskId });
       const endTime = Date.now();
 
       expect(endTime - startTime).toBeLessThan(100); // Should respond within 100ms
@@ -206,12 +220,14 @@ describe('Coordinator Agent Integration Flow', () => {
     const taskId = await coordinator.assignTask(taskDescription, 'high');
 
     // Step 2: User checks task status
-    const status = await coordinator.executeFunction('get_task_status', { taskId });
+    const statusTool = coordinator.tools.get('get_task_status');
+    const status = await statusTool?.execute({ taskId });
     expect(status.success).toBe(true);
     expect(status.task.status).toBe('assigned');
 
     // Step 3: User views all tasks
-    const taskList = await coordinator.executeFunction('list_active_tasks');
+    const listTool = coordinator.tools.get('list_active_tasks');
+    const taskList = await listTool?.execute({});
     expect(taskList.success).toBe(true);
     expect(taskList.count).toBe(1);
     expect(taskList.activeTasks[0].id).toBe(taskId);
@@ -232,12 +248,14 @@ describe('Coordinator Agent Integration Flow', () => {
     }
 
     // Verify all tasks are tracked
-    const taskList = await coordinator.executeFunction('list_active_tasks');
+    const listTool = coordinator.tools.get('list_active_tasks');
+    const taskList = await listTool?.execute({});
     expect(taskList.count).toBe(3);
 
     // Verify each task can be retrieved
+    const statusTool = coordinator.tools.get('get_task_status');
     for (const taskId of taskIds) {
-      const status = await coordinator.executeFunction('get_task_status', { taskId });
+      const status = await statusTool?.execute({ taskId });
       expect(status.success).toBe(true);
     }
   });

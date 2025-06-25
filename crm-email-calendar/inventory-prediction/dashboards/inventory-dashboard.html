@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在庫予測ダッシュボード | Inventory Prediction Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .metric-card {
+            @apply bg-white rounded-lg shadow-md p-6 transition-all hover:shadow-lg;
+        }
+        .alert-critical { @apply bg-red-100 border-red-500 text-red-700; }
+        .alert-warning { @apply bg-yellow-100 border-yellow-500 text-yellow-700; }
+        .alert-info { @apply bg-blue-100 border-blue-500 text-blue-700; }
+        .chart-container { position: relative; height: 300px; }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">在庫予測ダッシュボード</h1>
+            <p class="text-gray-600">リアルタイム在庫状況と需要予測</p>
+        </header>
+
+        <!-- Summary Metrics -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="metric-card">
+                <h3 class="text-sm font-medium text-gray-500 mb-2">総在庫アイテム</h3>
+                <p class="text-3xl font-bold text-gray-800" id="totalItems">-</p>
+                <p class="text-sm text-gray-600 mt-1">
+                    <span class="text-green-600">▲ 5%</span> 前月比
+                </p>
+            </div>
+            
+            <div class="metric-card">
+                <h3 class="text-sm font-medium text-gray-500 mb-2">在庫切れリスク</h3>
+                <p class="text-3xl font-bold text-red-600" id="stockoutRisk">-</p>
+                <p class="text-sm text-gray-600 mt-1">要注意アイテム</p>
+            </div>
+            
+            <div class="metric-card">
+                <h3 class="text-sm font-medium text-gray-500 mb-2">推奨発注額</h3>
+                <p class="text-3xl font-bold text-blue-600" id="recommendedOrder">-</p>
+                <p class="text-sm text-gray-600 mt-1">今週の推奨</p>
+            </div>
+            
+            <div class="metric-card">
+                <h3 class="text-sm font-medium text-gray-500 mb-2">予測精度</h3>
+                <p class="text-3xl font-bold text-green-600" id="forecastAccuracy">-</p>
+                <p class="text-sm text-gray-600 mt-1">過去30日間</p>
+            </div>
+        </div>
+
+        <!-- Alerts Section -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">アラート</h2>
+            <div id="alertsContainer" class="space-y-3">
+                <!-- Alerts will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Demand Forecast Chart -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">需要予測（30日間）</h2>
+                <div class="chart-container">
+                    <canvas id="demandForecastChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Inventory Status Chart -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">在庫状況</h2>
+                <div class="chart-container">
+                    <canvas id="inventoryStatusChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Category Analysis -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">カテゴリー別分析</h2>
+                <div class="chart-container">
+                    <canvas id="categoryAnalysisChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Supplier Performance -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">サプライヤーパフォーマンス</h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full table-auto">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">サプライヤー</th>
+                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">納期遵守率</th>
+                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">品質スコア</th>
+                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">コスト効率</th>
+                            </tr>
+                        </thead>
+                        <tbody id="supplierTableBody">
+                            <!-- Data will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendations Section -->
+        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">推奨アクション</h2>
+            <div id="recommendationsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Recommendations will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- YouTube Content Inventory (Special Section) -->
+        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">YouTube コンテンツ在庫</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="text-center">
+                    <p class="text-sm text-gray-500">フレッシュコンテンツ</p>
+                    <p class="text-2xl font-bold text-green-600" id="freshContent">-</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-sm text-gray-500">更新推奨</p>
+                    <p class="text-2xl font-bold text-yellow-600" id="needsRefresh">-</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-sm text-gray-500">廃止候補</p>
+                    <p class="text-2xl font-bold text-red-600" id="retirementCandidates">-</p>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="contentPerformanceChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dashboard initialization and data loading
+        class InventoryDashboard {
+            constructor() {
+                this.charts = {};
+                this.data = null;
+                this.init();
+            }
+
+            async init() {
+                await this.loadData();
+                this.updateMetrics();
+                this.renderAlerts();
+                this.initCharts();
+                this.renderRecommendations();
+                this.updateSupplierTable();
+                this.updateContentInventory();
+                
+                // Auto-refresh every 5 minutes
+                setInterval(() => this.refresh(), 300000);
+            }
+
+            async loadData() {
+                try {
+                    // In production, this would fetch from your API
+                    this.data = await this.mockDataFetch();
+                } catch (error) {
+                    console.error('Failed to load data:', error);
+                }
+            }
+
+            async mockDataFetch() {
+                // Mock data for demonstration
+                return {
+                    metrics: {
+                        totalItems: 1234,
+                        stockoutRisk: 15,
+                        recommendedOrder: '¥2,450,000',
+                        forecastAccuracy: '92.3%'
+                    },
+                    alerts: [
+                        {
+                            type: 'critical',
+                            message: 'パイプ材 A-100: 在庫切れ予測 (3日以内)',
+                            action: '緊急発注が必要です'
+                        },
+                        {
+                            type: 'warning',
+                            message: 'カッティングブレード B-50: 在庫低下',
+                            action: '7日以内の発注を推奨'
+                        },
+                        {
+                            type: 'info',
+                            message: '新規サプライヤーからの見積もりが到着',
+                            action: 'コスト削減の機会'
+                        }
+                    ],
+                    demandForecast: this.generateDemandForecastData(),
+                    inventoryStatus: this.generateInventoryStatusData(),
+                    categoryAnalysis: this.generateCategoryData(),
+                    suppliers: this.generateSupplierData(),
+                    recommendations: this.generateRecommendations(),
+                    contentInventory: {
+                        fresh: 45,
+                        needsRefresh: 23,
+                        retirement: 8
+                    }
+                };
+            }
+
+            updateMetrics() {
+                document.getElementById('totalItems').textContent = this.data.metrics.totalItems.toLocaleString();
+                document.getElementById('stockoutRisk').textContent = this.data.metrics.stockoutRisk;
+                document.getElementById('recommendedOrder').textContent = this.data.metrics.recommendedOrder;
+                document.getElementById('forecastAccuracy').textContent = this.data.metrics.forecastAccuracy;
+            }
+
+            renderAlerts() {
+                const container = document.getElementById('alertsContainer');
+                container.innerHTML = this.data.alerts.map(alert => `
+                    <div class="alert-${alert.type} border-l-4 p-4 rounded">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="font-semibold">${alert.message}</p>
+                                <p class="text-sm mt-1">${alert.action}</p>
+                            </div>
+                            <button class="text-sm underline ml-4">詳細</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            initCharts() {
+                // Demand Forecast Chart
+                this.charts.demandForecast = new Chart(
+                    document.getElementById('demandForecastChart').getContext('2d'),
+                    {
+                        type: 'line',
+                        data: this.data.demandForecast,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { position: 'bottom' }
+                            },
+                            scales: {
+                                y: { beginAtZero: true }
+                            }
+                        }
+                    }
+                );
+
+                // Inventory Status Chart
+                this.charts.inventoryStatus = new Chart(
+                    document.getElementById('inventoryStatusChart').getContext('2d'),
+                    {
+                        type: 'doughnut',
+                        data: this.data.inventoryStatus,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { position: 'bottom' }
+                            }
+                        }
+                    }
+                );
+
+                // Category Analysis Chart
+                this.charts.categoryAnalysis = new Chart(
+                    document.getElementById('categoryAnalysisChart').getContext('2d'),
+                    {
+                        type: 'bar',
+                        data: this.data.categoryAnalysis,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false }
+                            },
+                            scales: {
+                                y: { beginAtZero: true }
+                            }
+                        }
+                    }
+                );
+
+                // Content Performance Chart
+                this.charts.contentPerformance = new Chart(
+                    document.getElementById('contentPerformanceChart').getContext('2d'),
+                    {
+                        type: 'bubble',
+                        data: this.generateContentPerformanceData(),
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { position: 'bottom' }
+                            },
+                            scales: {
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: '動画の年齢（日）'
+                                    }
+                                },
+                                y: {
+                                    title: {
+                                        display: true,
+                                        text: '視聴回数/日'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                );
+            }
+
+            generateDemandForecastData() {
+                const labels = [];
+                const actual = [];
+                const forecast = [];
+                const upperBound = [];
+                const lowerBound = [];
+
+                for (let i = -14; i < 30; i++) {
+                    labels.push(moment().add(i, 'days').format('MM/DD'));
+                    if (i < 0) {
+                        actual.push(Math.floor(Math.random() * 50) + 100);
+                        forecast.push(null);
+                        upperBound.push(null);
+                        lowerBound.push(null);
+                    } else {
+                        actual.push(null);
+                        const base = Math.floor(Math.random() * 50) + 100;
+                        forecast.push(base);
+                        upperBound.push(base + 20);
+                        lowerBound.push(base - 20);
+                    }
+                }
+
+                return {
+                    labels,
+                    datasets: [
+                        {
+                            label: '実績',
+                            data: actual,
+                            borderColor: 'rgb(75, 192, 192)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            tension: 0.1
+                        },
+                        {
+                            label: '予測',
+                            data: forecast,
+                            borderColor: 'rgb(54, 162, 235)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderDash: [5, 5],
+                            tension: 0.1
+                        },
+                        {
+                            label: '上限',
+                            data: upperBound,
+                            borderColor: 'rgba(255, 99, 132, 0.2)',
+                            backgroundColor: 'transparent',
+                            borderDash: [2, 2],
+                            pointRadius: 0,
+                            tension: 0.1
+                        },
+                        {
+                            label: '下限',
+                            data: lowerBound,
+                            borderColor: 'rgba(255, 99, 132, 0.2)',
+                            backgroundColor: 'transparent',
+                            borderDash: [2, 2],
+                            pointRadius: 0,
+                            tension: 0.1
+                        }
+                    ]
+                };
+            }
+
+            generateInventoryStatusData() {
+                return {
+                    labels: ['適正在庫', '過剰在庫', '在庫不足', '在庫切れリスク'],
+                    datasets: [{
+                        data: [65, 15, 15, 5],
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.8)',
+                            'rgba(255, 206, 86, 0.8)',
+                            'rgba(255, 159, 64, 0.8)',
+                            'rgba(255, 99, 132, 0.8)'
+                        ]
+                    }]
+                };
+            }
+
+            generateCategoryData() {
+                return {
+                    labels: ['パイプ材', 'カッティングツール', '接続部品', '消耗品', 'その他'],
+                    datasets: [{
+                        label: '在庫金額（百万円）',
+                        data: [45, 38, 28, 15, 12],
+                        backgroundColor: 'rgba(54, 162, 235, 0.8)'
+                    }]
+                };
+            }
+
+            generateSupplierData() {
+                return [
+                    { name: 'サプライヤーA', delivery: '98%', quality: '4.8/5', cost: '優' },
+                    { name: 'サプライヤーB', delivery: '95%', quality: '4.5/5', cost: '良' },
+                    { name: 'サプライヤーC', delivery: '92%', quality: '4.7/5', cost: '優' },
+                    { name: 'サプライヤーD', delivery: '88%', quality: '4.3/5', cost: '可' }
+                ];
+            }
+
+            updateSupplierTable() {
+                const tbody = document.getElementById('supplierTableBody');
+                tbody.innerHTML = this.data.suppliers.map(supplier => `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="px-4 py-3">${supplier.name}</td>
+                        <td class="px-4 py-3">
+                            <span class="${this.getPerformanceClass(supplier.delivery)}">
+                                ${supplier.delivery}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3">${supplier.quality}</td>
+                        <td class="px-4 py-3">
+                            <span class="px-2 py-1 text-xs rounded-full ${this.getCostClass(supplier.cost)}">
+                                ${supplier.cost}
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            getPerformanceClass(value) {
+                const num = parseInt(value);
+                if (num >= 95) return 'text-green-600 font-semibold';
+                if (num >= 90) return 'text-yellow-600';
+                return 'text-red-600';
+            }
+
+            getCostClass(value) {
+                switch(value) {
+                    case '優': return 'bg-green-100 text-green-800';
+                    case '良': return 'bg-blue-100 text-blue-800';
+                    case '可': return 'bg-yellow-100 text-yellow-800';
+                    default: return 'bg-gray-100 text-gray-800';
+                }
+            }
+
+            generateRecommendations() {
+                return [
+                    {
+                        title: '在庫最適化',
+                        description: 'パイプ材カテゴリーの発注を統合することで、年間200万円のコスト削減が可能',
+                        action: '詳細分析を表示',
+                        priority: 'high'
+                    },
+                    {
+                        title: '需要急増アラート',
+                        description: '季節要因により、来月の需要が30%増加する見込み',
+                        action: '発注計画を調整',
+                        priority: 'medium'
+                    },
+                    {
+                        title: '新規サプライヤー',
+                        description: 'サプライヤーEからの提案により、10%のコスト削減が期待',
+                        action: '見積もりを確認',
+                        priority: 'low'
+                    },
+                    {
+                        title: 'YouTube動画更新',
+                        description: '「パイプ切断基礎」シリーズの更新により、問い合わせ削減が期待',
+                        action: 'コンテンツ計画を確認',
+                        priority: 'medium'
+                    }
+                ];
+            }
+
+            renderRecommendations() {
+                const container = document.getElementById('recommendationsContainer');
+                container.innerHTML = this.data.recommendations.map(rec => `
+                    <div class="p-4 border rounded-lg hover:shadow-md transition-shadow">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="font-semibold text-gray-800">${rec.title}</h3>
+                                <p class="text-sm text-gray-600 mt-1">${rec.description}</p>
+                            </div>
+                            <span class="px-2 py-1 text-xs rounded-full ${this.getPriorityClass(rec.priority)}">
+                                ${this.getPriorityLabel(rec.priority)}
+                            </span>
+                        </div>
+                        <button class="mt-3 text-sm text-blue-600 hover:text-blue-800 font-medium">
+                            ${rec.action} →
+                        </button>
+                    </div>
+                `).join('');
+            }
+
+            getPriorityClass(priority) {
+                switch(priority) {
+                    case 'high': return 'bg-red-100 text-red-800';
+                    case 'medium': return 'bg-yellow-100 text-yellow-800';
+                    case 'low': return 'bg-green-100 text-green-800';
+                    default: return 'bg-gray-100 text-gray-800';
+                }
+            }
+
+            getPriorityLabel(priority) {
+                switch(priority) {
+                    case 'high': return '高';
+                    case 'medium': return '中';
+                    case 'low': return '低';
+                    default: return '-';
+                }
+            }
+
+            updateContentInventory() {
+                document.getElementById('freshContent').textContent = this.data.contentInventory.fresh;
+                document.getElementById('needsRefresh').textContent = this.data.contentInventory.needsRefresh;
+                document.getElementById('retirementCandidates').textContent = this.data.contentInventory.retirement;
+            }
+
+            generateContentPerformanceData() {
+                const datasets = [
+                    {
+                        label: 'パフォーマンス良好',
+                        data: this.generateBubbleData(20, 'good'),
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)'
+                    },
+                    {
+                        label: '要改善',
+                        data: this.generateBubbleData(15, 'medium'),
+                        backgroundColor: 'rgba(255, 206, 86, 0.6)'
+                    },
+                    {
+                        label: '廃止候補',
+                        data: this.generateBubbleData(10, 'poor'),
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)'
+                    }
+                ];
+
+                return { datasets };
+            }
+
+            generateBubbleData(count, performance) {
+                const data = [];
+                for (let i = 0; i < count; i++) {
+                    let x, y, r;
+                    switch(performance) {
+                        case 'good':
+                            x = Math.random() * 60;
+                            y = Math.random() * 500 + 500;
+                            r = Math.random() * 20 + 10;
+                            break;
+                        case 'medium':
+                            x = Math.random() * 60 + 60;
+                            y = Math.random() * 500 + 200;
+                            r = Math.random() * 15 + 8;
+                            break;
+                        case 'poor':
+                            x = Math.random() * 60 + 120;
+                            y = Math.random() * 200;
+                            r = Math.random() * 10 + 5;
+                            break;
+                    }
+                    data.push({ x, y, r });
+                }
+                return data;
+            }
+
+            async refresh() {
+                await this.loadData();
+                this.updateMetrics();
+                this.renderAlerts();
+                this.updateCharts();
+                this.renderRecommendations();
+                this.updateSupplierTable();
+                this.updateContentInventory();
+            }
+
+            updateCharts() {
+                // Update chart data
+                Object.keys(this.charts).forEach(key => {
+                    if (this.charts[key]) {
+                        this.charts[key].update();
+                    }
+                });
+            }
+        }
+
+        // Initialize dashboard when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new InventoryDashboard();
+        });
+    </script>
+</body>
+</html>

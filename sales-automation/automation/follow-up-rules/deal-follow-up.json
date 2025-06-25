@@ -1,0 +1,186 @@
+{
+  "name": "商談フォローアップルール",
+  "description": "商談ステージに基づく自動フォローアップ設定",
+  "rules": [
+    {
+      "id": "new_deal_initial_contact",
+      "name": "新規商談初回連絡",
+      "trigger": {
+        "event": "record_created",
+        "table": "商談管理",
+        "conditions": [
+          {
+            "field": "ステージ",
+            "operator": "equals",
+            "value": "新規"
+          }
+        ]
+      },
+      "actions": [
+        {
+          "type": "create_task",
+          "config": {
+            "title": "【初回連絡】{商談名}への連絡",
+            "description": "新規商談の初回連絡を行ってください。\n- 顧客のニーズ確認\n- YouTube動画の提案準備\n- 次回アポイントの設定",
+            "assignee": "{担当者}",
+            "due_date": "+3days",
+            "priority": "高"
+          }
+        },
+        {
+          "type": "send_notification",
+          "config": {
+            "channel": "lark",
+            "recipient": "{担当者}",
+            "template": "new_deal_notification"
+          }
+        }
+      ]
+    },
+    {
+      "id": "proposal_follow_up",
+      "name": "提案後フォローアップ",
+      "trigger": {
+        "event": "field_updated",
+        "table": "商談管理",
+        "conditions": [
+          {
+            "field": "ステージ",
+            "operator": "equals",
+            "value": "提案"
+          },
+          {
+            "field": "最終活動日",
+            "operator": "days_ago",
+            "value": 7
+          }
+        ]
+      },
+      "actions": [
+        {
+          "type": "create_task",
+          "config": {
+            "title": "【要フォロー】{商談名}の検討状況確認",
+            "description": "提案から7日経過しました。\n- 検討状況の確認\n- 懸念事項のヒアリング\n- 追加資料の必要性確認",
+            "assignee": "{担当者}",
+            "due_date": "+1day",
+            "priority": "高"
+          }
+        },
+        {
+          "type": "send_alert",
+          "config": {
+            "type": "email",
+            "subject": "【アラート】提案後フォローが必要です - {商談名}",
+            "recipient": "{担当者}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "stalled_deal_escalation",
+      "name": "商談停滞エスカレーション",
+      "trigger": {
+        "event": "scheduled",
+        "schedule": "daily",
+        "conditions": [
+          {
+            "field": "最終活動日",
+            "operator": "days_ago",
+            "value": 14
+          },
+          {
+            "field": "ステージ",
+            "operator": "not_in",
+            "value": ["成約", "失注", "保留"]
+          }
+        ]
+      },
+      "actions": [
+        {
+          "type": "create_task",
+          "config": {
+            "title": "【エスカレーション】{商談名}が2週間停滞",
+            "description": "商談が2週間停滞しています。至急対応が必要です。",
+            "assignee": "{マネージャー}",
+            "due_date": "today",
+            "priority": "緊急"
+          }
+        },
+        {
+          "type": "update_field",
+          "config": {
+            "field": "リスクフラグ",
+            "value": "高"
+          }
+        },
+        {
+          "type": "send_notification",
+          "config": {
+            "channel": "slack",
+            "recipient": ["#sales-alert", "{担当者}", "{マネージャー}"],
+            "template": "escalation_notification"
+          }
+        }
+      ]
+    },
+    {
+      "id": "low_probability_action",
+      "name": "成約可能性低下時対策",
+      "trigger": {
+        "event": "field_updated",
+        "table": "商談管理",
+        "conditions": [
+          {
+            "field": "成約確度",
+            "operator": "decreased_to",
+            "value": 30
+          }
+        ]
+      },
+      "actions": [
+        {
+          "type": "generate_ai_suggestion",
+          "config": {
+            "prompt": "商談名: {商談名}\n顧客: {顧客名}\n現在の課題: {課題}\n成約確度が低下した理由を分析し、対策を提案してください。",
+            "output_field": "対策提案"
+          }
+        },
+        {
+          "type": "create_task",
+          "config": {
+            "title": "【要対策】{商談名}の成約確度が低下",
+            "description": "AIが生成した対策提案:\n{対策提案}\n\n早急に対応策を実行してください。",
+            "assignee": "{担当者}",
+            "due_date": "+2days",
+            "priority": "高"
+          }
+        },
+        {
+          "type": "schedule_meeting",
+          "config": {
+            "title": "【緊急】{商談名}対策会議",
+            "attendees": ["{担当者}", "{マネージャー}"],
+            "duration": "30min",
+            "within_days": 2
+          }
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "enabled": true,
+    "notification_preferences": {
+      "email": true,
+      "slack": true,
+      "lark": true,
+      "mobile_push": true
+    },
+    "escalation_hierarchy": [
+      "担当者",
+      "チームリーダー",
+      "マネージャー",
+      "営業部長"
+    ]
+  }
+}

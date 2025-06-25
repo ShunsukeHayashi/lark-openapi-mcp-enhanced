@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>顧客満足度ダッシュボード | Customer Satisfaction Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        .satisfaction-card {
+            @apply bg-white rounded-xl shadow-lg p-6 transition-all hover:shadow-xl;
+        }
+        .score-excellent { @apply text-green-600 bg-green-100; }
+        .score-good { @apply text-blue-600 bg-blue-100; }
+        .score-fair { @apply text-yellow-600 bg-yellow-100; }
+        .score-poor { @apply text-red-600 bg-red-100; }
+        .chart-container { position: relative; height: 350px; }
+        .mini-chart { height: 80px; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <!-- Header -->
+        <header class="mb-8">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">顧客満足度ダッシュボード</h1>
+                    <p class="text-gray-600 mt-2">リアルタイム満足度分析とアクション管理</p>
+                </div>
+                <div class="flex gap-2">
+                    <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        <i data-feather="download" class="inline w-4 h-4 mr-2"></i>
+                        レポート出力
+                    </button>
+                    <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+                        <i data-feather="settings" class="inline w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Key Metrics -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Overall Satisfaction -->
+            <div class="satisfaction-card">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">総合満足度</h3>
+                        <p class="text-3xl font-bold mt-2" id="overallScore">-</p>
+                    </div>
+                    <div class="p-3 rounded-lg score-good">
+                        <i data-feather="smile" class="w-6 h-6"></i>
+                    </div>
+                </div>
+                <div class="mini-chart">
+                    <canvas id="overallTrendChart"></canvas>
+                </div>
+                <p class="text-sm text-gray-600 mt-2">
+                    <span class="text-green-600">▲ 5.2%</span> 前月比
+                </p>
+            </div>
+
+            <!-- NPS Score -->
+            <div class="satisfaction-card">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">NPS スコア</h3>
+                        <p class="text-3xl font-bold mt-2" id="npsScore">-</p>
+                    </div>
+                    <div class="p-3 rounded-lg score-excellent">
+                        <i data-feather="trending-up" class="w-6 h-6"></i>
+                    </div>
+                </div>
+                <div class="flex justify-between text-sm mt-4">
+                    <span class="text-green-600">推奨者: <span id="promoters">-</span>%</span>
+                    <span class="text-red-600">批判者: <span id="detractors">-</span>%</span>
+                </div>
+            </div>
+
+            <!-- Churn Risk -->
+            <div class="satisfaction-card">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">離脱リスク</h3>
+                        <p class="text-3xl font-bold mt-2" id="churnRisk">-</p>
+                    </div>
+                    <div class="p-3 rounded-lg score-poor">
+                        <i data-feather="alert-triangle" class="w-6 h-6"></i>
+                    </div>
+                </div>
+                <div class="text-sm mt-4">
+                    <p class="text-red-600">高リスク: <span id="highRiskCount">-</span>名</p>
+                    <p class="text-yellow-600">要注意: <span id="mediumRiskCount">-</span>名</p>
+                </div>
+            </div>
+
+            <!-- Active Actions -->
+            <div class="satisfaction-card">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">アクティブアクション</h3>
+                        <p class="text-3xl font-bold mt-2" id="activeActions">-</p>
+                    </div>
+                    <div class="p-3 rounded-lg bg-purple-100 text-purple-600">
+                        <i data-feather="activity" class="w-6 h-6"></i>
+                    </div>
+                </div>
+                <div class="text-sm mt-4">
+                    <p>本日実行: <span id="todayActions">-</span></p>
+                    <p>成功率: <span id="successRate">-</span>%</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-time Alerts -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">リアルタイムアラート</h2>
+            <div id="alertsContainer" class="space-y-3">
+                <!-- Alerts will be dynamically inserted -->
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            <!-- Satisfaction Trend -->
+            <div class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-gray-800">満足度トレンド</h2>
+                    <div class="flex gap-2">
+                        <button class="px-3 py-1 text-sm bg-blue-100 text-blue-600 rounded-lg">7日</button>
+                        <button class="px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">30日</button>
+                        <button class="px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">90日</button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="satisfactionTrendChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Segment Analysis -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">セグメント分析</h2>
+                <div class="space-y-4">
+                    <div id="segmentAnalysis">
+                        <!-- Segment data will be inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Analysis -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Satisfaction Heatmap -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">満足度ヒートマップ</h2>
+                <div class="chart-container">
+                    <canvas id="satisfactionHeatmap"></canvas>
+                </div>
+            </div>
+
+            <!-- Top Issues -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">主要な課題</h2>
+                <div class="space-y-4" id="topIssuesContainer">
+                    <!-- Issues will be inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Management -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-gray-800">アクション管理</h2>
+                <button class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                    <i data-feather="plus" class="inline w-4 h-4 mr-2"></i>
+                    新規アクション
+                </button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead>
+                        <tr class="bg-gray-50">
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                顧客
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                アクションタイプ
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                優先度
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                ステータス
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                期限
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                アクション
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="actionTableBody" class="bg-white divide-y divide-gray-200">
+                        <!-- Action items will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Predictive Analytics -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Churn Prediction -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">離脱予測分析</h2>
+                <div class="chart-container">
+                    <canvas id="churnPredictionChart"></canvas>
+                </div>
+                <div class="mt-4 p-4 bg-red-50 rounded-lg">
+                    <p class="text-sm text-red-700">
+                        <strong>警告:</strong> 15名の顧客が今後30日以内に離脱する可能性があります
+                    </p>
+                </div>
+            </div>
+
+            <!-- Satisfaction Impact -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">満足度影響要因</h2>
+                <div class="chart-container">
+                    <canvas id="impactFactorsChart"></canvas>
+                </div>
+                <div class="mt-4 space-y-2">
+                    <div class="flex justify-between text-sm">
+                        <span>応答時間の改善</span>
+                        <span class="text-green-600">+8.5%</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span>機能追加</span>
+                        <span class="text-green-600">+6.2%</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span>価格調整</span>
+                        <span class="text-red-600">-3.1%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Customer Satisfaction Dashboard
+        class SatisfactionDashboard {
+            constructor() {
+                this.charts = {};
+                this.data = null;
+                this.refreshInterval = null;
+                this.init();
+            }
+
+            async init() {
+                await this.loadData();
+                this.updateMetrics();
+                this.renderAlerts();
+                this.initCharts();
+                this.renderSegmentAnalysis();
+                this.renderTopIssues();
+                this.renderActionTable();
+                
+                // Initialize Feather icons
+                feather.replace();
+                
+                // Auto-refresh every 2 minutes
+                this.refreshInterval = setInterval(() => this.refresh(), 120000);
+            }
+
+            async loadData() {
+                try {
+                    // In production, this would fetch from your API
+                    this.data = await this.mockDataFetch();
+                } catch (error) {
+                    console.error('Failed to load data:', error);
+                }
+            }
+
+            async mockDataFetch() {
+                return {
+                    metrics: {
+                        overallScore: 78.5,
+                        npsScore: 42,
+                        promoters: 58,
+                        detractors: 16,
+                        churnRisk: 12.3,
+                        highRiskCount: 23,
+                        mediumRiskCount: 67,
+                        activeActions: 45,
+                        todayActions: 12,
+                        successRate: 87
+                    },
+                    alerts: [
+                        {
+                            type: 'critical',
+                            customer: '株式会社サンプル',
+                            message: 'NPS スコアが急激に低下（9→3）',
+                            action: '緊急フォローアップが必要',
+                            time: '5分前'
+                        },
+                        {
+                            type: 'warning',
+                            customer: 'テスト工業',
+                            message: '離脱リスクが高まっています（68%）',
+                            action: 'リテンションオファーを検討',
+                            time: '15分前'
+                        },
+                        {
+                            type: 'success',
+                            customer: 'デモ製造',
+                            message: '満足度が大幅に改善（45→82）',
+                            action: 'ケーススタディの機会',
+                            time: '1時間前'
+                        }
+                    ],
+                    segments: [
+                        { name: 'チャンピオン', count: 234, satisfaction: 92, trend: 'up' },
+                        { name: '満足', count: 567, satisfaction: 78, trend: 'stable' },
+                        { name: '中立', count: 345, satisfaction: 55, trend: 'down' },
+                        { name: 'リスク', count: 89, satisfaction: 32, trend: 'down' }
+                    ],
+                    topIssues: [
+                        { category: 'サポート対応', count: 45, severity: 'high', impact: 15 },
+                        { category: '製品機能', count: 38, severity: 'medium', impact: 12 },
+                        { category: '価格', count: 27, severity: 'medium', impact: 8 },
+                        { category: '納期', count: 19, severity: 'low', impact: 5 }
+                    ],
+                    actions: [
+                        {
+                            customer: '株式会社A',
+                            type: '緊急フォローアップ',
+                            priority: 'urgent',
+                            status: 'in_progress',
+                            due: '2024-01-15',
+                            assignee: '田中'
+                        },
+                        {
+                            customer: 'B工業',
+                            type: 'リテンションオファー',
+                            priority: 'high',
+                            status: 'pending',
+                            due: '2024-01-17',
+                            assignee: '佐藤'
+                        },
+                        {
+                            customer: 'C製造',
+                            type: '定期チェックイン',
+                            priority: 'medium',
+                            status: 'scheduled',
+                            due: '2024-01-20',
+                            assignee: '鈴木'
+                        }
+                    ]
+                };
+            }
+
+            updateMetrics() {
+                // Update metric values
+                document.getElementById('overallScore').textContent = this.data.metrics.overallScore;
+                document.getElementById('npsScore').textContent = this.data.metrics.npsScore;
+                document.getElementById('promoters').textContent = this.data.metrics.promoters;
+                document.getElementById('detractors').textContent = this.data.metrics.detractors;
+                document.getElementById('churnRisk').textContent = `${this.data.metrics.churnRisk}%`;
+                document.getElementById('highRiskCount').textContent = this.data.metrics.highRiskCount;
+                document.getElementById('mediumRiskCount').textContent = this.data.metrics.mediumRiskCount;
+                document.getElementById('activeActions').textContent = this.data.metrics.activeActions;
+                document.getElementById('todayActions').textContent = this.data.metrics.todayActions;
+                document.getElementById('successRate').textContent = this.data.metrics.successRate;
+                
+                // Update score styling
+                this.updateScoreStyling('overallScore', this.data.metrics.overallScore);
+            }
+
+            updateScoreStyling(elementId, score) {
+                const element = document.getElementById(elementId);
+                if (score >= 80) {
+                    element.className = 'text-3xl font-bold mt-2 text-green-600';
+                } else if (score >= 60) {
+                    element.className = 'text-3xl font-bold mt-2 text-blue-600';
+                } else if (score >= 40) {
+                    element.className = 'text-3xl font-bold mt-2 text-yellow-600';
+                } else {
+                    element.className = 'text-3xl font-bold mt-2 text-red-600';
+                }
+            }
+
+            renderAlerts() {
+                const container = document.getElementById('alertsContainer');
+                container.innerHTML = this.data.alerts.map(alert => {
+                    const alertClass = {
+                        critical: 'border-red-500 bg-red-50',
+                        warning: 'border-yellow-500 bg-yellow-50',
+                        success: 'border-green-500 bg-green-50'
+                    }[alert.type];
+                    
+                    const iconColor = {
+                        critical: 'text-red-600',
+                        warning: 'text-yellow-600',
+                        success: 'text-green-600'
+                    }[alert.type];
+                    
+                    return `
+                        <div class="border-l-4 ${alertClass} p-4 rounded-lg">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <i data-feather="alert-circle" class="w-5 h-5 ${iconColor}"></i>
+                                </div>
+                                <div class="ml-3 flex-1">
+                                    <div class="flex justify-between">
+                                        <p class="text-sm font-medium text-gray-900">
+                                            ${alert.customer} - ${alert.message}
+                                        </p>
+                                        <span class="text-xs text-gray-500">${alert.time}</span>
+                                    </div>
+                                    <p class="mt-1 text-sm text-gray-600">${alert.action}</p>
+                                </div>
+                                <button class="ml-4 text-sm text-blue-600 hover:text-blue-800">
+                                    対応する
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                // Re-initialize feather icons
+                feather.replace();
+            }
+
+            initCharts() {
+                // Overall Trend Mini Chart
+                this.charts.overallTrend = new Chart(
+                    document.getElementById('overallTrendChart').getContext('2d'),
+                    {
+                        type: 'line',
+                        data: this.generateMiniTrendData(),
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                x: { display: false },
+                                y: { display: false }
+                            },
+                            elements: {
+                                point: { radius: 0 },
+                                line: { borderWidth: 2 }
+                            }
+                        }
+                    }
+                );
+
+                // Satisfaction Trend Chart
+                this.charts.satisfactionTrend = new Chart(
+                    document.getElementById('satisfactionTrendChart').getContext('2d'),
+                    {
+                        type: 'line',
+                        data: this.generateSatisfactionTrendData(),
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { position: 'bottom' }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: 100
+                                }
+                            }
+                        }
+                    }
+                );
+
+                // Satisfaction Heatmap
+                this.charts.heatmap = new Chart(
+                    document.getElementById('satisfactionHeatmap').getContext('2d'),
+                    {
+                        type: 'bar',
+                        data: this.generateHeatmapData(),
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: 100
+                                }
+                            }
+                        }
+                    }
+                );
+
+                // Churn Prediction Chart
+                this.charts.churnPrediction = new Chart(
+                    document.getElementById('churnPredictionChart').getContext('2d'),
+                    {
+                        type: 'scatter',
+                        data: this.generateChurnPredictionData(),
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { position: 'bottom' }
+                            },
+                            scales: {
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: '満足度スコア'
+                                    }
+                                },
+                                y: {
+                                    title: {
+                                        display: true,
+                                        text: '離脱確率 (%)'
+                                    },
+                                    min: 0,
+                                    max: 100
+                                }
+                            }
+                        }
+                    }
+                );
+
+                // Impact Factors Chart
+                this.charts.impactFactors = new Chart(
+                    document.getElementById('impactFactorsChart').getContext('2d'),
+                    {
+                        type: 'radar',
+                        data: this.generateImpactFactorsData(),
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { position: 'bottom' }
+                            },
+                            scales: {
+                                r: {
+                                    beginAtZero: true,
+                                    max: 10
+                                }
+                            }
+                        }
+                    }
+                );
+            }
+
+            generateMiniTrendData() {
+                const data = [];
+                for (let i = 0; i < 7; i++) {
+                    data.push(Math.random() * 20 + 70);
+                }
+                return {
+                    labels: Array(7).fill(''),
+                    datasets: [{
+                        data: data,
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4
+                    }]
+                };
+            }
+
+            generateSatisfactionTrendData() {
+                const labels = [];
+                for (let i = 6; i >= 0; i--) {
+                    labels.push(moment().subtract(i, 'days').format('MM/DD'));
+                }
+                
+                return {
+                    labels,
+                    datasets: [
+                        {
+                            label: '総合満足度',
+                            data: [72, 74, 73, 75, 76, 77, 78.5],
+                            borderColor: 'rgb(59, 130, 246)',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'NPS',
+                            data: [38, 40, 39, 41, 40, 41, 42],
+                            borderColor: 'rgb(16, 185, 129)',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'CSAT',
+                            data: [3.8, 3.9, 3.8, 4.0, 4.1, 4.1, 4.2],
+                            borderColor: 'rgb(251, 191, 36)',
+                            backgroundColor: 'rgba(251, 191, 36, 0.1)',
+                            tension: 0.4,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                };
+            }
+
+            generateHeatmapData() {
+                return {
+                    labels: ['製品品質', 'カスタマーサポート', '価格価値', '使いやすさ', '納期', 'アフターサービス'],
+                    datasets: [{
+                        data: [85, 72, 68, 90, 78, 81],
+                        backgroundColor: [
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(59, 130, 246, 0.8)',
+                            'rgba(251, 191, 36, 0.8)',
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(59, 130, 246, 0.8)',
+                            'rgba(59, 130, 246, 0.8)'
+                        ]
+                    }]
+                };
+            }
+
+            generateChurnPredictionData() {
+                const datasets = [
+                    {
+                        label: '高リスク',
+                        data: this.generateScatterData(20, 0, 40, 60, 100),
+                        backgroundColor: 'rgba(239, 68, 68, 0.6)',
+                        pointRadius: 8
+                    },
+                    {
+                        label: '中リスク',
+                        data: this.generateScatterData(30, 30, 60, 30, 70),
+                        backgroundColor: 'rgba(251, 191, 36, 0.6)',
+                        pointRadius: 6
+                    },
+                    {
+                        label: '低リスク',
+                        data: this.generateScatterData(50, 60, 100, 0, 30),
+                        backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                        pointRadius: 5
+                    }
+                ];
+                
+                return { datasets };
+            }
+
+            generateScatterData(count, minX, maxX, minY, maxY) {
+                const data = [];
+                for (let i = 0; i < count; i++) {
+                    data.push({
+                        x: Math.random() * (maxX - minX) + minX,
+                        y: Math.random() * (maxY - minY) + minY
+                    });
+                }
+                return data;
+            }
+
+            generateImpactFactorsData() {
+                return {
+                    labels: ['応答時間', '解決率', '製品品質', '価格設定', 'UI/UX', 'サポート'],
+                    datasets: [{
+                        label: '現在',
+                        data: [7, 8, 9, 6, 8, 7],
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)'
+                    }, {
+                        label: '目標',
+                        data: [9, 9, 9, 8, 9, 9],
+                        borderColor: 'rgb(16, 185, 129)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.2)'
+                    }]
+                };
+            }
+
+            renderSegmentAnalysis() {
+                const container = document.getElementById('segmentAnalysis');
+                container.innerHTML = this.data.segments.map(segment => {
+                    const trendIcon = segment.trend === 'up' ? 'trending-up' : 
+                                     segment.trend === 'down' ? 'trending-down' : 'minus';
+                    const trendColor = segment.trend === 'up' ? 'text-green-600' : 
+                                      segment.trend === 'down' ? 'text-red-600' : 'text-gray-600';
+                    
+                    return `
+                        <div class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50">
+                            <div class="flex items-center">
+                                <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                                    <span class="text-sm font-bold text-blue-600">${segment.count}</span>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="font-medium text-gray-900">${segment.name}</p>
+                                    <p class="text-sm text-gray-500">満足度: ${segment.satisfaction}%</p>
+                                </div>
+                            </div>
+                            <i data-feather="${trendIcon}" class="w-5 h-5 ${trendColor}"></i>
+                        </div>
+                    `;
+                }).join('');
+                
+                feather.replace();
+            }
+
+            renderTopIssues() {
+                const container = document.getElementById('topIssuesContainer');
+                container.innerHTML = this.data.topIssues.map((issue, index) => {
+                    const severityColor = {
+                        high: 'bg-red-100 text-red-800',
+                        medium: 'bg-yellow-100 text-yellow-800',
+                        low: 'bg-green-100 text-green-800'
+                    }[issue.severity];
+                    
+                    return `
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                            <div class="flex-1">
+                                <div class="flex items-center">
+                                    <span class="text-lg font-bold text-gray-400 mr-3">${index + 1}</span>
+                                    <div>
+                                        <p class="font-medium text-gray-900">${issue.category}</p>
+                                        <p class="text-sm text-gray-500">${issue.count} 件の報告</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="px-2 py-1 text-xs rounded-full ${severityColor}">
+                                    ${issue.severity === 'high' ? '高' : issue.severity === 'medium' ? '中' : '低'}
+                                </span>
+                                <div class="text-right">
+                                    <p class="text-sm font-medium text-gray-900">影響度</p>
+                                    <p class="text-lg font-bold text-red-600">-${issue.impact}%</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            renderActionTable() {
+                const tbody = document.getElementById('actionTableBody');
+                tbody.innerHTML = this.data.actions.map(action => {
+                    const priorityClass = {
+                        urgent: 'bg-red-100 text-red-800',
+                        high: 'bg-yellow-100 text-yellow-800',
+                        medium: 'bg-blue-100 text-blue-800',
+                        low: 'bg-gray-100 text-gray-800'
+                    }[action.priority];
+                    
+                    const statusClass = {
+                        in_progress: 'bg-blue-100 text-blue-800',
+                        pending: 'bg-yellow-100 text-yellow-800',
+                        scheduled: 'bg-gray-100 text-gray-800',
+                        completed: 'bg-green-100 text-green-800'
+                    }[action.status];
+                    
+                    const statusText = {
+                        in_progress: '進行中',
+                        pending: '保留中',
+                        scheduled: '予定',
+                        completed: '完了'
+                    }[action.status];
+                    
+                    return `
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">${action.customer}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">${action.type}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${priorityClass}">
+                                    ${action.priority === 'urgent' ? '緊急' : action.priority === 'high' ? '高' : '中'}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">
+                                    ${statusText}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                ${moment(action.due).format('MM/DD')}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <button class="text-blue-600 hover:text-blue-900 mr-3">編集</button>
+                                <button class="text-green-600 hover:text-green-900">実行</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            async refresh() {
+                await this.loadData();
+                this.updateMetrics();
+                this.renderAlerts();
+                this.updateCharts();
+                this.renderSegmentAnalysis();
+                this.renderTopIssues();
+                this.renderActionTable();
+                feather.replace();
+            }
+
+            updateCharts() {
+                // Update all charts with new data
+                Object.values(this.charts).forEach(chart => {
+                    if (chart) {
+                        chart.update();
+                    }
+                });
+            }
+
+            destroy() {
+                // Clean up
+                if (this.refreshInterval) {
+                    clearInterval(this.refreshInterval);
+                }
+                
+                Object.values(this.charts).forEach(chart => {
+                    if (chart) {
+                        chart.destroy();
+                    }
+                });
+            }
+        }
+
+        // Initialize dashboard when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            window.satisfactionDashboard = new SatisfactionDashboard();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,518 @@
+{
+  "views_configuration": {
+    "tbl_sales_pipeline_views": [
+      {
+        "view_id": "kanban_pipeline",
+        "name": "営業段階別パイプライン",
+        "type": "kanban",
+        "description": "営業段階ごとにかんばん表示",
+        "config": {
+          "group_by": "営業段階",
+          "sort_by": [
+            {"field": "見込み売上", "direction": "desc"},
+            {"field": "商談予定日", "direction": "asc"}
+          ],
+          "card_fields": [
+            "案件名",
+            "顧客名", 
+            "予想売上金額",
+            "確度",
+            "担当者",
+            "商談予定日"
+          ],
+          "card_cover": "顧客名",
+          "filters": [
+            {
+              "field": "営業段階",
+              "operator": "not_equal",
+              "value": "完了"
+            },
+            {
+              "field": "営業段階", 
+              "operator": "not_equal",
+              "value": "失注"
+            }
+          ],
+          "color_by": "確度"
+        }
+      },
+      {
+        "view_id": "gantt_schedule",
+        "name": "案件スケジュール",
+        "type": "gantt",
+        "description": "案件の時系列表示",
+        "config": {
+          "start_date": "作成日",
+          "end_date": "商談予定日",
+          "group_by": "担当者",
+          "display_fields": [
+            "案件名",
+            "営業段階",
+            "顧客名",
+            "予想売上金額"
+          ],
+          "color_by": "営業段階"
+        }
+      },
+      {
+        "view_id": "high_value_deals",
+        "name": "高額案件一覧",
+        "type": "grid",
+        "description": "500万円以上の案件リスト",
+        "config": {
+          "filters": [
+            {
+              "field": "予想売上金額",
+              "operator": "greater_than",
+              "value": 5000000
+            }
+          ],
+          "sort_by": [
+            {"field": "予想売上金額", "direction": "desc"}
+          ],
+          "displayed_fields": [
+            "案件名",
+            "顧客名",
+            "営業段階", 
+            "予想売上金額",
+            "確度",
+            "見込み売上",
+            "担当者",
+            "商談予定日",
+            "案件経過日数"
+          ]
+        }
+      },
+      {
+        "view_id": "my_deals",
+        "name": "担当案件",
+        "type": "grid", 
+        "description": "ログインユーザーの担当案件",
+        "config": {
+          "filters": [
+            {
+              "field": "担当者",
+              "operator": "is_current_user"
+            }
+          ],
+          "sort_by": [
+            {"field": "商談予定日", "direction": "asc"}
+          ]
+        }
+      },
+      {
+        "view_id": "overdue_deals",
+        "name": "期限切れ案件",
+        "type": "grid",
+        "description": "商談予定日が過ぎた案件",
+        "config": {
+          "filters": [
+            {
+              "field": "商談予定日",
+              "operator": "less_than",
+              "value": "TODAY()"
+            },
+            {
+              "field": "営業段階",
+              "operator": "not_equal", 
+              "value": "完了"
+            }
+          ],
+          "sort_by": [
+            {"field": "商談予定日", "direction": "asc"}
+          ]
+        }
+      }
+    ],
+    "tbl_customer_management_views": [
+      {
+        "view_id": "customer_status_cards",
+        "name": "顧客ステータス別",
+        "type": "gallery",
+        "description": "顧客ステータスごとのカード表示",
+        "config": {
+          "group_by": "顧客ステータス",
+          "sort_by": [
+            {"field": "最終接触日", "direction": "desc"}
+          ],
+          "card_fields": [
+            "会社名",
+            "担当者名",
+            "業界",
+            "企業規模",
+            "関連案件数",
+            "累計売上",
+            "最終接触日",
+            "担当営業"
+          ],
+          "card_cover": "会社名",
+          "color_by": "顧客ランク"
+        }
+      },
+      {
+        "view_id": "vip_customers",
+        "name": "VIP顧客",
+        "type": "grid",
+        "description": "VIP顧客の詳細一覧",
+        "config": {
+          "filters": [
+            {
+              "field": "顧客ステータス",
+              "operator": "equals",
+              "value": "VIP客"
+            }
+          ],
+          "sort_by": [
+            {"field": "累計売上", "direction": "desc"}
+          ]
+        }
+      },
+      {
+        "view_id": "inactive_customers",
+        "name": "接触要フォローアップ",
+        "type": "grid",
+        "description": "30日以上接触のない顧客",
+        "config": {
+          "filters": [
+            {
+              "field": "最終接触からの日数",
+              "operator": "greater_than",
+              "value": 30
+            },
+            {
+              "field": "顧客ステータス",
+              "operator": "not_equal",
+              "value": "休眠客"
+            }
+          ],
+          "sort_by": [
+            {"field": "最終接触からの日数", "direction": "desc"}
+          ]
+        }
+      },
+      {
+        "view_id": "industry_analysis",
+        "name": "業界別分析",
+        "type": "grid",
+        "description": "業界別の顧客分析",
+        "config": {
+          "group_by": "業界",
+          "sort_by": [
+            {"field": "累計売上", "direction": "desc"}
+          ]
+        }
+      }
+    ],
+    "tbl_activity_history_views": [
+      {
+        "view_id": "recent_activities",
+        "name": "最近の活動",
+        "type": "grid",
+        "description": "直近30日の活動履歴",
+        "config": {
+          "filters": [
+            {
+              "field": "実施日",
+              "operator": "within_last_n_days",
+              "value": 30
+            }
+          ],
+          "sort_by": [
+            {"field": "実施日", "direction": "desc"}
+          ]
+        }
+      },
+      {
+        "view_id": "followup_calendar",
+        "name": "フォローアップカレンダー",
+        "type": "calendar",
+        "description": "次回予定のカレンダー表示",
+        "config": {
+          "date_field": "次回予定日",
+          "title_field": "次回予定内容",
+          "color_by": "重要度"
+        }
+      },
+      {
+        "view_id": "overdue_followups",
+        "name": "期限切れフォローアップ",
+        "type": "grid",
+        "description": "期限切れのフォローアップ一覧",
+        "config": {
+          "filters": [
+            {
+              "field": "次回予定日",
+              "operator": "less_than",
+              "value": "TODAY()"
+            },
+            {
+              "field": "ステータス",
+              "operator": "equals",
+              "value": "予定"
+            }
+          ],
+          "sort_by": [
+            {"field": "次回予定日", "direction": "asc"}
+          ]
+        }
+      },
+      {
+        "view_id": "activity_timeline",
+        "name": "活動タイムライン",
+        "type": "timeline",
+        "description": "時系列での活動表示",
+        "config": {
+          "date_field": "実施日",
+          "group_by": "顧客名",
+          "sort_by": [
+            {"field": "実施日", "direction": "desc"}
+          ]
+        }
+      }
+    ],
+    "tbl_sales_targets_views": [
+      {
+        "view_id": "monthly_targets",
+        "name": "月次目標・実績",
+        "type": "grid",
+        "description": "月次の目標と実績",
+        "config": {
+          "group_by": "対象年月",
+          "sort_by": [
+            {"field": "対象年月", "direction": "desc"}
+          ]
+        }
+      },
+      {
+        "view_id": "performance_dashboard",
+        "name": "実績ダッシュボード",
+        "type": "grid",
+        "description": "担当者別実績表示",
+        "config": {
+          "group_by": "担当者",
+          "sort_by": [
+            {"field": "達成率", "direction": "desc"}
+          ],
+          "displayed_fields": [
+            "担当者",
+            "対象年月",
+            "月次売上目標",
+            "実績売上",
+            "達成率",
+            "達成状況",
+            "見込み売上合計"
+          ]
+        }
+      }
+    ]
+  },
+  "dashboards": [
+    {
+      "dashboard_id": "sales_overview",
+      "name": "営業概況ダッシュボード",
+      "description": "営業活動全体の概況を表示",
+      "layout": {
+        "widgets": [
+          {
+            "widget_id": "pipeline_summary",
+            "type": "chart",
+            "title": "営業パイプライン状況",
+            "config": {
+              "chart_type": "funnel",
+              "data_source": "tbl_sales_pipeline",
+              "x_axis": "営業段階",
+              "y_axis": "COUNT(案件ID)",
+              "color_by": "営業段階"
+            },
+            "position": {"row": 1, "col": 1, "width": 6, "height": 4}
+          },
+          {
+            "widget_id": "revenue_forecast",
+            "type": "chart",
+            "title": "売上予測",
+            "config": {
+              "chart_type": "bar",
+              "data_source": "tbl_sales_pipeline",
+              "x_axis": "営業段階",
+              "y_axis": "SUM(見込み売上)",
+              "color_by": "営業段階"
+            },
+            "position": {"row": 1, "col": 7, "width": 6, "height": 4}
+          },
+          {
+            "widget_id": "top_deals",
+            "type": "table",
+            "title": "高額案件TOP10",
+            "config": {
+              "data_source": "tbl_sales_pipeline",
+              "filters": [
+                {"field": "営業段階", "operator": "not_in", "value": ["完了", "失注"]}
+              ],
+              "sort_by": [{"field": "予想売上金額", "direction": "desc"}],
+              "limit": 10,
+              "columns": ["案件名", "顧客名", "予想売上金額", "営業段階", "担当者"]
+            },
+            "position": {"row": 5, "col": 1, "width": 12, "height": 6}
+          },
+          {
+            "widget_id": "customer_distribution",
+            "type": "chart",
+            "title": "顧客ステータス分布",
+            "config": {
+              "chart_type": "pie",
+              "data_source": "tbl_customer_management", 
+              "x_axis": "顧客ステータス",
+              "y_axis": "COUNT(顧客ID)"
+            },
+            "position": {"row": 11, "col": 1, "width": 6, "height": 4}
+          },
+          {
+            "widget_id": "industry_analysis",
+            "type": "chart",
+            "title": "業界別売上",
+            "config": {
+              "chart_type": "bar",
+              "data_source": "tbl_customer_management",
+              "x_axis": "業界",
+              "y_axis": "SUM(累計売上)"
+            },
+            "position": {"row": 11, "col": 7, "width": 6, "height": 4}
+          }
+        ]
+      }
+    },
+    {
+      "dashboard_id": "performance_dashboard",
+      "name": "営業実績ダッシュボード",
+      "description": "営業実績と目標達成状況",
+      "layout": {
+        "widgets": [
+          {
+            "widget_id": "monthly_performance",
+            "type": "chart",
+            "title": "月次実績推移",
+            "config": {
+              "chart_type": "line",
+              "data_source": "tbl_sales_targets",
+              "x_axis": "対象年月",
+              "y_axis": ["実績売上", "月次売上目標"],
+              "group_by": "担当者"
+            },
+            "position": {"row": 1, "col": 1, "width": 12, "height": 6}
+          },
+          {
+            "widget_id": "achievement_rate",
+            "type": "chart",
+            "title": "達成率比較",
+            "config": {
+              "chart_type": "bar",
+              "data_source": "tbl_sales_targets",
+              "x_axis": "担当者",
+              "y_axis": "達成率",
+              "color_by": "達成率"
+            },
+            "position": {"row": 7, "col": 1, "width": 6, "height": 4}
+          },
+          {
+            "widget_id": "target_vs_actual",
+            "type": "metric",
+            "title": "今月の実績サマリー",
+            "config": {
+              "data_source": "tbl_sales_targets",
+              "filters": [
+                {"field": "対象年月", "operator": "equals", "value": "THIS_MONTH()"}
+              ],
+              "metrics": [
+                {"label": "目標合計", "value": "SUM(月次売上目標)", "format": "currency"},
+                {"label": "実績合計", "value": "SUM(実績売上)", "format": "currency"},
+                {"label": "平均達成率", "value": "AVERAGE(達成率)", "format": "percent"}
+              ]
+            },
+            "position": {"row": 7, "col": 7, "width": 6, "height": 4}
+          }
+        ]
+      }
+    },
+    {
+      "dashboard_id": "activity_dashboard",
+      "name": "営業活動ダッシュボード",
+      "description": "営業活動の分析と管理",
+      "layout": {
+        "widgets": [
+          {
+            "widget_id": "activity_volume",
+            "type": "chart",
+            "title": "活動量推移",
+            "config": {
+              "chart_type": "line",
+              "data_source": "tbl_activity_history",
+              "x_axis": "実施日",
+              "y_axis": "COUNT(活動ID)",
+              "group_by": "活動タイプ"
+            },
+            "position": {"row": 1, "col": 1, "width": 12, "height": 6}
+          },
+          {
+            "widget_id": "activity_type_distribution",
+            "type": "chart",
+            "title": "活動タイプ別分布",
+            "config": {
+              "chart_type": "pie",
+              "data_source": "tbl_activity_history",
+              "x_axis": "活動タイプ",
+              "y_axis": "COUNT(活動ID)"
+            },
+            "position": {"row": 7, "col": 1, "width": 6, "height": 4}
+          },
+          {
+            "widget_id": "followup_status",
+            "type": "table",
+            "title": "フォローアップ状況",
+            "config": {
+              "data_source": "tbl_activity_history",
+              "filters": [
+                {"field": "次回予定日", "operator": "is_not_empty"}
+              ],
+              "columns": ["顧客名", "次回予定日", "次回予定内容", "フォローアップ状況"],
+              "sort_by": [{"field": "次回予定日", "direction": "asc"}]
+            },
+            "position": {"row": 7, "col": 7, "width": 6, "height": 4}
+          }
+        ]
+      }
+    }
+  ],
+  "permission_settings": {
+    "roles": [
+      {
+        "role_name": "営業マネージャー",
+        "permissions": {
+          "all_tables": ["read", "write", "delete"],
+          "all_views": ["access"],
+          "all_dashboards": ["access"],
+          "automation": ["configure"]
+        }
+      },
+      {
+        "role_name": "営業担当者",
+        "permissions": {
+          "tbl_sales_pipeline": ["read", "write"],
+          "tbl_customer_management": ["read", "write"],
+          "tbl_activity_history": ["read", "write"],
+          "tbl_sales_targets": ["read"],
+          "views": ["my_deals", "recent_activities", "customer_status_cards"],
+          "dashboards": ["sales_overview"]
+        }
+      },
+      {
+        "role_name": "営業アシスタント",
+        "permissions": {
+          "tbl_activity_history": ["read", "write"],
+          "tbl_customer_management": ["read"],
+          "views": ["recent_activities", "followup_calendar"],
+          "dashboards": ["activity_dashboard"]
+        }
+      }
+    ]
+  }
+}

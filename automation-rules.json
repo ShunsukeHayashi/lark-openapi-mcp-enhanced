@@ -1,0 +1,378 @@
+{
+  "automation_rules": {
+    "alert_rules": [
+      {
+        "rule_id": "pipeline_stagnation_alert",
+        "name": "案件停滞アラート",
+        "description": "商談段階の案件が2週間更新されていない場合のアラート",
+        "trigger": {
+          "type": "scheduled",
+          "frequency": "daily",
+          "time": "09:00"
+        },
+        "conditions": [
+          {
+            "field": "営業段階",
+            "operator": "equals",
+            "value": "商談"
+          },
+          {
+            "field": "更新日",
+            "operator": "older_than",
+            "value": "14",
+            "unit": "days"
+          }
+        ],
+        "actions": [
+          {
+            "type": "notification",
+            "recipients": [
+              "{担当者}",
+              "{担当者.manager}"
+            ],
+            "message": "案件「{案件名}」が2週間更新されていません。顧客: {顧客名}、予想売上: {予想売上金額}円",
+            "channels": ["lark_message", "email"]
+          },
+          {
+            "type": "field_update",
+            "field": "備考",
+            "value": "自動アラート: {TODAY()}に停滞アラートが発生しました"
+          }
+        ]
+      },
+      {
+        "rule_id": "followup_overdue_alert",
+        "name": "フォローアップ期限切れアラート",
+        "description": "活動履歴の次回予定日が過去になった場合のアラート",
+        "trigger": {
+          "type": "scheduled",
+          "frequency": "daily",
+          "time": "09:00"
+        },
+        "conditions": [
+          {
+            "field": "次回予定日",
+            "operator": "less_than",
+            "value": "TODAY()"
+          },
+          {
+            "field": "ステータス",
+            "operator": "equals",
+            "value": "予定"
+          }
+        ],
+        "actions": [
+          {
+            "type": "notification",
+            "recipients": ["{担当者}"],
+            "message": "顧客「{顧客名}」のフォローアップ期限が過ぎています。予定内容: {次回予定内容}",
+            "channels": ["lark_message"]
+          }
+        ]
+      },
+      {
+        "rule_id": "monthly_target_progress_alert",
+        "name": "月次目標進捗アラート",
+        "description": "月末5日前で達成率が70%未満の場合のアラート",
+        "trigger": {
+          "type": "scheduled",
+          "frequency": "daily",
+          "time": "10:00"
+        },
+        "conditions": [
+          {
+            "field": "達成率",
+            "operator": "less_than",
+            "value": 70
+          },
+          {
+            "custom_condition": "DAYS_UNTIL_MONTH_END() <= 5"
+          }
+        ],
+        "actions": [
+          {
+            "type": "notification",
+            "recipients": [
+              "{担当者}",
+              "{担当者.manager}"
+            ],
+            "message": "月次目標の達成率が{達成率}%です。目標: {月次売上目標}円、実績: {実績売上}円",
+            "channels": ["lark_message", "email"]
+          }
+        ]
+      },
+      {
+        "rule_id": "high_value_deal_alert",
+        "name": "高額案件アラート",
+        "description": "500万円以上の案件が成約段階に進んだ場合のアラート",
+        "trigger": {
+          "type": "field_change",
+          "field": "営業段階"
+        },
+        "conditions": [
+          {
+            "field": "営業段階",
+            "operator": "changed_to",
+            "value": "成約"
+          },
+          {
+            "field": "予想売上金額",
+            "operator": "greater_than",
+            "value": 5000000
+          }
+        ],
+        "actions": [
+          {
+            "type": "notification",
+            "recipients": ["@channel"],
+            "message": "🎉 高額案件成約！案件「{案件名}」（{予想売上金額}円）が成約しました。担当: {担当者}",
+            "channels": ["lark_message"]
+          }
+        ]
+      }
+    ],
+    "workflow_automations": [
+      {
+        "automation_id": "pipeline_stage_progression",
+        "name": "営業段階自動進行",
+        "description": "特定条件で営業段階を自動進行",
+        "trigger": {
+          "type": "field_change",
+          "field": "活動タイプ"
+        },
+        "rules": [
+          {
+            "condition": {
+              "field": "活動タイプ",
+              "operator": "equals",
+              "value": "プレゼン"
+            },
+            "action": {
+              "type": "field_update",
+              "target_table": "tbl_sales_pipeline",
+              "field": "営業段階",
+              "value": "提案"
+            }
+          }
+        ]
+      },
+      {
+        "automation_id": "customer_status_update",
+        "name": "顧客ステータス自動更新",
+        "description": "活動履歴に基づく顧客ステータスの自動更新",
+        "trigger": {
+          "type": "record_created",
+          "table": "tbl_activity_history"
+        },
+        "rules": [
+          {
+            "condition": {
+              "field": "顧客ステータス",
+              "operator": "equals",
+              "value": "見込み客"
+            },
+            "action": {
+              "type": "field_update",
+              "target_table": "tbl_customer_management",
+              "field": "顧客ステータス",
+              "value": "既存客"
+            }
+          },
+          {
+            "action": {
+              "type": "field_update",
+              "target_table": "tbl_customer_management",
+              "field": "最終接触日",
+              "value": "{実施日}"
+            }
+          }
+        ]
+      },
+      {
+        "automation_id": "deal_completion_processing",
+        "name": "案件完了時処理",
+        "description": "案件が完了状態になった時の自動処理",
+        "trigger": {
+          "type": "field_change",
+          "field": "営業段階"
+        },
+        "rules": [
+          {
+            "condition": {
+              "field": "営業段階",
+              "operator": "changed_to",
+              "value": "完了"
+            },
+            "actions": [
+              {
+                "type": "create_record",
+                "target_table": "tbl_activity_history",
+                "fields": {
+                  "活動タイプ": "その他",
+                  "顧客名": "{顧客名}",
+                  "案件名": "{案件名}",
+                  "実施日": "TODAY()",
+                  "担当者": "{担当者}",
+                  "活動内容": "案件完了 - 売上金額: {予想売上金額}円",
+                  "ステータス": "完了"
+                }
+              },
+              {
+                "type": "field_update",
+                "target_table": "tbl_customer_management",
+                "field": "顧客ステータス",
+                "value": "既存客"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "calculated_fields": {
+      "tbl_sales_pipeline": [
+        {
+          "field_name": "見込み売上",
+          "formula": "IF({予想売上金額} != BLANK(), {予想売上金額} * {確度} / 100, 0)",
+          "description": "予想売上金額に確度を掛けた加重売上"
+        },
+        {
+          "field_name": "案件経過日数",
+          "formula": "DAYS({作成日}, TODAY())",
+          "description": "案件作成からの経過日数"
+        },
+        {
+          "field_name": "商談予定まで",
+          "formula": "IF({商談予定日} != BLANK(), DAYS(TODAY(), {商談予定日}), '')",
+          "description": "商談予定日までの日数"
+        },
+        {
+          "field_name": "案件ステータス色",
+          "formula": "SWITCH({営業段階}, '見込み', '🔵', '商談', '🟡', '提案', '🟠', '成約', '🟢', '完了', '🟣', '失注', '🔴', '')",
+          "description": "営業段階の視覚的表示"
+        }
+      ],
+      "tbl_customer_management": [
+        {
+          "field_name": "関連案件数",
+          "formula": "COUNT({営業パイプライン管理})",
+          "description": "この顧客に関連する案件数"
+        },
+        {
+          "field_name": "累計売上",
+          "formula": "SUM(FILTER({営業パイプライン管理.予想売上金額}, {営業パイプライン管理.営業段階} = '完了'))",
+          "description": "完了案件の累計売上"
+        },
+        {
+          "field_name": "最終接触からの日数",
+          "formula": "IF({最終接触日} != BLANK(), DAYS({最終接触日}, TODAY()), '')",
+          "description": "最終接触日からの経過日数"
+        },
+        {
+          "field_name": "顧客ランク",
+          "formula": "IF({累計売上} >= 10000000, 'A', IF({累計売上} >= 5000000, 'B', IF({累計売上} >= 1000000, 'C', 'D')))",
+          "description": "累計売上に基づく顧客ランキング"
+        }
+      ],
+      "tbl_activity_history": [
+        {
+          "field_name": "活動から次回予定まで",
+          "formula": "IF({次回予定日} != BLANK(), DAYS({実施日}, {次回予定日}), '')",
+          "description": "活動実施日から次回予定日までの期間"
+        },
+        {
+          "field_name": "フォローアップ状況",
+          "formula": "IF({次回予定日} != BLANK(), IF({次回予定日} < TODAY(), '期限切れ', IF({次回予定日} = TODAY(), '本日予定', '予定あり')), '予定なし')",
+          "description": "フォローアップの状況"
+        }
+      ],
+      "tbl_sales_targets": [
+        {
+          "field_name": "達成率",
+          "formula": "IF({月次売上目標} != 0, {実績売上} / {月次売上目標} * 100, 0)",
+          "description": "月次売上目標に対する達成率"
+        },
+        {
+          "field_name": "目標差額",
+          "formula": "{月次売上目標} - {実績売上}",
+          "description": "目標と実績の差額"
+        },
+        {
+          "field_name": "達成状況",
+          "formula": "IF({達成率} >= 100, '✅ 達成', IF({達成率} >= 80, '⚠️ 80%以上', IF({達成率} >= 50, '🟡 50%以上', '🔴 50%未満')))",
+          "description": "達成状況の視覚的表示"
+        },
+        {
+          "field_name": "月次進捗",
+          "formula": "CONCATENATE(ROUND({達成率}, 1), '%（', {実績売上}, '/', {月次売上目標}, '円）')",
+          "description": "進捗状況のサマリー表示"
+        }
+      ]
+    },
+    "conditional_formatting": {
+      "tbl_sales_pipeline": [
+        {
+          "field": "営業段階",
+          "rules": [
+            {"condition": "見込み", "background_color": "#E3F2FD", "text_color": "#1976D2"},
+            {"condition": "商談", "background_color": "#FFF3E0", "text_color": "#F57C00"},
+            {"condition": "提案", "background_color": "#FFF8E1", "text_color": "#F9A825"},
+            {"condition": "成約", "background_color": "#E8F5E8", "text_color": "#388E3C"},
+            {"condition": "完了", "background_color": "#F3E5F5", "text_color": "#7B1FA2"},
+            {"condition": "失注", "background_color": "#FFEBEE", "text_color": "#D32F2F"}
+          ]
+        },
+        {
+          "field": "確度",
+          "rules": [
+            {"condition": ">= 80", "background_color": "#E8F5E8", "text_color": "#388E3C"},
+            {"condition": ">= 50", "background_color": "#FFF8E1", "text_color": "#F9A825"},
+            {"condition": "< 50", "background_color": "#FFEBEE", "text_color": "#D32F2F"}
+          ]
+        }
+      ],
+      "tbl_customer_management": [
+        {
+          "field": "顧客ステータス",
+          "rules": [
+            {"condition": "VIP客", "background_color": "#FFF3E0", "text_color": "#E65100"},
+            {"condition": "既存客", "background_color": "#E8F5E8", "text_color": "#388E3C"},
+            {"condition": "見込み客", "background_color": "#E3F2FD", "text_color": "#1976D2"},
+            {"condition": "休眠客", "background_color": "#F5F5F5", "text_color": "#616161"}
+          ]
+        }
+      ],
+      "tbl_sales_targets": [
+        {
+          "field": "達成率",
+          "rules": [
+            {"condition": ">= 100", "background_color": "#E8F5E8", "text_color": "#388E3C"},
+            {"condition": ">= 80", "background_color": "#FFF8E1", "text_color": "#F9A825"},
+            {"condition": "< 80", "background_color": "#FFEBEE", "text_color": "#D32F2F"}
+          ]
+        }
+      ]
+    }
+  },
+  "notification_templates": {
+    "pipeline_stagnation": {
+      "title": "案件停滞アラート",
+      "message": "案件「{案件名}」が{停滞日数}日間更新されていません。\n顧客: {顧客名}\n予想売上: {予想売上金額}円\n担当者: {担当者}\n\n早急な対応をお願いします。",
+      "priority": "high"
+    },
+    "followup_overdue": {
+      "title": "フォローアップ期限切れ",
+      "message": "顧客「{顧客名}」のフォローアップ期限が過ぎています。\n予定内容: {次回予定内容}\n予定日: {次回予定日}\n\n至急対応をお願いします。",
+      "priority": "medium"
+    },
+    "target_progress": {
+      "title": "月次目標進捗通知",
+      "message": "月次売上目標の進捗状況をお知らせします。\n\n担当者: {担当者}\n目標: {月次売上目標}円\n実績: {実績売上}円\n達成率: {達成率}%\n\n月末まで残り{残り日数}日です。",
+      "priority": "medium"
+    },
+    "high_value_deal": {
+      "title": "高額案件成約",
+      "message": "🎉 高額案件が成約しました！\n\n案件名: {案件名}\n顧客名: {顧客名}\n売上金額: {予想売上金額}円\n担当者: {担当者}\n\nお疲れ様でした！",
+      "priority": "low"
+    }
+  }
+}

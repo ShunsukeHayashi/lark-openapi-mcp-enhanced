@@ -1,0 +1,171 @@
+{
+  "templates": [
+    {
+      "id": "welcome_new_customer",
+      "name": "新規顧客ウェルカムメール",
+      "category": "onboarding",
+      "subject": "{{customer.name}}様、ようこそ{{companyName}}へ！",
+      "html": "<html><body><h2>{{customer.name}}様</h2><p>この度は{{companyName}}にご登録いただき、誠にありがとうございます。</p><p>私たちは、お客様のビジネス成長をサポートする最高のパートナーとなることをお約束します。</p><h3>次のステップ</h3><ul><li><a href='{{setupMeetingUrl}}'>初回ミーティングの予約</a></li><li><a href='{{youtubeIntroVideo}}'>サービス紹介動画を見る</a></li><li><a href='{{resourcesUrl}}'>リソースセンターを探索</a></li></ul><p>ご不明な点がございましたら、お気軽にお問い合わせください。</p><p>今後ともよろしくお願いいたします。</p><p>{{senderName}}<br>{{companyName}}</p><hr><p style='font-size:12px;color:#666;'><a href='{{unsubscribe_link}}'>配信停止</a></p></body></html>",
+      "text": "{{customer.name}}様\n\nこの度は{{companyName}}にご登録いただき、誠にありがとうございます。\n\n私たちは、お客様のビジネス成長をサポートする最高のパートナーとなることをお約束します。\n\n次のステップ:\n- 初回ミーティングの予約: {{setupMeetingUrl}}\n- サービス紹介動画を見る: {{youtubeIntroVideo}}\n- リソースセンターを探索: {{resourcesUrl}}\n\nご不明な点がございましたら、お気軽にお問い合わせください。\n\n今後ともよろしくお願いいたします。\n\n{{senderName}}\n{{companyName}}\n\n配信停止: {{unsubscribe_link}}",
+      "variables": [
+        "customer.name",
+        "companyName",
+        "senderName",
+        "setupMeetingUrl",
+        "youtubeIntroVideo",
+        "resourcesUrl"
+      ]
+    },
+    {
+      "id": "deal_follow_up",
+      "name": "商談フォローアップ",
+      "category": "sales",
+      "subject": "{{deal.title}}に関するフォローアップ - {{customer.name}}様",
+      "html": "<html><body><h2>{{customer.name}}様</h2><p>先日は貴重なお時間をいただき、ありがとうございました。</p><p>{{meetingDate}}の商談で話し合った「{{deal.title}}」について、以下の点を確認させていただきます：</p><ul>{{#each discussionPoints}}<li>{{this}}</li>{{/each}}</ul><h3>次のアクション</h3><ol>{{#each nextSteps}}<li>{{this.action}} - 期限: {{this.deadline}}</li>{{/each}}</ol><p>添付の提案書もご確認ください。ご質問やご不明な点がございましたら、お気軽にお問い合わせください。</p><h3>関連リソース</h3><ul><li><a href='{{proposalUrl}}'>提案書をダウンロード</a></li><li><a href='{{youtubeDemoVideo}}'>製品デモ動画</a></li><li><a href='{{caseStudyUrl}}'>類似事例の紹介</a></li></ul><p>次回のミーティングは{{nextMeetingDate}}を予定しております。</p><p>よろしくお願いいたします。</p><p>{{senderName}}<br>{{senderTitle}}<br>{{companyName}}</p></body></html>",
+      "variables": [
+        "customer.name",
+        "deal.title",
+        "meetingDate",
+        "discussionPoints",
+        "nextSteps",
+        "proposalUrl",
+        "youtubeDemoVideo",
+        "caseStudyUrl",
+        "nextMeetingDate",
+        "senderName",
+        "senderTitle"
+      ]
+    },
+    {
+      "id": "proposal_reminder",
+      "name": "提案期限リマインダー",
+      "category": "sales",
+      "subject": "【リマインダー】{{deal.title}}の提案期限が近づいています",
+      "html": "<html><body><h2>{{customer.name}}様</h2><p>お世話になっております。</p><p>「{{deal.title}}」に関する提案の有効期限が<strong>{{expiryDate}}</strong>に迫っております。</p><h3>提案内容の要約</h3><ul><li>提案金額: {{deal.amount}}</li><li>実装期間: {{implementationPeriod}}</li><li>主な利点: {{#each keyBenefits}}<br>- {{this}}{{/each}}</li></ul><p>この提案に関してご質問がございましたら、お気軽にお問い合わせください。</p><p><a href='{{scheduleCallUrl}}' style='background-color:#4CAF50;color:white;padding:10px 20px;text-decoration:none;border-radius:5px;'>相談の予約をする</a></p><p>期限内にご決定いただければ、以下の特典もご用意しております：</p><ul>{{#each incentives}}<li>{{this}}</li>{{/each}}</ul><p>よろしくお願いいたします。</p><p>{{senderName}}<br>{{companyName}}</p></body></html>",
+      "variables": [
+        "customer.name",
+        "deal.title",
+        "deal.amount",
+        "expiryDate",
+        "implementationPeriod",
+        "keyBenefits",
+        "scheduleCallUrl",
+        "incentives"
+      ]
+    },
+    {
+      "id": "thank_you_purchase",
+      "name": "成約お礼メール",
+      "category": "post_sale",
+      "subject": "{{customer.name}}様、ご契約ありがとうございます！",
+      "html": "<html><body><h2>{{customer.name}}様</h2><p>この度は{{deal.title}}をご契約いただき、誠にありがとうございます。</p><p>お客様の信頼に応えるべく、チーム一同全力でサポートさせていただきます。</p><h3>今後の流れ</h3><ol><li><strong>キックオフミーティング</strong><br>日時: {{kickoffDate}}<br>場所: {{kickoffLocation}}</li><li><strong>実装開始</strong><br>開始日: {{implementationStartDate}}<br>担当者: {{implementationManager}}</li><li><strong>トレーニング</strong><br>予定日: {{trainingDate}}<br>参加方法: {{trainingDetails}}</li></ol><h3>お客様専用リソース</h3><ul><li><a href='{{customerPortalUrl}}'>カスタマーポータル</a></li><li><a href='{{youtubeTrainingPlaylist}}'>トレーニング動画プレイリスト</a></li><li><a href='{{supportUrl}}'>サポートセンター</a></li></ul><p>ご不明な点がございましたら、担当の{{accountManager}}まで直接ご連絡ください。</p><p>今後ともよろしくお願いいたします。</p><p>{{senderName}}<br>{{companyName}}</p></body></html>",
+      "variables": [
+        "customer.name",
+        "deal.title",
+        "kickoffDate",
+        "kickoffLocation",
+        "implementationStartDate",
+        "implementationManager",
+        "trainingDate",
+        "trainingDetails",
+        "customerPortalUrl",
+        "youtubeTrainingPlaylist",
+        "supportUrl",
+        "accountManager"
+      ]
+    },
+    {
+      "id": "youtube_content_share",
+      "name": "YouTube コンテンツ共有",
+      "category": "content",
+      "subject": "{{customer.name}}様に役立つ動画コンテンツのご紹介",
+      "html": "<html><body><h2>{{customer.name}}様</h2><p>いつもお世話になっております。</p><p>{{customer.industry}}業界の最新トレンドに関する動画コンテンツをご用意しました。</p><h3>おすすめ動画</h3>{{#each videos}}<div style='margin:20px 0;padding:15px;border:1px solid #ddd;border-radius:5px;'><h4>{{this.title}}</h4><a href='{{this.url}}'><img src='{{this.thumbnail}}' style='width:100%;max-width:400px;' alt='{{this.title}}'></a><p>{{this.description}}</p><p>視聴時間: {{this.duration}} | カテゴリ: {{this.category}}</p><a href='{{this.url}}' style='background-color:#FF0000;color:white;padding:8px 16px;text-decoration:none;border-radius:3px;'>動画を見る</a></div>{{/each}}<p>これらの動画が{{customer.challenges}}の解決にお役立ていただければ幸いです。</p><p>ご感想やご質問がございましたら、ぜひお聞かせください。</p><p>{{senderName}}<br>{{companyName}}</p></body></html>",
+      "variables": [
+        "customer.name",
+        "customer.industry",
+        "customer.challenges",
+        "videos",
+        "senderName"
+      ]
+    },
+    {
+      "id": "meeting_confirmation",
+      "name": "ミーティング確認",
+      "category": "scheduling",
+      "subject": "ミーティング確認: {{meetingTitle}} - {{meetingDate}}",
+      "html": "<html><body><h2>{{customer.name}}様</h2><p>以下の日程でミーティングが確定しました。</p><div style='background-color:#f5f5f5;padding:20px;border-radius:5px;margin:20px 0;'><h3>{{meetingTitle}}</h3><p><strong>日時:</strong> {{meetingDate}} {{meetingTime}}<br><strong>場所:</strong> {{meetingLocation}}<br><strong>参加者:</strong> {{attendees}}<br><strong>所要時間:</strong> {{duration}}</p>{{#if meetingUrl}}<p><a href='{{meetingUrl}}' style='background-color:#4285F4;color:white;padding:10px 20px;text-decoration:none;border-radius:5px;'>オンラインミーティングに参加</a></p>{{/if}}</div><h3>アジェンダ</h3><ol>{{#each agenda}}<li>{{this}}</li>{{/each}}</ol><h3>事前準備</h3><ul>{{#each preparations}}<li>{{this}}</li>{{/each}}</ul><p>日程変更が必要な場合は、お早めにご連絡ください。</p><p><a href='{{calendarLink}}'>カレンダーに追加</a> | <a href='{{rescheduleLink}}'>日程変更</a></p><p>よろしくお願いいたします。</p><p>{{senderName}}<br>{{companyName}}</p></body></html>",
+      "variables": [
+        "customer.name",
+        "meetingTitle",
+        "meetingDate",
+        "meetingTime",
+        "meetingLocation",
+        "meetingUrl",
+        "attendees",
+        "duration",
+        "agenda",
+        "preparations",
+        "calendarLink",
+        "rescheduleLink"
+      ]
+    }
+  ],
+  "sequences": [
+    {
+      "id": "new_lead_nurture",
+      "name": "新規リード育成シーケンス",
+      "description": "新規リードを顧客に転換するための7日間のメールシーケンス",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "templateId": "welcome_new_customer",
+          "delayHours": 0,
+          "name": "ウェルカムメール"
+        },
+        {
+          "stepNumber": 2,
+          "templateId": "youtube_content_share",
+          "delayHours": 48,
+          "name": "価値提供コンテンツ"
+        },
+        {
+          "stepNumber": 3,
+          "templateId": "case_study_share",
+          "delayHours": 72,
+          "name": "成功事例の共有"
+        },
+        {
+          "stepNumber": 4,
+          "templateId": "meeting_invitation",
+          "delayHours": 168,
+          "name": "ミーティング招待"
+        }
+      ]
+    },
+    {
+      "id": "deal_acceleration",
+      "name": "商談加速シーケンス",
+      "description": "停滞している商談を前進させるためのフォローアップシーケンス",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "templateId": "deal_follow_up",
+          "delayHours": 0,
+          "name": "初回フォローアップ"
+        },
+        {
+          "stepNumber": 2,
+          "templateId": "value_proposition_reminder",
+          "delayHours": 72,
+          "name": "価値提案リマインダー"
+        },
+        {
+          "stepNumber": 3,
+          "templateId": "proposal_reminder",
+          "delayHours": 120,
+          "name": "提案期限リマインダー"
+        }
+      ]
+    }
+  ]
+}

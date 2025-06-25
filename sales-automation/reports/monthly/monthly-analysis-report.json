@@ -1,0 +1,354 @@
+{
+  "report_config": {
+    "name": "月次営業分析レポート",
+    "description": "包括的な月次パフォーマンス分析と戦略提案",
+    "schedule": {
+      "frequency": "monthly",
+      "day": 1,
+      "time": "10:00",
+      "timezone": "Asia/Tokyo"
+    },
+    "recipients": {
+      "to": ["executives@company.com", "sales-leadership@company.com"],
+      "cc": ["finance@company.com", "marketing@company.com"]
+    }
+  },
+  "sections": [
+    {
+      "id": "executive_dashboard",
+      "title": "エグゼクティブダッシュボード",
+      "type": "kpi_overview",
+      "layout": "grid",
+      "kpis": [
+        {
+          "name": "月次売上",
+          "value": "{monthly_revenue}",
+          "vs_target": "{target_achievement}%",
+          "vs_last_month": "{mom_growth}%",
+          "vs_last_year": "{yoy_growth}%",
+          "visual": "trend_sparkline"
+        },
+        {
+          "name": "新規顧客獲得",
+          "value": "{new_customers}",
+          "target": "{new_customer_target}",
+          "achievement": "{new_customer_achievement}%"
+        },
+        {
+          "name": "顧客単価",
+          "value": "{average_customer_value}",
+          "trend": "{acv_trend}",
+          "breakdown": "by_segment"
+        },
+        {
+          "name": "営業効率",
+          "value": "{sales_efficiency_score}",
+          "components": {
+            "活動あたり収益": "{revenue_per_activity}",
+            "商談転換率": "{opportunity_conversion}%",
+            "平均成約期間": "{avg_sales_cycle}日"
+          }
+        }
+      ]
+    },
+    {
+      "id": "revenue_analysis",
+      "title": "売上詳細分析",
+      "type": "multi_dimension_analysis",
+      "dimensions": [
+        {
+          "name": "製品別売上",
+          "chart": "stacked_bar",
+          "breakdown": "product_category",
+          "show_growth": true
+        },
+        {
+          "name": "顧客セグメント別",
+          "chart": "donut",
+          "breakdown": "customer_segment",
+          "show_percentage": true
+        },
+        {
+          "name": "地域別実績",
+          "chart": "heatmap",
+          "breakdown": "region",
+          "comparison": "vs_target"
+        },
+        {
+          "name": "チャネル別貢献",
+          "chart": "waterfall",
+          "breakdown": "sales_channel",
+          "show_cumulative": true
+        }
+      ]
+    },
+    {
+      "id": "pipeline_health",
+      "title": "パイプライン健全性評価",
+      "type": "pipeline_analytics",
+      "metrics": [
+        {
+          "name": "パイプライン総額",
+          "value": "{total_pipeline_value}",
+          "coverage_ratio": "{pipeline_coverage}x"
+        },
+        {
+          "name": "ステージ別分布",
+          "chart": "funnel",
+          "healthy_distribution": {
+            "early_stage": "40%",
+            "mid_stage": "35%",
+            "late_stage": "25%"
+          }
+        },
+        {
+          "name": "エージング分析",
+          "chart": "aging_heatmap",
+          "risk_thresholds": {
+            "low": "< 30 days",
+            "medium": "30-60 days",
+            "high": "> 60 days"
+          }
+        },
+        {
+          "name": "確度別予測",
+          "chart": "weighted_forecast",
+          "scenarios": ["conservative", "realistic", "optimistic"]
+        }
+      ]
+    },
+    {
+      "id": "youtube_impact",
+      "title": "YouTube動画インパクト分析",
+      "type": "content_roi_analysis",
+      "analyses": [
+        {
+          "metric": "動画ROI",
+          "calculation": "(influenced_revenue - content_cost) / content_cost",
+          "value": "{youtube_roi}%"
+        },
+        {
+          "metric": "エンゲージメント効果",
+          "chart": "correlation_matrix",
+          "variables": ["views", "engagement", "opportunities", "revenue"]
+        },
+        {
+          "metric": "コンテンツパフォーマンス",
+          "chart": "bubble",
+          "x_axis": "views",
+          "y_axis": "conversion_rate",
+          "bubble_size": "revenue_influenced"
+        },
+        {
+          "metric": "最適コンテンツ戦略",
+          "type": "ai_recommendation",
+          "based_on": ["performance_data", "customer_preferences", "market_trends"]
+        }
+      ]
+    },
+    {
+      "id": "team_productivity",
+      "title": "チーム生産性分析",
+      "type": "productivity_dashboard",
+      "metrics": [
+        {
+          "name": "個人別実績",
+          "chart": "ranking_table",
+          "metrics": ["revenue", "deals_closed", "activities", "efficiency_score"]
+        },
+        {
+          "name": "スキルマトリックス",
+          "chart": "radar",
+          "skills": ["prospecting", "presentation", "negotiation", "closing", "relationship"]
+        },
+        {
+          "name": "活動効率",
+          "chart": "scatter",
+          "x_axis": "activities_count",
+          "y_axis": "revenue_generated",
+          "trend_line": true
+        },
+        {
+          "name": "時間配分分析",
+          "chart": "time_allocation",
+          "categories": ["customer_facing", "admin", "training", "planning"]
+        }
+      ]
+    },
+    {
+      "id": "customer_insights",
+      "title": "顧客インサイト",
+      "type": "customer_analytics",
+      "analyses": [
+        {
+          "name": "顧客満足度",
+          "chart": "nps_gauge",
+          "score": "{nps_score}",
+          "breakdown": "by_segment"
+        },
+        {
+          "name": "顧客ライフサイクル",
+          "chart": "cohort_analysis",
+          "metrics": ["retention", "expansion", "churn"]
+        },
+        {
+          "name": "購買パターン",
+          "chart": "journey_map",
+          "touchpoints": ["awareness", "consideration", "decision", "retention"]
+        },
+        {
+          "name": "アップセル機会",
+          "type": "opportunity_matrix",
+          "axes": ["usage_level", "satisfaction_score"]
+        }
+      ]
+    },
+    {
+      "id": "competitive_landscape",
+      "title": "競合分析",
+      "type": "competitive_intelligence",
+      "elements": [
+        {
+          "name": "勝率分析",
+          "chart": "win_loss_matrix",
+          "by_competitor": true,
+          "by_reason": true
+        },
+        {
+          "name": "価格ポジショニング",
+          "chart": "positioning_map",
+          "axes": ["price", "value_perception"]
+        },
+        {
+          "name": "差別化要因",
+          "type": "strength_comparison",
+          "factors": ["product", "price", "service", "brand", "youtube_content"]
+        }
+      ]
+    },
+    {
+      "id": "predictive_analytics",
+      "title": "予測分析",
+      "type": "ml_predictions",
+      "predictions": [
+        {
+          "name": "来月売上予測",
+          "model": "time_series_forecast",
+          "prediction": "{next_month_forecast}",
+          "confidence_interval": "[{lower_bound}, {upper_bound}]"
+        },
+        {
+          "name": "成約確率スコア",
+          "model": "deal_scoring",
+          "high_probability_deals": "{high_prob_list}",
+          "attention_required": "{at_risk_deals}"
+        },
+        {
+          "name": "離脱リスク予測",
+          "model": "churn_prediction",
+          "at_risk_customers": "{churn_risk_list}",
+          "retention_actions": "{recommended_actions}"
+        }
+      ]
+    },
+    {
+      "id": "strategic_recommendations",
+      "title": "戦略的提言",
+      "type": "ai_insights",
+      "categories": [
+        {
+          "area": "売上成長戦略",
+          "insights": [
+            {
+              "finding": "{key_growth_opportunity}",
+              "impact": "{potential_revenue_impact}",
+              "action": "{recommended_action}",
+              "timeline": "{implementation_timeline}"
+            }
+          ]
+        },
+        {
+          "area": "効率改善",
+          "insights": [
+            {
+              "finding": "{efficiency_gap}",
+              "impact": "{productivity_gain}",
+              "action": "{process_improvement}",
+              "resources": "{required_resources}"
+            }
+          ]
+        },
+        {
+          "area": "YouTube戦略",
+          "insights": [
+            {
+              "finding": "{content_gap}",
+              "opportunity": "{content_opportunity}",
+              "action": "{content_strategy}",
+              "expected_roi": "{content_roi}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "action_plan",
+      "title": "次月アクションプラン",
+      "type": "structured_plan",
+      "priorities": [
+        {
+          "priority": 1,
+          "objective": "売上目標達成",
+          "actions": [
+            {
+              "action": "{action_1}",
+              "owner": "{owner_1}",
+              "deadline": "{deadline_1}",
+              "success_metric": "{metric_1}"
+            }
+          ]
+        },
+        {
+          "priority": 2,
+          "objective": "パイプライン強化",
+          "actions": [
+            {
+              "action": "{action_2}",
+              "owner": "{owner_2}",
+              "deadline": "{deadline_2}",
+              "success_metric": "{metric_2}"
+            }
+          ]
+        },
+        {
+          "priority": 3,
+          "objective": "チーム能力向上",
+          "actions": [
+            {
+              "action": "{action_3}",
+              "owner": "{owner_3}",
+              "deadline": "{deadline_3}",
+              "success_metric": "{metric_3}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "appendix": {
+    "detailed_data_tables": true,
+    "methodology_notes": true,
+    "glossary": true,
+    "data_sources": [
+      "CRM System",
+      "YouTube Analytics",
+      "Financial System",
+      "Customer Surveys"
+    ]
+  },
+  "distribution": {
+    "format": "interactive_dashboard",
+    "access_control": "role_based",
+    "archive": "monthly_reports_folder"
+  }
+}

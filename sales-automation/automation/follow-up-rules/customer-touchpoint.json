@@ -1,0 +1,264 @@
+{
+  "name": "顧客接触管理ルール",
+  "description": "顧客との接触頻度と関係性を管理する自動化ルール",
+  "rules": [
+    {
+      "id": "regular_followup_reminder",
+      "name": "定期フォロー通知",
+      "trigger": {
+        "event": "scheduled",
+        "schedule": "daily",
+        "conditions": [
+          {
+            "field": "最終接触日",
+            "operator": "days_ago",
+            "value": 30
+          },
+          {
+            "field": "顧客ステータス",
+            "operator": "equals",
+            "value": "アクティブ"
+          }
+        ]
+      },
+      "actions": [
+        {
+          "type": "create_task",
+          "config": {
+            "title": "【定期接触】{顧客名}へのフォローアップ",
+            "description": "30日間接触がありません。以下のいずれかを実施してください：\n- 近況確認の連絡\n- 新しいYouTube動画の共有\n- 業界情報の提供\n- ランチ/コーヒーミーティングの提案",
+            "assignee": "{担当者}",
+            "due_date": "+3days",
+            "priority": "中"
+          }
+        },
+        {
+          "type": "send_notification",
+          "config": {
+            "channel": "lark",
+            "recipient": "{担当者}",
+            "template": "touchpoint_reminder"
+          }
+        }
+      ]
+    },
+    {
+      "id": "vip_customer_check",
+      "name": "VIP顧客接触確認",
+      "trigger": {
+        "event": "scheduled",
+        "schedule": "weekly",
+        "conditions": [
+          {
+            "field": "顧客ランク",
+            "operator": "equals",
+            "value": "VIP"
+          },
+          {
+            "field": "最終接触日",
+            "operator": "days_ago",
+            "value": 14
+          }
+        ]
+      },
+      "actions": [
+        {
+          "type": "create_task",
+          "config": {
+            "title": "【VIP】{顧客名}への定期接触",
+            "description": "VIP顧客との接触を維持してください。\n推奨アクション：\n- パーソナライズされたコンテンツの提供\n- 専用YouTube動画の作成\n- エグゼクティブミーティングの設定",
+            "assignee": "{担当者}",
+            "due_date": "+2days",
+            "priority": "高"
+          }
+        },
+        {
+          "type": "prepare_content",
+          "config": {
+            "type": "personalized_youtube_list",
+            "customer_id": "{顧客ID}",
+            "preferences": "{関心分野}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "new_customer_onboarding",
+      "name": "新規顧客オンボーディング",
+      "trigger": {
+        "event": "record_created",
+        "table": "顧客管理",
+        "conditions": [
+          {
+            "field": "顧客ステータス",
+            "operator": "equals",
+            "value": "新規"
+          }
+        ]
+      },
+      "actions": [
+        {
+          "type": "create_sequence",
+          "config": {
+            "name": "オンボーディングシーケンス",
+            "steps": [
+              {
+                "day": 0,
+                "action": "send_welcome_email",
+                "content": "welcome_email_template"
+              },
+              {
+                "day": 3,
+                "action": "share_youtube_playlist",
+                "content": "onboarding_playlist"
+              },
+              {
+                "day": 7,
+                "action": "schedule_introduction_call",
+                "duration": "30min"
+              },
+              {
+                "day": 14,
+                "action": "send_case_studies",
+                "content": "success_stories"
+              },
+              {
+                "day": 30,
+                "action": "satisfaction_survey",
+                "content": "onboarding_survey"
+              }
+            ]
+          }
+        },
+        {
+          "type": "assign_buddy",
+          "config": {
+            "role": "カスタマーサクセス",
+            "duration": "90days"
+          }
+        }
+      ]
+    },
+    {
+      "id": "dormant_customer_reactivation",
+      "name": "休眠顧客再活性化",
+      "trigger": {
+        "event": "scheduled",
+        "schedule": "weekly",
+        "conditions": [
+          {
+            "field": "最終接触日",
+            "operator": "days_ago",
+            "value": 90
+          },
+          {
+            "field": "顧客ステータス",
+            "operator": "not_equals",
+            "value": "解約"
+          }
+        ]
+      },
+      "actions": [
+        {
+          "type": "update_field",
+          "config": {
+            "field": "顧客ステータス",
+            "value": "休眠"
+          }
+        },
+        {
+          "type": "create_campaign",
+          "config": {
+            "name": "{顧客名} - 再活性化キャンペーン",
+            "type": "reactivation",
+            "steps": [
+              {
+                "action": "send_reengagement_email",
+                "subject": "お久しぶりです！最新のYouTube動画をご覧ください",
+                "personalization": true
+              },
+              {
+                "action": "offer_special_content",
+                "type": "exclusive_youtube_series",
+                "duration": "30days"
+              },
+              {
+                "action": "schedule_reactivation_call",
+                "script": "reactivation_call_script"
+              }
+            ]
+          }
+        },
+        {
+          "type": "analyze_churn_risk",
+          "config": {
+            "factors": ["last_purchase", "engagement_score", "support_tickets"],
+            "output": "churn_risk_score"
+          }
+        }
+      ]
+    },
+    {
+      "id": "relationship_strength_monitor",
+      "name": "関係性強度モニタリング",
+      "trigger": {
+        "event": "calculated_field_update",
+        "field": "関係性スコア",
+        "conditions": [
+          {
+            "field": "関係性スコア",
+            "operator": "decreased_by",
+            "value": 20
+          }
+        ]
+      },
+      "actions": [
+        {
+          "type": "create_alert",
+          "config": {
+            "title": "【注意】{顧客名}との関係性が低下",
+            "severity": "warning",
+            "assignee": "{担当者}"
+          }
+        },
+        {
+          "type": "suggest_actions",
+          "config": {
+            "based_on": "customer_profile",
+            "suggestions": [
+              "パーソナライズドビデオメッセージの送信",
+              "限定コンテンツへの招待",
+              "1対1のオンラインセッション提案"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "touchpoint_types": [
+      "電話",
+      "メール",
+      "ミーティング",
+      "YouTube動画共有",
+      "ウェビナー参加",
+      "イベント招待",
+      "SNSインタラクション"
+    ],
+    "relationship_scoring": {
+      "factors": {
+        "contact_frequency": 30,
+        "engagement_level": 25,
+        "response_rate": 20,
+        "youtube_engagement": 15,
+        "purchase_history": 10
+      },
+      "thresholds": {
+        "strong": 80,
+        "moderate": 60,
+        "weak": 40,
+        "at_risk": 20
+      }
+    }
+  }
+}

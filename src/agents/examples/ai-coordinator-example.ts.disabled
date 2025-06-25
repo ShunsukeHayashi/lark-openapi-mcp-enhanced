@@ -1,0 +1,313 @@
+/**
+ * AI-Enhanced Coordinator Usage Example
+ * Demonstrates how to use Gemini-powered multi-agent coordination
+ */
+
+import { createAIEnhancedCoordinator } from '../ai-enhanced-coordinator';
+import { 
+  createBaseSpecialist,
+  createMessagingSpecialist,
+  createDocumentSpecialist,
+  createCalendarSpecialist
+} from '../specialists';
+import { globalRegistry, globalTaskCoordinator } from '../';
+
+// Example usage with the provided API key
+export async function demonstrateAICoordination() {
+  console.log('🚀 Initializing AI-Enhanced Multi-Agent System...');
+
+  try {
+    // 1. Initialize specialist agents
+    console.log('📋 Registering specialist agents...');
+    const baseAgentId = await createBaseSpecialist();
+    const messagingAgentId = await createMessagingSpecialist();
+    const documentAgentId = await createDocumentSpecialist();
+    const calendarAgentId = await createCalendarSpecialist();
+
+    // 2. Create AI-Enhanced Coordinator with Gemini API key
+    const coordinator = await createAIEnhancedCoordinator(
+      'AIzaSyA4lKChvPh6DnvqQUslqL1mlpaABas2J18'
+    );
+
+    console.log('✅ Multi-agent system initialized with AI capabilities');
+
+    // 3. Example 1: Complex Business Workflow
+    console.log('\n🎯 Example 1: Customer Onboarding Workflow');
+    const onboardingResult = await coordinator.enhancedTaskDecomposition(
+      '新しい顧客のオンボーディングプロセスを実行：顧客情報をBaseに登録し、ウェルカムドキュメントを作成し、初回ミーティングをスケジュールし、チームに通知する',
+      {
+        priority: 'high',
+        deadline: '24時間以内',
+        customerType: 'enterprise'
+      },
+      {
+        customerName: '株式会社サンプル',
+        industry: 'technology',
+        teamLead: 'tanaka@company.com'
+      }
+    );
+
+    console.log('🧠 AI Analysis Result:');
+    console.log(`  Complexity: ${onboardingResult.complexity}`);
+    console.log(`  Subtasks generated: ${onboardingResult.subtasks.length}`);
+    console.log(`  AI Confidence: ${onboardingResult.aiAnalysis?.agentRecommendation?.confidence || 'N/A'}`);
+    console.log('  Recommendations:');
+    onboardingResult.recommendations.forEach(rec => console.log(`    - ${rec}`));
+
+    // 4. Example 2: Agent Assignment Optimization
+    console.log('\n⚡ Example 2: Optimized Agent Assignment');
+    const assignmentResult = await coordinator.optimizeAgentAssignment(
+      onboardingResult.subtasks,
+      {
+        maxConcurrentTasks: 3,
+        preferParallelExecution: true,
+        prioritizeQuality: true
+      }
+    );
+
+    console.log('🎯 Assignment Optimization:');
+    console.log(`  Efficiency score: ${Math.round(assignmentResult.efficiency * 100)}%`);
+    console.log(`  Assignments: ${Object.keys(assignmentResult.assignments).length} tasks assigned`);
+    console.log('  Optimization insights:');
+    assignmentResult.recommendations.forEach(rec => console.log(`    - ${rec}`));
+
+    // 5. Example 3: Real-time Monitoring Simulation
+    console.log('\n📊 Example 3: AI-Powered Monitoring');
+    
+    // Simulate some task results
+    const simulatedResults = [
+      {
+        taskId: 'task_1',
+        taskName: 'Customer Data Registration',
+        success: true,
+        data: { customerId: 'CUST_001', recordsCreated: 1 },
+        duration: 45,
+        context: { quality: 'high' }
+      },
+      {
+        taskId: 'task_2',
+        taskName: 'Welcome Document Creation',
+        success: true,
+        data: { documentId: 'DOC_001', pageCount: 3 },
+        duration: 120,
+        context: { quality: 'medium' }
+      },
+      {
+        taskId: 'task_3',
+        taskName: 'Meeting Schedule',
+        success: false,
+        data: null,
+        duration: 0,
+        context: { error: 'Calendar conflict detected' }
+      }
+    ];
+
+    const monitoringResult = await coordinator.enhancedWorkflowMonitoring(
+      'workflow_001',
+      simulatedResults
+    );
+
+    console.log('📈 Monitoring Insights:');
+    monitoringResult.insights.forEach(insight => console.log(`  - ${insight}`));
+    console.log('🔮 Predictions:');
+    console.log(`  Likely outcome: ${monitoringResult.predictions?.likelyOutcome || 'unknown'}`);
+    console.log(`  Quality forecast: ${Math.round((monitoringResult.predictions?.qualityForecast || 0) * 100)}%`);
+
+    // 6. Example 4: Intelligent Error Recovery
+    console.log('\n🔧 Example 4: AI-Powered Error Recovery');
+    const errorRecovery = await coordinator.intelligentErrorRecovery(
+      'workflow_001',
+      {
+        type: 'calendar_conflict',
+        severity: 'medium',
+        affectedTasks: ['task_3'],
+        message: 'Requested meeting time conflicts with existing appointment'
+      },
+      [simulatedResults[2]]
+    );
+
+    console.log('🛠️ Recovery Strategy:');
+    console.log(`  Strategy: ${errorRecovery.strategy}`);
+    console.log('  Actions:');
+    errorRecovery.actions.forEach(action => console.log(`    - ${action}`));
+    console.log('  Prevention measures:');
+    errorRecovery.preventionMeasures.forEach(measure => console.log(`    - ${measure}`));
+
+    // 7. Example 5: Intelligent Summary Generation
+    console.log('\n📝 Example 5: AI-Generated Summary');
+    const executiveSummary = await coordinator.generateIntelligentSummary(
+      'workflow_001',
+      simulatedResults,
+      'executive'
+    );
+
+    console.log('📋 Executive Summary:');
+    console.log(executiveSummary);
+
+    // 8. System Statistics
+    console.log('\n📊 System Statistics:');
+    const registryStats = globalRegistry.getStatistics();
+    console.log(`  Total agents: ${registryStats.totalAgents}`);
+    console.log(`  Active agents: ${registryStats.activeAgents}`);
+    console.log(`  Agent types: ${Object.keys(registryStats.byType).join(', ')}`);
+
+    console.log('\n🎉 AI-Enhanced Multi-Agent System demonstration completed!');
+    return true;
+
+  } catch (error) {
+    console.error('❌ Demonstration failed:', error);
+    return false;
+  }
+}
+
+/**
+ * Example: Advanced Workflow with Real Lark Operations
+ */
+export async function advancedWorkflowExample() {
+  console.log('🏢 Advanced Workflow Example: Monthly Report Generation');
+
+  try {
+    const coordinator = await createAIEnhancedCoordinator(
+      'AIzaSyA4lKChvPh6DnvqQUslqL1mlpaABas2J18'
+    );
+
+    // Complex multi-domain task
+    const reportTask = await coordinator.enhancedTaskDecomposition(
+      '月次レポートを生成：営業データをBaseから抽出し、分析ドキュメントを作成し、チーム会議をスケジュールし、レポートを関係者に配布する',
+      {
+        reportType: 'monthly_sales',
+        departments: ['sales', 'marketing', 'management'],
+        deadline: '月末まで',
+        format: 'executive_summary'
+      },
+      {
+        baseAppId: 'app_sales_tracking',
+        tableIds: ['sales_data', 'customer_info', 'pipeline'],
+        recipients: ['ceo@company.com', 'sales-team@company.com'],
+        meetingDuration: 60
+      }
+    );
+
+    console.log('📊 Monthly Report Workflow Analysis:');
+    console.log(`  AI-generated subtasks: ${reportTask.subtasks.length}`);
+    console.log(`  Complexity assessment: ${reportTask.complexity}`);
+    console.log(`  AI confidence: ${Math.round((reportTask.aiAnalysis?.agentRecommendation?.confidence || 0) * 100)}%`);
+
+    // Show the AI-optimized task breakdown
+    reportTask.subtasks.forEach((subtask, index) => {
+      console.log(`  ${index + 1}. ${subtask.name}`);
+      console.log(`     Capabilities: ${subtask.requiredCapabilities.join(', ')}`);
+      console.log(`     Type: ${subtask.type}, Priority: ${subtask.priority}`);
+      if (subtask.dependencies) {
+        console.log(`     Dependencies: ${subtask.dependencies.length} task(s)`);
+      }
+    });
+
+    // AI-optimized agent assignment
+    const optimization = await coordinator.optimizeAgentAssignment(
+      reportTask.subtasks,
+      {
+        preferQualityOverSpeed: true,
+        enableParallelExecution: true,
+        maxConcurrentTasks: 2
+      }
+    );
+
+    console.log('\n⚡ AI-Optimized Assignment:');
+    console.log(`  Assignment efficiency: ${Math.round(optimization.efficiency * 100)}%`);
+    console.log('  Optimization recommendations:');
+    optimization.recommendations.forEach(rec => console.log(`    - ${rec}`));
+
+    return {
+      success: true,
+      subtasks: reportTask.subtasks,
+      assignments: optimization.assignments,
+      aiAnalysis: reportTask.aiAnalysis
+    };
+
+  } catch (error) {
+    console.error('❌ Advanced workflow failed:', error);
+    return { success: false, error: String(error) };
+  }
+}
+
+/**
+ * Example: Integration with existing Lark MCP tools
+ */
+export async function larkIntegrationExample() {
+  console.log('🔗 Lark MCP Integration Example');
+
+  try {
+    const coordinator = await createAIEnhancedCoordinator(
+      'AIzaSyA4lKChvPh6DnvqQUslqL1mlpaABas2J18'
+    );
+
+    // Task that requires real Lark API calls
+    const integrationTask = await coordinator.enhancedTaskDecomposition(
+      '新プロジェクトのキックオフ：プロジェクトベースを作成し、チームメンバーを追加し、キックオフミーティングを設定し、プロジェクト開始通知を送信する',
+      {
+        projectName: 'AI Enhanced MCP Project',
+        teamSize: 5,
+        duration: '3ヶ月',
+        budget: '¥5,000,000'
+      },
+      {
+        teamMembers: [
+          'developer1@company.com',
+          'designer1@company.com', 
+          'pm1@company.com'
+        ],
+        stakeholders: [
+          'manager@company.com',
+          'ceo@company.com'
+        ]
+      }
+    );
+
+    console.log('🚀 Project Kickoff Workflow:');
+    console.log(`  Generated ${integrationTask.subtasks.length} AI-optimized subtasks`);
+    
+    // Show how AI mapped to specific Lark capabilities
+    integrationTask.subtasks.forEach((task, i) => {
+      console.log(`\n  Task ${i + 1}: ${task.name}`);
+      console.log(`    Required capabilities: ${task.requiredCapabilities.join(', ')}`);
+      console.log(`    AI reasoning: ${task.context.aiReasoning || 'Standard workflow step'}`);
+      console.log(`    Estimated duration: ${task.estimatedDuration}s`);
+    });
+
+    return {
+      success: true,
+      workflow: integrationTask,
+      message: 'Integration workflow generated successfully'
+    };
+
+  } catch (error) {
+    console.error('❌ Integration example failed:', error);
+    return { success: false, error: String(error) };
+  }
+}
+
+// Export for easy testing
+export {
+  demonstrateAICoordination as main,
+  advancedWorkflowExample,
+  larkIntegrationExample
+};
+
+// Auto-run if called directly
+if (require.main === module) {
+  demonstrateAICoordination()
+    .then(success => {
+      if (success) {
+        console.log('\n✅ All examples completed successfully!');
+        process.exit(0);
+      } else {
+        console.log('\n❌ Some examples failed');
+        process.exit(1);
+      }
+    })
+    .catch(error => {
+      console.error('Fatal error:', error);
+      process.exit(1);
+    });
+}

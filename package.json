@@ -36,7 +36,18 @@
     "test:agent-tools": "node test-agent-with-tools.js",
     "login": "./lark-cli-login.js",
     "setup": "source setup-env.sh",
-    "status": "./lark-cli-login.js"
+    "status": "./lark-cli-login.js",
+    "docker:build": "./scripts/docker-build.sh",
+    "docker:build:dev": "./scripts/docker-build.sh 0.3.1 development",
+    "docker:build:prod": "./scripts/docker-build.sh 0.3.1 production",
+    "docker:run": "./scripts/docker-run.sh",
+    "docker:run:dev": "./scripts/docker-run.sh --target development",
+    "docker:run:prod": "./scripts/docker-run.sh --target production",
+    "docker:stdio": "./scripts/docker-run.sh --mode stdio",
+    "docker:sse": "./scripts/docker-run.sh --mode sse",
+    "docker:compose:dev": "docker-compose --profile development up",
+    "docker:compose:prod": "docker-compose --profile production up",
+    "docker:compose:genesis": "docker-compose --profile genesis up"
   },
   "keywords": [
     "feishu",

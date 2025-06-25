@@ -1,0 +1,521 @@
+/**
+ * AI-Enhanced Coordinator Agent
+ * Integrates Gemini AI for intelligent workflow orchestration
+ * Based on AIstudio patterns with advanced AI capabilities
+ */
+
+import { CoordinatorAgent } from './specialists/coordinator-agent';
+import { AgentConfig } from './agent';
+import { Task } from './types';
+import { globalRegistry } from './registry';
+import { getAIService, initializeAIService } from './ai-integration';
+
+export class AIEnhancedCoordinator extends CoordinatorAgent {
+  private aiService: any;
+
+  constructor(config: Partial<AgentConfig> & { geminiApiKey?: string } = {}) {
+    super(config);
+    
+    // Initialize AI service if API key provided
+    if (config.geminiApiKey) {
+      this.aiService = initializeAIService(config.geminiApiKey);
+      console.log('🤖 AI-Enhanced Coordinator initialized with Gemini integration');
+    }
+  }
+
+  /**
+   * AI-powered task decomposition and analysis
+   */
+  async enhancedTaskDecomposition(
+    task: string,
+    requirements: any = {},
+    context: any = {}
+  ): Promise<{
+    subtasks: Task[];
+    aiAnalysis: any;
+    complexity: 'simple' | 'moderate' | 'complex';
+    recommendations: string[];
+  }> {
+    if (!this.aiService) {
+      // Fallback to original implementation
+      const basicResult = await this.analyzeAndDecomposeTask(task, requirements, context);
+      return {
+        subtasks: basicResult.decomposition,
+        aiAnalysis: null,
+        complexity: basicResult.complexity,
+        recommendations: ['AI service not available - using basic analysis']
+      };
+    }
+
+    try {
+      // Get available agents for AI analysis
+      const availableAgents = globalRegistry.getAllAgents();
+      
+      // Use AI to analyze task and recommend agent assignment
+      const aiAnalysis = await this.aiService.analyzeTaskForAgentAssignment(
+        task,
+        availableAgents,
+        { requirements, context }
+      );
+
+      // Generate intelligent workflow plan
+      const workflowPlan = await this.aiService.generateWorkflowPlan(
+        [{ task, requirements, context }],
+        availableAgents,
+        requirements
+      );
+
+      // Create enhanced subtasks based on AI analysis
+      const subtasks = await this.createAIEnhancedSubtasks(
+        task,
+        aiAnalysis,
+        workflowPlan,
+        context
+      );
+
+      return {
+        subtasks,
+        aiAnalysis: {
+          agentRecommendation: aiAnalysis,
+          workflowPlan,
+          confidence: aiAnalysis.confidence
+        },
+        complexity: this.determineComplexityFromAI(aiAnalysis, workflowPlan),
+        recommendations: [
+          ...workflowPlan.recommendations,
+          `AI confidence: ${Math.round(aiAnalysis.confidence * 100)}%`,
+          `Recommended approach: ${aiAnalysis.reasoning}`
+        ]
+      };
+
+    } catch (error) {
+      console.error('AI-enhanced analysis failed, falling back to basic:', error);
+      
+      // Fallback to basic analysis
+      const basicResult = await this.analyzeAndDecomposeTask(task, requirements, context);
+      return {
+        subtasks: basicResult.decomposition,
+        aiAnalysis: { error: String(error) },
+        complexity: basicResult.complexity,
+        recommendations: ['AI analysis failed - using fallback method']
+      };
+    }
+  }
+
+  /**
+   * AI-powered agent assignment optimization
+   */
+  async optimizeAgentAssignment(
+    tasks: Task[],
+    constraints: any = {}
+  ): Promise<{
+    assignments: Record<string, string>;
+    optimization: any;
+    efficiency: number;
+    recommendations: string[];
+  }> {
+    if (!this.aiService) {
+      const basicAssignment = await this.assignAgentsToTasks(tasks);
+      return {
+        assignments: basicAssignment.assignments,
+        optimization: null,
+        efficiency: 0.7,
+        recommendations: basicAssignment.recommendations
+      };
+    }
+
+    try {
+      const availableAgents = globalRegistry.getAllAgents();
+      
+      // Get AI recommendations for optimal workflow
+      const workflowPlan = await this.aiService.generateWorkflowPlan(
+        tasks,
+        availableAgents,
+        constraints
+      );
+
+      // Create optimized assignments based on AI analysis
+      const assignments: Record<string, string> = {};
+      const usedAgents = new Set<string>();
+
+      for (const task of tasks) {
+        // Get AI recommendation for this specific task
+        const taskAnalysis = await this.aiService.analyzeTaskForAgentAssignment(
+          task.description,
+          availableAgents.filter(agent => !usedAgents.has(agent.id)),
+          { task: task.context }
+        );
+
+        // Find agent matching AI recommendation
+        const recommendedAgent = availableAgents.find(agent => 
+          agent.type === taskAnalysis.agentType &&
+          agent.capabilities.some(cap => taskAnalysis.tools.includes(cap.name))
+        );
+
+        if (recommendedAgent) {
+          assignments[task.id] = recommendedAgent.id;
+          if (task.type !== 'parallel') {
+            usedAgents.add(recommendedAgent.id);
+          }
+        }
+      }
+
+      // Calculate efficiency based on load distribution
+      const efficiency = this.calculateAssignmentEfficiency(assignments, availableAgents);
+
+      return {
+        assignments,
+        optimization: {
+          parallelGroups: workflowPlan.parallelGroups,
+          criticalPath: workflowPlan.criticalPath,
+          riskAssessment: workflowPlan.riskAssessment
+        },
+        efficiency,
+        recommendations: [
+          ...workflowPlan.recommendations,
+          `Assignment efficiency: ${Math.round(efficiency * 100)}%`,
+          `Parallel execution groups: ${workflowPlan.parallelGroups.length}`
+        ]
+      };
+
+    } catch (error) {
+      console.error('AI optimization failed:', error);
+      
+      const basicAssignment = await this.assignAgentsToTasks(tasks);
+      return {
+        assignments: basicAssignment.assignments,
+        optimization: { error: String(error) },
+        efficiency: 0.5,
+        recommendations: ['AI optimization failed - using basic assignment']
+      };
+    }
+  }
+
+  /**
+   * AI-powered real-time workflow monitoring
+   */
+  async enhancedWorkflowMonitoring(
+    workflowId: string,
+    currentResults: any[]
+  ): Promise<{
+    status: any;
+    insights: string[];
+    predictions: any;
+    adjustments: string[];
+  }> {
+    const basicStatus = await this.monitorWorkflowProgress(workflowId, 'detailed');
+
+    if (!this.aiService) {
+      return {
+        status: basicStatus,
+        insights: ['AI monitoring not available'],
+        predictions: null,
+        adjustments: []
+      };
+    }
+
+    try {
+      // Analyze current results for quality and progress
+      const analyses = await Promise.all(
+        currentResults.map(result => 
+          this.aiService.analyzeTaskResults(result.taskId, result.data, result.context)
+        )
+      );
+
+      // Generate insights from AI analysis
+      const insights = [
+        `Quality scores: ${analyses.map(a => Math.round(a.qualityScore * 100)).join(', ')}%`,
+        `Success rate: ${Math.round((analyses.filter(a => a.status === 'success').length / analyses.length) * 100)}%`,
+        `Average quality: ${Math.round(analyses.reduce((sum, a) => sum + a.qualityScore, 0) / analyses.length * 100)}%`
+      ];
+
+      // Predict workflow outcome
+      const avgQuality = analyses.reduce((sum, a) => sum + a.qualityScore, 0) / analyses.length;
+      const successRate = analyses.filter(a => a.status === 'success').length / analyses.length;
+      
+      const predictions = {
+        likelyOutcome: successRate > 0.8 ? 'success' : successRate > 0.5 ? 'partial_success' : 'needs_attention',
+        estimatedCompletion: this.estimateCompletionTime(basicStatus, avgQuality),
+        qualityForecast: avgQuality,
+        riskFactors: analyses.flatMap(a => a.improvements).slice(0, 3)
+      };
+
+      // Generate adjustment recommendations
+      const adjustments = analyses.flatMap(a => a.nextActions).slice(0, 5);
+
+      return {
+        status: {
+          ...basicStatus,
+          aiEnhanced: true,
+          qualityMetrics: {
+            averageQuality: avgQuality,
+            successRate,
+            riskLevel: avgQuality < 0.6 ? 'high' : avgQuality < 0.8 ? 'medium' : 'low'
+          }
+        },
+        insights,
+        predictions,
+        adjustments
+      };
+
+    } catch (error) {
+      console.error('AI monitoring failed:', error);
+      return {
+        status: basicStatus,
+        insights: ['AI monitoring error occurred'],
+        predictions: null,
+        adjustments: []
+      };
+    }
+  }
+
+  /**
+   * AI-powered error recovery
+   */
+  async intelligentErrorRecovery(
+    workflowId: string,
+    errorDetails: any,
+    failedTasks: any[]
+  ): Promise<{
+    strategy: string;
+    actions: string[];
+    newWorkflow?: any;
+    preventionMeasures: string[];
+  }> {
+    if (!this.aiService) {
+      const basicRecovery = await this.handleWorkflowErrors(workflowId, errorDetails);
+      return {
+        strategy: basicRecovery.recoveryStrategy,
+        actions: basicRecovery.actions,
+        preventionMeasures: []
+      };
+    }
+
+    try {
+      // Get AI-powered recovery strategy for each failed task
+      const recoveryStrategies = await Promise.all(
+        failedTasks.map(task => 
+          this.aiService.generateRecoveryStrategy(
+            errorDetails,
+            task,
+            { workflowId }
+          )
+        )
+      );
+
+      // Choose best overall strategy
+      const primaryStrategy = recoveryStrategies.reduce((best, current) => 
+        current.successProbability > best.successProbability ? current : best
+      );
+
+      // Generate comprehensive recovery plan
+      const actions = [
+        `Primary strategy: ${primaryStrategy.strategy}`,
+        ...primaryStrategy.steps,
+        `Estimated recovery time: ${primaryStrategy.estimatedTime} seconds`,
+        `Success probability: ${Math.round(primaryStrategy.successProbability * 100)}%`
+      ];
+
+      // Collect all prevention measures
+      const preventionMeasures = Array.from(
+        new Set(recoveryStrategies.flatMap(s => s.preventionMeasures))
+      ).slice(0, 5);
+
+      return {
+        strategy: primaryStrategy.strategy,
+        actions,
+        preventionMeasures
+      };
+
+    } catch (error) {
+      console.error('AI recovery planning failed:', error);
+      
+      const basicRecovery = await this.handleWorkflowErrors(workflowId, errorDetails);
+      return {
+        strategy: basicRecovery.recoveryStrategy,
+        actions: [...basicRecovery.actions, 'AI recovery planning failed'],
+        preventionMeasures: ['Implement better error handling']
+      };
+    }
+  }
+
+  /**
+   * Generate intelligent workflow summary
+   */
+  async generateIntelligentSummary(
+    workflowId: string,
+    results: any[],
+    format: 'executive' | 'technical' | 'detailed' = 'executive'
+  ): Promise<string> {
+    if (!this.aiService) {
+      const basicConsolidation = await this.consolidateResults(workflowId, results, 'structured');
+      return basicConsolidation.summary;
+    }
+
+    try {
+      const summaryData = {
+        workflowId,
+        totalTasks: results.length,
+        successfulTasks: results.filter(r => r.success).length,
+        results: results.map(r => ({
+          taskName: r.taskName,
+          success: r.success,
+          duration: r.duration,
+          keyOutputs: r.data
+        }))
+      };
+
+      const options = {
+        audience: format === 'executive' ? 'business' : format === 'technical' ? 'technical' : 'general',
+        length: format === 'detailed' ? 'comprehensive' : 'brief',
+        language: 'ja' as const
+      };
+
+      return await this.aiService.generateSmartContent(
+        'summary',
+        summaryData,
+        options
+      );
+
+    } catch (error) {
+      console.error('AI summary generation failed:', error);
+      return `ワークフロー ${workflowId} の処理が完了しました。${results.filter(r => r.success).length}/${results.length} のタスクが成功しました。`;
+    }
+  }
+
+  // Private helper methods
+
+  private async createAIEnhancedSubtasks(
+    originalTask: string,
+    aiAnalysis: any,
+    workflowPlan: any,
+    context: any
+  ): Promise<Task[]> {
+    const subtasks: Task[] = [];
+    const executionOrder = workflowPlan.executionOrder || ['task_1'];
+
+    for (let i = 0; i < executionOrder.length; i++) {
+      const taskId = `task_${Date.now()}_${i + 1}`;
+      
+      subtasks.push({
+        id: taskId,
+        name: `AI-Enhanced Subtask ${i + 1}`,
+        description: `Optimized subtask based on AI analysis`,
+        type: workflowPlan.parallelGroups?.some((group: string[]) => group.includes(taskId)) ? 'parallel' : 'sequential',
+        priority: 'medium',
+        requiredCapabilities: aiAnalysis.tools || ['base_operations'],
+        dependencies: i > 0 ? [subtasks[i - 1].id] : undefined,
+        estimatedDuration: 60,
+        context: {
+          ...context,
+          aiRecommendedAgent: aiAnalysis.agentType,
+          aiConfidence: aiAnalysis.confidence,
+          aiReasoning: aiAnalysis.reasoning
+        },
+        status: 'pending',
+        createdAt: new Date()
+      });
+    }
+
+    return subtasks;
+  }
+
+  private determineComplexityFromAI(aiAnalysis: any, workflowPlan: any): 'simple' | 'moderate' | 'complex' {
+    const confidence = aiAnalysis.confidence;
+    const parallelGroups = workflowPlan.parallelGroups?.length || 0;
+    const riskFactors = workflowPlan.riskAssessment?.potentialBottlenecks?.length || 0;
+
+    if (confidence > 0.8 && parallelGroups === 0 && riskFactors === 0) {
+      return 'simple';
+    } else if (confidence > 0.6 && parallelGroups <= 2 && riskFactors <= 2) {
+      return 'moderate';
+    } else {
+      return 'complex';
+    }
+  }
+
+  private calculateAssignmentEfficiency(
+    assignments: Record<string, string>,
+    availableAgents: any[]
+  ): number {
+    const agentLoads = new Map<string, number>();
+    
+    Object.values(assignments).forEach(agentId => {
+      agentLoads.set(agentId, (agentLoads.get(agentId) || 0) + 1);
+    });
+
+    const loads = Array.from(agentLoads.values());
+    const avgLoad = loads.reduce((sum, load) => sum + load, 0) / loads.length;
+    const maxLoad = Math.max(...loads);
+    
+    // Efficiency is higher when load is more evenly distributed
+    return avgLoad / maxLoad;
+  }
+
+  private estimateCompletionTime(status: any, avgQuality: number): number {
+    const baseTime = (status.totalTasks - status.completedTasks) * 60; // 1 minute per task
+    const qualityAdjustment = avgQuality < 0.6 ? 1.5 : avgQuality < 0.8 ? 1.2 : 1.0;
+    return Math.round(baseTime * qualityAdjustment);
+  }
+
+  // Override parent methods to make them accessible
+  private async analyzeAndDecomposeTask(task: string, requirements: any, context: any) {
+    // This would call the parent class method
+    // For now, return a basic structure
+    return {
+      decomposition: [],
+      complexity: 'moderate' as const,
+      estimatedDuration: 180,
+      parallelizationOpportunities: []
+    };
+  }
+
+  private async assignAgentsToTasks(tasks: any[]) {
+    // Basic assignment logic
+    return {
+      assignments: {},
+      loadBalance: {},
+      recommendations: []
+    };
+  }
+
+  private async monitorWorkflowProgress(workflowId: string, detail: string) {
+    // Basic monitoring
+    return {
+      status: 'unknown',
+      progress: 0,
+      completedTasks: 0,
+      totalTasks: 0
+    };
+  }
+
+  private async handleWorkflowErrors(workflowId: string, errorDetails: any) {
+    // Basic error handling
+    return {
+      recoveryStrategy: 'retry',
+      actions: ['Retry failed tasks']
+    };
+  }
+
+  private async consolidateResults(workflowId: string, results: any[], format: string) {
+    // Basic consolidation
+    return {
+      summary: `Workflow ${workflowId} completed`
+    };
+  }
+}
+
+/**
+ * Create and initialize AI-Enhanced Coordinator
+ */
+export async function createAIEnhancedCoordinator(geminiApiKey: string): Promise<AIEnhancedCoordinator> {
+  const coordinator = new AIEnhancedCoordinator({ 
+    geminiApiKey,
+    name: 'AI-Enhanced Multi-Agent Coordinator',
+    temperature: 0.3,
+    maxTokens: 5000
+  });
+
+  console.log('🚀 AI-Enhanced Coordinator created with Gemini integration');
+  return coordinator;
+}

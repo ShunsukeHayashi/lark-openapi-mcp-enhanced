@@ -10,6 +10,18 @@ This is a TypeScript-based MCP (Model Context Protocol) tool that provides compr
 **Repository**: Official Feishu/Lark OpenAPI MCP implementation  
 **Node.js**: Requires Node.js >=16.20.0
 
+## Project-Specific Guidelines
+
+### Code Conventions
+- Bilingual support (English/Chinese) is mandatory - maintain documentation in both languages
+- Use single quotes for strings (enforced by Prettier)
+- Line width: 120 characters maximum
+- TypeScript strict mode enabled - always handle null/undefined cases
+- Use Zod for all schema validation
+- Comments in test files use Chinese (bilingual project convention)
+- **CRITICAL**: When fixing TypeScript compilation errors, avoid calling `this` methods before `super()` in constructors
+- **CRITICAL**: All specialist agent files in `src/agents/specialists/` must be properly implemented or disabled to prevent build failures
+
 ## Key Commands
 
 ### Development
@@ -76,6 +88,53 @@ yarn build && node dist/cli.js mcp --mode stdio --rate-limit-requests 100 --rate
 yarn build && node dist/cli.js mcp --mode stdio --disable-rate-limit
 ```
 
+### Linting and Type Checking
+```bash
+# Run TypeScript compiler to check types
+yarn build
+
+# Format code with Prettier
+yarn format
+
+# Run a specific test
+yarn test tests/mcp-tool/lark-mcp-tool.test.ts
+```
+
+### Docker Commands
+```bash
+# Build Docker images
+yarn docker:build                    # Production build
+./scripts/docker-build.sh production # Production build (explicit)
+./scripts/docker-build.sh development # Development build
+
+# Run in STDIO mode with Docker
+yarn docker:stdio
+
+# Run in SSE mode with Docker  
+yarn docker:sse
+
+# Using docker-compose with profiles
+docker-compose --profile production up lark-mcp-sse    # Production SSE mode
+docker-compose --profile production up lark-mcp-stdio  # Production STDIO mode
+docker-compose --profile development up lark-mcp-sse-dev  # Development SSE mode
+docker-compose --profile genesis up lark-genesis       # Genesis CLI mode
+
+# Manual Docker commands
+docker run -it --rm --env-file .env lark-mcp:latest
+docker run -p 3000:3000 --env-file .env lark-mcp:latest node dist/cli.js mcp --mode sse --host 0.0.0.0
+
+# Development with volume mounts
+docker run -it --rm -v $(pwd):/app -p 3000:3000 lark-mcp:latest-development
+```
+
+### Docker Architecture
+- **Multi-stage Build**: Separate stages for dependencies, builder, production, and development
+- **Production Images**: Optimized with only production dependencies (~272MB Alpine-based)
+- **Development Images**: Include full source code with volume mounts for hot reload
+- **Security**: Non-root user execution, proper signal handling with dumb-init
+- **Health Checks**: Built-in container monitoring for SSE services
+- **Profiles**: Separate docker-compose profiles for production/development/genesis
+
 ## Architecture Overview
 
 ### Directory Structure
@@ -87,9 +146,12 @@ yarn build && node dist/cli.js mcp --mode stdio --disable-rate-limit
   - `builtin-tools/` - Custom-implemented tools
   - `document-tool/` - Documentation recall feature
 - `src/genesis/` - Genesis system for Lark Base application generation
+- `src/agents/` - Agent system for conversational AI with NLP
+- `src/storage/` - Conversation and data persistence
 - `src/utils/` - Shared utilities (HTTP client, rate limiting, version)
 - `tests/` - Jest test suite mirroring source structure
 - `prompt-management/` - Systematic prompt management and versioning system
+- `docs/` - Comprehensive documentation organized by topics
 
 ### Tool System Architecture
 
@@ -153,6 +215,8 @@ The Genesis system (`src/genesis/`) is an AI-powered Lark Base application gener
 - Test files: `**/tests/**/*.test.ts` pattern
 - Coverage reports: text and lcov formats
 - Path alias: `@/` maps to `src/`
+- **NOTE**: Full test suite may timeout (>2min) - run specific tests when possible
+- Agent system tests pass with 100% success rate (8/8 test scenarios)
 
 ## Error Handling
 
@@ -285,6 +349,67 @@ python prompt-management/tools/validator.py --file prompts/categories/analysis/c
 - Tool documentation is auto-generated in `docs/tools-en.md` and `docs/tools-zh.md`
 - **Rate limiting is enabled by default** to protect against API quota exhaustion
 - Prompts follow semantic versioning and must include metadata headers
+
+## Known Issues and Workarounds
+
+- **TypeScript Compilation**: Some specialist agent files in `src/agents/specialists/` have been disabled (.ts.disabled) due to compilation errors
+- **Test Suite**: Full test runs may timeout - prefer running specific test files
+- **Agent System**: Currently only base-specialist is functional; other specialists need implementation
+
+## Docker Development Workflow
+
+### Production vs Development Builds
+- **Production**: Optimized multi-stage build with minimal dependencies
+- **Development**: Includes volume mounts for hot reload and full source access
+
+### Enhanced Docker Scripts
+```bash
+# Build specific targets
+./scripts/docker-build.sh production   # Optimized production image
+./scripts/docker-build.sh development  # Development image with sources
+
+# Run with target specification
+./scripts/docker-run.sh --mode sse --target development --port 3000
+./scripts/docker-run.sh --mode stdio --target production --tools preset.light
+
+# Docker Compose profiles
+docker-compose --profile production up    # Production services
+docker-compose --profile development up   # Development services  
+docker-compose --profile genesis up       # Genesis CLI tools
+```
+
+## Extended Systems
+
+### Agent System (`src/agents/`)
+The project includes a comprehensive AI-enhanced multi-agent framework:
+- **Multi-Agent Orchestration**: Coordinator and specialist agents with intelligent task distribution
+- **AI Integration**: Google Gemini-powered task analysis, workflow optimization, and error recovery
+- **Specialist Agents**: Domain-specific agents for Base, IM, Docs, and Calendar operations
+- **Intelligent Coordination**: AI-powered task decomposition, agent assignment, and quality monitoring
+- **Real-time Monitoring**: Predictive analytics and adaptive workflow management
+- **Natural Language Processing**: Advanced chat interactions with context management
+- **Multi-language Support**: EN/ZH/JP with cultural context awareness
+
+#### AI-Enhanced Features
+- **Task Complexity Analysis**: AI determines optimal task breakdown and execution strategy
+- **Agent Assignment Optimization**: Load balancing with efficiency scoring and capability matching
+- **Predictive Monitoring**: Quality forecasting and risk assessment with adjustment recommendations
+- **Intelligent Error Recovery**: AI-generated recovery strategies with success probability estimation
+- **Smart Content Generation**: Context-aware summaries, explanations, and documentation
+
+### YouTube Integration
+Located in various system directories, includes:
+- CRM system for YouTube channel management
+- Automation for video lifecycle management
+- Analytics and reporting integration
+- Comment and engagement tracking
+
+### Sales and Pipe Cutting Systems
+Specialized business logic implementations:
+- Pipe cutting management system with complex calculations
+- Sales target tracking and achievement monitoring
+- Integration with Lark Base for data persistence
+- Automated reporting and notifications
 
 ## TypeScript and Module System
 

@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  # Test Service
+  lark-mcp-test:
+    build:
+      context: .
+      target: development
+    container_name: lark-mcp-test
+    environment:
+      - NODE_ENV=test
+      - APP_ID=${APP_ID}
+      - APP_SECRET=${APP_SECRET}
+      - LARK_DOMAIN=${LARK_DOMAIN:-https://open.feishu.cn}
+      - LARK_LANGUAGE=${LARK_LANGUAGE:-en}
+      - LARK_TOKEN_MODE=${LARK_TOKEN_MODE:-auto}
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: ["yarn", "test"]
+    profiles:
+      - test
+    networks:
+      - lark-network
+
+  # Integration Test Service
+  lark-mcp-integration-test:
+    build:
+      context: .
+      target: development
+    container_name: lark-mcp-integration-test
+    environment:
+      - NODE_ENV=test
+      - APP_ID=${APP_ID}
+      - APP_SECRET=${APP_SECRET}
+      - LARK_DOMAIN=${LARK_DOMAIN:-https://open.feishu.cn}
+      - LARK_LANGUAGE=${LARK_LANGUAGE:-en}
+      - LARK_TOKEN_MODE=${LARK_TOKEN_MODE:-auto}
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: ["yarn", "test:integration"]
+    profiles:
+      - test
+    networks:
+      - lark-network
+
+  # Agent Test Service
+  lark-mcp-agent-test:
+    build:
+      context: .
+      target: development
+    container_name: lark-mcp-agent-test
+    environment:
+      - NODE_ENV=test
+      - APP_ID=${APP_ID}
+      - APP_SECRET=${APP_SECRET}
+      - LARK_DOMAIN=${LARK_DOMAIN:-https://open.feishu.cn}
+      - LARK_LANGUAGE=${LARK_LANGUAGE:-en}
+      - LARK_TOKEN_MODE=${LARK_TOKEN_MODE:-auto}
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: ["yarn", "test:agent"]
+    profiles:
+      - test
+    networks:
+      - lark-network
+
+networks:
+  lark-network:
+    driver: bridge 

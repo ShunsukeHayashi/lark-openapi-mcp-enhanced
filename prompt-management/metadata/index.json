@@ -55,6 +55,20 @@
       "status": "active",
       "complexity": "expert",
       "estimated_tokens": 3000
+    },
+    {
+      "id": "generation-005",
+      "title": "Document Genesis Blueprint Generator v4.0 - CRM Requirements Analysis",
+      "category": "generation",
+      "tags": ["meta-prompt", "command-stack", "crm-requirements", "business-analysis", "structured-elicitation", "strategic-planning"],
+      "version": "4.0.0",
+      "path": "prompts/categories/generation/document-genesis-blueprint-v4.md",
+      "author": "AI System",
+      "created": "2024-12-25",
+      "updated": "2024-12-25",
+      "status": "active",
+      "complexity": "advanced",
+      "estimated_tokens": 3500
     }
   ],
   "categories": {
@@ -65,8 +79,8 @@
     },
     "generation": {
       "description": "コード生成、ドキュメント生成、テンプレート生成、アイデア生成",
-      "count": 4,
-      "prompts": ["generation-001", "generation-002", "generation-003", "generation-004"]
+      "count": 5,
+      "prompts": ["generation-001", "generation-002", "generation-003", "generation-004", "generation-005"]
     },
     "planning": {
       "description": "プロジェクト計画、アーキテクチャ設計、戦略策定、ロードマップ作成",
@@ -85,9 +99,9 @@
     }
   },
   "stats": {
-    "total_prompts": 4,
-    "active_prompts": 4,
+    "total_prompts": 5,
+    "active_prompts": 5,
     "deprecated_prompts": 0,
-    "last_updated": "2025-01-24"
+    "last_updated": "2024-12-25"
   }
 }

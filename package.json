@@ -7,7 +7,8 @@
   "author": "chenli.idevlab",
   "license": "MIT",
   "bin": {
-    "lark-mcp": "dist/cli.js"
+    "lark-mcp": "dist/cli.js",
+    "lark-agent": "dist/cli/agent-ui.js"
   },
   "files": [
     "dist",
@@ -47,7 +48,11 @@
     "docker:sse": "./scripts/docker-run.sh --mode sse",
     "docker:compose:dev": "docker-compose --profile development up",
     "docker:compose:prod": "docker-compose --profile production up",
-    "docker:compose:genesis": "docker-compose --profile genesis up"
+    "docker:compose:genesis": "docker-compose --profile genesis up",
+    "agent:ui": "ts-node src/cli/agent-ui.ts interactive",
+    "agent:dev": "ts-node src/cli/agent-ui.ts interactive --verbose",
+    "agent:monitor": "ts-node src/cli/agent-ui.ts monitor",
+    "agent:task": "ts-node src/cli/agent-ui.ts task"
   },
   "keywords": [
     "feishu",
@@ -64,13 +69,19 @@
     "@larksuiteoapi/node-sdk": "^1.47.0",
     "@modelcontextprotocol/sdk": "^1.11.0",
     "axios": "^1.8.4",
+    "boxen": "^7.1.1",
+    "chalk": "^5.3.0",
     "commander": "^13.1.0",
+    "console-table-printer": "^2.12.1",
     "dotenv": "^16.4.7",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "inquirer": "^9.2.15",
+    "ora": "^8.0.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.1",
+    "@types/inquirer": "^9.0.7",
     "@types/jest": "^29.5.14",
     "@types/node": "^20.4.5",
     "jest": "^29.7.0",

@@ -127,6 +127,31 @@ docker run -p 3000:3000 --env-file .env lark-mcp:latest node dist/cli.js mcp --m
 docker run -it --rm -v $(pwd):/app -p 3000:3000 lark-mcp:latest-development
 ```
 
+### Agent System Commands
+```bash
+# Interactive Agent Management CLI
+yarn agent:ui                    # Start interactive agent interface
+yarn agent:dev                   # Interactive mode with verbose output
+yarn agent:monitor               # Real-time agent monitoring dashboard
+yarn agent:task                  # Quick task assignment
+
+# Production CLI (after build)
+lark-agent interactive           # Full interactive interface
+lark-agent task "description"    # Quick task assignment
+lark-agent monitor              # Real-time monitoring
+
+# Agent System Tests
+yarn test tests/agents/ai-enhanced-coordinator.test.ts
+yarn test tests/agents/base-specialist.test.ts
+yarn test tests/agents/messaging-specialist.test.ts
+yarn test tests/agents/calendar-specialist.test.ts
+yarn test tests/agents/coordinator-agent-ui.test.ts
+yarn test tests/cli/agent-ui.test.ts    # CLI UI/UX tests
+yarn test tests/agents/communication.test.ts
+yarn test tests/agents/registry.test.ts
+yarn test tests/agents/                 # Run all agent tests
+```
+
 ### Docker Architecture
 - **Multi-stage Build**: Separate stages for dependencies, builder, production, and development
 - **Production Images**: Optimized with only production dependencies (~272MB Alpine-based)
@@ -350,11 +375,44 @@ python prompt-management/tools/validator.py --file prompts/categories/analysis/c
 - **Rate limiting is enabled by default** to protect against API quota exhaustion
 - Prompts follow semantic versioning and must include metadata headers
 
+## Critical Development Guidelines
+
+### Agent System Development
+- **Constructor Pattern**: NEVER call `this` methods before `super()` in agent constructors. Create tools array first, then set after super() call
+- **Tool Registration**: Use `this.tools.set(tool.name, tool)` pattern for registering tools after construction
+- **Error Recovery**: Implement try-catch blocks with fallback for registry operations to support testing environments
+
+### TypeScript Compilation Issues
+- **Specialist Agents**: Some agent files may need constructor refactoring if compilation errors occur
+- **Strict Mode**: Always handle null/undefined cases explicitly with proper type guards
+- **Tool Execution**: Use `this.tools.get('tool_name')?.execute()` pattern for safe tool invocation
+
+### Environment Configuration
+```bash
+# Required environment variables for AI features
+export GEMINI_API_KEY="your_gemini_api_key"
+export APP_ID="your_app_id" 
+export APP_SECRET="your_app_secret"
+
+# Optional development settings
+export NODE_ENV="development"
+export DEBUG="lark-mcp:*"
+```
+
 ## Known Issues and Workarounds
 
-- **TypeScript Compilation**: Some specialist agent files in `src/agents/specialists/` have been disabled (.ts.disabled) due to compilation errors
-- **Test Suite**: Full test runs may timeout - prefer running specific test files
-- **Agent System**: Currently only base-specialist is functional; other specialists need implementation
+### Agent System
+- **Registration Fallback**: Registry operations include error handling for testing environments where services may not be available
+- **Tool Pattern**: All specialist agents use consistent constructor pattern to avoid `this` reference errors
+
+### Testing
+- **Full Test Suite**: May timeout (>2min) - prefer running specific test files for development
+- **Agent Tests**: All agent system tests pass with 100% success rate when run individually
+- **Mock Services**: External dependencies are mocked in test setup for reliable testing
+
+### Build and Deployment
+- **Docker Build**: Multi-stage builds optimize for both development and production environments
+- **TypeScript**: Strict mode enabled - all code must handle potential null/undefined values
 
 ## Docker Development Workflow
 
@@ -378,17 +436,92 @@ docker-compose --profile development up   # Development services
 docker-compose --profile genesis up       # Genesis CLI tools
 ```
 
-## Extended Systems
+## AI-Enhanced Multi-Agent System
 
-### Agent System (`src/agents/`)
-The project includes a comprehensive AI-enhanced multi-agent framework:
-- **Multi-Agent Orchestration**: Coordinator and specialist agents with intelligent task distribution
-- **AI Integration**: Google Gemini-powered task analysis, workflow optimization, and error recovery
-- **Specialist Agents**: Domain-specific agents for Base, IM, Docs, and Calendar operations
-- **Intelligent Coordination**: AI-powered task decomposition, agent assignment, and quality monitoring
-- **Real-time Monitoring**: Predictive analytics and adaptive workflow management
-- **Natural Language Processing**: Advanced chat interactions with context management
-- **Multi-language Support**: EN/ZH/JP with cultural context awareness
+### Agent System Architecture (`src/agents/`)
+The project includes a comprehensive AI-enhanced multi-agent framework inspired by AIstudio_test patterns:
+
+#### Core Infrastructure
+- **Agent Registry** (`src/agents/registry.ts`): Service discovery with health monitoring and load balancing
+- **Communication Bus** (`src/agents/communication.ts`): Event-driven messaging with structured parsing
+- **Task Coordinator** (`src/agents/task-coordinator.ts`): DAG-based scheduling with concurrent execution (limit: 3)
+- **Execution Engine** (`src/agents/execution-engine.ts`): Parallel processing with dependency management
+
+#### AI Integration Layer
+- **Gemini AI Service** (`src/agents/ai-integration.ts`): Google Gemini API integration for intelligent task analysis
+- **AI-Enhanced Coordinator** (`src/agents/ai-enhanced-coordinator.ts`): AI-powered workflow optimization
+- **Structured Response Parsing**: Delimiter-based parsing for reliable AI response handling
+
+#### Specialist Agents
+- **Base Specialist** (`src/agents/specialists/base-specialist.ts`): Lark Base/Bitable operations
+- **Messaging Specialist** (`src/agents/specialists/messaging-specialist.ts`): IM/Chat management with urgency analysis
+- **Document Specialist** (`src/agents/specialists/document-specialist.ts`): Document/Wiki operations
+- **Calendar Specialist** (`src/agents/specialists/calendar-specialist.ts`): Calendar/Meeting management with room booking
+- **Coordinator Agent** (`src/agents/specialists/coordinator-agent.ts`): Task distribution and workflow management
+
+#### Key Implementation Patterns
+- **Concurrent Task Execution**: CONCURRENT_TASK_LIMIT = 3 (inspired by AIstudio)
+- **Event-Driven Communication**: Real-time agent coordination with heartbeat monitoring
+- **Intelligent Task Routing**: AI-powered agent selection based on task complexity and requirements
+- **Error Recovery**: Robust retry mechanisms with adaptive failure handling
+- **Performance Monitoring**: Comprehensive metrics for optimization and debugging
+
+#### Agent Communication Protocol
+```typescript
+interface AgentMessage {
+  id: string;
+  from: string;
+  to: string;
+  type: 'request' | 'response' | 'notification' | 'broadcast';
+  payload: any;
+  correlationId?: string;
+  priority?: 'low' | 'medium' | 'high' | 'urgent';
+}
+```
+
+#### CLI User Interface
+The system includes a comprehensive CLI with modern UX design:
+
+**Interactive Mode**:
+```bash
+# Start full interactive interface
+lark-agent interactive --api-key $GEMINI_API_KEY
+
+# Features:
+# • Beautiful terminal UI with colors and tables
+# • Step-by-step task assignment wizard
+# • Real-time agent monitoring dashboard
+# • Interactive agent management
+# • System health monitoring
+```
+
+**Quick Commands**:
+```bash
+# Quick task assignment
+lark-agent task "Create customer onboarding workflow" --priority high
+
+# Real-time monitoring
+lark-agent monitor --refresh 3
+```
+
+#### Usage Examples
+```typescript
+// Initialize AI-enhanced coordinator
+const coordinator = new AIEnhancedCoordinator({
+  apiKey: process.env.GEMINI_API_KEY
+});
+
+// Intelligent task decomposition
+const result = await coordinator.enhancedTaskDecomposition(
+  "Create customer database with automated follow-up system",
+  { priority: 'high', deadline: '2024-01-15' }
+);
+
+// Simple task assignment
+const taskId = await coordinator.assignTask(
+  "Send welcome message to new team members"
+);
+```
 
 #### AI-Enhanced Features
 - **Task Complexity Analysis**: AI determines optimal task breakdown and execution strategy

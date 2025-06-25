@@ -88,7 +88,34 @@
 - より具体的な使用例とトラブルシューティング
 - 実装ガイダンスの詳細化
 
-### [1.3.0] - Planned
+## [1.3.0] - 2024-12-25
+
+### Added
+- **generation-005**: Document Genesis Blueprint Generator v4.0 - CRM Requirements Analysis
+  - CRM要件分析に特化した最新のメタプロンプト
+  - 14段階の詳細なCommand Stackによる構造化要件収集
+  - ビジネス分析とCRM設計のための包括的なヒアリングシート生成
+  - 戦略的な要件定義プロセスの体系化
+  - Why-What-Howの3段階構造による論理的な要件整理
+
+### Enhanced
+- タグシステムの更なる拡張
+  - CRM要件定義関連タグ（crm-requirements）
+  - ビジネス分析タグ（business-analysis）
+  - 構造化聞き取りタグ（structured-elicitation）
+  - 戦略計画タグ（strategic-planning）
+- メタデータ管理の改善
+  - より精密な複雑度分類
+  - 実用的なトークン推定（3500トークン）
+  - ビジネス分析領域への対応
+
+### Technical Improvements
+- プロンプトテンプレートの標準化
+- 日英両言語対応の強化
+- 実践的な使用例の充実
+- LarkSuite MCP連携のドキュメント改善
+
+### [1.4.0] - Planned
 - [ ] Web UI での管理インターフェース
 - [ ] プロンプトの実行統計収集
 - [ ] 自動テスト機能

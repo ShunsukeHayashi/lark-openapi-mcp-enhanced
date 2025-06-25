@@ -1,0 +1,272 @@
+{
+  "japanese_localization": {
+    "description": "CRM/SFAシステムの日本語対応設定",
+    "locale_settings": {
+      "language": "ja-JP",
+      "region": "Japan",
+      "currency": "JPY",
+      "date_format": "YYYY年MM月DD日",
+      "time_format": "HH:mm",
+      "number_format": "#,##0",
+      "currency_format": "¥#,##0"
+    },
+    "field_labels": {
+      "tbl_sales_pipeline": {
+        "案件ID": "案件ID",
+        "案件名": "案件名",
+        "顧客名": "顧客名",
+        "営業段階": "営業段階",
+        "予想売上金額": "予想売上金額",
+        "確度": "確度（%）",
+        "見込み売上": "見込み売上",
+        "担当者": "営業担当者",
+        "作成日": "作成日",
+        "更新日": "最終更新日",
+        "商談予定日": "商談予定日",
+        "関連YouTube動画": "関連動画",
+        "備考": "備考・メモ"
+      },
+      "tbl_customer_management": {
+        "顧客ID": "顧客ID",
+        "会社名": "会社名・法人名",
+        "担当者名": "窓口担当者",
+        "電話番号": "代表電話番号",
+        "メールアドレス": "連絡先メール",
+        "住所": "所在地",
+        "業界": "業界・業種",
+        "企業規模": "企業規模",
+        "顧客ステータス": "顧客ステータス",
+        "最終接触日": "最終接触日",
+        "関連案件数": "関連案件数",
+        "累計売上": "累計売上金額",
+        "作成日": "登録日",
+        "担当営業": "担当営業",
+        "備考": "顧客情報メモ"
+      },
+      "tbl_activity_history": {
+        "活動ID": "活動ID",
+        "活動タイプ": "活動種別",
+        "顧客名": "対象顧客",
+        "案件名": "関連案件",
+        "実施日": "実施日",
+        "実施時間": "実施時刻",
+        "担当者": "実施者",
+        "活動内容": "活動内容",
+        "次回予定日": "次回フォロー予定日",
+        "次回予定内容": "次回予定内容",
+        "ステータス": "活動ステータス",
+        "重要度": "重要度",
+        "作成日時": "記録日時"
+      },
+      "tbl_sales_targets": {
+        "レコードID": "目標ID",
+        "対象年月": "対象年月",
+        "担当者": "営業担当者",
+        "月次売上目標": "月間売上目標",
+        "見込み売上合計": "見込み売上合計",
+        "実績売上": "実績売上",
+        "達成率": "目標達成率",
+        "新規顧客数目標": "新規顧客獲得目標",
+        "新規顧客数実績": "新規顧客獲得実績",
+        "商談数目標": "商談件数目標",
+        "商談数実績": "商談件数実績",
+        "四半期目標": "四半期売上目標",
+        "年次目標": "年間売上目標",
+        "備考": "備考"
+      }
+    },
+    "option_values": {
+      "営業段階": [
+        {"value": "見込み", "label": "見込み客", "description": "初期接触・ニーズ確認段階"},
+        {"value": "商談", "label": "商談中", "description": "具体的な商談を開始"},
+        {"value": "提案", "label": "提案済み", "description": "正式な提案書を提出済み"},
+        {"value": "成約", "label": "成約", "description": "契約締結完了"},
+        {"value": "完了", "label": "完了", "description": "プロジェクト完了・納品済み"},
+        {"value": "失注", "label": "失注", "description": "案件失注・他社決定"}
+      ],
+      "業界": [
+        {"value": "IT・通信", "label": "IT・通信業"},
+        {"value": "製造業", "label": "製造業"},
+        {"value": "小売・EC", "label": "小売・EC"},
+        {"value": "金融・保険", "label": "金融・保険業"},
+        {"value": "建設・不動産", "label": "建設・不動産業"},
+        {"value": "医療・福祉", "label": "医療・福祉"},
+        {"value": "教育", "label": "教育機関"},
+        {"value": "その他", "label": "その他"}
+      ],
+      "企業規模": [
+        {"value": "大企業", "label": "大企業（従業員300名以上）"},
+        {"value": "中小企業", "label": "中小企業（従業員300名未満）"},
+        {"value": "個人事業主", "label": "個人事業主・フリーランス"}
+      ],
+      "顧客ステータス": [
+        {"value": "見込み客", "label": "見込み客", "description": "まだ取引のない潜在顧客"},
+        {"value": "既存客", "label": "既存顧客", "description": "取引実績のある顧客"},
+        {"value": "VIP客", "label": "VIP顧客", "description": "重要顧客・大口取引先"},
+        {"value": "休眠客", "label": "休眠顧客", "description": "長期間取引のない顧客"}
+      ],
+      "活動タイプ": [
+        {"value": "電話", "label": "電話連絡"},
+        {"value": "メール", "label": "メール連絡"},
+        {"value": "商談", "label": "商談・打ち合わせ"},
+        {"value": "プレゼン", "label": "プレゼンテーション"},
+        {"value": "訪問", "label": "訪問・面談"},
+        {"value": "その他", "label": "その他"}
+      ],
+      "ステータス": [
+        {"value": "完了", "label": "実施完了"},
+        {"value": "予定", "label": "実施予定"},
+        {"value": "キャンセル", "label": "キャンセル"}
+      ],
+      "重要度": [
+        {"value": "高", "label": "高（緊急）", "color": "red"},
+        {"value": "中", "label": "中（通常）", "color": "yellow"},
+        {"value": "低", "label": "低（参考）", "color": "green"}
+      ]
+    },
+    "view_labels": {
+      "tbl_sales_pipeline": {
+        "kanban_pipeline": "営業段階別パイプライン",
+        "gantt_schedule": "案件スケジュール",
+        "high_value_deals": "高額案件一覧",
+        "my_deals": "担当案件",
+        "overdue_deals": "期限切れ案件"
+      },
+      "tbl_customer_management": {
+        "customer_status_cards": "顧客ステータス別一覧",
+        "vip_customers": "VIP顧客",
+        "inactive_customers": "フォローアップ要顧客",
+        "industry_analysis": "業界別分析"
+      },
+      "tbl_activity_history": {
+        "recent_activities": "最近の営業活動",
+        "followup_calendar": "フォローアップカレンダー",
+        "overdue_followups": "期限切れフォローアップ",
+        "activity_timeline": "活動タイムライン"
+      },
+      "tbl_sales_targets": {
+        "monthly_targets": "月次目標・実績",
+        "performance_dashboard": "実績ダッシュボード"
+      }
+    },
+    "dashboard_labels": {
+      "sales_overview": "営業概況ダッシュボード",
+      "performance_dashboard": "営業実績ダッシュボード", 
+      "activity_dashboard": "営業活動ダッシュボード",
+      "youtube_crm_dashboard": "YouTube-CRM統合ダッシュボード"
+    },
+    "notification_messages": {
+      "pipeline_stagnation": {
+        "title": "案件停滞アラート",
+        "template": "案件「{案件名}」が{停滞日数}日間更新されていません。\n顧客: {顧客名}\n予想売上: {予想売上金額}円\n担当者: {担当者}\n\n早急な対応をお願いします。"
+      },
+      "followup_overdue": {
+        "title": "フォローアップ期限切れ",
+        "template": "顧客「{顧客名}」のフォローアップ期限が過ぎています。\n予定内容: {次回予定内容}\n予定日: {次回予定日}\n\n至急対応をお願いします。"
+      },
+      "target_progress": {
+        "title": "月次目標進捗通知",
+        "template": "月次売上目標の進捗状況をお知らせします。\n\n担当者: {担当者}\n目標: {月次売上目標}円\n実績: {実績売上}円\n達成率: {達成率}%\n\n月末まで残り{残り日数}日です。"
+      },
+      "high_value_deal": {
+        "title": "高額案件成約通知",
+        "template": "🎉 高額案件が成約しました！\n\n案件名: {案件名}\n顧客名: {顧客名}\n売上金額: {予想売上金額}円\n担当者: {担当者}\n\nお疲れ様でした！"
+      }
+    },
+    "button_labels": {
+      "create": "新規作成",
+      "edit": "編集",
+      "delete": "削除",
+      "save": "保存",
+      "cancel": "キャンセル",
+      "search": "検索",
+      "filter": "フィルター",
+      "export": "エクスポート",
+      "import": "インポート",
+      "refresh": "更新"
+    },
+    "status_messages": {
+      "success": {
+        "created": "正常に作成されました",
+        "updated": "正常に更新されました",
+        "deleted": "正常に削除されました",
+        "saved": "正常に保存されました"
+      },
+      "error": {
+        "required_field": "必須フィールドが入力されていません",
+        "invalid_format": "入力形式が正しくありません",
+        "duplicate": "重複するデータが存在します",
+        "network_error": "ネットワークエラーが発生しました"
+      },
+      "warning": {
+        "unsaved_changes": "保存されていない変更があります",
+        "delete_confirmation": "このデータを削除してもよろしいですか？",
+        "overwrite_confirmation": "既存のデータを上書きしますか？"
+      }
+    },
+    "help_text": {
+      "営業段階": "案件の進行状況を示します。段階に応じて適切な営業アクションを実施してください。",
+      "確度": "成約の可能性を0-100%で入力してください。見込み売上の計算に使用されます。",
+      "予想売上金額": "この案件で見込まれる売上金額を入力してください。",
+      "顧客ステータス": "顧客との関係性を示します。ステータスに応じた対応を心がけてください。",
+      "活動内容": "実施した営業活動の詳細を記録してください。次回の参考になります。",
+      "次回予定日": "次回のフォローアップ予定日を設定してください。アラート機能で通知されます。"
+    },
+    "validation_rules": {
+      "phone_number": {
+        "pattern": "^(0\\d{1,4}-\\d{1,4}-\\d{4}|0\\d{9,10})$",
+        "message": "正しい電話番号形式で入力してください（例: 03-1234-5678）"
+      },
+      "email": {
+        "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+        "message": "正しいメールアドレス形式で入力してください"
+      },
+      "postal_code": {
+        "pattern": "^\\d{3}-\\d{4}$",
+        "message": "正しい郵便番号形式で入力してください（例: 123-4567）"
+      },
+      "currency": {
+        "min": 0,
+        "message": "0以上の数値を入力してください"
+      },
+      "percentage": {
+        "min": 0,
+        "max": 100,
+        "message": "0-100の範囲で入力してください"
+      }
+    },
+    "date_time_formats": {
+      "date_display": "YYYY年MM月DD日",
+      "date_input": "YYYY/MM/DD",
+      "time_display": "HH:mm",
+      "datetime_display": "YYYY年MM月DD日 HH:mm",
+      "relative_time": {
+        "今日": "今日",
+        "昨日": "昨日",
+        "明日": "明日",
+        "days_ago": "{n}日前",
+        "days_later": "{n}日後",
+        "weeks_ago": "{n}週間前",
+        "weeks_later": "{n}週間後",
+        "months_ago": "{n}ヶ月前",
+        "months_later": "{n}ヶ月後"
+      }
+    },
+    "business_terms": {
+      "営業": "営業・セールス",
+      "案件": "営業案件・商談案件",
+      "顧客": "お客様・取引先",
+      "見込み客": "見込み顧客・潜在顧客",
+      "商談": "商談・打ち合わせ",
+      "提案": "提案・見積もり提出",
+      "成約": "成約・契約締結",
+      "売上": "売上・売上高",
+      "目標": "売上目標・営業目標",
+      "実績": "売上実績・営業実績",
+      "達成率": "目標達成率",
+      "パイプライン": "営業パイプライン・セールスファネル",
+      "フォローアップ": "フォローアップ・継続対応",
+      "アプローチ": "営業アプローチ・顧客接触"
+    }
+  }
+}

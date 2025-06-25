@@ -1,0 +1,254 @@
+{
+  "report_config": {
+    "name": "営業パフォーマンス週次レポート",
+    "description": "週間の営業実績分析と次週の戦略",
+    "schedule": {
+      "frequency": "weekly",
+      "day": "monday",
+      "time": "09:00",
+      "timezone": "Asia/Tokyo"
+    },
+    "recipients": {
+      "to": ["sales-team@company.com", "management@company.com"],
+      "cc": ["executives@company.com"]
+    }
+  },
+  "sections": [
+    {
+      "id": "executive_summary",
+      "title": "エグゼクティブサマリー",
+      "type": "summary",
+      "content": {
+        "week": "{week_number}",
+        "period": "{start_date} - {end_date}",
+        "key_highlights": {
+          "revenue": "{weekly_revenue}",
+          "target_achievement": "{achievement_rate}%",
+          "new_opportunities": "{new_opportunities_count}",
+          "closed_deals": "{closed_deals_count}"
+        }
+      }
+    },
+    {
+      "id": "revenue_performance",
+      "title": "売上実績",
+      "type": "kpi_dashboard",
+      "kpis": [
+        {
+          "name": "週間売上",
+          "value": "{weekly_revenue}",
+          "target": "{weekly_target}",
+          "achievement": "{revenue_achievement}%",
+          "trend": "{revenue_trend}",
+          "chart": "progress_bar"
+        },
+        {
+          "name": "新規受注",
+          "value": "{new_orders}",
+          "comparison": "前週比 {new_orders_change}%",
+          "chart": "trend_line"
+        },
+        {
+          "name": "平均商談規模",
+          "value": "{avg_deal_size}",
+          "comparison": "前週比 {deal_size_change}%",
+          "chart": "comparison"
+        },
+        {
+          "name": "成約率",
+          "value": "{win_rate}%",
+          "target": "{win_rate_target}%",
+          "chart": "gauge"
+        }
+      ]
+    },
+    {
+      "id": "pipeline_analysis",
+      "title": "パイプライン分析",
+      "type": "funnel_chart",
+      "stages": [
+        {
+          "name": "リード",
+          "count": "{lead_count}",
+          "value": "{lead_value}"
+        },
+        {
+          "name": "商談化",
+          "count": "{qualified_count}",
+          "value": "{qualified_value}",
+          "conversion": "{lead_to_qualified}%"
+        },
+        {
+          "name": "提案",
+          "count": "{proposal_count}",
+          "value": "{proposal_value}",
+          "conversion": "{qualified_to_proposal}%"
+        },
+        {
+          "name": "交渉",
+          "count": "{negotiation_count}",
+          "value": "{negotiation_value}",
+          "conversion": "{proposal_to_negotiation}%"
+        },
+        {
+          "name": "成約",
+          "count": "{closed_won_count}",
+          "value": "{closed_won_value}",
+          "conversion": "{negotiation_to_closed}%"
+        }
+      ]
+    },
+    {
+      "id": "team_performance",
+      "title": "チーム別実績",
+      "type": "comparison_table",
+      "metrics": [
+        "revenue",
+        "opportunities_created",
+        "activities_completed",
+        "youtube_shares",
+        "win_rate"
+      ],
+      "grouping": "team",
+      "ranking": true,
+      "highlight_top": 3
+    },
+    {
+      "id": "youtube_roi",
+      "title": "YouTube動画ROI分析",
+      "type": "mixed_chart",
+      "charts": [
+        {
+          "type": "bar",
+          "title": "動画別エンゲージメント",
+          "data": "video_engagement_weekly"
+        },
+        {
+          "type": "line",
+          "title": "動画共有と成約の相関",
+          "data": "video_to_deal_correlation"
+        }
+      ],
+      "insights": {
+        "top_performing_videos": true,
+        "engagement_to_opportunity_rate": true,
+        "recommended_content_strategy": true
+      }
+    },
+    {
+      "id": "activity_metrics",
+      "title": "活動指標",
+      "type": "heatmap",
+      "data": {
+        "x_axis": "day_of_week",
+        "y_axis": "activity_type",
+        "value": "count"
+      },
+      "color_scale": "green_to_red",
+      "show_values": true
+    },
+    {
+      "id": "deal_velocity",
+      "title": "商談スピード分析",
+      "type": "metrics_grid",
+      "metrics": [
+        {
+          "name": "平均商談期間",
+          "value": "{avg_sales_cycle}日",
+          "change": "{cycle_change}%"
+        },
+        {
+          "name": "ステージ別滞留時間",
+          "breakdown": {
+            "リード→商談": "{lead_to_opp}日",
+            "商談→提案": "{opp_to_proposal}日",
+            "提案→成約": "{proposal_to_close}日"
+          }
+        }
+      ]
+    },
+    {
+      "id": "lost_analysis",
+      "title": "失注分析",
+      "type": "pie_chart",
+      "data": "lost_reasons_weekly",
+      "show_percentage": true,
+      "insights": {
+        "main_lost_reason": true,
+        "improvement_suggestions": true
+      }
+    },
+    {
+      "id": "next_week_forecast",
+      "title": "次週の見込み",
+      "type": "forecast",
+      "predictions": [
+        {
+          "metric": "expected_revenue",
+          "value": "{next_week_revenue}",
+          "confidence": "{confidence_level}%"
+        },
+        {
+          "metric": "closing_opportunities",
+          "list": "high_probability_deals",
+          "total_value": "{expected_close_value}"
+        }
+      ]
+    },
+    {
+      "id": "action_items",
+      "title": "次週の重点アクション",
+      "type": "priority_list",
+      "items": [
+        {
+          "priority": "1",
+          "action": "高確度商談のクロージング",
+          "targets": "{high_probability_deals_list}"
+        },
+        {
+          "priority": "2",
+          "action": "停滞商談の活性化",
+          "targets": "{stalled_deals_list}"
+        },
+        {
+          "priority": "3",
+          "action": "YouTube動画の効果測定とフォロー",
+          "targets": "{pending_video_followups}"
+        }
+      ]
+    },
+    {
+      "id": "recognition",
+      "title": "今週のMVP",
+      "type": "achievement",
+      "categories": [
+        {
+          "title": "最高売上",
+          "winner": "{top_revenue_rep}",
+          "achievement": "{top_revenue_amount}"
+        },
+        {
+          "title": "最多新規開拓",
+          "winner": "{top_hunter_rep}",
+          "achievement": "{new_opportunities_created}"
+        },
+        {
+          "title": "YouTube活用賞",
+          "winner": "{top_youtube_rep}",
+          "achievement": "{youtube_engagement_score}"
+        }
+      ]
+    }
+  ],
+  "charts_config": {
+    "theme": "professional",
+    "colors": ["#1E88E5", "#43A047", "#FB8C00", "#E53935"],
+    "animations": true,
+    "interactive": true
+  },
+  "export_options": {
+    "formats": ["pdf", "pptx", "excel"],
+    "include_raw_data": true,
+    "custom_branding": true
+  }
+}

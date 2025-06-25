@@ -1,0 +1,254 @@
+{
+  "workflow_name": "新規商談ワークフロー",
+  "description": "新規商談作成から成約までの標準プロセス",
+  "trigger": {
+    "event": "record_created",
+    "table": "商談管理"
+  },
+  "stages": [
+    {
+      "stage_id": "qualification",
+      "name": "案件精査",
+      "duration": "3days",
+      "tasks": [
+        {
+          "id": "initial_research",
+          "name": "顧客調査",
+          "description": "企業情報、ニーズ、予算規模の確認",
+          "required_fields": [
+            "企業規模",
+            "業界",
+            "予算規模",
+            "決裁プロセス"
+          ],
+          "automation": {
+            "company_info_fetch": true,
+            "industry_analysis": true
+          }
+        },
+        {
+          "id": "youtube_content_match",
+          "name": "関連YouTube動画の選定",
+          "description": "顧客の課題に合わせたコンテンツ選定",
+          "automation": {
+            "ai_content_matching": true,
+            "create_playlist": true
+          }
+        },
+        {
+          "id": "opportunity_scoring",
+          "name": "商談スコアリング",
+          "description": "AIによる成約確率の算出",
+          "automation": {
+            "scoring_model": "advanced_ml",
+            "factors": [
+              "company_size",
+              "budget_fit",
+              "urgency",
+              "decision_maker_access"
+            ]
+          }
+        }
+      ],
+      "exit_criteria": {
+        "all_tasks_completed": true,
+        "opportunity_score": ">= 60"
+      }
+    },
+    {
+      "stage_id": "first_contact",
+      "name": "初回接触",
+      "duration": "7days",
+      "tasks": [
+        {
+          "id": "introduction_email",
+          "name": "自己紹介メール送信",
+          "template": "new_opportunity_introduction",
+          "personalization": {
+            "company_research": true,
+            "relevant_case_studies": true
+          }
+        },
+        {
+          "id": "discovery_call",
+          "name": "ディスカバリーコール",
+          "description": "ニーズヒアリング、課題深掘り",
+          "call_script": {
+            "structure": [
+              "ビジネス課題の確認",
+              "現在のソリューション",
+              "改善要望",
+              "予算とタイムライン",
+              "意思決定プロセス"
+            ]
+          }
+        },
+        {
+          "id": "follow_up_content",
+          "name": "フォローアップコンテンツ送信",
+          "automation": {
+            "content_type": "youtube_playlist",
+            "based_on": "discovery_call_notes"
+          }
+        }
+      ]
+    },
+    {
+      "stage_id": "solution_design",
+      "name": "ソリューション設計",
+      "duration": "10days",
+      "tasks": [
+        {
+          "id": "requirements_analysis",
+          "name": "要件分析",
+          "collaboration": ["プリセールス", "技術チーム"]
+        },
+        {
+          "id": "custom_demo_prep",
+          "name": "カスタムデモ準備",
+          "deliverables": [
+            "デモシナリオ",
+            "カスタムYouTube動画",
+            "ROI計算書"
+          ]
+        },
+        {
+          "id": "proposal_creation",
+          "name": "提案書作成",
+          "components": [
+            "エグゼクティブサマリー",
+            "ソリューション詳細",
+            "導入計画",
+            "価格提案",
+            "成功事例"
+          ]
+        }
+      ]
+    },
+    {
+      "stage_id": "presentation",
+      "name": "提案・プレゼンテーション",
+      "duration": "14days",
+      "tasks": [
+        {
+          "id": "schedule_presentation",
+          "name": "プレゼンテーション日程調整",
+          "requirements": [
+            "全ステークホルダーの参加",
+            "90分枠の確保"
+          ]
+        },
+        {
+          "id": "deliver_presentation",
+          "name": "プレゼンテーション実施",
+          "follow_up_actions": [
+            "質疑応答記録",
+            "追加資料の提供",
+            "フィードバック収集"
+          ]
+        },
+        {
+          "id": "handle_objections",
+          "name": "懸念事項への対応",
+          "resources": [
+            "技術FAQ",
+            "価格調整オプション",
+            "追加デモ"
+          ]
+        }
+      ]
+    },
+    {
+      "stage_id": "negotiation",
+      "name": "交渉・条件調整",
+      "duration": "21days",
+      "tasks": [
+        {
+          "id": "commercial_negotiation",
+          "name": "商務条件交渉",
+          "approval_levels": [
+            {
+              "discount": "<= 10%",
+              "approver": "営業マネージャー"
+            },
+            {
+              "discount": "<= 20%",
+              "approver": "営業部長"
+            },
+            {
+              "discount": "> 20%",
+              "approver": "役員"
+            }
+          ]
+        },
+        {
+          "id": "contract_preparation",
+          "name": "契約書準備",
+          "legal_review": true
+        },
+        {
+          "id": "final_approval",
+          "name": "最終承認取得",
+          "stakeholders": ["購買部", "法務部", "決裁者"]
+        }
+      ]
+    },
+    {
+      "stage_id": "closing",
+      "name": "クロージング",
+      "duration": "7days",
+      "tasks": [
+        {
+          "id": "contract_execution",
+          "name": "契約締結",
+          "checklist": [
+            "契約書署名",
+            "発注書受領",
+            "キックオフ日程確定"
+          ]
+        },
+        {
+          "id": "handover_to_cs",
+          "name": "カスタマーサクセスへの引き継ぎ",
+          "documentation": [
+            "顧客要件書",
+            "約束事項リスト",
+            "導入スケジュール"
+          ]
+        },
+        {
+          "id": "celebrate_win",
+          "name": "成約お祝い",
+          "actions": [
+            "社内共有",
+            "顧客への感謝メッセージ",
+            "事例化の承諾取得"
+          ]
+        }
+      ]
+    }
+  ],
+  "automation_rules": [
+    {
+      "trigger": "stage_change",
+      "action": "notify_stakeholders",
+      "channel": ["email", "slack"]
+    },
+    {
+      "trigger": "task_overdue",
+      "action": "escalate_to_manager",
+      "threshold": "2days"
+    },
+    {
+      "trigger": "stage_stalled",
+      "action": "ai_recommendation",
+      "threshold": "150% of expected_duration"
+    }
+  ],
+  "metrics": {
+    "stage_conversion_rates": true,
+    "average_stage_duration": true,
+    "task_completion_time": true,
+    "win_rate_by_stage": true
+  }
+}

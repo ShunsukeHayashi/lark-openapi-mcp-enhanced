@@ -1,0 +1,190 @@
+{
+  "report_config": {
+    "name": "営業活動日次レポート",
+    "description": "日々の営業活動サマリーと翌日の予定",
+    "schedule": {
+      "frequency": "daily",
+      "time": "18:00",
+      "timezone": "Asia/Tokyo"
+    },
+    "recipients": {
+      "to": ["sales-team@company.com"],
+      "cc": ["sales-manager@company.com"],
+      "individual": true
+    }
+  },
+  "sections": [
+    {
+      "id": "header",
+      "title": "本日の営業活動サマリー",
+      "type": "summary",
+      "content": {
+        "date": "{report_date}",
+        "prepared_for": "{recipient_name}"
+      }
+    },
+    {
+      "id": "activity_summary",
+      "title": "活動実績",
+      "type": "metrics",
+      "metrics": [
+        {
+          "name": "総活動数",
+          "query": "COUNT(activities) WHERE date = TODAY",
+          "format": "number"
+        },
+        {
+          "name": "完了タスク",
+          "query": "COUNT(tasks) WHERE status = 'completed' AND date = TODAY",
+          "format": "number"
+        },
+        {
+          "name": "新規商談",
+          "query": "COUNT(opportunities) WHERE created_date = TODAY",
+          "format": "number"
+        },
+        {
+          "name": "YouTube動画送付",
+          "query": "COUNT(activities) WHERE type = 'youtube_share' AND date = TODAY",
+          "format": "number"
+        }
+      ],
+      "visualization": "metric_cards"
+    },
+    {
+      "id": "activity_breakdown",
+      "title": "活動内訳",
+      "type": "table",
+      "columns": [
+        {
+          "field": "activity_type",
+          "header": "活動タイプ"
+        },
+        {
+          "field": "count",
+          "header": "件数"
+        },
+        {
+          "field": "percentage",
+          "header": "割合"
+        }
+      ],
+      "data_source": "daily_activities_by_type",
+      "sort": {
+        "field": "count",
+        "order": "desc"
+      }
+    },
+    {
+      "id": "completed_tasks",
+      "title": "完了タスク一覧",
+      "type": "list",
+      "filter": {
+        "status": "completed",
+        "date": "TODAY"
+      },
+      "fields": [
+        "task_name",
+        "related_opportunity",
+        "completion_time"
+      ],
+      "limit": 10
+    },
+    {
+      "id": "pending_tasks",
+      "title": "未完了タスク",
+      "type": "list",
+      "filter": {
+        "status": ["pending", "in_progress"],
+        "due_date": "<= TODAY"
+      },
+      "fields": [
+        "task_name",
+        "priority",
+        "due_date",
+        "related_opportunity"
+      ],
+      "highlight": {
+        "condition": "overdue",
+        "style": "red"
+      }
+    },
+    {
+      "id": "tomorrow_schedule",
+      "title": "明日の予定",
+      "type": "timeline",
+      "date": "TOMORROW",
+      "items": [
+        {
+          "type": "meetings",
+          "icon": "calendar",
+          "color": "blue"
+        },
+        {
+          "type": "tasks",
+          "icon": "check",
+          "color": "green"
+        },
+        {
+          "type": "follow_ups",
+          "icon": "phone",
+          "color": "orange"
+        }
+      ]
+    },
+    {
+      "id": "attention_required",
+      "title": "要注意案件",
+      "type": "alert_list",
+      "alerts": [
+        {
+          "type": "stalled_opportunities",
+          "criteria": "no_activity > 7 days",
+          "severity": "high"
+        },
+        {
+          "type": "expiring_quotes",
+          "criteria": "expiry_date <= 3 days",
+          "severity": "medium"
+        },
+        {
+          "type": "low_engagement",
+          "criteria": "youtube_views = 0 after 3 days",
+          "severity": "low"
+        }
+      ]
+    },
+    {
+      "id": "youtube_performance",
+      "title": "YouTube動画効果",
+      "type": "chart",
+      "chart_type": "bar",
+      "data": {
+        "x_axis": "video_title",
+        "y_axis": "engagement_score",
+        "period": "last_7_days"
+      },
+      "top_n": 5
+    },
+    {
+      "id": "daily_reflection",
+      "title": "本日の振り返り",
+      "type": "ai_summary",
+      "prompts": [
+        "本日の主な成果",
+        "改善可能な点",
+        "明日の重点事項"
+      ]
+    }
+  ],
+  "formatting": {
+    "template": "modern_dashboard",
+    "color_scheme": "blue_gradient",
+    "logo": "company_logo.png",
+    "footer": "YouTube CRM 日次レポート - 自動生成"
+  },
+  "export_options": {
+    "formats": ["html", "pdf", "excel"],
+    "include_raw_data": false
+  }
+}

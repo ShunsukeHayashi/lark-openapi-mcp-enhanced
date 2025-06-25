@@ -1,0 +1,333 @@
+{
+  "name": "活動ベーストリガールール",
+  "description": "特定の営業活動に基づく自動フォローアップ設定",
+  "rules": [
+    {
+      "id": "youtube_video_follow_up",
+      "name": "YouTube動画送付後フォロー",
+      "trigger": {
+        "event": "activity_logged",
+        "activity_type": "YouTube動画送付",
+        "conditions": [
+          {
+            "field": "活動タイプ",
+            "operator": "equals",
+            "value": "YouTube動画送付"
+          }
+        ]
+      },
+      "actions": [
+        {
+          "type": "schedule_task",
+          "config": {
+            "delay": "+3days",
+            "task": {
+              "title": "【視聴確認】{顧客名}へのYouTube動画フォロー",
+              "description": "送付した動画について確認してください：\n- 動画タイトル: {動画タイトル}\n- 視聴状況の確認\n- 内容についての感想ヒアリング\n- 追加質問への対応",
+              "assignee": "{担当者}",
+              "priority": "中"
+            }
+          }
+        },
+        {
+          "type": "track_engagement",
+          "config": {
+            "video_id": "{動画ID}",
+            "metrics": ["視聴回数", "視聴時間", "エンゲージメント率"]
+          }
+        },
+        {
+          "type": "prepare_follow_up",
+          "config": {
+            "template": "video_follow_up_call_script",
+            "personalization": {
+              "video_key_points": true,
+              "customer_interests": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "quote_follow_up",
+      "name": "見積提出後フォロー",
+      "trigger": {
+        "event": "activity_logged",
+        "activity_type": "見積送付",
+        "conditions": [
+          {
+            "field": "活動タイプ",
+            "operator": "equals",
+            "value": "見積送付"
+          }
+        ]
+      },
+      "actions": [
+        {
+          "type": "schedule_task",
+          "config": {
+            "delay": "+5days",
+            "task": {
+              "title": "【検討確認】{商談名}の見積フォロー",
+              "description": "見積について確認してください：\n- 見積金額: {見積金額}\n- 予算との整合性\n- 決裁プロセスの確認\n- 競合他社の状況",
+              "assignee": "{担当者}",
+              "priority": "高"
+            }
+          }
+        },
+        {
+          "type": "create_reminder",
+          "config": {
+            "timing": "+10days",
+            "message": "見積の有効期限が近づいています",
+            "action": "extend_or_close"
+          }
+        },
+        {
+          "type": "prepare_negotiation",
+          "config": {
+            "analyze": ["price_sensitivity", "decision_factors"],
+            "suggest": ["discount_options", "payment_terms", "add_on_services"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "demo_feedback_collection",
+      "name": "デモ後フィードバック収集",
+      "trigger": {
+        "event": "activity_completed",
+        "activity_type": "デモ/プレゼンテーション",
+        "conditions": [
+          {
+            "field": "活動タイプ",
+            "operator": "equals",
+            "value": "デモ実施"
+          }
+        ]
+      },
+      "actions": [
+        {
+          "type": "send_survey",
+          "config": {
+            "delay": "+1day",
+            "survey_type": "demo_feedback",
+            "questions": [
+              "デモの内容は期待に沿っていましたか？",
+              "最も印象的だった機能は？",
+              "導入にあたっての懸念事項は？",
+              "次のステップとして何を希望されますか？"
+            ]
+          }
+        },
+        {
+          "type": "create_task",
+          "config": {
+            "timing": "+1day",
+            "task": {
+              "title": "【フィードバック収集】{顧客名}のデモ感想確認",
+              "description": "デモ参加者からフィードバックを収集し、次のアクションを決定してください",
+              "assignee": "{担当者}",
+              "priority": "高"
+            }
+          }
+        },
+        {
+          "type": "analyze_demo_success",
+          "config": {
+            "factors": ["attendee_engagement", "questions_asked", "technical_fit"],
+            "output": "demo_success_score"
+          }
+        }
+      ]
+    },
+    {
+      "id": "contract_renewal_preparation",
+      "name": "契約更新準備開始",
+      "trigger": {
+        "event": "date_approaching",
+        "date_field": "契約終了日",
+        "days_before": 90,
+        "conditions": [
+          {
+            "field": "契約タイプ",
+            "operator": "equals",
+            "value": "年間契約"
+          }
+        ]
+      },
+      "actions": [
+        {
+          "type": "create_renewal_opportunity",
+          "config": {
+            "opportunity_name": "{顧客名} - 契約更新商談",
+            "stage": "更新提案準備",
+            "expected_close_date": "{契約終了日}",
+            "renewal_amount": "{現契約金額}"
+          }
+        },
+        {
+          "type": "analyze_usage",
+          "config": {
+            "period": "last_12_months",
+            "metrics": [
+              "利用頻度",
+              "機能活用度",
+              "ROI達成度",
+              "満足度スコア"
+            ],
+            "output": "usage_report"
+          }
+        },
+        {
+          "type": "create_task_sequence",
+          "config": {
+            "tasks": [
+              {
+                "timing": "immediate",
+                "title": "更新提案書の作成",
+                "description": "使用状況レポートを基に更新提案を作成"
+              },
+              {
+                "timing": "+7days",
+                "title": "更新面談の設定",
+                "description": "キーパーソンとの更新協議日程調整"
+              },
+              {
+                "timing": "+14days",
+                "title": "更新提案の実施",
+                "description": "価値提案と新プランの説明"
+              }
+            ]
+          }
+        },
+        {
+          "type": "prepare_retention_strategy",
+          "config": {
+            "include": [
+              "success_stories",
+              "new_features_preview",
+              "exclusive_youtube_content",
+              "loyalty_discount"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "meeting_minutes_follow_up",
+      "name": "ミーティング議事録フォロー",
+      "trigger": {
+        "event": "activity_completed",
+        "activity_type": "ミーティング",
+        "conditions": [
+          {
+            "field": "議事録作成",
+            "operator": "equals",
+            "value": true
+          }
+        ]
+      },
+      "actions": [
+        {
+          "type": "extract_action_items",
+          "config": {
+            "source": "{議事録}",
+            "ai_analysis": true,
+            "categorize_by": ["owner", "priority", "deadline"]
+          }
+        },
+        {
+          "type": "create_tasks_from_minutes",
+          "config": {
+            "auto_assign": true,
+            "notification": true,
+            "link_to_opportunity": true
+          }
+        },
+        {
+          "type": "send_summary",
+          "config": {
+            "recipients": "{meeting_attendees}",
+            "include": [
+              "key_decisions",
+              "action_items",
+              "next_steps",
+              "shared_resources"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "competitive_situation_response",
+      "name": "競合情報対応",
+      "trigger": {
+        "event": "field_updated",
+        "table": "商談管理",
+        "conditions": [
+          {
+            "field": "競合状況",
+            "operator": "contains",
+            "value": ["競合あり", "比較検討中"]
+          }
+        ]
+      },
+      "actions": [
+        {
+          "type": "create_battle_card",
+          "config": {
+            "competitor": "{競合社名}",
+            "include": [
+              "差別化ポイント",
+              "価格比較",
+              "機能比較表",
+              "導入事例"
+            ]
+          }
+        },
+        {
+          "type": "schedule_strategy_meeting",
+          "config": {
+            "attendees": ["{担当者}", "{セールスマネージャー}", "{プリセールス}"],
+            "agenda": "競合対策協議",
+            "preparation": "battle_card"
+          }
+        },
+        {
+          "type": "create_youtube_comparison",
+          "config": {
+            "type": "comparison_video_playlist",
+            "focus": "competitive_advantages",
+            "personalized": true
+          }
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "activity_types": [
+      "電話",
+      "メール送信",
+      "ミーティング",
+      "デモ実施",
+      "見積送付",
+      "YouTube動画送付",
+      "提案書送付",
+      "契約交渉",
+      "クロージング"
+    ],
+    "follow_up_intervals": {
+      "critical": "1day",
+      "high": "3days",
+      "medium": "7days",
+      "low": "14days"
+    },
+    "ai_features": {
+      "sentiment_analysis": true,
+      "response_prediction": true,
+      "best_time_to_contact": true,
+      "content_personalization": true
+    }
+  }
+}

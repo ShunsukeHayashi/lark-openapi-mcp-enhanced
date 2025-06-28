@@ -10,6 +10,17 @@ This is a TypeScript-based MCP (Model Context Protocol) tool that provides compr
 **Repository**: Official Feishu/Lark OpenAPI MCP implementation  
 **Node.js**: Requires Node.js >=16.20.0
 
+### Key Technologies
+- **TypeScript** ^5.0.0 with strict mode
+- **Node.js** >=16.20.0
+- **Feishu/Lark Node SDK** ^1.47.0 for API integration
+- **MCP SDK** ^1.11.0 for Model Context Protocol
+- **Commander.js** ^13.1.0 for CLI
+- **Axios** ^1.8.4 for HTTP requests
+- **Express** ^5.1.0 for SSE mode server
+- **Jest** ^29.7.0 with ts-jest for testing
+- **Prettier** ^3.5.3 for code formatting
+
 ## Project-Specific Guidelines
 
 ### Code Conventions
@@ -87,6 +98,44 @@ yarn build && node dist/cli.js mcp --mode stdio --rate-limit-requests 100 --rate
 # Disable rate limiting (not recommended for production)
 yarn build && node dist/cli.js mcp --mode stdio --disable-rate-limit
 ```
+
+## Environment Setup
+
+### 1. Create `.env` file for local development:
+```bash
+# Feishu/Lark App Credentials
+APP_ID=your_app_id_here
+APP_SECRET=your_app_secret_here
+
+# Optional: User Access Token (for user-level operations)
+USER_ACCESS_TOKEN=your_user_access_token_here
+
+# Optional: Server Configuration
+PORT=3000
+HOST=localhost
+```
+
+### 2. Configuration file format (`config.json`):
+```json
+{
+  "appId": "your_app_id",
+  "appSecret": "your_app_secret",
+  "userAccessToken": "optional_user_token",
+  "rateLimiting": {
+    "enabled": true,
+    "rateLimits": {
+      "default": { "capacity": 100, "tokensPerInterval": 50, "intervalMs": 60000 }
+    }
+  }
+}
+```
+
+### 3. Obtaining Credentials:
+1. Go to [Feishu Open Platform](https://open.feishu.cn/) or [Lark Developer](https://open.larksuite.com/)
+2. Create or select your app
+3. Find App ID and App Secret in the app credentials section
+4. Configure required permissions (see Required Permissions section)
+5. For user tokens, implement OAuth flow or use temporary tokens for testing
 
 ### Linting and Type Checking
 ```bash
@@ -181,7 +230,7 @@ The Genesis system (`src/genesis/`) is an AI-powered Lark Base application gener
 1. **Core Components**:
    - `GenesisPromptEngine`: Multi-level prompt management with progressive disclosure
    - `StructuredDataExtractor`: Extracts structured data from unstructured input
-   - `LarkBaseBuilder`: Builds complete Lark Base applications with tables, fields, views, and automations
+   - `LarkBaseBuilder`: Builds complete Lark Base applications with tables, fields, and views
 
 2. **Key Features**:
    - Progressive generation with step-by-step user approval
@@ -437,3 +486,53 @@ When using this MCP tool, ensure your Feishu/Lark app has the necessary permissi
 - `bitable:app` - Create and manage Base applications
 - `drive:drive` - File operations
 - `docs:doc` - Document operations
+
+## Common Issues and Solutions
+
+### Authentication Errors
+**Problem**: "Invalid app_id or app_secret" error  
+**Solution**: 
+- Verify credentials are correctly set in environment variables or config file
+- Check for trailing spaces or special characters in credentials
+- Ensure the app is not in a suspended state on Feishu/Lark platform
+
+### Rate Limiting Issues
+**Problem**: "Rate limit exceeded" errors during heavy usage  
+**Solution**:
+- Use the built-in rate limiting feature (enabled by default)
+- Adjust rate limits based on your app's quota: `--rate-limit-requests 30`
+- Implement request batching for bulk operations
+- Monitor rate limit metrics using `client.getRateLimitMetrics()`
+
+### Permission Denied Errors
+**Problem**: API returns 403 or permission-related errors  
+**Solution**:
+- Check Required Permissions section for needed scopes
+- Verify permissions are granted in Feishu/Lark admin console
+- For user-level operations, ensure user token has necessary permissions
+- Some operations require admin approval in the workspace
+
+### Tool Not Found
+**Problem**: Specific tool not available or "Tool not found" error  
+**Solution**:
+- Check if using correct tool name format: `module.v{version}.resource.action`
+- Verify tool is included in selected preset or custom tool list
+- For custom tools, ensure they're properly exported in the module index
+- Use `--tools preset.default` for a balanced set of commonly used tools
+
+### Network Connectivity Issues
+**Problem**: Connection timeouts or network errors  
+**Solution**:
+- Check firewall settings for outbound HTTPS connections
+- Verify proxy settings if behind corporate firewall
+- Use the HTTP instance configuration for custom timeout values
+- Implement retry logic for transient failures
+
+### Genesis System Failures
+**Problem**: Genesis fails to generate Lark Base applications  
+**Solution**:
+- Ensure requirements are clear and well-structured
+- Use templates for complex applications: `-t crm`
+- Enable verbose logging: `-v` flag for debugging
+- Check API quota for Base creation operations
+- Verify Base creation permissions are granted

@@ -124,7 +124,7 @@ export class GeminiClient {
     
     let lastError: Error | null = null;
     
-    for (let attempt = 1; attempt <= this.config.maxRetries; attempt++) {
+    for (let attempt = 0; attempt < this.config.maxRetries; attempt++) {
       try {
         const response = await this.httpClient.post<GeminiResponse>(url, request);
         
@@ -148,14 +148,32 @@ export class GeminiClient {
       } catch (error: any) {
         lastError = error;
         
-        if (attempt < this.config.maxRetries) {
-          const delay = Math.pow(2, attempt) * 1000; // 指数バックオフ
+        // Handle authentication errors - don't retry
+        if (error.response?.status === 401) {
+          throw new Error(`Authentication failed: ${error.response?.data?.error?.message || 'Invalid API key'}`);
+        }
+        
+        // Handle API logic errors - don't retry
+        if (error.message && (
+          error.message.includes('No candidates returned') ||
+          error.message.includes('Generation failed with reason') ||
+          error.message.includes('No text content in response')
+        )) {
+          throw error;
+        }
+        
+        // Handle rate limit errors with backoff
+        if (error.response?.status === 429 && attempt < this.config.maxRetries - 1) {
+          const delay = Math.pow(2, attempt + 1) * 1000; // 指数バックオフ
+          await new Promise(resolve => setTimeout(resolve, delay));
+        } else if (attempt < this.config.maxRetries - 1) {
+          const delay = Math.pow(2, attempt + 1) * 1000; // 指数バックオフ
           await new Promise(resolve => setTimeout(resolve, delay));
         }
       }
     }
 
-    throw new Error(`Gemini API request failed after ${this.config.maxRetries} attempts: ${lastError?.message}`);
+    throw new Error(`Failed after ${this.config.maxRetries} attempts: ${lastError?.message}`);
   }
 
   /**

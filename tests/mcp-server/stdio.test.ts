@@ -1,123 +1,125 @@
-import { initStdioServer } from '../../src/mcp-server/stdio';
-import { initMcpServer } from '../../src/mcp-server/shared/init';
-import { McpServerOptions } from '../../src/mcp-server/shared/types';
+/**
+ * Tests for STDIO MCP Server
+ * Testing standard input/output server transport
+ */
 
-// 创建可追踪的模拟函数
-const connectMock = jest.fn().mockResolvedValue(undefined);
-const connectErrorMock = jest.fn().mockRejectedValue(new Error('Connection error'));
+import { initStdioServer } from '@/mcp-server/stdio';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-// 模拟依赖
-jest.mock('../../src/mcp-server/shared/init', () => {
-  return {
-    initMcpServer: jest.fn().mockImplementation(() => ({
-      mcpServer: {
-        connect: connectMock,
-      },
-      larkClient: {},
-    })),
-  };
-});
+// Mock the MCP SDK modules
+jest.mock('@modelcontextprotocol/sdk/server/stdio.js');
+jest.mock('@modelcontextprotocol/sdk/server/mcp.js');
 
-// 模拟 McpServer
-jest.mock('@modelcontextprotocol/sdk/server/mcp.js', () => ({
-  McpServer: jest.fn().mockImplementation(() => ({
-    connect: connectMock,
-    server: {},
-    _registeredResources: {},
-    _registeredResourceTemplates: {},
-    _registeredTools: {},
-  })),
-}));
-
-jest.mock('@modelcontextprotocol/sdk/server/stdio', () => ({
-  StdioServerTransport: jest.fn().mockImplementation(() => ({
-    connect: jest.fn(),
-  })),
-}));
-
-// 保存原始console
-const originalConsole = console;
-
-// 创建用于stdin的模拟函数
-const setEncodingMock = jest.fn().mockReturnValue(process.stdin);
-const resumeMock = jest.fn().mockReturnValue(process.stdin);
-const onMock = jest.fn().mockReturnValue(process.stdin);
+// Mock console and process
+const mockConsoleError = jest.spyOn(console, 'error').mockImplementation();
+const mockProcessExit = jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
 
 describe('initStdioServer', () => {
+  let mockServer: jest.Mocked<McpServer>;
+  let mockTransport: jest.Mocked<StdioServerTransport>;
+
   beforeEach(() => {
-    // 重置所有模拟
     jest.clearAllMocks();
-
-    // 模拟console方法
-    console.log = jest.fn();
-    console.error = jest.fn();
-
-    // 模拟process方法，但不直接替换对象
-    jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
-    jest.spyOn(process.stdin, 'setEncoding').mockImplementation(setEncodingMock);
-    jest.spyOn(process.stdin, 'resume').mockImplementation(resumeMock);
-    jest.spyOn(process.stdin, 'on').mockImplementation(onMock);
-    jest.spyOn(process.stderr, 'write').mockImplementation(() => true);
-    jest.spyOn(process, 'exit').mockImplementation((code?: string | number | null) => {
-      return undefined as never;
-    });
+    
+    // Create mock transport
+    mockTransport = {
+      // Add any required transport methods here
+    } as any;
+    
+    // Mock the transport constructor
+    (StdioServerTransport as jest.Mock).mockImplementation(() => mockTransport);
+    
+    // Create mock server
+    mockServer = {
+      connect: jest.fn()
+    } as any;
   });
 
   afterEach(() => {
-    // 恢复原始console
-    console = originalConsole;
-
-    // 清除所有模拟
-    jest.restoreAllMocks();
+    jest.clearAllMocks();
   });
 
-  it('应该初始化MCP服务器并连接', () => {
-    const options: McpServerOptions = {
-      appId: 'test-app-id',
-      appSecret: 'test-app-secret',
-      host: 'localhost',
-      port: 3000,
-    };
+  test('should create stdio transport and connect to server', async () => {
+    // Setup successful connection
+    mockServer.connect.mockResolvedValue(undefined);
 
-    // 首先初始化MCP服务器
-    const { mcpServer } = initMcpServer(options);
+    // Call the function
+    initStdioServer(mockServer);
 
-    // 然后使用mcpServer调用initStdioServer
-    initStdioServer(mcpServer);
+    // Verify transport was created
+    expect(StdioServerTransport).toHaveBeenCalledTimes(1);
+    expect(StdioServerTransport).toHaveBeenCalledWith();
 
-    // 验证调用
-    expect(initMcpServer).toHaveBeenCalledWith(options);
-    expect(connectMock).toHaveBeenCalled();
+    // Verify server.connect was called with transport
+    expect(mockServer.connect).toHaveBeenCalledTimes(1);
+    expect(mockServer.connect).toHaveBeenCalledWith(mockTransport);
   });
 
-  it('应该处理连接错误', () => {
-    const options: McpServerOptions = {
-      appId: 'test-app-id',
-      appSecret: 'test-app-secret',
-      host: 'localhost',
-      port: 3000,
-    };
+  test('should handle connection error and exit process', async () => {
+    // Setup connection error
+    const connectionError = new Error('Connection failed');
+    mockServer.connect.mockRejectedValue(connectionError);
 
-    // 修改connect的实现以模拟错误
-    (initMcpServer as jest.Mock).mockImplementationOnce(() => ({
-      mcpServer: {
-        connect: connectErrorMock,
-      },
-      larkClient: {},
-    }));
+    // Call the function
+    initStdioServer(mockServer);
 
-    // 首先初始化MCP服务器
-    const { mcpServer } = initMcpServer(options);
+    // Wait for async operations
+    await new Promise(resolve => setImmediate(resolve));
 
-    // 然后使用mcpServer调用initStdioServer
-    initStdioServer(mcpServer);
+    // Verify error was logged
+    expect(mockConsoleError).toHaveBeenCalledWith('MCP Connect Error:', connectionError);
+    
+    // Verify process.exit was called
+    expect(mockProcessExit).toHaveBeenCalledWith(1);
+  });
 
-    // 假设错误处理是异步的，我们需要等待Promise rejecting
-    return new Promise<void>(process.nextTick).then(() => {
-      // 验证错误处理
-      expect(connectErrorMock).toHaveBeenCalled();
-      expect(console.error).toHaveBeenCalledWith('MCP Connect Error:', expect.any(Error));
-      expect(process.exit).toHaveBeenCalledWith(1);
+  test('should use the provided McpServer instance', () => {
+    mockServer.connect.mockResolvedValue(undefined);
+
+    // Create different server instances
+    const server1 = { connect: jest.fn().mockResolvedValue(undefined) } as any;
+    const server2 = { connect: jest.fn().mockResolvedValue(undefined) } as any;
+
+    initStdioServer(server1);
+    initStdioServer(server2);
+
+    // Verify each server's connect was called
+    expect(server1.connect).toHaveBeenCalledTimes(1);
+    expect(server2.connect).toHaveBeenCalledTimes(1);
+  });
+
+  test('should handle async nature of connection', async () => {
+    // Create a promise we can control
+    let resolveConnect: () => void;
+    const connectPromise = new Promise<void>(resolve => {
+      resolveConnect = resolve;
     });
+    
+    mockServer.connect.mockReturnValue(connectPromise);
+
+    // Call the function
+    initStdioServer(mockServer);
+
+    // Verify connect was called immediately
+    expect(mockServer.connect).toHaveBeenCalledTimes(1);
+
+    // Process should not exit yet
+    expect(mockProcessExit).not.toHaveBeenCalled();
+
+    // Resolve the connection
+    resolveConnect!();
+    await connectPromise;
+
+    // Process should still not exit (successful connection)
+    expect(mockProcessExit).not.toHaveBeenCalled();
+  });
+
+  test('should not throw synchronously on connection error', () => {
+    // Setup connection error
+    mockServer.connect.mockRejectedValue(new Error('Async error'));
+
+    // Call should not throw
+    expect(() => initStdioServer(mockServer)).not.toThrow();
   });
 });

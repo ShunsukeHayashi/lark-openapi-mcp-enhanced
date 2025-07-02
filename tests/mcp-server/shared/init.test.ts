@@ -1,197 +1,395 @@
-import { initMcpServer } from '../../../src/mcp-server/shared/init';
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+/**
+ * Tests for MCP Server Initialization
+ * Testing server setup, configuration, and tool registration
+ */
 
-// 模拟依赖项
-jest.mock('@modelcontextprotocol/sdk/server/mcp.js', () => ({
-  McpServer: jest.fn().mockImplementation(() => ({
-    connect: jest.fn().mockResolvedValue(undefined),
-  })),
+import { initMcpServer } from '@/mcp-server/shared/init';
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import * as larkmcp from '@/mcp-tool';
+import { currentVersion } from '@/utils/version';
+
+// Mock dependencies
+jest.mock('@modelcontextprotocol/sdk/server/mcp.js');
+jest.mock('@/mcp-tool');
+jest.mock('@/utils/noop', () => ({
+  noop: jest.fn()
+}));
+jest.mock('@/utils/version', () => ({
+  currentVersion: '1.0.0-test'
+}));
+jest.mock('@/utils/http-instance', () => ({
+  oapiHttpInstance: 'mock-http-instance'
 }));
 
-// 模拟mcp-tool模块
-jest.mock('../../../src/mcp-tool', () => {
-  return {
-    LarkMcpTool: jest.fn().mockImplementation(() => ({
-      updateUserAccessToken: jest.fn(),
-      registerMcpServer: jest.fn(),
-    })),
-    defaultToolNames: ['default-tool-1', 'default-tool-2'],
-    presetTools: {
-      'preset.default': ['default-tool-1', 'default-tool-2'],
-    },
-  };
-});
-
-// 保存原始的环境变量和console.error
-const originalEnv = process.env;
-const originalConsoleError = console.error;
-const originalProcessExit = process.exit;
+// Mock console and process
+const mockConsoleError = jest.spyOn(console, 'error').mockImplementation();
+const mockProcessExit = jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
 
 describe('initMcpServer', () => {
+  let mockLarkClient: jest.Mocked<larkmcp.LarkMcpTool>;
+  let mockMcpServer: jest.Mocked<McpServer>;
+
   beforeEach(() => {
-    // 重置模拟
     jest.clearAllMocks();
-
-    // 模拟环境变量
-    process.env = { ...originalEnv };
-
-    // 模拟 console.error
-    console.error = jest.fn();
-
-    // 模拟 process.exit
-    process.exit = jest.fn() as any;
-  });
-
-  afterEach(() => {
-    // 恢复原始环境变量和函数
-    process.env = originalEnv;
-    console.error = originalConsoleError;
-    process.exit = originalProcessExit;
-  });
-
-  it('应该使用提供的凭证初始化服务器', () => {
-    const options = {
-      appId: 'test-app-id',
-      appSecret: 'test-app-secret',
-      host: 'localhost',
-      port: 3000,
+    
+    // Mock McpServer constructor
+    mockMcpServer = {} as any;
+    (McpServer as jest.Mock).mockImplementation(() => mockMcpServer);
+    
+    // Mock LarkMcpTool
+    mockLarkClient = {
+      updateUserAccessToken: jest.fn(),
+      registerMcpServer: jest.fn()
+    } as any;
+    (larkmcp.LarkMcpTool as jest.Mock).mockImplementation(() => mockLarkClient);
+    
+    // Mock preset tools
+    (larkmcp as any).presetTools = {
+      'preset.default': ['tool1', 'tool2'],
+      'preset.light': ['tool1'],
+      'preset.base': ['base.tool1', 'base.tool2']
     };
-
-    const { mcpServer, larkClient } = initMcpServer(options);
-
-    expect(McpServer).toHaveBeenCalled();
-    // 从mcp-tool模块导入LarkMcpTool
-    const { LarkMcpTool } = require('../../../src/mcp-tool');
-    expect(LarkMcpTool).toHaveBeenCalledWith(
-      expect.objectContaining({
-        appId: 'test-app-id',
-        appSecret: 'test-app-secret',
-      }),
-    );
   });
 
-  it('应该使用环境变量中的凭证', () => {
-    process.env.APP_ID = 'env-app-id';
-    process.env.APP_SECRET = 'env-app-secret';
+  describe('Credential validation', () => {
+    test('should exit if appId is missing', () => {
+      const options = {
+        appId: '',
+        appSecret: 'secret'
+      };
 
-    // initMcpServer expects credentials to be passed in options
-    // Environment variables are handled by the CLI layer
-    const options = {
-      appId: process.env.APP_ID,
-      appSecret: process.env.APP_SECRET,
-      host: 'localhost',
-      port: 3000,
-    };
+      initMcpServer(options as any);
+      
+      expect(mockConsoleError).toHaveBeenCalledWith(
+        'Error: Missing App Credentials, please provide APP_ID and APP_SECRET or specify them via command line arguments'
+      );
+      expect(mockProcessExit).toHaveBeenCalledWith(1);
+    });
 
-    const { mcpServer, larkClient } = initMcpServer(options);
+    test('should exit if appSecret is missing', () => {
+      const options = {
+        appId: 'app-id',
+        appSecret: ''
+      };
 
-    // 从mcp-tool模块导入LarkMcpTool
-    const { LarkMcpTool } = require('../../../src/mcp-tool');
-    expect(LarkMcpTool).toHaveBeenCalledWith(
-      expect.objectContaining({
-        appId: 'env-app-id',
-        appSecret: 'env-app-secret',
-      }),
-    );
+      initMcpServer(options as any);
+      
+      expect(mockConsoleError).toHaveBeenCalledWith(
+        'Error: Missing App Credentials, please provide APP_ID and APP_SECRET or specify them via command line arguments'
+      );
+      expect(mockProcessExit).toHaveBeenCalledWith(1);
+    });
+
+    test('should proceed with valid credentials', () => {
+      const options = {
+        appId: 'app-id',
+        appSecret: 'app-secret'
+      };
+
+      const result = initMcpServer(options as any);
+
+      expect(mockProcessExit).not.toHaveBeenCalled();
+      expect(result).toHaveProperty('mcpServer');
+      expect(result).toHaveProperty('larkClient');
+    });
   });
 
-  it('如果提供了userAccessToken，应该调用updateUserAccessToken', () => {
-    const options = {
-      appId: 'test-app-id',
-      appSecret: 'test-app-secret',
-      userAccessToken: 'test-user-access-token',
-      host: 'localhost',
-      port: 3000,
-    };
+  describe('MCP Server creation', () => {
+    test('should create MCP server with correct configuration', () => {
+      const options = {
+        appId: 'app-id',
+        appSecret: 'app-secret'
+      };
 
-    const { larkClient } = initMcpServer(options);
+      initMcpServer(options as any);
 
-    expect(larkClient.updateUserAccessToken).toHaveBeenCalledWith('test-user-access-token');
+      expect(McpServer).toHaveBeenCalledWith({
+        id: 'lark-mcp-server',
+        name: 'Feishu/Lark MCP Server',
+        version: '1.0.0-test'
+      });
+    });
   });
 
-  it('应该处理数组形式的tools参数', () => {
-    const options = {
-      appId: 'test-app-id',
-      appSecret: 'test-app-secret',
-      tools: ['tool1', 'tool2'],
-      host: 'localhost',
-      port: 3000,
-    };
+  describe('Tool configuration', () => {
+    test('should handle empty tools array', () => {
+      const options = {
+        appId: 'app-id',
+        appSecret: 'app-secret',
+        tools: []
+      };
 
-    const { larkClient } = initMcpServer(options);
+      initMcpServer(options as any);
 
-    // 从mcp-tool模块导入LarkMcpTool
-    const { LarkMcpTool } = require('../../../src/mcp-tool');
-    expect(LarkMcpTool).toHaveBeenCalledWith(
-      expect.objectContaining({
-        toolsOptions: expect.objectContaining({
-          allowTools: ['tool1', 'tool2'],
-        }),
-      }),
-    );
+      expect(larkmcp.LarkMcpTool).toHaveBeenCalledWith(
+        expect.objectContaining({
+          toolsOptions: { language: undefined }
+        })
+      );
+    });
+
+    test('should handle tools as string', () => {
+      const options = {
+        appId: 'app-id',
+        appSecret: 'app-secret',
+        tools: 'tool1,tool2,tool3'
+      };
+
+      initMcpServer(options as any);
+
+      expect(larkmcp.LarkMcpTool).toHaveBeenCalledWith(
+        expect.objectContaining({
+          toolsOptions: { 
+            allowTools: ['tool1', 'tool2', 'tool3'], 
+            language: undefined 
+          }
+        })
+      );
+    });
+
+    test('should expand preset tools', () => {
+      const options = {
+        appId: 'app-id',
+        appSecret: 'app-secret',
+        tools: ['preset.default', 'custom-tool']
+      };
+
+      initMcpServer(options as any);
+
+      expect(larkmcp.LarkMcpTool).toHaveBeenCalledWith(
+        expect.objectContaining({
+          toolsOptions: { 
+            allowTools: ['tool1', 'tool2', 'preset.default', 'custom-tool'], 
+            language: undefined 
+          }
+        })
+      );
+    });
+
+    test('should deduplicate tools', () => {
+      const options = {
+        appId: 'app-id',
+        appSecret: 'app-secret',
+        tools: ['tool1', 'tool1', 'preset.light', 'tool2']
+      };
+
+      initMcpServer(options as any);
+
+      expect(larkmcp.LarkMcpTool).toHaveBeenCalledWith(
+        expect.objectContaining({
+          toolsOptions: { 
+            allowTools: ['tool1', 'preset.light', 'tool2'], 
+            language: undefined 
+          }
+        })
+      );
+    });
+
+    test('should use language option', () => {
+      const options = {
+        appId: 'app-id',
+        appSecret: 'app-secret',
+        language: 'zh'
+      };
+
+      initMcpServer(options as any);
+
+      expect(larkmcp.LarkMcpTool).toHaveBeenCalledWith(
+        expect.objectContaining({
+          toolsOptions: { language: 'zh' }
+        })
+      );
+    });
   });
 
-  it('应该处理字符串形式的tools参数', () => {
-    const options = {
-      appId: 'test-app-id',
-      appSecret: 'test-app-secret',
-      tools: 'tool1,tool2',
-      host: 'localhost',
-      port: 3000,
-    };
+  describe('Rate limiting configuration', () => {
+    test('should enable rate limiting by default', () => {
+      const options = {
+        appId: 'app-id',
+        appSecret: 'app-secret'
+      };
 
-    const { larkClient } = initMcpServer(options);
+      initMcpServer(options as any);
 
-    // 从mcp-tool模块导入LarkMcpTool
-    const { LarkMcpTool } = require('../../../src/mcp-tool');
-    expect(LarkMcpTool).toHaveBeenCalledWith(
-      expect.objectContaining({
-        toolsOptions: expect.objectContaining({
-          allowTools: ['tool1', 'tool2'],
-        }),
-      }),
-    );
+      expect(larkmcp.LarkMcpTool).toHaveBeenCalledWith(
+        expect.objectContaining({
+          rateLimiting: expect.objectContaining({
+            enabled: true
+          })
+        })
+      );
+    });
+
+    test('should disable rate limiting when specified', () => {
+      const options = {
+        appId: 'app-id',
+        appSecret: 'app-secret',
+        disableRateLimit: true
+      };
+
+      initMcpServer(options as any);
+
+      expect(larkmcp.LarkMcpTool).toHaveBeenCalledWith(
+        expect.objectContaining({
+          rateLimiting: expect.objectContaining({
+            enabled: false
+          })
+        })
+      );
+    });
+
+    test('should configure custom rate limits', () => {
+      const options = {
+        appId: 'app-id',
+        appSecret: 'app-secret',
+        rateLimitRequests: '100',
+        rateLimitWrites: '20'
+      };
+
+      initMcpServer(options as any);
+
+      expect(larkmcp.LarkMcpTool).toHaveBeenCalledWith(
+        expect.objectContaining({
+          rateLimiting: expect.objectContaining({
+            rateLimits: {
+              default: {
+                capacity: 200,
+                tokensPerInterval: 100,
+                intervalMs: 60000,
+                maxWaitTimeMs: 5000
+              },
+              read: {
+                capacity: 200,
+                tokensPerInterval: 100,
+                intervalMs: 60000,
+                maxWaitTimeMs: 2000
+              },
+              write: {
+                capacity: 40,
+                tokensPerInterval: 20,
+                intervalMs: 60000,
+                maxWaitTimeMs: 10000
+              },
+              admin: {
+                capacity: 4,
+                tokensPerInterval: 2,
+                intervalMs: 60000,
+                maxWaitTimeMs: 30000
+              }
+            }
+          })
+        })
+      );
+    });
   });
 
-  it('如果凭证缺失，应该退出程序', () => {
-    const options = {
-      host: 'localhost',
-      port: 3000,
-    };
+  describe('Lark client configuration', () => {
+    test('should pass all configuration to LarkMcpTool', () => {
+      const options = {
+        appId: 'app-id',
+        appSecret: 'app-secret',
+        domain: 'https://custom.domain.com',
+        tokenMode: 'user' as const
+      };
 
-    // 清除环境变量
-    delete process.env.APP_ID;
-    delete process.env.APP_SECRET;
+      initMcpServer(options as any);
 
-    initMcpServer(options);
+      expect(larkmcp.LarkMcpTool).toHaveBeenCalledWith(
+        expect.objectContaining({
+          appId: 'app-id',
+          appSecret: 'app-secret',
+          httpInstance: 'mock-http-instance',
+          domain: 'https://custom.domain.com',
+          tokenMode: 'user'
+        })
+      );
+    });
 
-    expect(console.error).toHaveBeenCalled();
-    expect(process.exit).toHaveBeenCalledWith(1);
+    test('should update user access token if provided', () => {
+      const options = {
+        appId: 'app-id',
+        appSecret: 'app-secret',
+        userAccessToken: 'user-token-123'
+      };
+
+      initMcpServer(options as any);
+
+      expect(mockLarkClient.updateUserAccessToken).toHaveBeenCalledWith('user-token-123');
+    });
+
+    test('should not update user access token if not provided', () => {
+      const options = {
+        appId: 'app-id',
+        appSecret: 'app-secret'
+      };
+
+      initMcpServer(options as any);
+
+      expect(mockLarkClient.updateUserAccessToken).not.toHaveBeenCalled();
+    });
+
+    test('should register MCP server with Lark client', () => {
+      const options = {
+        appId: 'app-id',
+        appSecret: 'app-secret',
+        toolNameCase: 'camelCase'
+      };
+
+      initMcpServer(options as any);
+
+      expect(mockLarkClient.registerMcpServer).toHaveBeenCalledWith(
+        mockMcpServer,
+        { toolNameCase: 'camelCase' }
+      );
+    });
   });
 
-  it('应该处理preset.default工具集', () => {
-    const options = {
-      appId: 'test-app-id',
-      appSecret: 'test-app-secret',
-      tools: ['preset.default', 'extra-tool'],
-      host: 'localhost',
-      port: 3000,
-    };
+  describe('Return values', () => {
+    test('should return both mcpServer and larkClient', () => {
+      const options = {
+        appId: 'app-id',
+        appSecret: 'app-secret'
+      };
 
-    // 从模块导入默认工具列表
-    const { defaultToolNames } = require('../../../src/mcp-tool');
+      const result = initMcpServer(options as any);
 
-    const { larkClient } = initMcpServer(options);
+      expect(result).toEqual({
+        mcpServer: mockMcpServer,
+        larkClient: mockLarkClient
+      });
+    });
+  });
 
-    // 从mcp-tool模块导入LarkMcpTool
-    const { LarkMcpTool } = require('../../../src/mcp-tool');
-    // 检查是否合并了默认工具和额外的工具
-    expect(LarkMcpTool).toHaveBeenCalledWith(
-      expect.objectContaining({
-        toolsOptions: expect.objectContaining({
-          allowTools: expect.arrayContaining([...defaultToolNames, 'preset.default', 'extra-tool']),
-        }),
-      }),
-    );
+  describe('Edge cases', () => {
+    test('should handle undefined tools option', () => {
+      const options = {
+        appId: 'app-id',
+        appSecret: 'app-secret',
+        tools: undefined
+      };
+
+      initMcpServer(options as any);
+
+      expect(larkmcp.LarkMcpTool).toHaveBeenCalledWith(
+        expect.objectContaining({
+          toolsOptions: { language: undefined }
+        })
+      );
+    });
+
+    test('should handle low write rate limits', () => {
+      const options = {
+        appId: 'app-id',
+        appSecret: 'app-secret',
+        rateLimitRequests: '10',
+        rateLimitWrites: '1'
+      };
+
+      initMcpServer(options as any);
+
+      const call = (larkmcp.LarkMcpTool as jest.Mock).mock.calls[0][0];
+      expect(call.rateLimiting.rateLimits.admin.capacity).toBe(2); // Math.max(2, ...)
+      expect(call.rateLimiting.rateLimits.admin.tokensPerInterval).toBe(1); // Math.max(1, ...)
+    });
   });
 });

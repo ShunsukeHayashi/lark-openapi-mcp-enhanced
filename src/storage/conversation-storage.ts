@@ -74,17 +74,37 @@ export abstract class ConversationStorage {
   protected encrypt(data: string): string {
     if (!this.encryptionKey) return data;
     
-    const cipher = crypto.createCipher('aes-256-cbc', this.encryptionKey);
+    // Generate a random IV for each encryption
+    const iv = crypto.randomBytes(16);
+    
+    // Ensure the key is exactly 32 bytes for AES-256
+    const key = crypto.createHash('sha256').update(this.encryptionKey).digest();
+    
+    const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
     let encrypted = cipher.update(data, 'utf8', 'hex');
     encrypted += cipher.final('hex');
-    return encrypted;
+    
+    // Prepend IV to the encrypted data for use in decryption
+    return iv.toString('hex') + ':' + encrypted;
   }
 
   protected decrypt(encryptedData: string): string {
     if (!this.encryptionKey) return encryptedData;
     
-    const decipher = crypto.createDecipher('aes-256-cbc', this.encryptionKey);
-    let decrypted = decipher.update(encryptedData, 'hex', 'utf8');
+    // Extract IV from the encrypted data
+    const parts = encryptedData.split(':');
+    if (parts.length !== 2) {
+      throw new Error('Invalid encrypted data format');
+    }
+    
+    const iv = Buffer.from(parts[0], 'hex');
+    const encrypted = parts[1];
+    
+    // Ensure the key is exactly 32 bytes for AES-256
+    const key = crypto.createHash('sha256').update(this.encryptionKey).digest();
+    
+    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+    let decrypted = decipher.update(encrypted, 'hex', 'utf8');
     decrypted += decipher.final('utf8');
     return decrypted;
   }

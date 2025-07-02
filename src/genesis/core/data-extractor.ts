@@ -51,6 +51,11 @@ export class StructuredDataExtractor {
     let confidence = 0;
 
     try {
+      // Null/undefined check
+      if (!markdownText) {
+        throw new Error('Input text is required');
+      }
+      
       // 1. JSONコードブロックの抽出を試行
       const jsonResult = this.extractFromCodeBlocks(markdownText);
       if (jsonResult.success) {
@@ -123,7 +128,7 @@ export class StructuredDataExtractor {
         errors,
         warnings,
         metadata: {
-          sourceLength: markdownText.length,
+          sourceLength: markdownText ? markdownText.length : 0,
           extractedFields: 0,
           confidence: 0
         }

@@ -39,14 +39,19 @@ jest.mock('sqlite3', () => ({
   })
 }), { virtual: true });
 
-// Mock crypto for deprecated createCipher
+// Mock crypto for createCipheriv/createDecipheriv
 jest.mock('crypto', () => ({
   ...jest.requireActual('crypto'),
-  createCipher: jest.fn((algorithm, key) => ({
+  randomBytes: jest.fn((size) => Buffer.from('a'.repeat(size))),
+  createHash: jest.fn(() => ({
+    update: jest.fn().mockReturnThis(),
+    digest: jest.fn(() => Buffer.from('hashed_key_32_bytes_long________'))
+  })),
+  createCipheriv: jest.fn((algorithm, key, iv) => ({
     update: jest.fn((data) => 'encrypted_' + data),
     final: jest.fn(() => '_final')
   })),
-  createDecipher: jest.fn((algorithm, key) => ({
+  createDecipheriv: jest.fn((algorithm, key, iv) => ({
     update: jest.fn((data) => data.replace('encrypted_', '').replace('_final', '')),
     final: jest.fn(() => '')
   }))

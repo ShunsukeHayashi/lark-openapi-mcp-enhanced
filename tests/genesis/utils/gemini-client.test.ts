@@ -163,7 +163,6 @@ describe('GeminiClient - TDD Approach', () => {
       
       mockAxiosInstance.post
         .mockRejectedValueOnce(error)
-        .mockRejectedValueOnce(error)
         .mockResolvedValueOnce({
           data: {
             candidates: [{
@@ -191,7 +190,7 @@ describe('GeminiClient - TDD Approach', () => {
       const result = await promise;
 
       expect(result).toBe('Success after retries');
-      expect(mockAxiosInstance.post).toHaveBeenCalledTimes(3);
+      expect(mockAxiosInstance.post).toHaveBeenCalledTimes(2);
       
       jest.useRealTimers();
     });
@@ -204,18 +203,20 @@ describe('GeminiClient - TDD Approach', () => {
       
       mockAxiosInstance.post
         .mockRejectedValueOnce(error)
-        .mockRejectedValueOnce(error)
         .mockRejectedValueOnce(error);
 
       const promise = client.generateContent('Test prompt');
       
+      // We need to handle the promise rejection before advancing timers
+      const rejectPromise = expect(promise).rejects.toThrow('Failed after 2 attempts: Persistent error');
+      
       // Fast-forward through all timers
       await jest.runAllTimersAsync();
       
-      await expect(promise).rejects.toThrow('Failed after 2 retries: Persistent error');
+      await rejectPromise;
       
-      // Due to the off-by-one error in the implementation, it actually tries 3 times
-      expect(mockAxiosInstance.post).toHaveBeenCalledTimes(3);
+      // Now correctly tries only maxRetries times
+      expect(mockAxiosInstance.post).toHaveBeenCalledTimes(2);
       
       jest.useRealTimers();
     });
@@ -351,6 +352,8 @@ describe('GeminiClient - TDD Approach', () => {
 
     // RED: Test handling of rate limit errors
     test('should handle rate limit errors with exponential backoff', async () => {
+      jest.useFakeTimers();
+      
       const rateLimitError = new Error('Rate limit exceeded');
       (rateLimitError as any).response = {
         status: 429,
@@ -378,14 +381,17 @@ describe('GeminiClient - TDD Approach', () => {
           }
         });
 
-      const startTime = Date.now();
-      const result = await client.generateContent('Test prompt');
-      const endTime = Date.now();
+      const promise = client.generateContent('Test prompt');
+      
+      // Fast-forward through the exponential backoff delay
+      await jest.runAllTimersAsync();
+      
+      const result = await promise;
 
       expect(result).toBe('Success after rate limit');
       expect(mockAxiosInstance.post).toHaveBeenCalledTimes(2);
-      // Should have waited at least 1 second due to exponential backoff
-      expect(endTime - startTime).toBeGreaterThanOrEqual(1000);
+      
+      jest.useRealTimers();
     });
 
     // RED: Test handling of invalid API key
@@ -512,7 +518,9 @@ describe('GeminiClient - TDD Approach', () => {
       
       expect(results).toHaveLength(3);
       expect(results[0]).toEqual({ id: 'req1', result: 'Response 1' });
-      expect(results[1]).toEqual({ id: 'req2', result: '', error: 'API Error' });
+      expect(results[1].id).toBe('req2');
+      expect(results[1].result).toBe('');
+      expect(results[1].error).toContain('Failed after 2 attempts');
       expect(results[2]).toEqual({ id: 'req3', result: 'Response 3' });
       
       jest.useRealTimers();

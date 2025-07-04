@@ -15,13 +15,18 @@ This is the Feishu/Lark official OpenAPI MCP (Model Context Protocol) tool desig
 ## Features
 
 - **Complete Feishu/Lark API Toolkit:** Encapsulates almost all Feishu/Lark API interfaces, including message management, group management, document operations, calendar events, Bitable, and other core functional areas.
+- **Genesis AI System:** Create complete Lark Base applications from natural language requirements with AI-powered generation
+  - Analyze requirements and suggest optimal data structures
+  - Generate tables, fields, views, and automation rules
+  - Create ER diagrams and documentation
+  - Optimize existing bases with AI recommendations
 - **Dual Authentication Support:**
   - Supports App Access Token authentication
   - Supports User Access Token authentication
 - **Flexible Communication Protocols:**
   - Supports standard input/output stream (stdio) mode, suitable for integration with AI tools like Trae/Cursor/Claude
   - Supports Server-Sent Events (SSE) mode, providing HTTP-based interfaces
-
+- **Smart Prompts:** MCP prompts for common Genesis workflows
 - Supports multiple configuration methods, adapting to different usage scenarios
 
 ## Tool List
@@ -153,41 +158,90 @@ lark-mcp mcp -a <your_app_id> -s <your_app_secret> -t im.v1.message.create,im.v1
 
 The following table details each API tool and its inclusion in different preset collections, helping you choose the appropriate preset for your needs:
 
-| Tool Name | Function Description | preset.light | preset.default (Default) | preset.im.default | preset.base.default | preset.base.batch | preset.doc.default | preset.task.default | preset.calendar.default |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| im.v1.chat.create | Create a group chat | | ✓ | ✓ | | | | | |
-| im.v1.chat.list | Get group chat list | | ✓ | ✓ | | | | | |
-| im.v1.chat.search | Search group chats | ✓ | | | | | | | |
-| im.v1.chatMembers.get | Get group members | | ✓ | ✓ | | | | | |
-| im.v1.message.create | Send messages | ✓ | ✓ | ✓ | | | | | |
-| im.v1.message.list | Get message list | ✓ | ✓ | ✓ | | | | | |
-| bitable.v1.app.create | Create base | | ✓ | | ✓ | ✓ | | | |
-| bitable.v1.appTable.create | Create base data table | | ✓ | | ✓ | ✓ | | | |
-| bitable.v1.appTable.list | Get base data table list | | ✓ | | ✓ | ✓ | | | |
-| bitable.v1.appTableField.list | Get base data table field list | | ✓ | | ✓ | ✓ | | | |
-| bitable.v1.appTableRecord.search | Search base data table records | ✓ | ✓ | | ✓ | ✓ | | | |
-| bitable.v1.appTableRecord.create | Create base data table records | | ✓ | | ✓ | | | | |
-| bitable.v1.appTableRecord.batchCreate | Batch create base data table records | ✓ | | | | ✓ | | | |
-| bitable.v1.appTableRecord.update | Update base data table records | | ✓ | | ✓ | | | | |
-| bitable.v1.appTableRecord.batchUpdate | Batch update base data table records | | | | | ✓ | | | |
-| docx.v1.document.rawContent | Get document content | ✓ | ✓ | | | | ✓ | | |
-| docx.builtin.import | Import documents | ✓ | ✓ | | | | ✓ | | |
-| docx.builtin.search | Search documents | ✓ | ✓ | | | | ✓ | | |
-| drive.v1.permissionMember.create | Add collaborator permissions | | ✓ | | | | ✓ | | |
-| wiki.v2.space.getNode | Get Wiki node | ✓ | ✓ | | | | ✓ | | |
-| wiki.v1.node.search | Search Wiki nodes | | ✓ | | | | ✓ | | |
-| contact.v3.user.batchGetId | Batch get user IDs | ✓ | ✓ | | | | | | |
-| task.v2.task.create | Create task | | | | | | | ✓ | |
-| task.v2.task.patch | Modify task | | | | | | | ✓ | |
-| task.v2.task.addMembers | Add task members | | | | | | | ✓ | |
-| task.v2.task.addReminders | Add task reminders | | | | | | | ✓ | |
-| calendar.v4.calendarEvent.create | Create calendar event | | | | | | | | ✓ |
-| calendar.v4.calendarEvent.patch | Modify calendar event | | | | | | | | ✓ |
-| calendar.v4.calendarEvent.get | Get calendar event | | | | | | | | ✓ |
-| calendar.v4.freebusy.list | Query free/busy status | | | | | | | | ✓ |
-| calendar.v4.calendar.primary | Get primary calendar | | | | | | | | ✓ |
+| Tool Name | Function Description | preset.light | preset.default (Default) | preset.im.default | preset.base.default | preset.base.batch | preset.doc.default | preset.task.default | preset.calendar.default | preset.genesis.default |
+| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| im.v1.chat.create | Create a group chat | | ✓ | ✓ | | | | | | |
+| im.v1.chat.list | Get group chat list | | ✓ | ✓ | | | | | | |
+| im.v1.chat.search | Search group chats | ✓ | | | | | | | | |
+| im.v1.chatMembers.get | Get group members | | ✓ | ✓ | | | | | | |
+| im.v1.message.create | Send messages | ✓ | ✓ | ✓ | | | | | | |
+| im.v1.message.list | Get message list | ✓ | ✓ | ✓ | | | | | | |
+| bitable.v1.app.create | Create base | | ✓ | | ✓ | ✓ | | | | ✓ |
+| bitable.v1.appTable.create | Create base data table | | ✓ | | ✓ | ✓ | | | | ✓ |
+| bitable.v1.appTable.list | Get base data table list | | ✓ | | ✓ | ✓ | | | | ✓ |
+| bitable.v1.appTableField.list | Get base data table field list | | ✓ | | ✓ | ✓ | | | | ✓ |
+| bitable.v1.appTableRecord.search | Search base data table records | ✓ | ✓ | | ✓ | ✓ | | | | ✓ |
+| bitable.v1.appTableRecord.create | Create base data table records | | ✓ | | ✓ | | | | | |
+| bitable.v1.appTableRecord.batchCreate | Batch create base data table records | ✓ | | | | ✓ | | | | |
+| bitable.v1.appTableRecord.update | Update base data table records | | ✓ | | ✓ | | | | | |
+| bitable.v1.appTableRecord.batchUpdate | Batch update base data table records | | | | | ✓ | | | | |
+| docx.v1.document.rawContent | Get document content | ✓ | ✓ | | | | ✓ | | | |
+| docx.builtin.import | Import documents | ✓ | ✓ | | | | ✓ | | | |
+| docx.builtin.search | Search documents | ✓ | ✓ | | | | ✓ | | | |
+| drive.v1.permissionMember.create | Add collaborator permissions | | ✓ | | | | ✓ | | | |
+| wiki.v2.space.getNode | Get Wiki node | ✓ | ✓ | | | | ✓ | | | |
+| wiki.v1.node.search | Search Wiki nodes | | ✓ | | | | ✓ | | | |
+| contact.v3.user.batchGetId | Batch get user IDs | ✓ | ✓ | | | | | | | |
+| task.v2.task.create | Create task | | | | | | | ✓ | | |
+| task.v2.task.patch | Modify task | | | | | | | ✓ | | |
+| task.v2.task.addMembers | Add task members | | | | | | | ✓ | | |
+| task.v2.task.addReminders | Add task reminders | | | | | | | ✓ | | |
+| calendar.v4.calendarEvent.create | Create calendar event | | | | | | | | ✓ | |
+| calendar.v4.calendarEvent.patch | Modify calendar event | | | | | | | | ✓ | |
+| calendar.v4.calendarEvent.get | Get calendar event | | | | | | | | ✓ | |
+| calendar.v4.freebusy.list | Query free/busy status | | | | | | | | ✓ | |
+| calendar.v4.calendar.primary | Get primary calendar | | | | | | | | ✓ | |
+| genesis.builtin.create_base | AI-powered base creation | | | | | | | | | ✓ |
+| genesis.builtin.analyze_requirements | Analyze requirements for base design | | | | | | | | | ✓ |
+| genesis.builtin.generate_er_diagram | Generate ER diagram | | | | | | | | | ✓ |
+| genesis.builtin.optimize_base | Optimize existing base with AI | | | | | | | | | ✓ |
+| genesis.builtin.create_view | Create custom views (grid, kanban, etc.) | | | | | | | | | ✓ |
+| genesis.builtin.create_dashboard | Create dashboard from template | | | | | | | | | ✓ |
+| genesis.builtin.create_automation | Create automation workflows | | | | | | | | | ✓ |
+| genesis.builtin.create_filter_view | Create filter views for spreadsheets | | | | | | | | | ✓ |
+| bitable.v1.appTableView.create | Create table view | | | | | | | | | ✓ |
+| bitable.v1.appDashboard.copy | Copy dashboard | | | | | | | | | ✓ |
+| bitable.v1.appWorkflow.list | List workflows | | | | | | | | | ✓ |
+| sheets.v3.spreadsheetSheetFilterView.create | Create spreadsheet filter view | | | | | | | | | ✓ |
 
 > **Note**: In the table, "✓" indicates the tool is included in that preset. Using `-t preset.xxx` will only enable tools marked with "✓" in the corresponding column.
+
+### Genesis AI System
+
+The Genesis AI System enables you to create complete Lark Base applications from natural language requirements. When using MCP, Genesis provides both tools and prompts to help you build applications quickly.
+
+#### Using Genesis with MCP
+
+1. **Enable Genesis Tools**:
+   ```bash
+   lark-mcp mcp -a <your_app_id> -s <your_app_secret> -t preset.genesis.default
+   ```
+
+2. **Available Genesis Prompts** (automatically registered with MCP server):
+   - `genesis_create_base` - Create a complete Lark Base from requirements
+   - `genesis_migrate_excel` - Migrate Excel to Lark Base with AI optimization
+   - `genesis_template_crm` - Generate CRM system using templates
+   - `genesis_optimize_base` - Optimize existing base with AI
+   - `genesis_ai_features` - Add AI-powered features to a base
+
+3. **Example Usage in AI Assistant**:
+   ```
+   "Use the genesis_create_base prompt to create a task management system with the following requirements:
+   - Track tasks with priority and due dates
+   - Assign tasks to team members
+   - Monitor project progress
+   - Generate weekly reports"
+   ```
+
+4. **Genesis Tools Available**:
+   - `genesis.builtin.create_base` - Create base from requirements
+   - `genesis.builtin.analyze_requirements` - Analyze and suggest structure
+   - `genesis.builtin.generate_er_diagram` - Generate ER diagrams
+   - `genesis.builtin.optimize_base` - Optimize existing bases
+   - `genesis.builtin.create_view` - Create custom views (grid, kanban, calendar, etc.)
+   - `genesis.builtin.create_dashboard` - Create dashboards by copying and customizing
+   - `genesis.builtin.create_automation` - Create automation workflows with triggers and actions
+   - `genesis.builtin.create_filter_view` - Create filter views for spreadsheets
 
 ### Advanced Configuration
 
@@ -256,6 +310,7 @@ The `lark-mcp mcp` tool provides various command line parameters for flexible MC
    > - `preset.doc.default` - Document related tools, such as document content reading, permission management, etc.
    > - `preset.task.default` - Task management related tools, such as task creation, member management, etc.
    > - `preset.calendar.default` - Calendar event management tools, such as creating calendar events, querying free/busy status, etc.
+   > - `preset.genesis.default` - Genesis AI-powered tools for creating and optimizing Lark Base applications
 
 6. **Using SSE Mode with Specific Port and Host**:
    ```bash

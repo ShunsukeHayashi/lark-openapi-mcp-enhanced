@@ -37,6 +37,14 @@ export enum PresetName {
    * Calendar event management tools
    */
   CALENDAR_DEFAULT = 'preset.calendar.default',
+  /**
+   * Genesis AI-powered base generation tools
+   */
+  GENESIS_DEFAULT = 'preset.genesis.default',
+  /**
+   * Complete set of all Lark functions
+   */
+  COMPLETE_ALL = 'preset.complete.all',
 }
 
 export const presetLightToolNames: ToolName[] = [
@@ -106,11 +114,46 @@ export const presetCalendarToolNames: ToolName[] = [
   'calendar.v4.calendar.primary',
 ];
 
+export const presetGenesisToolNames: ToolName[] = [
+  'genesis.builtin.create_base',
+  'genesis.builtin.analyze_requirements',
+  'genesis.builtin.generate_er_diagram',
+  'genesis.builtin.optimize_base',
+  'genesis.builtin.create_view',
+  'genesis.builtin.create_dashboard',
+  'genesis.builtin.create_automation',
+  'genesis.builtin.create_filter_view',
+  'genesis.builtin.list_templates',
+  ...presetBaseCommonToolNames, // Include base tools for Genesis to work with
+  'bitable.v1.appTableView.create', // For creating views
+  'bitable.v1.appDashboard.copy', // For copying dashboards
+  'bitable.v1.appWorkflow.list', // For listing workflows
+  'sheets.v3.spreadsheetSheetFilterView.create', // For creating filter views
+];
+
 export const defaultToolNames: ToolName[] = [
   ...presetImToolNames,
   ...presetBaseToolNames,
   ...presetDocToolNames,
   ...presetContactToolNames,
+];
+
+export const presetCompleteToolNames: ToolName[] = [
+  // Complete function tools
+  'complete.user.get_info',
+  'complete.user.create',
+  'complete.department.create',
+  'complete.group.create',
+  'complete.approval.create_instance',
+  'complete.wiki.create_space',
+  'complete.meeting_room.book',
+  'complete.okr.create',
+  'complete.hr.create_employee',
+  // Include all other presets for comprehensive access
+  ...defaultToolNames,
+  ...presetGenesisToolNames,
+  ...presetTaskToolNames,
+  ...presetCalendarToolNames,
 ];
 
 export const presetTools: Record<PresetName, ToolName[]> = {
@@ -122,4 +165,6 @@ export const presetTools: Record<PresetName, ToolName[]> = {
   [PresetName.DOC_DEFAULT]: presetDocToolNames,
   [PresetName.TASK_DEFAULT]: presetTaskToolNames,
   [PresetName.CALENDAR_DEFAULT]: presetCalendarToolNames,
+  [PresetName.GENESIS_DEFAULT]: presetGenesisToolNames,
+  [PresetName.COMPLETE_ALL]: presetCompleteToolNames,
 };

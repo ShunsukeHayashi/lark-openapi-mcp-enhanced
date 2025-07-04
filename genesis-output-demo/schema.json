@@ -1,0 +1,42 @@
+{
+  "name": "AI-Powered Task Management System",
+  "tables": [
+    {
+      "name": "Tasks",
+      "fields": 15,
+      "type": "standard"
+    },
+    {
+      "name": "Team Members",
+      "fields": 8,
+      "type": "standard"
+    },
+    {
+      "name": "Projects",
+      "fields": 9,
+      "type": "standard"
+    },
+    {
+      "name": "Comments",
+      "fields": 6,
+      "type": "standard"
+    }
+  ],
+  "views": [
+    "My Tasks View",
+    "Team Dashboard",
+    "Project Timeline",
+    "AI Insights"
+  ],
+  "automations": [
+    "Auto-assign Priority",
+    "Due Date Reminder",
+    "Workload Alert",
+    "Status Update Notification"
+  ],
+  "metrics": {
+    "estimated_records": 1000,
+    "complexity_score": 85,
+    "ai_features": true
+  }
+}

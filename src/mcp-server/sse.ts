@@ -26,11 +26,7 @@ export function initSSEServer(server: McpServer, options: McpServerOptions) {
     await transport.handlePostMessage(req, res);
   });
 
-  app.listen(options.port, options.host, (error) => {
-    if (error) {
-      console.error('Server error:', error);
-      process.exit(1);
-    }
+  app.listen(options.port, options.host, () => {
     console.log(`Server is running on port ${options.port}`);
     console.log(`SSE endpoint: http://${options.host}:${options.port}/sse`);
   });

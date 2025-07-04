@@ -4,6 +4,9 @@ import { currentVersion } from '../../utils/version';
 import { McpServerOptions } from './types';
 import * as larkmcp from '../../mcp-tool';
 import { oapiHttpInstance } from '../../utils/http-instance';
+import { registerGenesisPrompts } from '../genesis-prompts';
+import { registerCompletePrompts } from '../complete-prompts';
+import { registerResources } from '../resources';
 
 export function initMcpServer(options: McpServerOptions) {
   const { appId, appSecret, userAccessToken } = options;
@@ -86,6 +89,15 @@ export function initMcpServer(options: McpServerOptions) {
   }
 
   larkClient.registerMcpServer(mcpServer, { toolNameCase: options.toolNameCase });
+
+  // Register Genesis prompts
+  registerGenesisPrompts(mcpServer);
+  
+  // Register complete prompts for all functions
+  registerCompletePrompts(mcpServer);
+  
+  // Register resources
+  registerResources(mcpServer);
 
   return { mcpServer, larkClient };
 }

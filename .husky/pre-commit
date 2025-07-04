@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# TypeScript check
+echo "🔍 Running TypeScript check..."
+yarn build || {
+  echo "❌ TypeScript check failed. Please fix the errors and try again."
+  exit 1
+}
+
+# Format check
+echo "🎨 Checking code formatting..."
+yarn format:check || {
+  echo "❌ Code formatting issues found. Run 'yarn format' to fix them."
+  exit 1
+}
+
+echo "✅ Pre-commit checks passed!"

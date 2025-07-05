@@ -76,20 +76,7 @@ Monitor progress and handle task dependencies.
     }
   }
 
-  private async initializeMcpTools(mcpOptions?: LarkMcpToolOptions): Promise<void> {
-    if (mcpOptions) {
-      this.mcpTool = new LarkMcpTool(mcpOptions);
-      this.loadAvailableMcpTools();
-      await this.loadConfigurationFromFile();
-      
-      // Watch for configuration changes
-      if (this.configAutoReload) {
-        this.configManager.watchConfig(async (config) => {
-          await this.applyConfiguration(config);
-        });
-      }
-    }
-  }
+  // Remove the duplicate initializeMcpTools method since we moved the logic to constructor
 
   private loadAvailableMcpTools(): void {
     if (!this.mcpTool) return;

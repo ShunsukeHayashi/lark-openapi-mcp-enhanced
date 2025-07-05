@@ -103,14 +103,14 @@ export class PerformanceOptimizer {
       enableCaching: true,
       memoryLimit: 1024 * 1024 * 1024, // 1GB
       cpuLimit: 80, // 80%
-      ...config
+      ...config,
     };
 
     this.cache = new Map();
     this.batchQueue = new Map();
     this.activeRequests = new Set();
     this.requestQueue = [];
-    
+
     this.metrics = {
       executionTime: 0,
       memoryUsage: 0,
@@ -119,7 +119,7 @@ export class PerformanceOptimizer {
       cacheHits: 0,
       cacheMisses: 0,
       errors: 0,
-      warnings: 0
+      warnings: 0,
     };
 
     this.resourceMonitor = null;
@@ -153,7 +153,7 @@ export class PerformanceOptimizer {
   private updateResourceUsage(): void {
     const usage = process.memoryUsage();
     this.metrics.memoryUsage = usage.heapUsed;
-    
+
     // CPU使用率の簡易計算（実際の実装ではより精密な測定が必要）
     const startUsage = process.cpuUsage();
     setTimeout((): void => {
@@ -176,7 +176,7 @@ export class PerformanceOptimizer {
       }
     }
 
-    expiredKeys.forEach(key => {
+    expiredKeys.forEach((key) => {
       this.cache.delete(key);
     });
   }
@@ -186,7 +186,7 @@ export class PerformanceOptimizer {
    */
   private checkResourceLimits(): void {
     const memoryPercentage = (this.metrics.memoryUsage / this.config.memoryLimit) * 100;
-    
+
     if (memoryPercentage > 90) {
       this.handleMemoryPressure();
     }
@@ -201,9 +201,8 @@ export class PerformanceOptimizer {
    */
   private handleMemoryPressure(): void {
     // キャッシュの積極的なクリーンアップ
-    const entries = Array.from(this.cache.entries())
-      .sort((a, b) => a[1].lastAccessed - b[1].lastAccessed);
-    
+    const entries = Array.from(this.cache.entries()).sort((a, b) => a[1].lastAccessed - b[1].lastAccessed);
+
     const toRemove = Math.ceil(entries.length * 0.3); // 30%を削除
     entries.slice(0, toRemove).forEach(([key]) => {
       this.cache.delete(key);
@@ -221,10 +220,11 @@ export class PerformanceOptimizer {
   private handleCpuPressure(): void {
     // リクエスト処理の一時停止
     this.config.maxConcurrentRequests = Math.max(1, this.config.maxConcurrentRequests - 2);
-    
+
     // 低優先度のリクエストを遅延
-    this.requestQueue = this.requestQueue.filter(item => {
-      if (item.priority < 2) { // 低優先度
+    this.requestQueue = this.requestQueue.filter((item) => {
+      if (item.priority < 2) {
+        // 低優先度
         return false; // 削除
       }
       return true;
@@ -250,44 +250,38 @@ export class PerformanceOptimizer {
     if (!request) return;
 
     this.activeRequests.add(request.id);
-    
-    this.executeWithRetry(request.operation, request.id)
-      .finally(() => {
-        this.activeRequests.delete(request.id);
-      });
+
+    this.executeWithRetry(request.operation, request.id).finally(() => {
+      this.activeRequests.delete(request.id);
+    });
   }
 
   /**
    * リトライ付き実行
    */
-  private async executeWithRetry<T>(
-    operation: () => Promise<T>,
-    requestId: string,
-    attempt: number = 1
-  ): Promise<T> {
+  private async executeWithRetry<T>(operation: () => Promise<T>, requestId: string, attempt: number = 1): Promise<T> {
     const startTime = Date.now();
-    
+
     try {
       const result = await Promise.race([
         operation(),
         new Promise<never>((_, reject) => {
           setTimeout(() => reject(new Error('Request timeout')), this.config.requestTimeout);
-        })
+        }),
       ]);
 
       this.metrics.executionTime = Date.now() - startTime;
       this.metrics.apiCalls++;
-      
-      return result;
 
+      return result;
     } catch (error) {
       this.metrics.errors++;
-      
+
       if (attempt < this.config.retryAttempts) {
         await this.delay(this.config.retryDelay * attempt);
         return this.executeWithRetry(operation, requestId, attempt + 1);
       }
-      
+
       throw error;
     }
   }
@@ -296,7 +290,7 @@ export class PerformanceOptimizer {
    * 遅延処理
    */
   private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   /**
@@ -325,7 +319,7 @@ export class PerformanceOptimizer {
     entry.accessCount++;
     entry.lastAccessed = now;
     this.metrics.cacheHits++;
-    
+
     return entry.value;
   }
 
@@ -343,7 +337,7 @@ export class PerformanceOptimizer {
       timestamp: Date.now(),
       ttl: ttl || this.config.cacheTTL,
       accessCount: 0,
-      lastAccessed: Date.now()
+      lastAccessed: Date.now(),
     };
 
     this.cache.set(key, entry);
@@ -355,29 +349,29 @@ export class PerformanceOptimizer {
   createBatch<T>(
     items: T[],
     operation: (batch: T[]) => Promise<any>,
-    priority: 'low' | 'medium' | 'high' | 'critical' = 'medium'
+    priority: 'low' | 'medium' | 'high' | 'critical' = 'medium',
   ): string {
     const batchId = `batch_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+
     const batch: BatchOperation<T> = {
       id: batchId,
       items,
       priority,
-      status: 'pending'
+      status: 'pending',
     };
 
     this.batchQueue.set(batchId, batch);
-    
+
     // バッチサイズに応じて分割
     const chunks = this.chunkArray(items, this.config.batchSize);
-    
+
     chunks.forEach((chunk, index) => {
       const chunkId = `${batchId}_chunk_${index}`;
       this.requestQueue.push({
         id: chunkId,
         operation: () => operation(chunk),
         priority: this.getPriorityValue(priority),
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     });
 
@@ -400,11 +394,16 @@ export class PerformanceOptimizer {
    */
   private getPriorityValue(priority: 'low' | 'medium' | 'high' | 'critical'): number {
     switch (priority) {
-      case 'low': return 1;
-      case 'medium': return 2;
-      case 'high': return 3;
-      case 'critical': return 4;
-      default: return 2;
+      case 'low':
+        return 1;
+      case 'medium':
+        return 2;
+      case 'high':
+        return 3;
+      case 'critical':
+        return 4;
+      default:
+        return 2;
     }
   }
 
@@ -420,16 +419,16 @@ export class PerformanceOptimizer {
    */
   async executeOptimized<T>(
     operation: () => Promise<T>,
-    priority: 'low' | 'medium' | 'high' | 'critical' = 'medium'
+    priority: 'low' | 'medium' | 'high' | 'critical' = 'medium',
   ): Promise<T> {
     const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+
     return new Promise((resolve, reject) => {
       this.requestQueue.push({
         id: requestId,
         operation,
         priority: this.getPriorityValue(priority),
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
 
       // 結果の監視
@@ -437,10 +436,8 @@ export class PerformanceOptimizer {
         // 実際の実装では、結果を適切に管理する必要があります
         // ここでは簡易的な実装として、直接実行します
         clearInterval(checkResult);
-        
-        this.executeWithRetry(operation, requestId)
-          .then(resolve)
-          .catch(reject);
+
+        this.executeWithRetry(operation, requestId).then(resolve).catch(reject);
       }, 100);
     });
   }
@@ -450,24 +447,26 @@ export class PerformanceOptimizer {
    */
   async executeParallel<T>(
     operations: Array<() => Promise<T>>,
-    maxConcurrency: number = this.config.maxConcurrentRequests
+    maxConcurrency: number = this.config.maxConcurrentRequests,
   ): Promise<T[]> {
     const results: T[] = [];
     const executing: Promise<void>[] = [];
 
     for (let i = 0; i < operations.length; i++) {
       const operation = operations[i];
-      
-      const promise = this.executeOptimized(operation)
-        .then(result => {
-          results[i] = result;
-        });
+
+      const promise = this.executeOptimized(operation).then((result) => {
+        results[i] = result;
+      });
 
       executing.push(promise);
 
       if (executing.length >= maxConcurrency) {
         await Promise.race(executing);
-        executing.splice(executing.findIndex(p => p === promise), 1);
+        executing.splice(
+          executing.findIndex((p) => p === promise),
+          1,
+        );
       }
     }
 
@@ -488,29 +487,29 @@ export class PerformanceOptimizer {
   getResourceUsage(): ResourceUsage {
     const usage = process.memoryUsage();
     const os = require('os');
-    
+
     return {
       memory: {
         used: usage.heapUsed,
         available: usage.heapTotal - usage.heapUsed,
         total: usage.heapTotal,
-        percentage: (usage.heapUsed / usage.heapTotal) * 100
+        percentage: (usage.heapUsed / usage.heapTotal) * 100,
       },
       cpu: {
         usage: this.metrics.cpuUsage,
         cores: os.cpus().length,
-        load: os.loadavg()[0]
+        load: os.loadavg()[0],
       },
       network: {
         requestsPerSecond: this.calculateRequestsPerSecond(),
         averageResponseTime: this.metrics.executionTime,
-        errorRate: this.calculateErrorRate()
+        errorRate: this.calculateErrorRate(),
       },
       disk: {
         readBytes: 0, // 実際の実装では適切に測定
         writeBytes: 0,
-        iops: 0
-      }
+        iops: 0,
+      },
     };
   }
 
@@ -543,9 +542,8 @@ export class PerformanceOptimizer {
     const totalAccesses = this.metrics.cacheHits + this.metrics.cacheMisses;
     const hitRate = totalAccesses > 0 ? (this.metrics.cacheHits / totalAccesses) * 100 : 0;
     const missRate = 100 - hitRate;
-    
-    const totalAccessCount = Array.from(this.cache.values())
-      .reduce((sum, entry) => sum + entry.accessCount, 0);
+
+    const totalAccessCount = Array.from(this.cache.values()).reduce((sum, entry) => sum + entry.accessCount, 0);
     const averageAccessCount = this.cache.size > 0 ? totalAccessCount / this.cache.size : 0;
 
     return {
@@ -553,7 +551,7 @@ export class PerformanceOptimizer {
       hitRate,
       missRate,
       totalAccesses,
-      averageAccessCount
+      averageAccessCount,
     };
   }
 
@@ -572,7 +570,7 @@ export class PerformanceOptimizer {
       clearInterval(this.resourceMonitor as NodeJS.Timeout);
       this.resourceMonitor = null;
     }
-    
+
     this.cache.clear();
     this.batchQueue.clear();
     this.activeRequests.clear();
@@ -614,7 +612,7 @@ export class PerformanceOptimizer {
       metrics,
       resourceUsage,
       cacheStats,
-      recommendations
+      recommendations,
     };
   }
-} 
+}

@@ -12,10 +12,10 @@ export function initMcpServer(options: McpServerOptions) {
   const { appId, appSecret, userAccessToken } = options;
 
   if (!appId || !appSecret) {
-    console.error(
-      'Error: Missing App Credentials, please provide APP_ID and APP_SECRET or specify them via command line arguments',
+    throw new Error(
+      'Missing App Credentials: Please provide APP_ID and APP_SECRET via environment variables or command line arguments. ' +
+        'Visit https://open.larksuite.com/ to create an app and obtain credentials.',
     );
-    process.exit(1);
   }
 
   let allowTools = Array.isArray(options.tools) ? options.tools : options.tools?.split(',') || [];
@@ -42,7 +42,7 @@ export function initMcpServer(options: McpServerOptions) {
   if (options.rateLimitRequests || options.rateLimitWrites) {
     const requestsPerMinute = parseInt(options.rateLimitRequests || '50');
     const writesPerMinute = parseInt(options.rateLimitWrites || '10');
-    
+
     rateLimitingConfig.rateLimits = {
       default: {
         capacity: requestsPerMinute * 2,
@@ -92,10 +92,10 @@ export function initMcpServer(options: McpServerOptions) {
 
   // Register Genesis prompts
   registerGenesisPrompts(mcpServer);
-  
+
   // Register complete prompts for all functions
   registerCompletePrompts(mcpServer);
-  
+
   // Register resources
   registerResources(mcpServer);
 

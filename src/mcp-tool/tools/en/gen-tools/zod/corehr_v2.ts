@@ -504,9 +504,7 @@ export const corehrV2BasicInfoNationalitySearch = {
         .optional(),
       country_region_id_list: z
         .array(z.string())
-        .describe(
-          'Country/region ID List, which can be queried through the  interface',
-        )
+        .describe('Country/region ID List, which can be queried through the  interface')
         .optional(),
       status_list: z.array(z.number().describe('Options:1(active),0(inactive)')).describe('status list').optional(),
     }),
@@ -616,11 +614,7 @@ export const corehrV2CompanyActive = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      company_id: z
-        .string()
-        .describe(
-          'Company ID- Available from the id field of ',
-        ),
+      company_id: z.string().describe('Company ID- Available from the id field of '),
       effective_time: z
         .string()
         .describe(
@@ -882,9 +876,7 @@ export const corehrV2CostCenterCreate = {
         .optional(),
       parent_cost_center_id: z
         .string()
-        .describe(
-          'The superior cost center ID, the detailed information can be obtained through the  interface query',
-        )
+        .describe('The superior cost center ID, the detailed information can be obtained through the  interface query')
         .optional(),
       managers: z
         .array(z.string())
@@ -924,12 +916,7 @@ export const corehrV2CostCenterDelete = {
   schema: {
     data: z.object({ operation_reason: z.string().describe('Operational reasons') }),
     path: z.object({
-      cost_center_id: z
-        .string()
-        .describe(
-          'Cost center ID; can be obtained through the  interface query',
-        )
-        .optional(),
+      cost_center_id: z.string().describe('Cost center ID; can be obtained through the  interface query').optional(),
     }),
   },
 };
@@ -952,12 +939,7 @@ export const corehrV2CostCenterPatch = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id', 'people_corehr_id']).describe('User ID type').optional(),
     }),
     path: z.object({
-      cost_center_id: z
-        .string()
-        .describe(
-          'The cost center ID can be obtained through the  interface query',
-        )
-        .optional(),
+      cost_center_id: z.string().describe('The cost center ID can be obtained through the  interface query').optional(),
     }),
   },
 };
@@ -1039,15 +1021,11 @@ export const corehrV2CostCenterVersionCreate = {
         .describe('Cost center name'),
       parent_cost_center_id: z
         .string()
-        .describe(
-          'The superior cost center ID can be obtained through the  interface query',
-        )
+        .describe('The superior cost center ID can be obtained through the  interface query')
         .optional(),
       managers: z
         .array(z.string())
-        .describe(
-          'The ID list of the person in charge of the cost center can be obtained through the  interface',
-        )
+        .describe('The ID list of the person in charge of the cost center can be obtained through the  interface')
         .optional(),
       description: z
         .array(
@@ -1071,12 +1049,7 @@ export const corehrV2CostCenterVersionCreate = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id', 'people_corehr_id']).describe('User ID type').optional(),
     }),
     path: z.object({
-      cost_center_id: z
-        .string()
-        .describe(
-          'The cost center ID can be obtained through the  interface query',
-        )
-        .optional(),
+      cost_center_id: z.string().describe('The cost center ID can be obtained through the  interface query').optional(),
     }),
   },
 };
@@ -1092,18 +1065,8 @@ export const corehrV2CostCenterVersionDelete = {
   schema: {
     data: z.object({ operation_reason: z.string().describe('Operational reasons') }),
     path: z.object({
-      cost_center_id: z
-        .string()
-        .describe(
-          'The cost center ID can be obtained through the  interface query',
-        )
-        .optional(),
-      version_id: z
-        .string()
-        .describe(
-          'Version ID, which can be obtained through the  interface query',
-        )
-        .optional(),
+      cost_center_id: z.string().describe('The cost center ID can be obtained through the  interface query').optional(),
+      version_id: z.string().describe('Version ID, which can be obtained through the  interface query').optional(),
     }),
   },
 };
@@ -1130,9 +1093,7 @@ export const corehrV2CostCenterVersionPatch = {
         .describe('Cost center name'),
       parent_cost_center_id: z
         .string()
-        .describe(
-          'The superior cost center ID can be obtained through the  interface query',
-        )
+        .describe('The superior cost center ID can be obtained through the  interface query')
         .optional(),
       managers: z
         .array(z.string())
@@ -1162,18 +1123,8 @@ export const corehrV2CostCenterVersionPatch = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id', 'people_corehr_id']).describe('User ID type').optional(),
     }),
     path: z.object({
-      cost_center_id: z
-        .string()
-        .describe(
-          'The cost center ID can be obtained through the  interface query',
-        )
-        .optional(),
-      version_id: z
-        .string()
-        .describe(
-          'Version ID, which can be obtained through the  interface query',
-        )
-        .optional(),
+      cost_center_id: z.string().describe('The cost center ID can be obtained through the  interface query').optional(),
+      version_id: z.string().describe('Version ID, which can be obtained through the  interface query').optional(),
     }),
   },
 };
@@ -1339,9 +1290,7 @@ export const corehrV2DepartmentDelete = {
     path: z.object({
       department_id: z
         .string()
-        .describe(
-          'The department ID that needs to be deleted can be obtained through the  interface query',
-        ),
+        .describe('The department ID that needs to be deleted can be obtained through the  interface query'),
     }),
   },
 };
@@ -1486,11 +1435,7 @@ export const corehrV2DepartmentQueryMultiTimeline = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      department_ids: z
-        .array(z.string())
-        .describe(
-          'Department ID List，Request',
-        ),
+      department_ids: z.array(z.string()).describe('Department ID List，Request'),
       effective_date_start: z.string().describe('Effective date begins (inclusive)').optional(),
       effective_date_end: z.string().describe('End of effective date (inclusive)').optional(),
       fields: z
@@ -1610,11 +1555,7 @@ export const corehrV2DepartmentQueryTimeline = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      department_ids: z
-        .array(z.string())
-        .describe(
-          'Department ID List，Request',
-        ),
+      department_ids: z.array(z.string()).describe('Department ID List，Request'),
       effective_date: z
         .string()
         .describe(
@@ -2865,12 +2806,7 @@ export const corehrV2EmployeeSearch = {
           'List of citizenship types, exact match query- Field permission requirements - <md-perm name = "corehr:person.citizenship_status:read" desc = "read employee citizenship" support_app_types = "custom, isv" > read employee citizenship </md-perm >',
         )
         .optional(),
-      cost_center_id_list: z
-        .array(z.string())
-        .describe(
-          'Cost center ID list- Available through ',
-        )
-        .optional(),
+      cost_center_id_list: z.array(z.string()).describe('Cost center ID list- Available through ').optional(),
       service_company_list: z
         .array(z.string())
         .describe(
@@ -2883,17 +2819,10 @@ export const corehrV2EmployeeSearch = {
           'List of company IDs (including subordinates)-  Get- Field permission requirements: - <md-perm name = "corehr:job_data.service_company:read" desc = "read employee company" support_app_types = "custom, isv" > read employee company </md-perm >',
         )
         .optional(),
-      job_family_id_list: z
-        .array(z.string())
-        .describe(
-          'list of serial IDs-  get',
-        )
-        .optional(),
+      job_family_id_list: z.array(z.string()).describe('list of serial IDs-  get').optional(),
       job_family_id_list_include_sub: z
         .array(z.string())
-        .describe(
-          'List of serial IDs (including subordinates)-  get',
-        )
+        .describe('List of serial IDs (including subordinates)-  get')
         .optional(),
       job_level_id_list: z
         .array(z.string())
@@ -2927,9 +2856,7 @@ export const corehrV2EmployeeSearch = {
         .optional(),
       working_hours_type_id_list: z
         .array(z.string())
-        .describe(
-          'List of working hours system IDs- Can be obtained through ',
-        )
+        .describe('List of working hours system IDs- Can be obtained through ')
         .optional(),
       nationality_id_list: z
         .array(z.string())
@@ -3889,16 +3816,8 @@ export const corehrV2LocationAddressCreate = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      country_region_id: z
-        .string()
-        .describe(
-          'Country ID- It can be obtained through the  interface',
-        ),
-      region_id: z
-        .string()
-        .describe(
-          'Main administrative region ID- It can be obtained through the  interface',
-        ),
+      country_region_id: z.string().describe('Country ID- It can be obtained through the  interface'),
+      region_id: z.string().describe('Main administrative region ID- It can be obtained through the  interface'),
       city_id: z
         .string()
         .describe(
@@ -4033,17 +3952,10 @@ export const corehrV2LocationAddressPatch = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      country_region_id: z
-        .string()
-        .describe(
-          'Country ID- It can be obtained through the  interface',
-        )
-        .optional(),
+      country_region_id: z.string().describe('Country ID- It can be obtained through the  interface').optional(),
       region_id: z
         .string()
-        .describe(
-          'Main administrative region ID- It can be obtained through the  interface',
-        )
+        .describe('Main administrative region ID- It can be obtained through the  interface')
         .optional(),
       city_id: z
         .string()
@@ -5832,9 +5744,7 @@ export const corehrV2PreHireCreate = {
             .optional(),
           born_country_region: z
             .string()
-            .describe(
-              'The country/region of birth, It can be obtained through the  interface',
-            )
+            .describe('The country/region of birth, It can be obtained through the  interface')
             .optional(),
           is_disabled: z.boolean().describe('Disabled or not').optional(),
           disable_card_number: z.string().describe('Disability ID number').optional(),
@@ -5861,14 +5771,10 @@ export const corehrV2PreHireCreate = {
                     z.object({
                       country_region_id: z
                         .string()
-                        .describe(
-                          'country_region, It can be obtained through the  interface',
-                        ),
+                        .describe('country_region, It can be obtained through the  interface'),
                       national_id_type_id: z
                         .string()
-                        .describe(
-                          'national id type id, It can be obtained through the  interface',
-                        ),
+                        .describe('national id type id, It can be obtained through the  interface'),
                       national_id_number: z.string().describe('national id number'),
                       issue_date: z.string().describe('issue date').optional(),
                       expiration_date: z.string().describe('expiration date').optional(),
@@ -5925,15 +5831,8 @@ export const corehrV2PreHireCreate = {
                   .object({
                     country_region_id: z
                       .string()
-                      .describe(
-                        'country region id, It can be obtained through the  interface',
-                      ),
-                    region_id: z
-                      .string()
-                      .describe(
-                        'region id, It can be obtained through the  interface',
-                      )
-                      .optional(),
+                      .describe('country region id, It can be obtained through the  interface'),
+                    region_id: z.string().describe('region id, It can be obtained through the  interface').optional(),
                     local_address_line1: z.string().describe('Address line 1 (non-Latin native scripts)').optional(),
                     local_address_line2: z.string().describe('Address line 2 (non-Latin native scripts)').optional(),
                     local_address_line3: z.string().describe('Address line 3 (non-Latin native scripts)').optional(),
@@ -5993,9 +5892,7 @@ export const corehrV2PreHireCreate = {
                 account_holder: z.string().describe('Account holder'),
                 country_region_id: z
                   .string()
-                  .describe(
-                    'Country region id, It can be obtained through the  interface',
-                  )
+                  .describe('Country region id, It can be obtained through the  interface')
                   .optional(),
                 bank_account_usages: z
                   .array(z.string())
@@ -6016,16 +5913,10 @@ export const corehrV2PreHireCreate = {
           national_id_list: z
             .array(
               z.object({
-                country_region_id: z
-                  .string()
-                  .describe(
-                    'Country region id, it can be obtained through the  interface',
-                  ),
+                country_region_id: z.string().describe('Country region id, it can be obtained through the  interface'),
                 national_id_type_id: z
                   .string()
-                  .describe(
-                    'National id type id, it can be obtained through the  interface',
-                  ),
+                  .describe('National id type id, it can be obtained through the  interface'),
                 national_id_number: z.string().describe('National id number'),
                 issue_date: z.string().describe('issue date').optional(),
                 expiration_date: z.string().describe('expiration date').optional(),
@@ -6046,12 +5937,7 @@ export const corehrV2PreHireCreate = {
                 files: z
                   .array(
                     z.object({
-                      id: z
-                        .string()
-                        .describe(
-                          'file id, it can be obtained through the  interface',
-                        )
-                        .optional(),
+                      id: z.string().describe('file id, it can be obtained through the  interface').optional(),
                     }),
                   )
                   .describe('files')
@@ -6103,15 +5989,8 @@ export const corehrV2PreHireCreate = {
                   .object({
                     country_region_id: z
                       .string()
-                      .describe(
-                        'Country region id, it can be obtained through the  interface',
-                      ),
-                    region_id: z
-                      .string()
-                      .describe(
-                        'Region id, it can be obtained through the  interface',
-                      )
-                      .optional(),
+                      .describe('Country region id, it can be obtained through the  interface'),
+                    region_id: z.string().describe('Region id, it can be obtained through the  interface').optional(),
                     local_address_line1: z.string().describe('Address line 1 (non-Latin native scripts)').optional(),
                     local_address_line2: z.string().describe('Address line 2 (non-Latin native scripts)').optional(),
                     local_address_line3: z.string().describe('Address line 3 (non-Latin native scripts)').optional(),
@@ -6172,17 +6051,8 @@ export const corehrV2PreHireCreate = {
           address_list: z
             .array(
               z.object({
-                country_region_id: z
-                  .string()
-                  .describe(
-                    'Country region id, it can be obtained through the  interface',
-                  ),
-                region_id: z
-                  .string()
-                  .describe(
-                    'Region id, it can be obtained through the  interface',
-                  )
-                  .optional(),
+                country_region_id: z.string().describe('Country region id, it can be obtained through the  interface'),
+                region_id: z.string().describe('Region id, it can be obtained through the  interface').optional(),
                 local_address_line1: z.string().describe('Address line 1 (non-Latin native scripts)').optional(),
                 local_address_line2: z.string().describe('Address line 2 (non-Latin native scripts)').optional(),
                 local_address_line3: z.string().describe('Address line 3 (non-Latin native scripts)').optional(),
@@ -6228,12 +6098,7 @@ export const corehrV2PreHireCreate = {
               'Ethnicity race, the enumeration value can be queried by the  interface, and can be queried according to the following parameters:- object_api_name: person- custom_api_name: ethnicity_race',
             )
             .optional(),
-          native_region: z
-            .string()
-            .describe(
-              'Native region, it can be obtained through the  interface',
-            )
-            .optional(),
+          native_region: z.string().describe('Native region, it can be obtained through the  interface').optional(),
           hukou_type: z
             .string()
             .describe(
@@ -6318,12 +6183,7 @@ export const corehrV2PreHireCreate = {
             )
             .describe('Cost center allocation information')
             .optional(),
-          job_grade_id: z
-            .string()
-            .describe(
-              'Job grade id, it can be obtained through the  interface',
-            )
-            .optional(),
+          job_grade_id: z.string().describe('Job grade id, it can be obtained through the  interface').optional(),
           custom_fields: z
             .array(
               z.object({
@@ -6348,9 +6208,7 @@ export const corehrV2PreHireCreate = {
             .optional(),
           work_location_id: z
             .string()
-            .describe(
-              'Work location id, it can be obtained through the  interface',
-            )
+            .describe('Work location id, it can be obtained through the  interface')
             .optional(),
           onboarding_address_id: z.string().describe('Onboarding dddress id').optional(),
           office_address_id: z.string().describe('Office address id').optional(),
@@ -6358,17 +6216,10 @@ export const corehrV2PreHireCreate = {
           working_calendar_id: z.string().describe('Working calendar id').optional(),
           working_hours_type: z
             .string()
-            .describe(
-              'Working hours type, it can be obtained through the  interface',
-            )
+            .describe('Working hours type, it can be obtained through the  interface')
             .optional(),
           pay_group_id: z.string().describe('Pay group id').optional(),
-          flow_id: z
-            .string()
-            .describe(
-              'Flow id, it can be obtained through the  interface',
-            )
-            .optional(),
+          flow_id: z.string().describe('Flow id, it can be obtained through the  interface').optional(),
           check_in_time: z.string().describe('Check in time').optional(),
           check_in_method: z
             .string()
@@ -6580,11 +6431,7 @@ export const corehrV2PreHirePatch = {
                     'Is it the primary mailbox? If there are multiple mailboxes, only one mailbox can have "is_primary" set to true',
                   ),
                 is_public: z.boolean().describe('Is it a public email address?'),
-                email_usage: z
-                  .string()
-                  .describe(
-                    'Email usage, the enumeration value can be obtained through ',
-                  ),
+                email_usage: z.string().describe('Email usage, the enumeration value can be obtained through '),
               }),
             )
             .describe(
@@ -6598,23 +6445,15 @@ export const corehrV2PreHirePatch = {
               z.object({
                 tax_country_region: z
                   .string()
-                  .describe(
-                    'Country/Region, it can be obtained through the  interface',
-                  )
+                  .describe('Country/Region, it can be obtained through the  interface')
                   .optional(),
                 resident_status: z.string().describe('residency').optional(),
                 tax_address: z
                   .object({
-                    country_region_id: z
-                      .string()
-                      .describe(
-                        'Country/Region, it can be obtained through the  interface',
-                      ),
+                    country_region_id: z.string().describe('Country/Region, it can be obtained through the  interface'),
                     region_id: z
                       .string()
-                      .describe(
-                        'main administrative region, it can be obtained through the interface',
-                      )
+                      .describe('main administrative region, it can be obtained through the interface')
                       .optional(),
                     local_address_line1: z.string().describe('Address line 1 (non-Latin native scripts)').optional(),
                     local_address_line2: z.string().describe('Address line 2 (non-Latin native scripts)').optional(),
@@ -6671,9 +6510,7 @@ export const corehrV2PreHirePatch = {
                     z.object({
                       country_region_id: z
                         .string()
-                        .describe(
-                          'Country/Region, it can be obtained through the  interface',
-                        ),
+                        .describe('Country/Region, it can be obtained through the  interface'),
                       national_id_type_id: z.string().describe('National id type id'),
                       national_id_number: z.string().describe('National id number'),
                       issue_date: z.string().describe('Issue date').optional(),
@@ -6708,16 +6545,10 @@ export const corehrV2PreHirePatch = {
                   .optional(),
                 address: z
                   .object({
-                    country_region_id: z
-                      .string()
-                      .describe(
-                        'Country/Region, it can be obtained through the  interface',
-                      ),
+                    country_region_id: z.string().describe('Country/Region, it can be obtained through the  interface'),
                     region_id: z
                       .string()
-                      .describe(
-                        'main administrative region, it can be obtained through the interface',
-                      )
+                      .describe('main administrative region, it can be obtained through the interface')
                       .optional(),
                     local_address_line1: z.string().describe('Address line 1 (non-Latin native scripts)').optional(),
                     local_address_line2: z.string().describe('Address line 2 (non-Latin native scripts)').optional(),
@@ -6763,11 +6594,7 @@ export const corehrV2PreHirePatch = {
           national_id_list: z
             .array(
               z.object({
-                country_region_id: z
-                  .string()
-                  .describe(
-                    'Country/Region, it can be obtained through the  interface',
-                  ),
+                country_region_id: z.string().describe('Country/Region, it can be obtained through the  interface'),
                 national_id_type_id: z.string().describe('national id type id'),
                 national_id_number: z.string().describe('national id number'),
                 issue_date: z.string().describe('issue date').optional(),
@@ -6813,16 +6640,10 @@ export const corehrV2PreHirePatch = {
                   .optional(),
                 address: z
                   .object({
-                    country_region_id: z
-                      .string()
-                      .describe(
-                        'Country/Region, it can be obtained through the  interface',
-                      ),
+                    country_region_id: z.string().describe('Country/Region, it can be obtained through the  interface'),
                     region_id: z
                       .string()
-                      .describe(
-                        'main administrative region, it can be obtained through the interface',
-                      )
+                      .describe('main administrative region, it can be obtained through the interface')
                       .optional(),
                     local_address_line1: z.string().describe('Address line 1 (non-Latin native scripts)').optional(),
                     local_address_line2: z.string().describe('Address line 2 (non-Latin native scripts)').optional(),
@@ -6870,16 +6691,10 @@ export const corehrV2PreHirePatch = {
           address_list: z
             .array(
               z.object({
-                country_region_id: z
-                  .string()
-                  .describe(
-                    'Country/Region, it can be obtained through the  interface',
-                  ),
+                country_region_id: z.string().describe('Country/Region, it can be obtained through the  interface'),
                 region_id: z
                   .string()
-                  .describe(
-                    'main administrative region, it can be obtained through the interface',
-                  )
+                  .describe('main administrative region, it can be obtained through the interface')
                   .optional(),
                 local_address_line1: z.string().describe('Address line 1 (non-Latin native scripts)').optional(),
                 local_address_line2: z.string().describe('Address line 2 (non-Latin native scripts)').optional(),
@@ -6929,12 +6744,7 @@ export const corehrV2PreHirePatch = {
             )
             .describe('Custom fields')
             .optional(),
-          native_region: z
-            .string()
-            .describe(
-              'Native region, it can be obtained through the interface',
-            )
-            .optional(),
+          native_region: z.string().describe('Native region, it can be obtained through the interface').optional(),
           hukou_type: z
             .string()
             .describe(
@@ -6991,9 +6801,7 @@ export const corehrV2PreHirePatch = {
           ats_application_id: z.string().describe('Recruitment Application ID').optional(),
           onboarding_location_id: z
             .string()
-            .describe(
-              'Job location ID, detailed information can be obtained through ',
-            )
+            .describe('Job location ID, detailed information can be obtained through ')
             .optional(),
           onboarding_address_id: z
             .string()
@@ -7003,9 +6811,7 @@ export const corehrV2PreHirePatch = {
             .optional(),
           office_location_id: z
             .string()
-            .describe(
-              'Office location ID, detailed information can be obtained through ',
-            )
+            .describe('Office location ID, detailed information can be obtained through ')
             .optional(),
           office_address_id: z
             .string()
@@ -7013,15 +6819,11 @@ export const corehrV2PreHirePatch = {
             .optional(),
           employment_type: z
             .string()
-            .describe(
-              'Employment type, obtain the enumeration apiName through - employee- contingent_worker',
-            )
+            .describe('Employment type, obtain the enumeration apiName through - employee- contingent_worker')
             .optional(),
           onboarding_method: z
             .string()
-            .describe(
-              'Onboarding method, obtain the enumeration apiName through- onsite- remote',
-            )
+            .describe('Onboarding method, obtain the enumeration apiName through- onsite- remote')
             .optional(),
           work_emails: z
             .array(
@@ -7033,11 +6835,7 @@ export const corehrV2PreHirePatch = {
                     'Is it the primary mailbox? If there are multiple mailboxes, only one mailbox can have "is_primary" set to true',
                   ),
                 is_public: z.boolean().describe('Is it a public email address?'),
-                email_usage: z
-                  .string()
-                  .describe(
-                    'Email usage, the enumeration value can be obtained through ',
-                  ),
+                email_usage: z.string().describe('Email usage, the enumeration value can be obtained through '),
               }),
             )
             .describe('work email')
@@ -7101,12 +6899,7 @@ export const corehrV2PreHirePatch = {
               'Check in method, the enumeration value can be queried by the interface, and can be queried according to the following parameters:- object_api_name: pre_hire- custom_api_name: onboarding_method',
             )
             .optional(),
-          company: z
-            .string()
-            .describe(
-              'Company, it can be obtained through the interface',
-            )
-            .optional(),
+          company: z.string().describe('Company, it can be obtained through the interface').optional(),
           work_shift: z
             .string()
             .describe(
@@ -7126,36 +6919,11 @@ export const corehrV2PreHirePatch = {
             )
             .optional(),
           pay_group_id: z.string().describe('Pay group id').optional(),
-          offer_hr_id: z
-            .string()
-            .describe(
-              'Offer HR ID, it can be obtained through the interface',
-            )
-            .optional(),
-          job_id: z
-            .string()
-            .describe(
-              'Job ID, it can be obtained through the interface',
-            )
-            .optional(),
-          job_family_id: z
-            .string()
-            .describe(
-              'Job Family ID, it can be obtained through the interface',
-            )
-            .optional(),
-          job_level_id: z
-            .string()
-            .describe(
-              'Job Level ID, it can be obtained through the interface',
-            )
-            .optional(),
-          job_grade_id: z
-            .string()
-            .describe(
-              'Job Grade ID, it can be obtained through the interface',
-            )
-            .optional(),
+          offer_hr_id: z.string().describe('Offer HR ID, it can be obtained through the interface').optional(),
+          job_id: z.string().describe('Job ID, it can be obtained through the interface').optional(),
+          job_family_id: z.string().describe('Job Family ID, it can be obtained through the interface').optional(),
+          job_level_id: z.string().describe('Job Level ID, it can be obtained through the interface').optional(),
+          job_grade_id: z.string().describe('Job Grade ID, it can be obtained through the interface').optional(),
           employee_type_id: z.string().describe('Employee type id,').optional(),
           employee_subtype_id: z.string().describe('personnel subtype').optional(),
           direct_leader_id: z.string().describe('Direct leader id').optional(),
@@ -7320,11 +7088,7 @@ export const corehrV2PreHireRestoreFlowInstance = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      pre_hire_id: z
-        .string()
-        .describe(
-          'The pending prehire ID can be obtained from the  interface',
-        ),
+      pre_hire_id: z.string().describe('The pending prehire ID can be obtained from the  interface'),
       confirm_workforce: z
         .boolean()
         .describe('Whether to force occupation; true is mandatory occupation; false is non-mandatory occupation')
@@ -7446,11 +7210,7 @@ export const corehrV2PreHireWithdrawOnboarding = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      pre_hire_id: z
-        .string()
-        .describe(
-          'The prehire ID can be obtained through the  interface',
-        ),
+      pre_hire_id: z.string().describe('The prehire ID can be obtained through the  interface'),
       withdraw_reason: z.string().describe('Reason for withdraw, limited to 500 words'),
     }),
   },
@@ -7572,12 +7332,7 @@ export const corehrV2ProcessApproverUpdate = {
                 list_values: z.array(z.string()).describe('Arrays value.Refer to the list in subValues').optional(),
                 file_value: z
                   .object({
-                    open_file_id: z
-                      .string()
-                      .describe(
-                        'ID obtained via ',
-                      )
-                      .optional(),
+                    open_file_id: z.string().describe('ID obtained via ').optional(),
                     file_name: z.string().describe('file name').optional(),
                     length: z.number().describe('File size, in Bytes').optional(),
                   })
@@ -7623,12 +7378,7 @@ export const corehrV2ProcessApproverUpdate = {
                         .optional(),
                       file_value: z
                         .object({
-                          open_file_id: z
-                            .string()
-                            .describe(
-                              'ID obtained via ',
-                            )
-                            .optional(),
+                          open_file_id: z.string().describe('ID obtained via ').optional(),
                           file_name: z.string().describe('file name').optional(),
                           length: z.number().describe('File size, in Bytes').optional(),
                         })
@@ -8020,9 +7770,7 @@ export const corehrV2WorkforcePlanDetailBatch = {
         .optional(),
       employee_type_ids: z
         .array(z.string())
-        .describe(
-          'List of person type IDs- Details can be obtained by ',
-        )
+        .describe('List of person type IDs- Details can be obtained by ')
         .optional(),
       work_location_ids: z
         .array(z.string())

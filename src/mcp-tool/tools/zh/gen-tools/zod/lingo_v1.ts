@@ -151,9 +151,7 @@ export const lingoV1DraftCreate = {
         .optional(),
       rich_text: z
         .string()
-        .describe(
-          '富文本格式（当填写富文本内容时，description字段将会失效可不填写），支持的格式参考中的释义部分',
-        )
+        .describe('富文本格式（当填写富文本内容时，description字段将会失效可不填写），支持的格式参考中的释义部分')
         .optional(),
       i18n_descs: z
         .array(
@@ -271,9 +269,7 @@ export const lingoV1DraftUpdate = {
         .optional(),
       rich_text: z
         .string()
-        .describe(
-          '富文本格式（当填写富文本内容时，description字段将会失效可不填写），支持的格式参考中的释义部分',
-        )
+        .describe('富文本格式（当填写富文本内容时，description字段将会失效可不填写），支持的格式参考中的释义部分')
         .optional(),
       i18n_descs: z
         .array(
@@ -680,9 +676,7 @@ export const lingoV1EntityUpdate = {
         .optional(),
       rich_text: z
         .string()
-        .describe(
-          '富文本格式（当填写富文本内容时，description字段将会失效可不填写），支持的格式参考中的释义部分',
-        )
+        .describe('富文本格式（当填写富文本内容时，description字段将会失效可不填写），支持的格式参考中的释义部分')
         .optional(),
       i18n_descs: z
         .array(

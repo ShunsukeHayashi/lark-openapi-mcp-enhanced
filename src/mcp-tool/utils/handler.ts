@@ -1,12 +1,13 @@
 import * as lark from '@larksuiteoapi/node-sdk';
 import { McpHandler, McpHandlerOptions } from '../types';
+import { createErrorResponse, ErrorCategory } from './error-handler';
 
 const sdkFuncCall = async (client: lark.Client, params: any, options: McpHandlerOptions) => {
   const { tool, userAccessToken } = options || {};
   const { sdkName, path, httpMethod } = tool || {};
 
   if (!sdkName) {
-    throw new Error('Invalid sdkName');
+    throw new Error('Invalid sdkName: SDK function name is required');
   }
 
   const chain = sdkName.split('.');
@@ -26,7 +27,7 @@ const sdkFuncCall = async (client: lark.Client, params: any, options: McpHandler
 
   if (params?.useUAT) {
     if (!userAccessToken) {
-      throw new Error('Invalid UserAccessToken');
+      throw new Error('Invalid UserAccessToken: User access token is required for this operation');
     }
     return await func(params, lark.withUserAccessToken(userAccessToken));
   }
@@ -34,6 +35,8 @@ const sdkFuncCall = async (client: lark.Client, params: any, options: McpHandler
 };
 
 export const larkOapiHandler: McpHandler = async (client, params, options) => {
+  const toolName = options?.tool?.name || 'unknown-tool';
+
   try {
     const response = await sdkFuncCall(client, params, options);
     return {
@@ -45,14 +48,10 @@ export const larkOapiHandler: McpHandler = async (client, params, options) => {
       ],
     };
   } catch (error) {
-    return {
-      isError: true,
-      content: [
-        {
-          type: 'text' as const,
-          text: `Error: ${JSON.stringify((error as any)?.response?.data || (error as any)?.message || error)}`,
-        },
-      ],
-    };
+    return createErrorResponse(error, {
+      operation: 'Lark API call',
+      toolName,
+      language: 'en',
+    });
   }
 };

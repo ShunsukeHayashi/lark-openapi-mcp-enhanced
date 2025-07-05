@@ -3,6 +3,9 @@
 [![npm version](https://img.shields.io/npm/v/@larksuiteoapi/lark-mcp.svg)](https://www.npmjs.com/package/@larksuiteoapi/lark-mcp)
 [![npm downloads](https://img.shields.io/npm/dm/@larksuiteoapi/lark-mcp.svg)](https://www.npmjs.com/package/@larksuiteoapi/lark-mcp)
 [![Node.js Version](https://img.shields.io/node/v/@larksuiteoapi/lark-mcp.svg)](https://nodejs.org/)
+[![CI](https://github.com/larksuite/lark-openapi-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/larksuite/lark-openapi-mcp/actions/workflows/ci.yml)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
+[![Docker](https://img.shields.io/badge/Docker-Supported-blue.svg)](https://hub.docker.com/r/larksuiteoapi/lark-mcp)
 
 English | [中文](./README_ZH.md)
 

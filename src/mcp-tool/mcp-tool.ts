@@ -8,6 +8,7 @@ import { larkOapiHandler } from './utils/handler';
 import { caseTransf } from './utils/case-transf';
 import { getShouldUseUAT } from './utils/get-should-use-uat';
 import { createRateLimitedHttpInstance, RateLimitedHttpInstance } from '../utils/rate-limited-http';
+import { globalCache, CacheManager, CacheCategory } from './utils/cache-manager';
 
 /**
  * Feishu/Lark MCP
@@ -28,6 +29,9 @@ export class LarkMcpTool {
   // Rate-limited HTTP instance
   private rateLimitedHttp: RateLimitedHttpInstance;
 
+  // Cache manager instance
+  private cacheManager: CacheManager;
+
   /**
    * Feishu/Lark MCP
    * @param options Feishu/Lark Client Options
@@ -39,6 +43,9 @@ export class LarkMcpTool {
       rateLimits: options.rateLimiting?.rateLimits,
       logger: options.rateLimiting?.logger,
     });
+
+    // Initialize cache manager
+    this.cacheManager = globalCache;
 
     if (options.client) {
       this.client = options.client;
@@ -99,6 +106,56 @@ export class LarkMcpTool {
    */
   setRateLimitEnabled(enabled: boolean): void {
     this.rateLimitedHttp.setRateLimitEnabled(enabled);
+  }
+
+  /**
+   * Get cache statistics and metrics
+   * @returns Cache performance metrics and statistics
+   */
+  getCacheMetrics() {
+    return {
+      metrics: this.cacheManager.getMetrics(),
+      stats: this.cacheManager.getStats(),
+    };
+  }
+
+  /**
+   * Clear cache by category
+   * @param category Cache category to clear
+   * @returns Number of entries cleared
+   */
+  clearCache(category?: CacheCategory): number {
+    if (category) {
+      return this.cacheManager.clearCategory(category);
+    } else {
+      this.cacheManager.clear();
+      return 0;
+    }
+  }
+
+  /**
+   * Preload frequently accessed data into cache
+   * @param appId App ID for context
+   */
+  async preloadCache(appId: string): Promise<void> {
+    // Preload commonly accessed data that doesn't change often
+    try {
+      // Only preload if cache is empty to avoid unnecessary API calls
+      if (!this.cacheManager.has(CacheCategory.APP_TOKENS, appId)) {
+        // Cache will be populated as API calls are made
+        console.log('Cache preloading will occur during normal API usage');
+      }
+    } catch (error) {
+      // Ignore preload errors
+    }
+  }
+
+  /**
+   * Get cache instance for advanced operations
+   * @returns Cache manager instance
+   */
+  getCache(): CacheManager {
+    return this.cacheManager;
   }
 
   /**

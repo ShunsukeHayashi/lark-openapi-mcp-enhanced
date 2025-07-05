@@ -16,36 +16,36 @@ export class CalendarSpecialistAgent extends Agent {
         name: 'create_calendar_event',
         description: 'Create new calendar event',
         execute: async (params: any) => {
-          const { 
-            calendarId, 
-            summary, 
-            description, 
-            startTime, 
-            endTime, 
+          const {
+            calendarId,
+            summary,
+            description,
+            startTime,
+            endTime,
             attendees = [],
             location,
-            meetingRooms = []
+            meetingRooms = [],
           } = params;
-          
+
           return this.executeMcpTool('calendar.v4.calendar.event.create', {
             calendar_id: calendarId,
             summary,
             description,
             start_time: {
-              timestamp: startTime
+              timestamp: startTime,
             },
             end_time: {
-              timestamp: endTime
+              timestamp: endTime,
             },
             attendee_ability: 'can_see_others',
             attendees: attendees.map((email: string) => ({
               type: 'third_party',
-              email
+              email,
             })),
             location: location ? { name: location } : undefined,
             meeting_rooms: meetingRooms.map((roomId: string) => ({
-              room_id: roomId
-            }))
+              room_id: roomId,
+            })),
           });
         },
         schema: {
@@ -56,20 +56,20 @@ export class CalendarSpecialistAgent extends Agent {
             description: { type: 'string', description: 'Event description' },
             startTime: { type: 'string', description: 'Start timestamp (RFC3339)' },
             endTime: { type: 'string', description: 'End timestamp (RFC3339)' },
-            attendees: { 
+            attendees: {
               type: 'array',
               items: { type: 'string' },
-              description: 'Attendee email addresses'
+              description: 'Attendee email addresses',
             },
             location: { type: 'string', description: 'Event location' },
             meetingRooms: {
               type: 'array',
               items: { type: 'string' },
-              description: 'Meeting room IDs'
-            }
+              description: 'Meeting room IDs',
+            },
           },
-          required: ['calendarId', 'summary', 'startTime', 'endTime']
-        }
+          required: ['calendarId', 'summary', 'startTime', 'endTime'],
+        },
       },
 
       {
@@ -77,12 +77,12 @@ export class CalendarSpecialistAgent extends Agent {
         description: 'Retrieve calendar events within time range',
         execute: async (params: any) => {
           const { calendarId, startTime, endTime, pageSize = 50 } = params;
-          
+
           return this.executeMcpTool('calendar.v4.calendar.event.list', {
             calendar_id: calendarId,
             start_time: startTime,
             end_time: endTime,
-            page_size: pageSize
+            page_size: pageSize,
           });
         },
         schema: {
@@ -91,10 +91,10 @@ export class CalendarSpecialistAgent extends Agent {
             calendarId: { type: 'string', description: 'Calendar ID' },
             startTime: { type: 'string', description: 'Start timestamp filter' },
             endTime: { type: 'string', description: 'End timestamp filter' },
-            pageSize: { type: 'number', default: 50 }
+            pageSize: { type: 'number', default: 50 },
           },
-          required: ['calendarId']
-        }
+          required: ['calendarId'],
+        },
       },
 
       {
@@ -102,11 +102,11 @@ export class CalendarSpecialistAgent extends Agent {
         description: 'Update existing calendar event',
         execute: async (params: any) => {
           const { calendarId, eventId, updates } = params;
-          
+
           return this.executeMcpTool('calendar.v4.calendar.event.patch', {
             calendar_id: calendarId,
             event_id: eventId,
-            ...updates
+            ...updates,
           });
         },
         schema: {
@@ -114,13 +114,13 @@ export class CalendarSpecialistAgent extends Agent {
           properties: {
             calendarId: { type: 'string', description: 'Calendar ID' },
             eventId: { type: 'string', description: 'Event ID to update' },
-            updates: { 
+            updates: {
               type: 'object',
-              description: 'Fields to update (summary, description, start_time, etc.)'
-            }
+              description: 'Fields to update (summary, description, start_time, etc.)',
+            },
           },
-          required: ['calendarId', 'eventId', 'updates']
-        }
+          required: ['calendarId', 'eventId', 'updates'],
+        },
       },
 
       {
@@ -128,11 +128,11 @@ export class CalendarSpecialistAgent extends Agent {
         description: 'Delete calendar event',
         execute: async (params: any) => {
           const { calendarId, eventId, needNotification = true } = params;
-          
+
           return this.executeMcpTool('calendar.v4.calendar.event.delete', {
             calendar_id: calendarId,
             event_id: eventId,
-            need_notification: needNotification
+            need_notification: needNotification,
           });
         },
         schema: {
@@ -140,10 +140,10 @@ export class CalendarSpecialistAgent extends Agent {
           properties: {
             calendarId: { type: 'string', description: 'Calendar ID' },
             eventId: { type: 'string', description: 'Event ID to delete' },
-            needNotification: { type: 'boolean', default: true }
+            needNotification: { type: 'boolean', default: true },
           },
-          required: ['calendarId', 'eventId']
-        }
+          required: ['calendarId', 'eventId'],
+        },
       },
 
       {
@@ -151,12 +151,12 @@ export class CalendarSpecialistAgent extends Agent {
         description: 'Search for available meeting rooms',
         execute: async (params: any) => {
           const { startTime, endTime, capacity, building } = params;
-          
+
           return this.executeMcpTool('calendar.v4.meeting_room.search', {
             start_time: startTime,
             end_time: endTime,
             capacity,
-            building
+            building,
           });
         },
         schema: {
@@ -165,10 +165,10 @@ export class CalendarSpecialistAgent extends Agent {
             startTime: { type: 'string', description: 'Start time for availability check' },
             endTime: { type: 'string', description: 'End time for availability check' },
             capacity: { type: 'number', description: 'Required room capacity' },
-            building: { type: 'string', description: 'Building preference' }
+            building: { type: 'string', description: 'Building preference' },
           },
-          required: ['startTime', 'endTime']
-        }
+          required: ['startTime', 'endTime'],
+        },
       },
 
       {
@@ -176,11 +176,11 @@ export class CalendarSpecialistAgent extends Agent {
         description: 'Check attendee availability for scheduling',
         execute: async (params: any) => {
           const { attendeeEmails, startTime, endTime } = params;
-          
+
           return this.executeMcpTool('calendar.v4.freebusy.batch_get', {
             time_min: startTime,
             time_max: endTime,
-            attendees: attendeeEmails.map((email: string) => ({ email }))
+            attendees: attendeeEmails.map((email: string) => ({ email })),
           });
         },
         schema: {
@@ -189,28 +189,21 @@ export class CalendarSpecialistAgent extends Agent {
             attendeeEmails: {
               type: 'array',
               items: { type: 'string' },
-              description: 'List of attendee email addresses'
+              description: 'List of attendee email addresses',
             },
             startTime: { type: 'string', description: 'Start time for availability check' },
-            endTime: { type: 'string', description: 'End time for availability check' }
+            endTime: { type: 'string', description: 'End time for availability check' },
           },
-          required: ['attendeeEmails', 'startTime', 'endTime']
-        }
+          required: ['attendeeEmails', 'startTime', 'endTime'],
+        },
       },
 
       {
         name: 'create_recurring_event',
         description: 'Create recurring calendar event',
         execute: async (params: any) => {
-          const { 
-            calendarId, 
-            summary, 
-            startTime, 
-            endTime, 
-            recurrenceRule,
-            attendees = []
-          } = params;
-          
+          const { calendarId, summary, startTime, endTime, recurrenceRule, attendees = [] } = params;
+
           return this.executeMcpTool('calendar.v4.calendar.event.create', {
             calendar_id: calendarId,
             summary,
@@ -219,8 +212,8 @@ export class CalendarSpecialistAgent extends Agent {
             recurrence: [recurrenceRule],
             attendees: attendees.map((email: string) => ({
               type: 'third_party',
-              email
-            }))
+              email,
+            })),
           });
         },
         schema: {
@@ -230,18 +223,18 @@ export class CalendarSpecialistAgent extends Agent {
             summary: { type: 'string', description: 'Event title' },
             startTime: { type: 'string', description: 'Start timestamp' },
             endTime: { type: 'string', description: 'End timestamp' },
-            recurrenceRule: { 
-              type: 'string', 
-              description: 'RRULE string (e.g., FREQ=WEEKLY;BYDAY=MO,WE,FR)'
+            recurrenceRule: {
+              type: 'string',
+              description: 'RRULE string (e.g., FREQ=WEEKLY;BYDAY=MO,WE,FR)',
             },
             attendees: {
               type: 'array',
               items: { type: 'string' },
-              description: 'Attendee email addresses'
-            }
+              description: 'Attendee email addresses',
+            },
           },
-          required: ['calendarId', 'summary', 'startTime', 'endTime', 'recurrenceRule']
-        }
+          required: ['calendarId', 'summary', 'startTime', 'endTime', 'recurrenceRule'],
+        },
       },
 
       {
@@ -249,11 +242,11 @@ export class CalendarSpecialistAgent extends Agent {
         description: 'Send meeting invitation to attendees',
         execute: async (params: any) => {
           const { calendarId, eventId, message } = params;
-          
+
           return this.executeMcpTool('calendar.v4.calendar.event.attendee.batch_create', {
             calendar_id: calendarId,
             event_id: eventId,
-            message
+            message,
           });
         },
         schema: {
@@ -261,10 +254,10 @@ export class CalendarSpecialistAgent extends Agent {
           properties: {
             calendarId: { type: 'string', description: 'Calendar ID' },
             eventId: { type: 'string', description: 'Event ID' },
-            message: { type: 'string', description: 'Invitation message' }
+            message: { type: 'string', description: 'Invitation message' },
           },
-          required: ['calendarId', 'eventId']
-        }
+          required: ['calendarId', 'eventId'],
+        },
       },
 
       {
@@ -272,18 +265,18 @@ export class CalendarSpecialistAgent extends Agent {
         description: 'Get list of accessible calendars',
         execute: async (params: any) => {
           const { pageSize = 50 } = params;
-          
+
           return this.executeMcpTool('calendar.v4.calendar.list', {
-            page_size: pageSize
+            page_size: pageSize,
           });
         },
         schema: {
           type: 'object',
           properties: {
-            pageSize: { type: 'number', default: 50 }
-          }
-        }
-      }
+            pageSize: { type: 'number', default: 50 },
+          },
+        },
+      },
     ];
 
     const specialistConfig: AgentConfig = {
@@ -315,7 +308,7 @@ export class CalendarSpecialistAgent extends Agent {
       temperature: 0.1, // 時間管理は正確性が重要
       maxTokens: 3500,
       language: 'ja',
-      ...config
+      ...config,
     };
 
     super(specialistConfig);
@@ -333,19 +326,18 @@ export class CalendarSpecialistAgent extends Agent {
         timestamp: new Date().toISOString(),
         data: {
           message: `Executed ${toolName} successfully`,
-          ...params
-        }
+          ...params,
+        },
       };
 
       return response;
-
     } catch (error) {
       return {
         success: false,
         tool: toolName,
         parameters: params,
         error: String(error),
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
     }
   }
@@ -403,7 +395,10 @@ export class CalendarSpecialistAgent extends Agent {
     }
 
     const optimalTimes = preferredTimes || [
-      '09:00', '10:00', '14:00', '15:00' // Default business hours
+      '09:00',
+      '10:00',
+      '14:00',
+      '15:00', // Default business hours
     ];
 
     return {
@@ -411,7 +406,7 @@ export class CalendarSpecialistAgent extends Agent {
       recommendations,
       optimalTimes,
       roomSuggestions: this.suggestRooms(roomCapacity || attendees.length),
-      estimatedSchedulingTime: difficulty === 'challenging' ? 300 : difficulty === 'moderate' ? 120 : 60
+      estimatedSchedulingTime: difficulty === 'challenging' ? 300 : difficulty === 'moderate' ? 120 : 60,
     };
   }
 
@@ -435,10 +430,10 @@ export class CalendarSpecialistAgent extends Agent {
    */
   parseTimeInput(timeString: string): { startTime: string; endTime: string; isValid: boolean } {
     const now = new Date();
-    
+
     // Handle common patterns
     const patterns = [
-      /明日の?(\d{1,2}):?(\d{2})?/,  // 明日の14:00
+      /明日の?(\d{1,2}):?(\d{2})?/, // 明日の14:00
       /来週の?(月|火|水|木|金|土|日)曜?日?の?(\d{1,2}):?(\d{2})?/, // 来週の月曜日の10:00
       /(\d{1,2})月(\d{1,2})日の?(\d{1,2}):?(\d{2})?/, // 3月15日の14:00
     ];
@@ -454,7 +449,7 @@ export class CalendarSpecialistAgent extends Agent {
     return {
       startTime: tomorrow.toISOString(),
       endTime: endTime.toISOString(),
-      isValid: true
+      isValid: true,
     };
   }
 }
@@ -473,35 +468,35 @@ export async function createCalendarSpecialist(): Promise<string> {
         properties: {
           operation: { type: 'string' },
           calendarId: { type: 'string' },
-          eventDetails: { type: 'object' }
-        }
-      }
+          eventDetails: { type: 'object' },
+        },
+      },
     },
     {
       name: 'meeting_scheduling',
       description: 'Optimal meeting time finding and scheduling',
-      category: 'calendar'
+      category: 'calendar',
     },
     {
       name: 'room_booking',
       description: 'Meeting room reservation and management',
-      category: 'calendar'
+      category: 'calendar',
     },
     {
       name: 'availability_checking',
       description: 'Attendee availability verification',
-      category: 'calendar'
+      category: 'calendar',
     },
     {
       name: 'recurring_events',
       description: 'Recurring event series management',
-      category: 'calendar'
+      category: 'calendar',
     },
     {
       name: 'time_analysis',
       description: 'Meeting pattern analysis and optimization',
-      category: 'calendar'
-    }
+      category: 'calendar',
+    },
   ];
 
   const metadata: AgentMetadata = {
@@ -513,7 +508,7 @@ export async function createCalendarSpecialist(): Promise<string> {
     maxConcurrentTasks: 4,
     currentTasks: 0,
     lastHeartbeat: new Date(),
-    version: '1.0.0'
+    version: '1.0.0',
   };
 
   const registered = await globalRegistry.registerAgent(metadata);

@@ -85,22 +85,22 @@ export const COMMAND_STACK: CommandStackLevel[] = [
               id: { type: 'string' },
               description: { type: 'string' },
               priority: { type: 'string', enum: ['high', 'medium', 'low'] },
-              complexity: { type: 'number', minimum: 1, maximum: 5 }
-            }
-          }
+              complexity: { type: 'number', minimum: 1, maximum: 5 },
+            },
+          },
         },
         nonFunctionalRequirements: {
           type: 'object',
           properties: {
             performance: { type: 'string' },
             security: { type: 'string' },
-            scalability: { type: 'string' }
-          }
+            scalability: { type: 'string' },
+          },
         },
-        constraints: { type: 'array', items: { type: 'string' } }
+        constraints: { type: 'array', items: { type: 'string' } },
       },
-      required: ['projectTitle', 'domain', 'functionalRequirements']
-    }
+      required: ['projectTitle', 'domain', 'functionalRequirements'],
+    },
   },
   {
     id: 'C2',
@@ -163,13 +163,13 @@ export const COMMAND_STACK: CommandStackLevel[] = [
                     type: { type: 'string', enum: ['string', 'number', 'date', 'boolean', 'select', 'multiSelect'] },
                     required: { type: 'boolean' },
                     description: { type: 'string' },
-                    options: { type: 'array', items: { type: 'string' } }
-                  }
-                }
+                    options: { type: 'array', items: { type: 'string' } },
+                  },
+                },
               },
-              primaryKey: { type: 'string' }
-            }
-          }
+              primaryKey: { type: 'string' },
+            },
+          },
         },
         relationships: {
           type: 'array',
@@ -179,13 +179,13 @@ export const COMMAND_STACK: CommandStackLevel[] = [
               from: { type: 'string' },
               to: { type: 'string' },
               type: { type: 'string', enum: ['oneToOne', 'oneToMany', 'manyToMany'] },
-              description: { type: 'string' }
-            }
-          }
+              description: { type: 'string' },
+            },
+          },
         },
-        mermaidDiagram: { type: 'string' }
-      }
-    }
+        mermaidDiagram: { type: 'string' },
+      },
+    },
   },
   {
     id: 'C3',
@@ -253,13 +253,13 @@ export const COMMAND_STACK: CommandStackLevel[] = [
               name: { type: 'string' },
               description: { type: 'string' },
               fields: { type: 'array' },
-              views: { type: 'array' }
-            }
-          }
+              views: { type: 'array' },
+            },
+          },
         },
-        automations: { type: 'array' }
-      }
-    }
+        automations: { type: 'array' },
+      },
+    },
   },
   {
     id: 'C4',
@@ -309,9 +309,9 @@ Lark Base構造を基に、ビジネスロジックと計算式を設計して�
       properties: {
         businessRules: { type: 'array' },
         formulas: { type: 'array' },
-        validations: { type: 'array' }
-      }
-    }
+        validations: { type: 'array' },
+      },
+    },
   },
   {
     id: 'C5',
@@ -359,9 +359,9 @@ Lark Base構造を基に、ビジネスロジックと計算式を設計して�
       type: 'object',
       properties: {
         workflows: { type: 'array' },
-        notifications: { type: 'array' }
-      }
-    }
+        notifications: { type: 'array' },
+      },
+    },
   },
   {
     id: 'C6',
@@ -421,9 +421,9 @@ Lark Base構造を基に、ビジネスロジックと計算式を設計して�
       properties: {
         dashboards: { type: 'array' },
         forms: { type: 'array' },
-        permissions: { type: 'array' }
-      }
-    }
+        permissions: { type: 'array' },
+      },
+    },
   },
   {
     id: 'C7',
@@ -490,10 +490,10 @@ Lark Base構造を基に、ビジネスロジックと計算式を設計して�
       properties: {
         implementationPlan: { type: 'object' },
         deploymentGuide: { type: 'object' },
-        documentation: { type: 'object' }
-      }
-    }
-  }
+        documentation: { type: 'object' },
+      },
+    },
+  },
 ];
 
 /**
@@ -509,7 +509,7 @@ export class GenesisPromptEngine {
     this.geminiClient = new GeminiClient({
       apiKey: this.config.geminiApiKey,
       maxRetries: this.config.maxRetries,
-      timeoutMs: this.config.timeoutMs
+      timeoutMs: this.config.timeoutMs,
     });
   }
 
@@ -524,19 +524,19 @@ export class GenesisPromptEngine {
       metadata: {
         projectId: `genesis_${Date.now()}`,
         timestamp: Date.now(),
-        version: '1.0.0'
-      }
+        version: '1.0.0',
+      },
     };
 
     for (let i = 0; i < COMMAND_STACK.length; i++) {
       const command = COMMAND_STACK[i];
       this.log(`Executing ${command.id}: ${command.name}`);
-      
+
       try {
         context.currentLevel = i + 1;
         const result = await this.executeCommand(command, context);
         context.results[command.id] = result;
-        
+
         this.log(`Completed ${command.id} successfully`);
       } catch (error) {
         this.log(`Error in ${command.id}: ${error}`);
@@ -562,7 +562,7 @@ export class GenesisPromptEngine {
 
     // プロンプト組み立て
     let prompt = command.prompt;
-    
+
     // 依存関係の結果を注入
     if (command.dependencies) {
       for (const dep of command.dependencies) {
@@ -570,16 +570,16 @@ export class GenesisPromptEngine {
         prompt = prompt.replace(`{${dep}_result}`, depResult);
       }
     }
-    
+
     // 要求仕様を注入
     prompt = prompt.replace('{requirements}', context.requirements);
 
     // Gemini APIを呼び出し
     const response = await this.callGeminiAPI(prompt, command.outputSchema);
-    
+
     // レスポンス検証
     this.validateResponse(response, command.outputSchema);
-    
+
     return response;
   }
 
@@ -590,9 +590,9 @@ export class GenesisPromptEngine {
     try {
       const response = await this.geminiClient.generateStructuredContent(prompt, schema, {
         temperature: 0.1,
-        maxOutputTokens: 4096
+        maxOutputTokens: 4096,
       });
-      
+
       return response;
     } catch (error) {
       this.log(`Gemini API error: ${error}`);
@@ -621,7 +621,7 @@ export class GenesisPromptEngine {
    * 特定のコマンドのみ実行
    */
   async executeSpecificCommand(commandId: string, context: ExecutionContext): Promise<any> {
-    const command = COMMAND_STACK.find(c => c.id === commandId);
+    const command = COMMAND_STACK.find((c) => c.id === commandId);
     if (!command) {
       throw new Error(`Command ${commandId} not found`);
     }
@@ -635,13 +635,13 @@ export class GenesisPromptEngine {
   getExecutionStatus(context: ExecutionContext): any {
     const totalCommands = COMMAND_STACK.length;
     const completedCommands = Object.keys(context.results).length;
-    
+
     return {
       progress: (completedCommands / totalCommands) * 100,
       currentLevel: context.currentLevel,
       completedCommands: Object.keys(context.results),
       nextCommand: COMMAND_STACK[completedCommands]?.id || null,
-      isComplete: completedCommands === totalCommands
+      isComplete: completedCommands === totalCommands,
     };
   }
 }

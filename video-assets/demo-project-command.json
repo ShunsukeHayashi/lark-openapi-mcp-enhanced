@@ -1,0 +1,14 @@
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "params": {
+    "name": "genesis.builtin.create_base",
+    "arguments": {
+      "requirements": "Development team needs a comprehensive project management system for agile software development.\n\nKey Requirements:\n• Epic and user story management with acceptance criteria\n• Sprint planning and backlog management (2-week sprints)\n• Task tracking with time estimates, actual time, and remaining work\n• Bug tracking with severity, priority, and resolution tracking\n• Team member assignments and capacity planning\n• Burndown charts and velocity tracking\n• Code repository integration and deployment tracking\n• Daily standup and retrospective support\n\nThe system should support 2-3 development teams (8-12 people total) working on multiple projects simultaneously.",
+      "template_type": "project_management",
+      "include_sample_data": true,
+      "optimization_level": "high"
+    }
+  },
+  "id": 2
+}

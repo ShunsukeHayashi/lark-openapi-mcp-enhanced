@@ -5487,9 +5487,7 @@ export const docxV1DocumentBlockBatchUpdate = {
     path: z.object({
       document_id: z
         .string()
-        .describe(
-          'Unique identification of the document. Corresponding to the token of the Upgraded Docs, ',
-        )
+        .describe('Unique identification of the document. Corresponding to the token of the Upgraded Docs, ')
         .optional(),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
@@ -5526,9 +5524,7 @@ export const docxV1DocumentBlockChildrenBatchDelete = {
     path: z.object({
       document_id: z
         .string()
-        .describe(
-          'Unique identification of the document. Corresponding to the token of the Upgraded Docs, ',
-        ),
+        .describe('Unique identification of the document. Corresponding to the token of the Upgraded Docs, '),
       block_id: z.string().describe("Parent block's unique identity"),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
@@ -10894,12 +10890,7 @@ export const docxV1DocumentBlockChildrenCreate = {
             quote_container: z.object({}).describe('Quote Container Block').optional(),
             okr: z
               .object({
-                okr_id: z
-                  .string()
-                  .describe(
-                    "OKR ID. Get the OKR ID that needs to be inserted and see ",
-                  )
-                  .optional(),
+                okr_id: z.string().describe('OKR ID. Get the OKR ID that needs to be inserted and see ').optional(),
                 objectives: z
                   .array(
                     z.object({
@@ -10949,9 +10940,7 @@ export const docxV1DocumentBlockChildrenCreate = {
     path: z.object({
       document_id: z
         .string()
-        .describe(
-          'Unique identification of the document. Corresponding to the token of the Upgraded Docs, ',
-        ),
+        .describe('Unique identification of the document. Corresponding to the token of the Upgraded Docs, '),
       block_id: z.string().describe("Block's unique identity"),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
@@ -10981,9 +10970,7 @@ export const docxV1DocumentBlockChildrenGet = {
     path: z.object({
       document_id: z
         .string()
-        .describe(
-          'Unique identification of the document. Corresponding to the token of the Upgraded Docs, ',
-        ),
+        .describe('Unique identification of the document. Corresponding to the token of the Upgraded Docs, '),
       block_id: z.string().describe("Block's unique identity"),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
@@ -15605,9 +15592,7 @@ export const docxV1DocumentBlockGet = {
     path: z.object({
       document_id: z
         .string()
-        .describe(
-          'Unique identification of the document. Corresponding to the token of the Upgraded Docs, ',
-        ),
+        .describe('Unique identification of the document. Corresponding to the token of the Upgraded Docs, '),
       block_id: z.string().describe("Block's unique identity"),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
@@ -15637,9 +15622,7 @@ export const docxV1DocumentBlockList = {
     path: z.object({
       document_id: z
         .string()
-        .describe(
-          'Unique identification of the document. Corresponding to the token of the Upgraded Docs, ',
-        ),
+        .describe('Unique identification of the document. Corresponding to the token of the Upgraded Docs, '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -16448,9 +16431,7 @@ export const docxV1DocumentBlockPatch = {
     path: z.object({
       document_id: z
         .string()
-        .describe(
-          'Unique identification of the document. Corresponding to the token of the Upgraded Docs, ',
-        ),
+        .describe('Unique identification of the document. Corresponding to the token of the Upgraded Docs, '),
       block_id: z.string().describe("Block's unique identity"),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
@@ -16491,9 +16472,7 @@ export const docxV1DocumentGet = {
     path: z.object({
       document_id: z
         .string()
-        .describe(
-          'The unique identification of the document. Click  to learn how to get `document_id`',
-        ),
+        .describe('The unique identification of the document. Click  to learn how to get `document_id`'),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -16519,9 +16498,7 @@ export const docxV1DocumentRawContent = {
     path: z.object({
       document_id: z
         .string()
-        .describe(
-          'The unique identification of the document. Click  to learn how to get `document_id`',
-        ),
+        .describe('The unique identification of the document. Click  to learn how to get `document_id`'),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },

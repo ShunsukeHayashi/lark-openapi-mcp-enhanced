@@ -29,11 +29,7 @@ export const driveV2FileLikeList = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional(),
     }),
     path: z.object({
-      file_token: z
-        .string()
-        .describe(
-          'The document token specified to query the like list. ',
-        ),
+      file_token: z.string().describe('The document token specified to query the like list. '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -56,11 +52,7 @@ export const driveV2PermissionPublicGet = {
         ),
     }),
     path: z.object({
-      token: z
-        .string()
-        .describe(
-          'Token of the file. For more information about how to obtain the token, see ',
-        ),
+      token: z.string().describe('Token of the file. For more information about how to obtain the token, see '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -135,11 +127,7 @@ export const driveV2PermissionPublicPatch = {
         ),
     }),
     path: z.object({
-      token: z
-        .string()
-        .describe(
-          'Token of the file. For more information about how to obtain the token, see ',
-        ),
+      token: z.string().describe('Token of the file. For more information about how to obtain the token, see '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },

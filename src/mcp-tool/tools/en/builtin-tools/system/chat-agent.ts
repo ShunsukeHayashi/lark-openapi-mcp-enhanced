@@ -1,10 +1,7 @@
 import { McpTool } from '../../../../types';
 import { z } from 'zod';
 
-export type ChatAgentToolName = 
-  | 'system.chat.message'
-  | 'system.chat.command'
-  | 'system.chat.context';
+export type ChatAgentToolName = 'system.chat.message' | 'system.chat.command' | 'system.chat.context';
 
 /**
  * LLM Chat Agent - ユーザーとの対話を処理するメインエージェント
@@ -19,18 +16,21 @@ export const systemChatMessageTool: McpTool = {
       user_message: z.string().describe('User message content'),
       chat_id: z.string().describe('Chat ID to send response to'),
       user_id: z.string().optional().describe('User ID for personalization'),
-      message_type: z.enum(['text', 'command', 'question', 'request']).optional().describe('Message type classification'),
-      context: z.record(z.any()).optional().describe('Additional context information')
-    })
+      message_type: z
+        .enum(['text', 'command', 'question', 'request'])
+        .optional()
+        .describe('Message type classification'),
+      context: z.record(z.any()).optional().describe('Additional context information'),
+    }),
   },
   customHandler: async (client, params): Promise<any> => {
     try {
       const { user_message, chat_id, user_id, message_type, context } = params.data;
-      
+
       // メッセージの分析と分類
       const messageAnalysis = analyzeUserMessage(user_message);
       const responseText = await generateResponse(user_message, messageAnalysis, context);
-      
+
       // Larkにメッセージを送信
       const response = await client.request({
         method: 'POST',
@@ -39,26 +39,30 @@ export const systemChatMessageTool: McpTool = {
         data: {
           receive_id: chat_id,
           msg_type: 'text',
-          content: JSON.stringify({ text: responseText })
-        }
+          content: JSON.stringify({ text: responseText }),
+        },
       });
-      
+
       return {
-        content: [{
-          type: 'text' as const,
-          text: `Chat response sent: "${responseText.substring(0, 100)}${responseText.length > 100 ? '...' : ''}"`
-        }]
+        content: [
+          {
+            type: 'text' as const,
+            text: `Chat response sent: "${responseText.substring(0, 100)}${responseText.length > 100 ? '...' : ''}"`,
+          },
+        ],
       };
     } catch (error) {
       return {
         isError: true,
-        content: [{
-          type: 'text' as const,
-          text: `Failed to process chat message: ${error}`
-        }]
+        content: [
+          {
+            type: 'text' as const,
+            text: `Failed to process chat message: ${error}`,
+          },
+        ],
       };
     }
-  }
+  },
 };
 
 /**
@@ -74,31 +78,35 @@ export const systemChatCommandTool: McpTool = {
       command: z.string().describe('Command to execute'),
       args: z.array(z.string()).optional().describe('Command arguments'),
       chat_id: z.string().describe('Chat ID to send response to'),
-      user_id: z.string().optional().describe('User ID for authorization')
-    })
+      user_id: z.string().optional().describe('User ID for authorization'),
+    }),
   },
   customHandler: async (client, params): Promise<any> => {
     try {
       const { command, args = [], chat_id, user_id } = params.data;
-      
+
       const commandResult = await executeCommand(command, args, client, chat_id);
-      
+
       return {
-        content: [{
-          type: 'text' as const,
-          text: `Command executed: ${command} ${args.join(' ')}`
-        }]
+        content: [
+          {
+            type: 'text' as const,
+            text: `Command executed: ${command} ${args.join(' ')}`,
+          },
+        ],
       };
     } catch (error) {
       return {
         isError: true,
-        content: [{
-          type: 'text' as const,
-          text: `Failed to execute command: ${error}`
-        }]
+        content: [
+          {
+            type: 'text' as const,
+            text: `Failed to execute command: ${error}`,
+          },
+        ],
       };
     }
-  }
+  },
 };
 
 /**
@@ -115,33 +123,37 @@ export const systemChatContextTool: McpTool = {
       chat_id: z.string().describe('Chat ID'),
       user_id: z.string().optional().describe('User ID'),
       context_data: z.record(z.any()).optional().describe('Context data to save'),
-      key: z.string().optional().describe('Specific context key to retrieve')
-    })
+      key: z.string().optional().describe('Specific context key to retrieve'),
+    }),
   },
   customHandler: async (client, params): Promise<any> => {
     try {
       const { action, chat_id, user_id, context_data, key } = params.data;
-      
+
       // 簡易的なインメモリコンテキスト管理
       // 実際の実装では、データベースやRedisを使用
       const contextResult = await manageContext(action, chat_id, user_id, context_data, key);
-      
+
       return {
-        content: [{
-          type: 'text' as const,
-          text: `Context ${action} completed for chat ${chat_id}`
-        }]
+        content: [
+          {
+            type: 'text' as const,
+            text: `Context ${action} completed for chat ${chat_id}`,
+          },
+        ],
       };
     } catch (error) {
       return {
         isError: true,
-        content: [{
-          type: 'text' as const,
-          text: `Failed to manage context: ${error}`
-        }]
+        content: [
+          {
+            type: 'text' as const,
+            text: `Failed to manage context: ${error}`,
+          },
+        ],
       };
     }
-  }
+  },
 };
 
 // ヘルパー関数群
@@ -157,11 +169,12 @@ function analyzeUserMessage(message: string): {
   category: string;
 } {
   const lowercaseMessage = message.toLowerCase();
-  
+
   // コマンドの検出
-  const isCommand = lowercaseMessage.startsWith('/') || 
-                   !!lowercaseMessage.match(/^(help|use|settings|status|show|list|create|delete|update)/);
-  
+  const isCommand =
+    lowercaseMessage.startsWith('/') ||
+    !!lowercaseMessage.match(/^(help|use|settings|status|show|list|create|delete|update)/);
+
   // インテント分析
   let intent = 'general';
   if (lowercaseMessage.includes('help') || lowercaseMessage.includes('ヘルプ')) {
@@ -173,22 +186,22 @@ function analyzeUserMessage(message: string): {
   } else if (lowercaseMessage.includes('show') || lowercaseMessage.includes('表示')) {
     intent = 'show_request';
   }
-  
+
   // エンティティ抽出（簡易版）
   const entities: string[] = [];
   const keywords = ['base', 'document', 'message', 'calendar', 'contact', 'user', 'table', 'record'];
-  keywords.forEach(keyword => {
+  keywords.forEach((keyword) => {
     if (lowercaseMessage.includes(keyword)) {
       entities.push(keyword);
     }
   });
-  
+
   return {
     intent,
     entities,
     sentiment: 'neutral',
     isCommand,
-    category: entities[0] || 'general'
+    category: entities[0] || 'general',
   };
 }
 
@@ -196,31 +209,31 @@ function analyzeUserMessage(message: string): {
  * レスポンス生成
  */
 async function generateResponse(
-  userMessage: string, 
+  userMessage: string,
   analysis: ReturnType<typeof analyzeUserMessage>,
-  context?: Record<string, any>
+  context?: Record<string, any>,
 ): Promise<string> {
   const { intent, entities, isCommand, category } = analysis;
-  
+
   // コマンドの場合
   if (isCommand) {
     return handleCommandResponse(userMessage, analysis);
   }
-  
+
   // インテント別のレスポンス生成
   switch (intent) {
     case 'help_request':
       return generateHelpResponse(entities);
-    
+
     case 'create_request':
       return generateCreateResponse(entities, userMessage);
-    
+
     case 'search_request':
       return generateSearchResponse(entities, userMessage);
-    
+
     case 'show_request':
       return generateShowResponse(entities, userMessage);
-    
+
     default:
       return generateGeneralResponse(userMessage, entities, context);
   }
@@ -241,7 +254,7 @@ function generateHelpResponse(entities: string[]): string {
 
 例: "salesテーブルからレコードを検索して"`;
   }
-  
+
   if (entities.includes('message') || entities.includes('chat')) {
     return `💬 **メッセージング ヘルプ**
 
@@ -253,7 +266,7 @@ function generateHelpResponse(entities: string[]): string {
 
 例: "営業チームにメッセージを送って"`;
   }
-  
+
   return `🤖 **MCP統合ツール ヘルプ**
 
 主な機能:
@@ -282,7 +295,7 @@ function generateCreateResponse(entities: string[], userMessage: string): string
 業界: IT
 担当者: 田中太郎"`;
   }
-  
+
   if (entities.includes('message')) {
     return `💬 **メッセージ作成**
 
@@ -292,7 +305,7 @@ function generateCreateResponse(entities: string[], userMessage: string): string
 
 例: "営業チームに「今日の会議は15時からです」と送信"`;
   }
-  
+
   return `✨ **作成機能**
 
 作成できるもの:
@@ -317,7 +330,7 @@ function generateSearchResponse(entities: string[], userMessage: string): string
 
 例: "顧客テーブルから業界がITの会社を検索"`;
   }
-  
+
   if (entities.includes('document')) {
     return `📄 **ドキュメント検索**
 
@@ -327,7 +340,7 @@ function generateSearchResponse(entities: string[], userMessage: string): string
 
 例: "プロジェクト計画書を検索"`;
   }
-  
+
   return `🔍 **検索機能**
 
 検索できるもの:
@@ -352,7 +365,7 @@ function generateShowResponse(entities: string[], userMessage: string): string {
 
 例: "売上テーブルの今月のデータを表示"`;
   }
-  
+
   return `📋 **表示機能**
 
 表示できるもの:
@@ -369,7 +382,7 @@ function generateShowResponse(entities: string[], userMessage: string): string {
  */
 function generateGeneralResponse(userMessage: string, entities: string[], context?: Record<string, any>): string {
   const lowerMessage = userMessage.toLowerCase();
-  
+
   // 挨拶の検出
   if (!!lowerMessage.match(/(こんにちは|おはよう|こんばんは|hello|hi)/)) {
     return `こんにちは！🎉 MCP統合ツールです。
@@ -383,14 +396,14 @@ function generateGeneralResponse(userMessage: string, entities: string[], contex
 
 何かご質問があれば、お気軽にお聞きください！`;
   }
-  
+
   // 感謝の検出
   if (!!lowerMessage.match(/(ありがとう|thank you|thanks)/)) {
     return `どういたしまして！😊
 
 他にもお手伝いできることがあれば、遠慮なくお声がけください。`;
   }
-  
+
   // デフォルトレスポンス
   return `申し訳ございませんが、「${userMessage}」について詳しく説明していただけますか？
 
@@ -407,19 +420,19 @@ function generateGeneralResponse(userMessage: string, entities: string[], contex
  */
 function handleCommandResponse(userMessage: string, analysis: ReturnType<typeof analyzeUserMessage>): string {
   const command = userMessage.toLowerCase().trim();
-  
+
   if (command.startsWith('help')) {
     const topic = command.split(' ')[1];
     return generateHelpResponse(topic ? [topic] : []);
   }
-  
+
   if (command.startsWith('use ')) {
     const preset = command.substring(4);
     return `🔧 プリセット「${preset}」に切り替えます。
 
 しばらくお待ちください...`;
   }
-  
+
   if (command === 'settings') {
     return `⚙️ **現在の設定**
 
@@ -430,7 +443,7 @@ function handleCommandResponse(userMessage: string, analysis: ReturnType<typeof 
 
 設定を変更しますか？`;
   }
-  
+
   if (command === 'status') {
     return `🚀 **システム状況**
 
@@ -441,7 +454,7 @@ function handleCommandResponse(userMessage: string, analysis: ReturnType<typeof 
 
 すべてのシステムが正常に動作しています！`;
   }
-  
+
   return `❓ 不明なコマンド: ${userMessage}
 
 利用可能なコマンド:
@@ -465,39 +478,35 @@ async function executeCommand(command: string, args: string[], client: any, chat
  * コンテキスト管理
  */
 async function manageContext(
-  action: string, 
-  chatId: string, 
-  userId?: string, 
-  contextData?: Record<string, any>, 
-  key?: string
+  action: string,
+  chatId: string,
+  userId?: string,
+  contextData?: Record<string, any>,
+  key?: string,
 ): Promise<any> {
   // 簡易的なインメモリ実装
   // 実際の実装では永続化が必要
   const contexts = new Map<string, Record<string, any>>();
-  
+
   const contextKey = `${chatId}:${userId || 'anonymous'}`;
-  
+
   switch (action) {
     case 'save':
       if (contextData) {
         contexts.set(contextKey, { ...contexts.get(contextKey), ...contextData });
       }
       break;
-    
+
     case 'retrieve':
       const context = contexts.get(contextKey);
       return key ? context?.[key] : context;
-    
+
     case 'clear':
       contexts.delete(contextKey);
       break;
   }
-  
+
   return { success: true };
 }
 
-export const chatAgentTools = [
-  systemChatMessageTool,
-  systemChatCommandTool,
-  systemChatContextTool
-];
+export const chatAgentTools = [systemChatMessageTool, systemChatCommandTool, systemChatContextTool];

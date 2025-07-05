@@ -58,18 +58,12 @@ export const bitableV1AppCopy = {
   schema: {
     data: z.object({
       name: z.string().describe('Base App Name').optional(),
-      folder_token: z
-        .string()
-        .describe('')
-        .optional(),
+      folder_token: z.string().describe('').optional(),
       without_content: z
         .boolean()
         .describe('Whether to copy the Base content, take the value:* true: not copy* false: copy')
         .optional(),
-      time_zone: z
-        .string()
-        .describe('Base App Time Zone, ')
-        .optional(),
+      time_zone: z.string().describe('Base App Time Zone, ').optional(),
     }),
     path: z.object({ app_token: z.string().describe('Base unique App identifier') }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
@@ -92,10 +86,7 @@ export const bitableV1AppCreate = {
           'Base App Folder Token. The default value is empty, which means that the Base App is created at the root folder. For information on how to obtain folder_token, please refer to ',
         )
         .optional(),
-      time_zone: z
-        .string()
-        .describe('Base App Time Zone, ')
-        .optional(),
+      time_zone: z.string().describe('Base App Time Zone, ').optional(),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -536,9 +527,7 @@ export const bitableV1AppTableBatchDelete = {
     data: z.object({
       table_ids: z
         .array(z.string())
-        .describe(
-          'Base data table unique device identifier,Currently supports up to 50 data tables in one operation',
-        )
+        .describe('Base data table unique device identifier,Currently supports up to 50 data tables in one operation')
         .optional(),
     }),
     path: z.object({ app_token: z.string().describe('Base unique App identifier') }),
@@ -876,9 +865,7 @@ export const bitableV1AppTableFieldCreate = {
                     .describe('Relevant settings for scoring fields')
                     .optional(),
                 })
-                .describe(
-                  'Field Property, ref: ',
-                )
+                .describe('Field Property, ref: ')
                 .optional(),
               ui_type: z
                 .enum(['Number', 'Progress', 'Currency', 'Rating', 'DateTime'])
@@ -890,9 +877,7 @@ export const bitableV1AppTableFieldCreate = {
             .describe('Set the type of the formula field')
             .optional(),
         })
-        .describe(
-          'Field Property, ref: ',
-        )
+        .describe('Field Property, ref: ')
         .optional(),
       description: z
         .object({
@@ -1134,9 +1119,7 @@ export const bitableV1AppTableFieldUpdate = {
                     .describe('Relevant settings for scoring fields')
                     .optional(),
                 })
-                .describe(
-                  'Field Property, ref: ',
-                )
+                .describe('Field Property, ref: ')
                 .optional(),
               ui_type: z
                 .enum(['Number', 'Progress', 'Currency', 'Rating', 'DateTime'])
@@ -1148,9 +1131,7 @@ export const bitableV1AppTableFieldUpdate = {
             .describe('Set the type of the formula field')
             .optional(),
         })
-        .describe(
-          'Field Property, ref: ',
-        )
+        .describe('Field Property, ref: ')
         .optional(),
       description: z
         .object({
@@ -1424,11 +1405,7 @@ export const bitableV1AppTableRecordBatchGet = {
   accessTokens: ['tenant', 'user'],
   schema: {
     data: z.object({
-      record_ids: z
-        .array(z.string())
-        .describe(
-          'record id list. See ',
-        ),
+      record_ids: z.array(z.string()).describe('record id list. See '),
       user_id_type: z.enum(['user_id', 'union_id', 'open_id']).describe('User ID type').optional(),
       with_shared_url: z
         .boolean()
@@ -1665,20 +1642,13 @@ export const bitableV1AppTableRecordSearch = {
                   .describe(
                     'operator Options:is(OperatorIs is),isNot(OperatorIsNot is not. This value does not support date fields. To learn how to query date fields, refer to .),contains(OperatorContains contains. This value does not support date fields.),doesNotContain(OperatorDoesNotContain does not contain. This value does not support date fields.),isEmpty(OperatorIsEmpty is empty),isNotEmpty(OperatorIsNotEmpty is not empty),isGreater(OperatorIsGreater greater than.),isGreaterEqual(OperatorIsGreaterEqual greater than or equal to. This value does not support date fields.),isLess(OperatorIsLess less than),isLessEqual(OperatorIsLessEqual less than or equal to. This value does not support date fields.),like(OperatorLike LIKE operator. Not supported yet),in(OperatorIn IN operator. Not supported yet)',
                   ),
-                value: z
-                  .array(z.string())
-                  .describe(
-                    'value',
-                  )
-                  .optional(),
+                value: z.array(z.string()).describe('value').optional(),
               }),
             )
             .describe('conditions')
             .optional(),
         })
-        .describe(
-          'Refer to the  to learn how to fill in the filter',
-        )
+        .describe('Refer to the  to learn how to fill in the filter')
         .optional(),
       automatic_fields: z
         .boolean()

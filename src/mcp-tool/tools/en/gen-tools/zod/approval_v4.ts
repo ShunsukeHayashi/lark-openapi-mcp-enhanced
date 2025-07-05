@@ -1343,9 +1343,7 @@ export const approvalV4InstanceCreate = {
               .optional(),
             value: z
               .array(z.string())
-              .describe(
-                'The approver list requires the user_id of users. Refer to  for the method to acquire user_ids',
-              )
+              .describe('The approver list requires the user_id of users. Refer to  for the method to acquire user_ids')
               .optional(),
           }),
         )
@@ -1364,9 +1362,7 @@ export const approvalV4InstanceCreate = {
               .optional(),
             value: z
               .array(z.string())
-              .describe(
-                "The approver list requires the user open_id. Refer to  for the method to acquire open_ids",
-              )
+              .describe('The approver list requires the user open_id. Refer to  for the method to acquire open_ids')
               .optional(),
           }),
         )
@@ -1385,9 +1381,7 @@ export const approvalV4InstanceCreate = {
               .optional(),
             value: z
               .array(z.string())
-              .describe(
-                "The CC recipient list requires the user_id. Refer to  for the method to acquire user_ids",
-              )
+              .describe('The CC recipient list requires the user_id. Refer to  for the method to acquire user_ids')
               .optional(),
           }),
         )
@@ -1798,9 +1792,7 @@ export const approvalV4TaskApprove = {
       comment: z.string().describe('Opinion').optional(),
       task_id: z
         .string()
-        .describe(
-          'Approval task ID, call  and retrieve the required ID from the `task_list` in the returned result',
-        ),
+        .describe('Approval task ID, call  and retrieve the required ID from the `task_list` in the returned result'),
       form: z
         .string()
         .describe(
@@ -1859,9 +1851,7 @@ export const approvalV4TaskReject = {
       comment: z.string().describe('Opinion').optional(),
       task_id: z
         .string()
-        .describe(
-          'Approval task ID, call  and retrieve the required ID from the task_list in the returned result',
-        ),
+        .describe('Approval task ID, call  and retrieve the required ID from the task_list in the returned result'),
       form: z
         .string()
         .describe(
@@ -1897,9 +1887,7 @@ export const approvalV4TaskResubmit = {
       comment: z.string().describe('Opinion').optional(),
       task_id: z
         .string()
-        .describe(
-          'Approval task ID, call  and retrieve the required ID from the task_list in the returned result',
-        ),
+        .describe('Approval task ID, call  and retrieve the required ID from the task_list in the returned result'),
       form: z
         .string()
         .describe(
@@ -2026,9 +2014,7 @@ export const approvalV4TaskTransfer = {
         .describe('Fill in the unique ID of the transferred person according to the user_id_type'),
       task_id: z
         .string()
-        .describe(
-          'Approval task ID, call  and retrieve the required ID from the task_list in the returned result',
-        ),
+        .describe('Approval task ID, call  and retrieve the required ID from the task_list in the returned result'),
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional() }),
   },

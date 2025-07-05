@@ -45,13 +45,20 @@ program
       }
     }
     const mergedOptions = { ...OAPI_MCP_DEFAULT_ARGS, ...OAPI_MCP_ENV_ARGS, ...fileOptions, ...options };
-    const { mcpServer } = initMcpServer(mergedOptions);
-    if (mergedOptions.mode === 'stdio') {
-      initStdioServer(mcpServer);
-    } else if (mergedOptions.mode === 'sse') {
-      initSSEServer(mcpServer, mergedOptions);
-    } else {
-      console.error('Invalid mode:', mergedOptions.mode);
+
+    try {
+      const { mcpServer } = initMcpServer(mergedOptions);
+
+      if (mergedOptions.mode === 'stdio') {
+        initStdioServer(mcpServer);
+      } else if (mergedOptions.mode === 'sse') {
+        initSSEServer(mcpServer, mergedOptions);
+      } else {
+        console.error('Invalid mode:', mergedOptions.mode);
+        process.exit(1);
+      }
+    } catch (error) {
+      console.error('Failed to initialize MCP server:', error instanceof Error ? error.message : error);
       process.exit(1);
     }
   });

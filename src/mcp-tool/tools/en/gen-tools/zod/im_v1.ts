@@ -739,9 +739,7 @@ export const imV1ChatMenuItemPatch = {
         .optional(),
       menu_item_id: z
         .string()
-        .describe(
-          'The ID of the top level menu or second level menu. The ID can be obtained through the  interface',
-        )
+        .describe('The ID of the top level menu or second level menu. The ID can be obtained through the  interface')
         .optional(),
     }),
   },
@@ -924,9 +922,7 @@ export const imV1ChatMenuTreeDelete = {
     data: z.object({
       chat_menu_top_level_ids: z
         .array(z.string())
-        .describe(
-          'The top level menu ID. The ID can be obtained through the  interface',
-        ),
+        .describe('The top level menu ID. The ID can be obtained through the  interface'),
     }),
     path: z.object({
       chat_id: z
@@ -1185,11 +1181,7 @@ export const imV1ChatTabDeleteTabs = {
   accessTokens: ['tenant', 'user'],
   schema: {
     data: z.object({
-      tab_ids: z
-        .array(z.string())
-        .describe(
-          'Chat tag ID list. Tab ID can be found in  and  return value',
-        ),
+      tab_ids: z.array(z.string()).describe('Chat tag ID list. Tab ID can be found in  and  return value'),
     }),
     path: z.object({
       chat_id: z
@@ -1263,12 +1255,7 @@ export const imV1ChatTabUpdateTabs = {
       chat_tabs: z
         .array(
           z.object({
-            tab_id: z
-              .string()
-              .describe(
-                'Chat tag ID. Tab ID can be found in  and  return value',
-              )
-              .optional(),
+            tab_id: z.string().describe('Chat tag ID. Tab ID can be found in  and  return value').optional(),
             tab_name: z
               .string()
               .describe('Tab name**Note**: The group tab name does not exceed 30 characters')
@@ -1852,9 +1839,7 @@ export const imV1MessageReactionCreate = {
         .object({
           emoji_type: z
             .string()
-            .describe(
-              'Emoji type. For supported emojis and corresponding emoji_type values, see the ',
-            ),
+            .describe('Emoji type. For supported emojis and corresponding emoji_type values, see the '),
         })
         .describe('Reaction type'),
     }),
@@ -2165,11 +2150,7 @@ export const imV1PinList = {
   accessTokens: ['tenant', 'user'],
   schema: {
     params: z.object({
-      chat_id: z
-        .string()
-        .describe(
-          'Group ID. For details, refer to ',
-        ),
+      chat_id: z.string().describe('Group ID. For details, refer to '),
       start_time: z
         .string()
         .describe(

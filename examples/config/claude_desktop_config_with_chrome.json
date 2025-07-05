@@ -1,0 +1,38 @@
+{
+  "mcpServers": {
+    "streamable-mcp-server": {
+      "type": "streamable-http",
+      "url": "http://127.0.0.1:12306/mcp"
+    },
+    "lark-genesis": {
+      "command": "node",
+      "args": [
+        "/Users/shunsuke/Dev/lark-openapi-mcp-enhanced/dist/cli.js",
+        "mcp",
+        "--mode", "stdio",
+        "--tools", "preset.genesis.default"
+      ],
+      "env": {
+        "APP_ID": "YOUR_LARK_APP_ID_HERE",
+        "APP_SECRET": "YOUR_LARK_APP_SECRET_HERE"
+      }
+    },
+    "chrome-mcp": {
+      "type": "streamable-http",
+      "url": "http://127.0.0.1:12306/mcp"
+    },
+    "lark-mcp-complete": {
+      "command": "node",
+      "args": [
+        "/Users/shunsuke/Dev/lark-openapi-mcp-enhanced/dist/cli.js",
+        "mcp",
+        "--mode", "stdio",
+        "--tools", "preset.complete.all"
+      ],
+      "env": {
+        "APP_ID": "YOUR_LARK_APP_ID_HERE",
+        "APP_SECRET": "YOUR_LARK_APP_SECRET_HERE"
+      }
+    }
+  }
+}

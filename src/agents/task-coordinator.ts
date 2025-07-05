@@ -4,13 +4,7 @@
  */
 
 import { EventEmitter } from 'events';
-import { 
-  TaskAssignment, 
-  WorkflowState, 
-  AgentMessage, 
-  StructuredResponse,
-  RESPONSE_DELIMITERS 
-} from './types';
+import { TaskAssignment, WorkflowState, AgentMessage, StructuredResponse, RESPONSE_DELIMITERS } from './types';
 import { globalRegistry } from './registry';
 import { globalCommBus, parseStructuredResponse, parseTaskAssignment } from './communication';
 
@@ -58,12 +52,12 @@ export class TaskCoordinator extends EventEmitter {
       maxConcurrentTasks: this.CONCURRENT_TASK_LIMIT,
       retryAttempts: this.MAX_RETRY_ATTEMPTS,
       timeoutMs: this.TASK_TIMEOUT_MS,
-      ...strategy
+      ...strategy,
     };
 
     // Listen to communication bus events
     globalCommBus.on('agent_offline', this.handleAgentOffline.bind(this));
-    
+
     // Start processing queue
     setInterval(() => this.processTaskQueue(), 1000);
   }
@@ -76,7 +70,7 @@ export class TaskCoordinator extends EventEmitter {
       ...taskData,
       id: this.generateTaskId(),
       status: 'pending',
-      createdAt: new Date()
+      createdAt: new Date(),
     };
 
     this.tasks.set(task.id, task);
@@ -94,7 +88,7 @@ export class TaskCoordinator extends EventEmitter {
   async createWorkflow(
     name: string,
     tasks: Omit<Task, 'id' | 'status' | 'createdAt'>[],
-    context: Record<string, any> = {}
+    context: Record<string, any> = {},
   ): Promise<string> {
     const workflowId = this.generateWorkflowId();
     const taskIds: string[] = [];
@@ -113,7 +107,7 @@ export class TaskCoordinator extends EventEmitter {
       tasks: [], // Will be populated during assignment
       context,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     this.workflows.set(workflowId, workflow);
@@ -134,8 +128,7 @@ export class TaskCoordinator extends EventEmitter {
     this.isProcessing = true;
 
     try {
-      const currentActiveTasks = Array.from(this.tasks.values())
-        .filter(task => task.status === 'in_progress').length;
+      const currentActiveTasks = Array.from(this.tasks.values()).filter((task) => task.status === 'in_progress').length;
 
       if (currentActiveTasks >= this.strategy.maxConcurrentTasks!) {
         return;
@@ -143,7 +136,7 @@ export class TaskCoordinator extends EventEmitter {
 
       const tasksToProcess = Math.min(
         this.strategy.maxConcurrentTasks! - currentActiveTasks,
-        this.processingQueue.length
+        this.processingQueue.length,
       );
 
       for (let i = 0; i < tasksToProcess; i++) {
@@ -152,7 +145,6 @@ export class TaskCoordinator extends EventEmitter {
           await this.distributeTask(taskId);
         }
       }
-
     } finally {
       this.isProcessing = false;
     }
@@ -195,7 +187,7 @@ export class TaskCoordinator extends EventEmitter {
         priority: task.priority,
         estimatedDuration: task.estimatedDuration,
         dependencies: task.dependencies,
-        context: task.context
+        context: task.context,
       };
 
       // Send task to agent
@@ -207,10 +199,10 @@ export class TaskCoordinator extends EventEmitter {
         payload: {
           type: 'task_assignment',
           assignment,
-          task
+          task,
         },
         timestamp: new Date(),
-        priority: task.priority
+        priority: task.priority,
       };
 
       const sent = await globalCommBus.sendMessage(message);
@@ -233,7 +225,6 @@ export class TaskCoordinator extends EventEmitter {
       this.startTaskTimeout(taskId);
 
       return true;
-
     } catch (error) {
       console.error(`❌ Failed to distribute task ${taskId}:`, error);
       task.status = 'failed';
@@ -251,9 +242,9 @@ export class TaskCoordinator extends EventEmitter {
     for (const capability of task.requiredCapabilities) {
       const agent = globalRegistry.findBestAgent(capability, {
         preferredType: 'specialist',
-        maxLoad: 0.8 // Don't overload agents
+        maxLoad: 0.8, // Don't overload agents
       });
-      
+
       if (agent) {
         return agent;
       }
@@ -263,9 +254,9 @@ export class TaskCoordinator extends EventEmitter {
     for (const capability of task.requiredCapabilities) {
       const agent = globalRegistry.findBestAgent(capability, {
         preferredType: 'coordinator',
-        maxLoad: 0.9
+        maxLoad: 0.9,
       });
-      
+
       if (agent) {
         return agent;
       }
@@ -287,7 +278,7 @@ export class TaskCoordinator extends EventEmitter {
    */
   private getRecommendedTools(task: Task): string[] {
     const tools: string[] = [];
-    
+
     // Map capabilities to specific tools
     for (const capability of task.requiredCapabilities) {
       switch (capability) {
@@ -316,7 +307,7 @@ export class TaskCoordinator extends EventEmitter {
    * Check if task dependencies are completed
    */
   private areDependenciesCompleted(dependencies: string[]): boolean {
-    return dependencies.every(depId => {
+    return dependencies.every((depId) => {
       const depTask = this.tasks.get(depId);
       return depTask?.status === 'completed';
     });
@@ -325,11 +316,7 @@ export class TaskCoordinator extends EventEmitter {
   /**
    * Handle task completion from agent
    */
-  async handleTaskCompletion(
-    taskId: string, 
-    result: any, 
-    agentId: string
-  ): Promise<void> {
+  async handleTaskCompletion(taskId: string, result: any, agentId: string): Promise<void> {
     const task = this.tasks.get(taskId);
     if (!task || task.assignedAgentId !== agentId) {
       return;
@@ -355,11 +342,7 @@ export class TaskCoordinator extends EventEmitter {
   /**
    * Handle task failure from agent
    */
-  async handleTaskFailure(
-    taskId: string, 
-    error: string, 
-    agentId: string
-  ): Promise<void> {
+  async handleTaskFailure(taskId: string, error: string, agentId: string): Promise<void> {
     const task = this.tasks.get(taskId);
     if (!task || task.assignedAgentId !== agentId) {
       return;
@@ -424,7 +407,7 @@ export class TaskCoordinator extends EventEmitter {
    */
   private handleAgentOffline(event: any): void {
     const agentId = event.agentId;
-    
+
     // Reassign tasks from offline agent
     for (const [taskId, task] of this.tasks.entries()) {
       if (task.assignedAgentId === agentId && task.status === 'in_progress') {
@@ -439,11 +422,12 @@ export class TaskCoordinator extends EventEmitter {
    */
   private async checkWorkflowCompletion(completedTaskId: string): Promise<void> {
     for (const [workflowId, workflow] of this.workflows.entries()) {
-      const workflowTasks = Array.from(this.tasks.values())
-        .filter(task => workflow.tasks.some(assignment => assignment.taskId === task.id));
+      const workflowTasks = Array.from(this.tasks.values()).filter((task) =>
+        workflow.tasks.some((assignment) => assignment.taskId === task.id),
+      );
 
-      const completedTasks = workflowTasks.filter(task => task.status === 'completed');
-      const failedTasks = workflowTasks.filter(task => task.status === 'failed');
+      const completedTasks = workflowTasks.filter((task) => task.status === 'completed');
+      const failedTasks = workflowTasks.filter((task) => task.status === 'failed');
 
       if (completedTasks.length === workflowTasks.length) {
         workflow.status = 'completed';
@@ -481,8 +465,7 @@ export class TaskCoordinator extends EventEmitter {
    * Get all active tasks
    */
   getActiveTasks(): Task[] {
-    return Array.from(this.tasks.values())
-      .filter(task => ['assigned', 'in_progress'].includes(task.status));
+    return Array.from(this.tasks.values()).filter((task) => ['assigned', 'in_progress'].includes(task.status));
   }
 
   /**
@@ -494,14 +477,14 @@ export class TaskCoordinator extends EventEmitter {
 
     return {
       totalTasks: tasks.length,
-      pendingTasks: tasks.filter(t => t.status === 'pending').length,
-      activeTasks: tasks.filter(t => ['assigned', 'in_progress'].includes(t.status)).length,
-      completedTasks: tasks.filter(t => t.status === 'completed').length,
-      failedTasks: tasks.filter(t => t.status === 'failed').length,
+      pendingTasks: tasks.filter((t) => t.status === 'pending').length,
+      activeTasks: tasks.filter((t) => ['assigned', 'in_progress'].includes(t.status)).length,
+      completedTasks: tasks.filter((t) => t.status === 'completed').length,
+      failedTasks: tasks.filter((t) => t.status === 'failed').length,
       totalWorkflows: workflows.length,
-      activeWorkflows: workflows.filter(w => w.status === 'in_progress').length,
-      completedWorkflows: workflows.filter(w => w.status === 'completed').length,
-      queueSize: this.processingQueue.length
+      activeWorkflows: workflows.filter((w) => w.status === 'in_progress').length,
+      completedWorkflows: workflows.filter((w) => w.status === 'completed').length,
+      queueSize: this.processingQueue.length,
     };
   }
 

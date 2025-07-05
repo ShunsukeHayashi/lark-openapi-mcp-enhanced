@@ -61,12 +61,7 @@ export const taskV2AttachmentDelete = {
   accessTokens: ['tenant', 'user'],
   schema: {
     path: z.object({
-      attachment_guid: z
-        .string()
-        .describe(
-          '要删除附件的GUID。可以通过创建接口创建, 或者通过接口查询得到',
-        )
-        .optional(),
+      attachment_guid: z.string().describe('要删除附件的GUID。可以通过创建接口创建, 或者通过接口查询得到').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -83,11 +78,7 @@ export const taskV2AttachmentGet = {
   schema: {
     params: z.object({ user_id_type: z.string().describe('用户ID类型').optional() }),
     path: z.object({
-      attachment_guid: z
-        .string()
-        .describe(
-          '获取详情的附件GUID。可以通过创建接口创建, 或者通过接口查询得到',
-        ),
+      attachment_guid: z.string().describe('获取详情的附件GUID。可以通过创建接口创建, 或者通过接口查询得到'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -243,11 +234,7 @@ export const taskV2CustomFieldAdd = {
       resource_id: z.string().describe('要将自定义字段添加到的资源id，目前只支持tasklist_guid'),
     }),
     path: z.object({
-      custom_field_guid: z
-        .string()
-        .describe(
-          '自定义字段GUID。自定义字段GUID。可以通过接口创建, 或者通过接口查询得到',
-        ),
+      custom_field_guid: z.string().describe('自定义字段GUID。自定义字段GUID。可以通过接口创建, 或者通过接口查询得到'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -378,11 +365,7 @@ export const taskV2CustomFieldGet = {
   schema: {
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
     path: z.object({
-      custom_field_guid: z
-        .string()
-        .describe(
-          '自定义字段GUID。可以通过接口创建, 或者通过接口查询得到',
-        ),
+      custom_field_guid: z.string().describe('自定义字段GUID。可以通过接口创建, 或者通过接口查询得到'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -574,11 +557,7 @@ export const taskV2CustomFieldPatch = {
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
     path: z.object({
-      custom_field_guid: z
-        .string()
-        .describe(
-          '自定义字段GUID。自定义字段GUID。可以通过接口创建, 或者通过接口查询得到',
-        ),
+      custom_field_guid: z.string().describe('自定义字段GUID。自定义字段GUID。可以通过接口创建, 或者通过接口查询得到'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -600,11 +579,7 @@ export const taskV2CustomFieldRemove = {
         .describe('要从某个资源移除自定义字段的资源id，`resource_type`为"tasklist"时，需填写清单的GUID'),
     }),
     path: z.object({
-      custom_field_guid: z
-        .string()
-        .describe(
-          '自定义字段GUID。自定义字段GUID。可以通过接口创建, 或者通过接口查询得到',
-        ),
+      custom_field_guid: z.string().describe('自定义字段GUID。自定义字段GUID。可以通过接口创建, 或者通过接口查询得到'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -808,12 +783,7 @@ export const taskV2TaskAddMembers = {
         .describe(
           '要添加的members列表，单请求支持最大50个成员（去重后)。关于member的格式，详见中的“ 如何表示任务和清单的成员？”章节',
         ),
-      client_token: z
-        .string()
-        .describe(
-          '幂等token，如果提供则实现幂等行为。详见中的“ 幂等调用 ”章节',
-        )
-        .optional(),
+      client_token: z.string().describe('幂等token，如果提供则实现幂等行为。详见中的“ 幂等调用 ”章节').optional(),
     }),
     params: z.object({ user_id_type: z.string().describe('用户ID类型').optional() }),
     path: z.object({ task_guid: z.string().describe('要添加负责人的任务全局唯一ID') }),
@@ -891,9 +861,7 @@ export const taskV2TaskCreate = {
             .describe('是否截止到一个日期。如果设为true，timestamp中只有日期的部分会被解析和存储')
             .optional(),
         })
-        .describe(
-          '任务截止时间。详见中的“ 如何使用开始时间和截止时间？”章节',
-        )
+        .describe('任务截止时间。详见中的“ 如何使用开始时间和截止时间？”章节')
         .optional(),
       origin: z
         .object({
@@ -957,9 +925,7 @@ export const taskV2TaskCreate = {
         .optional(),
       repeat_rule: z
         .string()
-        .describe(
-          '重复任务规则。如果设置，则该任务为“重复任务”。详见中的“如何使用重复任务？”章节',
-        )
+        .describe('重复任务规则。如果设置，则该任务为“重复任务”。详见中的“如何使用重复任务？”章节')
         .optional(),
       custom_complete: z
         .object({
@@ -1033,9 +999,7 @@ export const taskV2TaskCreate = {
             .describe('android端的自定义完成配置')
             .optional(),
         })
-        .describe(
-          '任务自定义完成配置。详见中的“ 如何使用任务自定义完成？”章节',
-        )
+        .describe('任务自定义完成配置。详见中的“ 如何使用任务自定义完成？”章节')
         .optional(),
       tasklists: z
         .array(
@@ -1056,9 +1020,7 @@ export const taskV2TaskCreate = {
         .optional(),
       client_token: z
         .string()
-        .describe(
-          '幂等token。如果提供则触发后端实现幂等行为。详见中的“ 幂等调用 ”章节',
-        )
+        .describe('幂等token。如果提供则触发后端实现幂等行为。详见中的“ 幂等调用 ”章节')
         .optional(),
       start: z
         .object({
@@ -1073,9 +1035,7 @@ export const taskV2TaskCreate = {
             .describe('是否开始于一个日期。如果设为true，timestamp中只有日期的部分会被解析和存储')
             .optional(),
         })
-        .describe(
-          '任务的开始时间(ms), 详见中的“ 如何使用开始时间和截止时间？”章节',
-        )
+        .describe('任务的开始时间(ms), 详见中的“ 如何使用开始时间和截止时间？”章节')
         .optional(),
       reminders: z
         .array(
@@ -1224,17 +1184,13 @@ export const taskV2TaskPatch = {
                 .describe('是否截止到一个日期。如果设为true，timestamp中只有日期的部分会被解析和存储')
                 .optional(),
             })
-            .describe(
-              '任务截止时间。详见中的“ 如何使用开始时间和截止时间？”章节',
-            )
+            .describe('任务截止时间。详见中的“ 如何使用开始时间和截止时间？”章节')
             .optional(),
           extra: z.string().describe('调用者可以传入的任意附带到任务上的数据。在获取任务详情时会原样返回').optional(),
           completed_at: z.string().describe('任务的完成时刻时间戳(ms)').optional(),
           repeat_rule: z
             .string()
-            .describe(
-              '如果设置，则该任务为“重复任务”。详见中的“如何使用重复任务？”章节',
-            )
+            .describe('如果设置，则该任务为“重复任务”。详见中的“如何使用重复任务？”章节')
             .optional(),
           custom_complete: z
             .object({
@@ -1308,9 +1264,7 @@ export const taskV2TaskPatch = {
                 .describe('android端的自定义完成配置')
                 .optional(),
             })
-            .describe(
-              '任务自定义完成配置。详见中的“ 如何使用任务自定义完成？”章节',
-            )
+            .describe('任务自定义完成配置。详见中的“ 如何使用任务自定义完成？”章节')
             .optional(),
           start: z
             .object({
@@ -1325,9 +1279,7 @@ export const taskV2TaskPatch = {
                 .describe('是否开始于一个日期。如果设为true，timestamp中只有日期的部分会被解析和存储')
                 .optional(),
             })
-            .describe(
-              '任务的开始时间(ms)。详见中的“ 如何使用开始时间和截止时间？”章节',
-            )
+            .describe('任务的开始时间(ms)。详见中的“ 如何使用开始时间和截止时间？”章节')
             .optional(),
           mode: z.number().describe('任务的完成模式。1 - 会签任务；2 - 或签任务').optional(),
           is_milestone: z.boolean().describe('是否是里程碑任务').optional(),
@@ -1518,9 +1470,7 @@ export const taskV2TaskSubtaskCreate = {
             .describe('任务关联的来源平台详情页链接')
             .optional(),
         })
-        .describe(
-          '任务关联的第三方平台来源信息。详见',
-        )
+        .describe('任务关联的第三方平台来源信息。详见')
         .optional(),
       extra: z.string().describe('调用者可以传入的任意附带到任务上的数据。在获取任务详情时会原样返回').optional(),
       completed_at: z.string().describe('任务的完成时刻时间戳(ms)').optional(),
@@ -1536,9 +1486,7 @@ export const taskV2TaskSubtaskCreate = {
         .optional(),
       repeat_rule: z
         .string()
-        .describe(
-          '如果设置，则该任务为“重复任务”。该字段表示了重复任务的重复规则。详见中的“如何使用重复任务？”章节',
-        )
+        .describe('如果设置，则该任务为“重复任务”。该字段表示了重复任务的重复规则。详见中的“如何使用重复任务？”章节')
         .optional(),
       custom_complete: z
         .object({
@@ -1612,9 +1560,7 @@ export const taskV2TaskSubtaskCreate = {
             .describe('飞书android端的自定义完成配置')
             .optional(),
         })
-        .describe(
-          '任务自定义完成规则。详见中的“如何使用自定义完成？”章节',
-        )
+        .describe('任务自定义完成规则。详见中的“如何使用自定义完成？”章节')
         .optional(),
       tasklists: z
         .array(
@@ -1632,9 +1578,7 @@ export const taskV2TaskSubtaskCreate = {
         .optional(),
       client_token: z
         .string()
-        .describe(
-          '幂等token。如果提供则触发后端实现幂等行为。详见中的“ 幂等调用 ”章节',
-        )
+        .describe('幂等token。如果提供则触发后端实现幂等行为。详见中的“ 幂等调用 ”章节')
         .optional(),
       start: z
         .object({
@@ -1748,16 +1692,8 @@ export const taskV2TasklistActivitySubscriptionDelete = {
   accessTokens: ['tenant', 'user'],
   schema: {
     path: z.object({
-      tasklist_guid: z
-        .string()
-        .describe(
-          '清单GUID。可以通过，或者通过接口查询得到',
-        ),
-      activity_subscription_guid: z
-        .string()
-        .describe(
-          '要删除的订阅GUID。可以通过接口创建，或者通过查询得到',
-        ),
+      tasklist_guid: z.string().describe('清单GUID。可以通过，或者通过接口查询得到'),
+      activity_subscription_guid: z.string().describe('要删除的订阅GUID。可以通过接口创建，或者通过查询得到'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1774,16 +1710,8 @@ export const taskV2TasklistActivitySubscriptionGet = {
   schema: {
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
     path: z.object({
-      tasklist_guid: z
-        .string()
-        .describe(
-          '清单GUID。可以通过，或者通过接口查询得到',
-        ),
-      activity_subscription_guid: z
-        .string()
-        .describe(
-          '订阅GUID。可以通过接口创建，或者通过查询得到',
-        ),
+      tasklist_guid: z.string().describe('清单GUID。可以通过，或者通过接口查询得到'),
+      activity_subscription_guid: z.string().describe('订阅GUID。可以通过接口创建，或者通过查询得到'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1803,11 +1731,7 @@ export const taskV2TasklistActivitySubscriptionList = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional(),
     }),
     path: z.object({
-      tasklist_guid: z
-        .string()
-        .describe(
-          '清单GUID。可以通过，或者通过接口查询得到',
-        ),
+      tasklist_guid: z.string().describe('清单GUID。可以通过，或者通过接口查询得到'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1856,16 +1780,8 @@ export const taskV2TasklistActivitySubscriptionPatch = {
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
     path: z.object({
-      tasklist_guid: z
-        .string()
-        .describe(
-          '清单GUID。可以通过，或者通过接口查询得到',
-        ),
-      activity_subscription_guid: z
-        .string()
-        .describe(
-          '要更新的动态订阅GUID。可以通过接口创建，或者通过查询得到',
-        ),
+      tasklist_guid: z.string().describe('清单GUID。可以通过，或者通过接口查询得到'),
+      activity_subscription_guid: z.string().describe('要更新的动态订阅GUID。可以通过接口创建，或者通过查询得到'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1899,9 +1815,7 @@ export const taskV2TasklistAddMembers = {
               .optional(),
           }),
         )
-        .describe(
-          '要添加的成员列表。关于member的格式，详见中的“ 如何表示任务和清单的成员？”章节',
-        ),
+        .describe('要添加的成员列表。关于member的格式，详见中的“ 如何表示任务和清单的成员？”章节'),
     }),
     params: z.object({ user_id_type: z.string().describe('用户ID类型').optional() }),
     path: z.object({ tasklist_guid: z.string().describe('要添加成员的清单的全局唯一ID').optional() }),
@@ -1936,9 +1850,7 @@ export const taskV2TasklistCreate = {
               .optional(),
           }),
         )
-        .describe(
-          '清单的成员列表。关于member的格式，详见中的“ 如何表示任务和清单的成员？”章节',
-        )
+        .describe('清单的成员列表。关于member的格式，详见中的“ 如何表示任务和清单的成员？”章节')
         .optional(),
     }),
     params: z.object({ user_id_type: z.string().describe('用户ID类型').optional() }),
@@ -2060,9 +1972,7 @@ export const taskV2TasklistRemoveMembers = {
             role: z.string().describe('清单角色。移除清单成员时该字段不需要填写').optional(),
           }),
         )
-        .describe(
-          '要移除的member列表。关于member的格式，详见中的“ 如何表示任务和清单的成员？”章节',
-        ),
+        .describe('要移除的member列表。关于member的格式，详见中的“ 如何表示任务和清单的成员？”章节'),
     }),
     params: z.object({ user_id_type: z.string().describe('用户ID类型').optional() }),
     path: z.object({ tasklist_guid: z.string().describe('要移除协作人的清单全局唯一ID').optional() }),

@@ -6,9 +6,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a TypeScript-based MCP (Model Context Protocol) tool that provides comprehensive access to Feishu/Lark OpenAPI for AI assistant integration. The project supports both English and Chinese, with auto-generated tools from OpenAPI specifications.
 
-**npm Package**: `@larksuiteoapi/lark-mcp` (Beta v0.3.1)  
+**npm Package**: `@larksuiteoapi/lark-mcp` (Beta v0.4.0)  
 **Repository**: Official Feishu/Lark OpenAPI MCP implementation  
 **Node.js**: Requires Node.js >=16.20.0
+
+### Core Features
+- **Complete Feishu/Lark API Toolkit**: Encapsulates almost all Feishu/Lark API interfaces including message management, group management, document operations, calendar events, Bitable, and other core functional areas
+- **Genesis AI System**: Create complete Lark Base applications from natural language requirements with AI-powered generation
+  - Analyze requirements and suggest optimal data structures
+  - Generate tables, fields, views, and automation rules
+  - Create ER diagrams and documentation
+  - Optimize existing bases with AI recommendations
+- **Dual Authentication Support**: App Access Token and User Access Token authentication
+- **Flexible Communication Protocols**: STDIO mode (for Trae/Cursor/Claude) and SSE mode (HTTP-based)
+- **Smart Prompts**: MCP prompts for common Genesis workflows
+- **Developer Documentation Retrieval**: MCP tool for quickly finding relevant Feishu/Lark development documentation
 
 ### Key Technologies
 - **TypeScript** ^5.0.0 with strict mode
@@ -20,6 +32,7 @@ This is a TypeScript-based MCP (Model Context Protocol) tool that provides compr
 - **Express** ^5.1.0 for SSE mode server
 - **Jest** ^29.7.0 with ts-jest for testing
 - **Prettier** ^3.5.3 for code formatting
+- **Discord.js** ^14.16.3 for Discord integration
 
 ## Project-Specific Guidelines
 
@@ -71,6 +84,24 @@ yarn bot:dev
 
 # Test chat agent
 yarn test:agent
+
+# Test agent with tools
+yarn test:agent-tools
+```
+
+### Discord Integration
+```bash
+# Setup Discord integration
+yarn discord:setup
+
+# Sync with Discord
+yarn discord:sync
+
+# Run Discord webhook
+yarn discord:webhook
+
+# Development mode for Discord
+yarn discord:dev
 ```
 
 ### Running the MCP Server
@@ -99,6 +130,46 @@ yarn build && node dist/cli.js mcp --mode stdio --rate-limit-requests 100 --rate
 yarn build && node dist/cli.js mcp --mode stdio --disable-rate-limit
 ```
 
+## Prerequisites
+
+### Installing Node.js
+
+This project requires Node.js >=16.20.0. Installation methods:
+
+#### macOS:
+```bash
+# Using Homebrew (Recommended)
+brew install node
+
+# Or download from nodejs.org
+# Verify installation:
+node -v
+npm -v
+```
+
+#### Windows:
+- Download the installer from [nodejs.org](https://nodejs.org/)
+- Run the Windows installer (.msi file)
+- Follow the installation wizard
+- Verify in command prompt: `node -v` and `npm -v`
+
+#### Linux:
+```bash
+# Using NodeSource repository (Ubuntu/Debian)
+curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+sudo apt-get install -y nodejs
+```
+
+### Installing the MCP Tool
+
+```bash
+# Global installation (recommended)
+npm install -g @larksuiteoapi/lark-mcp
+
+# Or use npx without installation
+npx -y @larksuiteoapi/lark-mcp mcp --help
+```
+
 ## Environment Setup
 
 ### 1. Create `.env` file for local development:
@@ -113,6 +184,11 @@ USER_ACCESS_TOKEN=your_user_access_token_here
 # Optional: Server Configuration
 PORT=3000
 HOST=localhost
+
+# Optional: Lark Configuration
+LARK_DOMAIN=https://open.feishu.cn  # or https://open.larksuite.com
+LARK_LANGUAGE=zh                    # or en
+LARK_TOKEN_MODE=auto                # auto, tenant, or user
 ```
 
 ### 2. Configuration file format (`config.json`):
@@ -136,6 +212,26 @@ HOST=localhost
 3. Find App ID and App Secret in the app credentials section
 4. Configure required permissions (see Required Permissions section)
 5. For user tokens, implement OAuth flow or use temporary tokens for testing
+
+### 4. Quick Integration with AI Tools (Trae/Cursor/Claude):
+```json
+{
+  "mcpServers": {
+    "lark-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@larksuiteoapi/lark-mcp",
+        "mcp",
+        "-a",
+        "<your_app_id>",
+        "-s",
+        "<your_app_secret>"
+      ]
+    }
+  }
+}
+```
 
 ### Linting and Type Checking
 ```bash
@@ -180,9 +276,10 @@ docker run -it --rm -v $(pwd):/app -p 3000:3000 lark-mcp:latest-development
 - **Multi-stage Build**: Separate stages for dependencies, builder, production, and development
 - **Production Images**: Optimized with only production dependencies (~272MB Alpine-based)
 - **Development Images**: Include full source code with volume mounts for hot reload
-- **Security**: Non-root user execution, proper signal handling with dumb-init
-- **Health Checks**: Built-in container monitoring for SSE services
+- **Security**: Non-root user execution (UID 1001), proper signal handling with dumb-init
+- **Health Checks**: Built-in container monitoring for SSE services (wget-based)
 - **Profiles**: Separate docker-compose profiles for production/development/genesis
+- **Platform Support**: Multi-platform images (linux/amd64, linux/arm64)
 
 ## Architecture Overview
 
@@ -222,6 +319,10 @@ docker run -it --rm -v $(pwd):/app -p 3000:3000 lark-mcp:latest-development
    - `preset.doc.default`: Document and wiki tools (6 tools)
    - `preset.task.default`: Task management tools (4 tools)
    - `preset.calendar.default`: Calendar event tools (5 tools)
+   - `preset.genesis.default`: Genesis AI-powered tools (13 tools)
+   - `preset.complete.all`: All available tools (50+ tools)
+
+   > **Note**: A complete list of all supported tools and their inclusion in each preset can be found in [docs/tools-en.md](./docs/tools-en.md). The detailed preset matrix showing which tools are included in each preset is available in the README.md file.
 
 ### Genesis System Architecture
 
@@ -238,9 +339,28 @@ The Genesis system (`src/genesis/`) is an AI-powered Lark Base application gener
    - Multi-language support (English, Chinese, Japanese)
    - Error recovery and rollback capabilities
    - Performance optimization with caching
+   - Pre-built templates: CRM, Project Management, HR Management, Inventory, Event Planning, Bug Tracking
 
 3. **Integration Flow**:
    - Parse natural language requirements → Extract structured specifications → Generate Base schema → Build via Lark API
+
+4. **Genesis Tools Available**:
+   - `genesis.builtin.create_base` - Create a complete Lark Base from requirements
+   - `genesis.builtin.list_templates` - Browse available templates with details
+   - `genesis.builtin.analyze_requirements` - Analyze and structure natural language requirements
+   - `genesis.builtin.suggest_fields` - AI-powered field suggestions based on data patterns
+   - `genesis.builtin.generate_views` - Create optimized views for different use cases
+   - `genesis.builtin.create_view` - Create custom views (Grid, Kanban, Calendar, Gallery, Gantt, Form)
+   - `genesis.builtin.create_dashboard` - Design interactive dashboards with AI
+   - `genesis.builtin.create_automation` - Design workflow automations
+   - `genesis.builtin.create_filter_view` - Create spreadsheet filter views
+   - `genesis.builtin.optimize_base` - Analyze and optimize existing Base structure
+   - `genesis.builtin.generate_automation` - Create automation rules and workflows
+   - `genesis.builtin.export_schema` - Export Base schema for documentation/backup
+
+5. **MCP Integration**:
+   - MCP prompts: `genesis_templates`, `complete_genesis_create`, `genesis_create_base`, `genesis_migrate_excel`, `genesis_template_crm`, `genesis_optimize_base`, `genesis_ai_features`
+   - MCP resource: `genesis_template_examples` with template details
 
 ### Authentication Modes
 - **Tenant Token**: App-level authentication via `appId` and `appSecret`
@@ -262,10 +382,49 @@ The Genesis system (`src/genesis/`) is an AI-powered Lark Base application gener
 - Tests use Chinese comments (bilingual project)
 - Mock Lark SDK client in test setup
 - Test files: `**/tests/**/*.test.ts` pattern
-- Coverage reports: text and lcov formats
+- Coverage reports: text and lcov formats (uploaded to Codecov)
 - Path alias: `@/` maps to `src/`
 - **NOTE**: Full test suite may timeout (>2min) - run specific tests when possible
 - Agent system tests pass with 100% success rate (8/8 test scenarios)
+
+### Quick Testing Scripts
+```bash
+# Quick release readiness test
+./scripts/quick-test.sh
+
+# Test release process (dry run)
+./scripts/test-release.sh
+
+# Run specific test suite
+yarn test path/to/specific.test.ts
+```
+
+## CI/CD Pipeline
+
+### GitHub Actions Workflows
+- **CI Pipeline** (`.github/workflows/ci.yml`):
+  - Tests on Node.js 16.x, 18.x, and 20.x
+  - TypeScript compilation check
+  - Code formatting validation (Prettier)
+  - Docker image build verification
+  - Coverage reporting to Codecov
+  
+- **Release Pipeline** (`.github/workflows/release.yml`):
+  - Automated npm publishing
+  - Multi-platform Docker images (linux/amd64, linux/arm64)
+  - GitHub release creation with changelog
+  - Triggered by version tags (v*)
+
+### Release Process
+```bash
+# Automated release script with validation
+./scripts/release.sh
+
+# Manual release steps
+npm version patch/minor/major
+git push --follow-tags
+# GitHub Actions will handle the rest
+```
 
 ## Error Handling
 
@@ -273,6 +432,40 @@ The project uses a centralized error handler in `src/mcp-tool/utils/handler.ts`:
 - API errors are wrapped in a standardized response format
 - Missing credentials cause process exit with code 1
 - Validation errors throw standard Error objects
+- Comprehensive error code guide in `docs/ERROR_CODES_GUIDE.md`
+
+### Error Code Categories
+- **AUTH_XXX**: Authentication errors (401, 403)
+- **RATE_XXX**: Rate limiting errors (429)
+- **PERM_XXX**: Permission errors (403)
+- **VALID_XXX**: Validation errors (400)
+- **NET_XXX**: Network errors (timeout, connection)
+
+## Security Features
+
+The project implements comprehensive security measures:
+
+### Token Security
+- **Encryption**: AES-256-GCM encryption for sensitive tokens
+- **Secure Storage**: Encrypted token storage with configurable encryption keys
+- **Token Rotation**: Support for automatic token refresh
+
+### Input Validation
+- **XSS Protection**: Input sanitization for all user inputs
+- **SQL Injection Prevention**: Parameterized queries and input validation
+- **Path Traversal Protection**: Secure file path handling
+
+### Security Monitoring
+- **Audit Logging**: Real-time activity monitoring
+- **Anomaly Detection**: Unusual activity pattern detection
+- **Security Events**: Logged security events with alerts
+
+### Compliance
+- **GDPR Compliant**: Data privacy controls
+- **ISO 27001 Standards**: Security best practices
+- **SOC 2 Validation**: Compliance validation tools
+
+See `docs/SECURITY_GUIDE.md` for detailed security implementation.
 
 ## Adding Custom Tools
 
@@ -345,9 +538,23 @@ client.resetRateLimiters();
 client.setRateLimitEnabled(false);
 ```
 
-## Genesis CLI Usage
+## Genesis System Usage
 
-The Genesis system provides a CLI for generating Lark Base applications:
+### Genesis in MCP Mode
+
+When using with Claude Desktop or other AI tools:
+
+```bash
+# Enable Genesis tools
+lark-mcp mcp -a <your_app_id> -s <your_app_secret> -t preset.genesis.default
+
+# Or use with npx
+npx -y @larksuiteoapi/lark-mcp mcp -a <your_app_id> -s <your_app_secret> -t preset.genesis.default
+```
+
+### Genesis CLI Usage
+
+The Genesis system also provides a standalone CLI for generating Lark Base applications:
 
 ```bash
 # Generate from requirements file
@@ -362,6 +569,28 @@ yarn build && node dist/genesis/cli/genesis-cli.js generate -t crm -o crm-base.j
 # Enable verbose logging
 yarn build && node dist/genesis/cli/genesis-cli.js generate -r requirements.md -v
 ```
+
+### Genesis Usage Examples
+
+#### Create a Task Management System
+```
+Use genesis.builtin.create_base to create a task management system with:
+- Task tracking with priority levels (Low, Medium, High, Urgent)
+- Team member assignment
+- Due date tracking
+- Project categorization
+- Progress status (To Do, In Progress, Review, Done)
+```
+
+#### Create Views and Dashboards
+```
+Use genesis.builtin.create_view to create a Kanban view for the Tasks table:
+- Group by Status field
+- Sort by Priority (descending) then Due Date (ascending)
+- Hide completed tasks older than 30 days
+```
+
+**Note**: Genesis tools currently operate in simulation mode for planning and prototyping. For actual implementation, use the corresponding Lark APIs.
 
 ## Prompt Management System
 
@@ -393,17 +622,51 @@ python prompt-management/tools/validator.py --file prompts/categories/analysis/c
 - Use the provided HTTP instance (`src/utils/http-instance.ts`) for consistency
 - Follow the existing TypeScript strict mode conventions
 - Code formatting uses Prettier with single quotes and 120-character line width
-- The project is currently in Beta stage - features and APIs may change
+- The project is currently in Beta stage (v0.4.0) - features and APIs may change
 - Bilingual support is core to the project - maintain both English and Chinese documentation
 - Tool documentation is auto-generated in `docs/tools-en.md` and `docs/tools-zh.md`
 - **Rate limiting is enabled by default** to protect against API quota exhaustion
 - Prompts follow semantic versioning and must include metadata headers
+- **Genesis System**: Currently operates in simulation mode for planning/prototyping without actual API calls
+- **Developer Documentation**: Use the built-in documentation retrieval tool for finding Feishu/Lark API docs
+- Docker support with multi-stage builds for production and development environments
+- Official documentation available at [Feishu MCP](https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/mcp_integration/mcp_introduction)
+
+## Debugging Tips
+
+### Enable Verbose Logging
+```bash
+# Genesis CLI with verbose output
+yarn build && node dist/genesis/cli/genesis-cli.js generate -r requirements.md -v
+
+# Set NODE_ENV for debug logs
+NODE_ENV=development yarn dev
+
+# MCP server with debug output
+DEBUG=* yarn build && node dist/cli.js mcp --mode stdio
+```
+
+### Common Debugging Workflows
+1. **API Request Failures**: Check rate limiting metrics first
+2. **Authentication Issues**: Verify token mode matches your credentials
+3. **Tool Not Found**: Use `--tools preset.complete.all` to ensure all tools loaded
+4. **Genesis Failures**: Enable verbose mode to see AI reasoning steps
+
+### Debug Logger Interface
+The project uses a custom logger with levels:
+- `trace`: Very detailed debugging info
+- `debug`: General debugging messages  
+- `info`: Information messages
+- `warn`: Warning messages
+- `error`: Error messages
 
 ## Known Issues and Workarounds
 
-- **TypeScript Compilation**: Some specialist agent files in `src/agents/specialists/` have been disabled (.ts.disabled) due to compilation errors
-- **Test Suite**: Full test runs may timeout - prefer running specific test files
-- **Agent System**: Currently only base-specialist is functional; other specialists need implementation
+- **Test Suite**: Full test runs may timeout (>2min) - prefer running specific test files
+- **Test Path Aliases**: Some tests fail due to TypeScript path alias configuration issues
+- **Code Formatting**: Multiple files need formatting updates (run `yarn format` to fix)
+- **Genesis Simulation Mode**: Genesis tools currently operate in simulation mode for safety during beta
+- **File Operations**: Upload/download file APIs not yet available in MCP tools
 
 ## Docker Development Workflow
 
@@ -467,6 +730,21 @@ Specialized business logic implementations:
 - Use Zod for schema validation in tools
 - Type definitions are in `src/mcp-tool/types/`
 - Generated declaration files (.d.ts) are created during build
+
+## Package Distribution
+
+The npm package includes only essential files:
+- `dist/` - Compiled JavaScript and type definitions
+- `docs/` - User documentation
+- `README.md`, `README_ZH.md` - Package documentation
+- `CHANGELOG.md` - Version history
+- `LICENSE` - MIT license
+
+Excluded from npm package:
+- Source code (`src/`)
+- Tests (`tests/`)
+- Development configurations
+- Scripts and examples
 
 ## Required Permissions
 
@@ -536,3 +814,13 @@ When using this MCP tool, ensure your Feishu/Lark app has the necessary permissi
 - Enable verbose logging: `-v` flag for debugging
 - Check API quota for Base creation operations
 - Verify Base creation permissions are granted
+
+## Related Links
+
+- **GitHub Repository**: [larksuite/lark-openapi-mcp](https://github.com/larksuite/lark-openapi-mcp)
+- **npm Package**: [@larksuiteoapi/lark-mcp](https://www.npmjs.com/package/@larksuiteoapi/lark-mcp)
+- **Docker Hub**: [larksuite/lark-mcp](https://hub.docker.com/r/larksuite/lark-mcp)
+- **MCP Protocol**: [Model Context Protocol Documentation](https://modelcontextprotocol.io/docs)
+- **Official Documentation**: [Feishu MCP Integration Guide](https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/mcp_integration/mcp_introduction)
+- **Feishu Open Platform**: [open.feishu.cn](https://open.feishu.cn/)
+- **Lark International Platform**: [open.larksuite.com](https://open.larksuite.com/)

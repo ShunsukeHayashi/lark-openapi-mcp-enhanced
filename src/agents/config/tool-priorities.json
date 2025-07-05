@@ -1,0 +1,133 @@
+{
+  "version": "1.0.0",
+  "description": "Tool priority configuration for coordinator agent",
+  "priorities": {
+    "larkTools": {
+      "description": "Lark MCP tools get highest priority for Lark-related operations",
+      "patterns": [
+        {
+          "pattern": "lark.mcp.base",
+          "priority": 1,
+          "description": "Base/Bitable operations - highest priority"
+        },
+        {
+          "pattern": "lark.mcp.im",
+          "priority": 1,
+          "description": "Instant messaging operations - highest priority"
+        },
+        {
+          "pattern": "lark.mcp.docs",
+          "priority": 2,
+          "description": "Document operations - high priority"
+        },
+        {
+          "pattern": "lark.mcp.calendar",
+          "priority": 2,
+          "description": "Calendar operations - high priority"
+        },
+        {
+          "pattern": "lark.mcp.contact",
+          "priority": 3,
+          "description": "Contact management - medium-high priority"
+        }
+      ]
+    },
+    "chromeMcpTools": {
+      "description": "Chrome MCP tools get lower priority",
+      "patterns": [
+        {
+          "pattern": "chrome.mcp.search",
+          "priority": 4,
+          "description": "Chrome search operations - medium priority"
+        },
+        {
+          "pattern": "chrome.mcp.automation",
+          "priority": 5,
+          "description": "Chrome automation - medium-low priority"
+        },
+        {
+          "pattern": "chrome.mcp.general",
+          "priority": 6,
+          "description": "Chrome general operations - low priority"
+        }
+      ]
+    },
+    "customTools": {
+      "description": "Custom tool priorities can be added here",
+      "patterns": [
+        {
+          "pattern": "test.custom.tool",
+          "priority": 7,
+          "description": "Added via API"
+        }
+      ]
+    }
+  },
+  "fallbacks": {
+    "description": "Tool fallback mappings for resilience",
+    "mappings": [
+      {
+        "primary": "bitable.v1.appTableRecord.search",
+        "fallbacks": [
+          "bitable.v1.appTableRecord.list",
+          "bitable.v1.appTable.list"
+        ],
+        "description": "Fallback from search to list operations"
+      },
+      {
+        "primary": "bitable.v1.appTableRecord.create",
+        "fallbacks": [
+          "bitable.v1.appTableRecord.batchCreate",
+          "base.v2.record.create"
+        ],
+        "description": "Fallback for record creation"
+      },
+      {
+        "primary": "im.v1.message.create",
+        "fallbacks": [
+          "im.v1.message.reply",
+          "im.v2.message.create"
+        ],
+        "description": "Fallback for message sending"
+      },
+      {
+        "primary": "docx.v1.document.create",
+        "fallbacks": [
+          "docs.v1.create",
+          "wiki.v2.space.node.create"
+        ],
+        "description": "Fallback for document creation"
+      },
+      {
+        "primary": "calendar.v4.calendar.event.create",
+        "fallbacks": [
+          "calendar.v4.calendar.event.patch",
+          "event.v1.create"
+        ],
+        "description": "Fallback for calendar events"
+      },
+      {
+        "primary": "chrome.mcp.search",
+        "fallbacks": [
+          "search.v2.app.search",
+          "bitable.v1.appTableRecord.search"
+        ],
+        "description": "Fallback from Chrome search to Lark search"
+      },
+      {
+        "primary": "test.primary.tool",
+        "fallbacks": [
+          "test.fallback1",
+          "test.fallback2"
+        ],
+        "description": "Test fallback mapping"
+      }
+    ]
+  },
+  "retryPolicy": {
+    "maxAttempts": 3,
+    "baseDelay": 1000,
+    "maxDelay": 10000,
+    "backoffMultiplier": 2
+  }
+}

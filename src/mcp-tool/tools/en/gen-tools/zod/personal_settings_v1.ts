@@ -60,12 +60,7 @@ export const personalSettingsV1SystemStatusBatchOpen = {
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional() }),
     path: z.object({
-      system_status_id: z
-        .string()
-        .describe(
-          'System stauts ID',
-        )
-        .optional(),
+      system_status_id: z.string().describe('System stauts ID').optional(),
     }),
   },
 };
@@ -197,12 +192,7 @@ export const personalSettingsV1SystemStatusDelete = {
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      system_status_id: z
-        .string()
-        .describe(
-          'System stauts ID',
-        )
-        .optional(),
+      system_status_id: z.string().describe('System stauts ID').optional(),
     }),
   },
 };
@@ -356,12 +346,7 @@ export const personalSettingsV1SystemStatusPatch = {
         .describe('Fields that need to be updated'),
     }),
     path: z.object({
-      system_status_id: z
-        .string()
-        .describe(
-          'System stauts ID',
-        )
-        .optional(),
+      system_status_id: z.string().describe('System stauts ID').optional(),
     }),
   },
 };

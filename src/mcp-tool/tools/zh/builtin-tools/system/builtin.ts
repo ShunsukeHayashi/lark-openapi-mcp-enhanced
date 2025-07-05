@@ -73,7 +73,7 @@ export const larkSystemBuiltinTimeTool: McpTool = {
     try {
       const now = new Date();
       const format = params.data.format || 'iso';
-      
+
       let result: any = {
         requested_format: format,
       };

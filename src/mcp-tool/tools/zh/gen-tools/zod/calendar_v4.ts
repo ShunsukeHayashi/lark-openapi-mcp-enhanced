@@ -66,9 +66,7 @@ export const calendarV4CalendarAclCreate = {
             ),
           user_id: z
             .string()
-            .describe(
-              '用户 ID。当 `type=user` 时，必须设置该参数值。关于用户 ID 的更多介绍可参见',
-            )
+            .describe('用户 ID。当 `type=user` 时，必须设置该参数值。关于用户 ID 的更多介绍可参见')
             .optional(),
         })
         .describe('权限的生效范围'),
@@ -102,9 +100,7 @@ export const calendarV4CalendarAclDelete = {
         ),
       acl_id: z
         .string()
-        .describe(
-          '访问控制 ID。为日历创建访问控制时会返回访问控制 ID。你也可以调用接口，获取指定日历内的访问控制信息',
-        ),
+        .describe('访问控制 ID。为日历创建访问控制时会返回访问控制 ID。你也可以调用接口，获取指定日历内的访问控制信息'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -135,9 +131,7 @@ export const calendarV4CalendarAclList = {
     path: z.object({
       calendar_id: z
         .string()
-        .describe(
-          '日历 ID。创建共享日历时会返回日历 ID。你也可以调用以下接口获取某一日历的 ID。- - - ',
-        ),
+        .describe('日历 ID。创建共享日历时会返回日历 ID。你也可以调用以下接口获取某一日历的 ID。- - - '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -155,9 +149,7 @@ export const calendarV4CalendarAclSubscription = {
     path: z.object({
       calendar_id: z
         .string()
-        .describe(
-          '日历ID。创建共享日历时会返回日历 ID。你也可以调用以下接口获取某一日历的 ID。- - - ',
-        ),
+        .describe('日历ID。创建共享日历时会返回日历 ID。你也可以调用以下接口获取某一日历的 ID。- - - '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -175,9 +167,7 @@ export const calendarV4CalendarAclUnsubscription = {
     path: z.object({
       calendar_id: z
         .string()
-        .describe(
-          '日历ID。创建共享日历时会返回日历 ID。你也可以调用以下接口获取某一日历的 ID。- - - ',
-        ),
+        .describe('日历ID。创建共享日历时会返回日历 ID。你也可以调用以下接口获取某一日历的 ID。- - - '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -226,9 +216,7 @@ export const calendarV4CalendarDelete = {
     path: z.object({
       calendar_id: z
         .string()
-        .describe(
-          '日历 ID。创建共享日历时会返回日历 ID。你也可以调用以下接口获取某一日历的 ID。- - - ',
-        ),
+        .describe('日历 ID。创建共享日历时会返回日历 ID。你也可以调用以下接口获取某一日历的 ID。- - - '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -298,16 +286,8 @@ export const calendarV4CalendarEventAttendeeBatchDelete = {
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          '日程对应的日历 ID。了解更多，参见',
-        ),
-      event_id: z
-        .string()
-        .describe(
-          '日程 ID。创建日程时会返回日程 ID。你也可以调用以下接口获取某一日历的 ID。- - ',
-        ),
+      calendar_id: z.string().describe('日程对应的日历 ID。了解更多，参见'),
+      event_id: z.string().describe('日程 ID。创建日程时会返回日程 ID。你也可以调用以下接口获取某一日历的 ID。- - '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -333,16 +313,8 @@ export const calendarV4CalendarEventAttendeeChatMemberList = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional(),
     }),
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          '日程所在的日历 ID。关于日历 ID 可参见',
-        ),
-      event_id: z
-        .string()
-        .describe(
-          '日程 ID。创建日程时会返回日程 ID。你也可以调用以下接口获取某一日历的 ID。- - ',
-        ),
+      calendar_id: z.string().describe('日程所在的日历 ID。关于日历 ID 可参见'),
+      event_id: z.string().describe('日程 ID。创建日程时会返回日程 ID。你也可以调用以下接口获取某一日历的 ID。- - '),
       attendee_id: z
         .string()
         .describe(
@@ -382,9 +354,7 @@ export const calendarV4CalendarEventAttendeeCreate = {
               .optional(),
             chat_id: z
               .string()
-              .describe(
-                '群组 ID。当选择群组类型参与人（type 取值为 chat）时，需要传入该参数。关于群组 ID 可参见',
-              )
+              .describe('群组 ID。当选择群组类型参与人（type 取值为 chat）时，需要传入该参数。关于群组 ID 可参见')
               .optional(),
             room_id: z
               .string()
@@ -457,16 +427,8 @@ export const calendarV4CalendarEventAttendeeCreate = {
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          '日程对应的日历 ID。了解更多，参见',
-        ),
-      event_id: z
-        .string()
-        .describe(
-          '日程 ID。创建日程时会返回日程 ID。你也可以调用以下接口获取某一日历的 ID。- - ',
-        ),
+      calendar_id: z.string().describe('日程对应的日历 ID。了解更多，参见'),
+      event_id: z.string().describe('日程 ID。创建日程时会返回日程 ID。你也可以调用以下接口获取某一日历的 ID。- - '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -501,16 +463,8 @@ export const calendarV4CalendarEventAttendeeList = {
         .optional(),
     }),
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          '日程所在的日历 ID。关于日历 ID 可参见',
-        ),
-      event_id: z
-        .string()
-        .describe(
-          '日程 ID。创建日程时会返回日程 ID。你也可以调用以下接口获取某一日历的 ID。- - ',
-        ),
+      calendar_id: z.string().describe('日程所在的日历 ID。关于日历 ID 可参见'),
+      event_id: z.string().describe('日程 ID。创建日程时会返回日程 ID。你也可以调用以下接口获取某一日历的 ID。- - '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -789,9 +743,7 @@ export const calendarV4CalendarEventCreate = {
     path: z.object({
       calendar_id: z
         .string()
-        .describe(
-          '日历 ID。创建共享日历时会返回日历 ID。你也可以调用以下接口获取某一日历的 ID。- - - ',
-        ),
+        .describe('日历 ID。创建共享日历时会返回日历 ID。你也可以调用以下接口获取某一日历的 ID。- - - '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -812,16 +764,8 @@ export const calendarV4CalendarEventDelete = {
         .optional(),
     }),
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          '日程所在的日历 ID。了解更多，参见',
-        ),
-      event_id: z
-        .string()
-        .describe(
-          '日程 ID。获取方式：- 会返回日程 ID- - ',
-        ),
+      calendar_id: z.string().describe('日程所在的日历 ID。了解更多，参见'),
+      event_id: z.string().describe('日程 ID。获取方式：- 会返回日程 ID- - '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -847,25 +791,12 @@ export const calendarV4CalendarEventGet = {
         .boolean()
         .describe('是否需要返回参与人信息。**可选值有**：- true：需要- false（默认值）：不需要')
         .optional(),
-      max_attendee_num: z
-        .number()
-        .describe(
-          '返回的最大参与人数量。调用可获取日程完整的参与人信息',
-        )
-        .optional(),
+      max_attendee_num: z.number().describe('返回的最大参与人数量。调用可获取日程完整的参与人信息').optional(),
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional(),
     }),
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          '日程所在的日历 ID。关于日历 ID 可参见',
-        ),
-      event_id: z
-        .string()
-        .describe(
-          '日程 ID。创建日程时会返回日程 ID。你也可以调用以下接口获取某一日历的 ID。- - ',
-        ),
+      calendar_id: z.string().describe('日程所在的日历 ID。关于日历 ID 可参见'),
+      event_id: z.string().describe('日程 ID。创建日程时会返回日程 ID。你也可以调用以下接口获取某一日历的 ID。- - '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -894,11 +825,7 @@ export const calendarV4CalendarEventInstanceView = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional(),
     }),
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          '日历 ID。关于日历 ID 可参见',
-        ),
+      calendar_id: z.string().describe('日历 ID。关于日历 ID 可参见'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -933,16 +860,8 @@ export const calendarV4CalendarEventInstances = {
         .optional(),
     }),
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          '日历 ID。关于日历 ID 可参见',
-        ),
-      event_id: z
-        .string()
-        .describe(
-          '日程 ID。创建日程时会返回日程 ID。你也可以调用以下接口获取某一日历的 ID。- - ',
-        ),
+      calendar_id: z.string().describe('日历 ID。关于日历 ID 可参见'),
+      event_id: z.string().describe('日程 ID。创建日程时会返回日程 ID。你也可以调用以下接口获取某一日历的 ID。- - '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -996,11 +915,7 @@ export const calendarV4CalendarEventList = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional(),
     }),
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          '日历 ID。关于日历 ID 可参见',
-        ),
+      calendar_id: z.string().describe('日历 ID。关于日历 ID 可参见'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1015,16 +930,8 @@ export const calendarV4CalendarEventMeetingChatCreate = {
   accessTokens: ['tenant', 'user'],
   schema: {
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          '日程所在的日历 ID。了解更多，参见',
-        ),
-      event_id: z
-        .string()
-        .describe(
-          '日程 ID。创建日程时会返回日程 ID。你也可以调用以下接口获取某一日历的 ID。- - ',
-        ),
+      calendar_id: z.string().describe('日程所在的日历 ID。了解更多，参见'),
+      event_id: z.string().describe('日程 ID。创建日程时会返回日程 ID。你也可以调用以下接口获取某一日历的 ID。- - '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1054,16 +961,8 @@ export const calendarV4CalendarEventMeetingMinuteCreate = {
   accessTokens: ['tenant', 'user'],
   schema: {
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          '日历 ID。调用接口，获取当前身份的主日历 ID',
-        ),
-      event_id: z
-        .string()
-        .describe(
-          '日程 ID。调用接口，在指定日历内搜索日程并获取日程 ID',
-        ),
+      calendar_id: z.string().describe('日历 ID。调用接口，获取当前身份的主日历 ID'),
+      event_id: z.string().describe('日程 ID。调用接口，在指定日历内搜索日程并获取日程 ID'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1334,16 +1233,8 @@ export const calendarV4CalendarEventPatch = {
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          '日程所在的日历 ID。了解更多，参见',
-        ),
-      event_id: z
-        .string()
-        .describe(
-          '日程 ID。创建日程时会返回日程 ID。你也可以调用以下接口获取某一日历的 ID。- - ',
-        ),
+      calendar_id: z.string().describe('日程所在的日历 ID。了解更多，参见'),
+      event_id: z.string().describe('日程 ID。创建日程时会返回日程 ID。你也可以调用以下接口获取某一日历的 ID。- - '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1363,16 +1254,8 @@ export const calendarV4CalendarEventReply = {
         .describe('日程参与人 RSVP 状态，即日程回复状态。 Options:accept(接受),decline(拒绝),tentative(待定)'),
     }),
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          '日程所在的日历 ID。了解更多，参见',
-        ),
-      event_id: z
-        .string()
-        .describe(
-          '日程 ID。创建日程时会返回日程 ID。你也可以调用以下接口获取某一日历的 ID。- - ',
-        ),
+      calendar_id: z.string().describe('日程所在的日历 ID。了解更多，参见'),
+      event_id: z.string().describe('日程 ID。创建日程时会返回日程 ID。你也可以调用以下接口获取某一日历的 ID。- - '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1477,11 +1360,7 @@ export const calendarV4CalendarEventSearch = {
       page_size: z.number().describe('一次调用所返回的最大日程数量。最小值为10，不足10取10').optional(),
     }),
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          '日历 ID。关于日历 ID 可参见',
-        ),
+      calendar_id: z.string().describe('日历 ID。关于日历 ID 可参见'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1496,11 +1375,7 @@ export const calendarV4CalendarEventSubscription = {
   accessTokens: ['user'],
   schema: {
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          '日历 ID。关于日历 ID 可参见',
-        ),
+      calendar_id: z.string().describe('日历 ID。关于日历 ID 可参见'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1515,11 +1390,7 @@ export const calendarV4CalendarEventUnsubscription = {
   accessTokens: ['user'],
   schema: {
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          '日历 ID。关于日历 ID 可参见',
-        ),
+      calendar_id: z.string().describe('日历 ID。关于日历 ID 可参见'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1536,9 +1407,7 @@ export const calendarV4CalendarGet = {
     path: z.object({
       calendar_id: z
         .string()
-        .describe(
-          '日历 ID。创建共享日历时会返回日历 ID。你也可以调用以下接口获取某一日历的 ID。- - - ',
-        ),
+        .describe('日历 ID。创建共享日历时会返回日历 ID。你也可以调用以下接口获取某一日历的 ID。- - - '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1608,9 +1477,7 @@ export const calendarV4CalendarPatch = {
     path: z.object({
       calendar_id: z
         .string()
-        .describe(
-          '日历 ID。创建共享日历时会返回日历 ID。你也可以调用以下接口获取某一日历的 ID。- - - ',
-        ),
+        .describe('日历 ID。创建共享日历时会返回日历 ID。你也可以调用以下接口获取某一日历的 ID。- - - '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1665,9 +1532,7 @@ export const calendarV4CalendarSubscribe = {
     path: z.object({
       calendar_id: z
         .string()
-        .describe(
-          '日历ID。创建共享日历时会返回日历 ID。你也可以调用以下接口获取某一日历的 ID。- - - ',
-        ),
+        .describe('日历ID。创建共享日历时会返回日历 ID。你也可以调用以下接口获取某一日历的 ID。- - - '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1678,8 +1543,7 @@ export const calendarV4CalendarSubscription = {
   sdkName: 'calendar.v4.calendar.subscription',
   path: '/open-apis/calendar/v4/calendars/subscription',
   httpMethod: 'POST',
-  description:
-    '[Feishu/Lark]-日历-日历管理-订阅日历变更事件-调用该接口为当前用户身份订阅',
+  description: '[Feishu/Lark]-日历-日历管理-订阅日历变更事件-调用该接口为当前用户身份订阅',
   accessTokens: ['user'],
   schema: {
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
@@ -1695,11 +1559,7 @@ export const calendarV4CalendarUnsubscribe = {
   accessTokens: ['tenant', 'user'],
   schema: {
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          '日历 ID。你可以调用以下接口获取某一日历的 ID。- - - ',
-        ),
+      calendar_id: z.string().describe('日历 ID。你可以调用以下接口获取某一日历的 ID。- - - '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1710,8 +1570,7 @@ export const calendarV4CalendarUnsubscription = {
   sdkName: 'calendar.v4.calendar.unsubscription',
   path: '/open-apis/calendar/v4/calendars/unsubscription',
   httpMethod: 'POST',
-  description:
-    '[Feishu/Lark]-日历-日历管理-取消订阅日历变更事件-调用该接口为当前用户身份取消订阅',
+  description: '[Feishu/Lark]-日历-日历管理-取消订阅日历变更事件-调用该接口为当前用户身份取消订阅',
   accessTokens: ['user'],
   schema: {
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
@@ -1730,12 +1589,7 @@ export const calendarV4ExchangeBindingCreate = {
     data: z.object({
       admin_account: z.string().describe('Exchange 的 admin 账户').optional(),
       exchange_account: z.string().describe('需绑定的 Exchange 账户').optional(),
-      user_id: z
-        .string()
-        .describe(
-          '用户 ID，即 Exchange 账户绑定的飞书账户 ID。关于用户 ID 可参见',
-        )
-        .optional(),
+      user_id: z.string().describe('用户 ID，即 Exchange 账户绑定的飞书账户 ID。关于用户 ID 可参见').optional(),
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
@@ -1754,9 +1608,7 @@ export const calendarV4ExchangeBindingDelete = {
     path: z.object({
       exchange_binding_id: z
         .string()
-        .describe(
-          'Exchange 绑定的唯一标识 ID。调用  绑定时，可从返回结果中获取 exchange_binding_id',
-        ),
+        .describe('Exchange 绑定的唯一标识 ID。调用  绑定时，可从返回结果中获取 exchange_binding_id'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1775,9 +1627,7 @@ export const calendarV4ExchangeBindingGet = {
     path: z.object({
       exchange_binding_id: z
         .string()
-        .describe(
-          'Exchange 绑定的唯一标识 ID。调用  绑定时，可从返回结果中获取 exchange_binding_id',
-        ),
+        .describe('Exchange 绑定的唯一标识 ID。调用  绑定时，可从返回结果中获取 exchange_binding_id'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1795,14 +1645,10 @@ export const calendarV4FreebusyList = {
     data: z.object({
       time_min: z
         .string()
-        .describe(
-          '查询时段开始时间， date_time 格式。**注意**：time_min 与 time_max 之间的时间间隔不能大于 90 天',
-        ),
+        .describe('查询时段开始时间， date_time 格式。**注意**：time_min 与 time_max 之间的时间间隔不能大于 90 天'),
       time_max: z
         .string()
-        .describe(
-          '查询时段结束时间， date_time 格式。**注意**：time_min 与 time_max 之间的时间间隔不能大于 90 天',
-        ),
+        .describe('查询时段结束时间， date_time 格式。**注意**：time_min 与 time_max 之间的时间间隔不能大于 90 天'),
       user_id: z
         .string()
         .describe(
@@ -1857,11 +1703,7 @@ export const calendarV4TimeoffEventCreate = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      user_id: z
-        .string()
-        .describe(
-          '用户 ID。ID 类型需要与 user_id_type 的值保持一致。关于用户 ID 可参见',
-        ),
+      user_id: z.string().describe('用户 ID。ID 类型需要与 user_id_type 的值保持一致。关于用户 ID 可参见'),
       timezone: z.string().describe('时区信息'),
       start_time: z
         .string()

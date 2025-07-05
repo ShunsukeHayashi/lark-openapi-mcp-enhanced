@@ -22,17 +22,17 @@ export class AgentRegistry extends EventEmitter {
 
   constructor(config: AgentRegistryConfig = {}) {
     super();
-    
+
     this.config = {
       maxAgentsPerType: config.maxAgentsPerType || 10,
       healthCheckInterval: config.healthCheckInterval || 30000,
       registrationTimeout: config.registrationTimeout || 60000,
-      ...config
+      ...config,
     };
 
     // Initialize agent type maps
     const agentTypes: AgentType[] = ['coordinator', 'specialist', 'bridge', 'monitor', 'recovery'];
-    agentTypes.forEach(type => {
+    agentTypes.forEach((type) => {
       this.agentsByType.set(type, new Set());
     });
 
@@ -68,7 +68,7 @@ export class AgentRegistry extends EventEmitter {
         ...metadata,
         status: 'idle',
         currentTasks: 0,
-        lastHeartbeat: new Date()
+        lastHeartbeat: new Date(),
       };
 
       this.agents.set(metadata.id, agentData);
@@ -76,7 +76,7 @@ export class AgentRegistry extends EventEmitter {
       this.agentsByType.set(metadata.type, typeAgents);
 
       // Index by capabilities
-      metadata.capabilities.forEach(capability => {
+      metadata.capabilities.forEach((capability) => {
         if (!this.agentsByCapability.has(capability.name)) {
           this.agentsByCapability.set(capability.name, new Set());
         }
@@ -87,10 +87,9 @@ export class AgentRegistry extends EventEmitter {
       globalCommBus.registerAgent(agentData);
 
       this.emit('agent_registered', agentData);
-      
+
       console.log(`✅ Agent registered: ${metadata.name} (${metadata.id})`);
       return true;
-
     } catch (error) {
       console.error(`❌ Failed to register agent ${metadata.id}:`, error);
       return false;
@@ -114,7 +113,7 @@ export class AgentRegistry extends EventEmitter {
       }
 
       // Remove from capability index
-      agent.capabilities.forEach(capability => {
+      agent.capabilities.forEach((capability) => {
         const capabilityAgents = this.agentsByCapability.get(capability.name);
         if (capabilityAgents) {
           capabilityAgents.delete(agentId);
@@ -131,10 +130,9 @@ export class AgentRegistry extends EventEmitter {
       globalCommBus.unregisterAgent(agentId);
 
       this.emit('agent_unregistered', agent);
-      
+
       console.log(`🗑️ Agent unregistered: ${agent.name} (${agentId})`);
       return true;
-
     } catch (error) {
       console.error(`❌ Failed to unregister agent ${agentId}:`, error);
       return false;
@@ -147,10 +145,8 @@ export class AgentRegistry extends EventEmitter {
   discoverAgents(capability: string): AgentMetadata[] {
     const agentIds = this.agentsByCapability.get(capability) || new Set();
     return Array.from(agentIds)
-      .map(id => this.agents.get(id))
-      .filter((agent): agent is AgentMetadata => 
-        agent !== undefined && agent.status !== 'offline'
-      );
+      .map((id) => this.agents.get(id))
+      .filter((agent): agent is AgentMetadata => agent !== undefined && agent.status !== 'offline');
   }
 
   /**
@@ -159,44 +155,41 @@ export class AgentRegistry extends EventEmitter {
   discoverAgentsByType(type: AgentType): AgentMetadata[] {
     const agentIds = this.agentsByType.get(type) || new Set();
     return Array.from(agentIds)
-      .map(id => this.agents.get(id))
-      .filter((agent): agent is AgentMetadata => 
-        agent !== undefined && agent.status !== 'offline'
-      );
+      .map((id) => this.agents.get(id))
+      .filter((agent): agent is AgentMetadata => agent !== undefined && agent.status !== 'offline');
   }
 
   /**
    * Find best available agent for a task
    */
   findBestAgent(
-    capability: string, 
+    capability: string,
     options: {
       preferredType?: AgentType;
       maxLoad?: number;
       excludeAgents?: string[];
-    } = {}
+    } = {},
   ): AgentMetadata | null {
-    const candidates = this.discoverAgents(capability)
-      .filter(agent => {
-        // Filter by type preference
-        if (options.preferredType && agent.type !== options.preferredType) {
-          return false;
-        }
-        
-        // Filter by max load
-        const loadRatio = agent.currentTasks / agent.maxConcurrentTasks;
-        if (options.maxLoad && loadRatio > options.maxLoad) {
-          return false;
-        }
-        
-        // Exclude specific agents
-        if (options.excludeAgents?.includes(agent.id)) {
-          return false;
-        }
-        
-        // Must have capacity for new tasks
-        return agent.currentTasks < agent.maxConcurrentTasks;
-      });
+    const candidates = this.discoverAgents(capability).filter((agent) => {
+      // Filter by type preference
+      if (options.preferredType && agent.type !== options.preferredType) {
+        return false;
+      }
+
+      // Filter by max load
+      const loadRatio = agent.currentTasks / agent.maxConcurrentTasks;
+      if (options.maxLoad && loadRatio > options.maxLoad) {
+        return false;
+      }
+
+      // Exclude specific agents
+      if (options.excludeAgents?.includes(agent.id)) {
+        return false;
+      }
+
+      // Must have capacity for new tasks
+      return agent.currentTasks < agent.maxConcurrentTasks;
+    });
 
     if (candidates.length === 0) {
       return null;
@@ -206,11 +199,11 @@ export class AgentRegistry extends EventEmitter {
     candidates.sort((a, b) => {
       const loadA = a.currentTasks / a.maxConcurrentTasks;
       const loadB = b.currentTasks / b.maxConcurrentTasks;
-      
+
       // Prefer coordinators for complex tasks
       if (a.type === 'coordinator' && b.type !== 'coordinator') return -1;
       if (b.type === 'coordinator' && a.type !== 'coordinator') return 1;
-      
+
       return loadA - loadB;
     });
 
@@ -242,12 +235,12 @@ export class AgentRegistry extends EventEmitter {
       offlineAgents: 0,
       byType: {} as Record<AgentType, number>,
       byCapability: {} as Record<string, number>,
-      totalTasks: 0
+      totalTasks: 0,
     };
 
     // Initialize type counters
     const agentTypes: AgentType[] = ['coordinator', 'specialist', 'bridge', 'monitor', 'recovery'];
-    agentTypes.forEach(type => {
+    agentTypes.forEach((type) => {
       stats.byType[type] = 0;
     });
 
@@ -336,12 +329,12 @@ export class AgentRegistry extends EventEmitter {
 
     for (const [agentId, agent] of this.agents.entries()) {
       const timeSinceHeartbeat = now.getTime() - agent.lastHeartbeat.getTime();
-      
+
       if (timeSinceHeartbeat > timeout && agent.status !== 'offline') {
         agent.status = 'offline';
         agent.currentTasks = 0;
         offlineCount++;
-        
+
         this.emit('agent_offline', agent);
         console.warn(`⚠️ Agent ${agent.name} (${agentId}) marked as offline`);
       }
@@ -359,7 +352,7 @@ export class AgentRegistry extends EventEmitter {
     if (this.healthCheckInterval) {
       clearInterval(this.healthCheckInterval);
     }
-    
+
     this.removeAllListeners();
     this.agents.clear();
     this.agentsByType.clear();
@@ -385,7 +378,7 @@ export const AgentFactory = {
       maxConcurrentTasks: 5,
       currentTasks: 0,
       lastHeartbeat: new Date(),
-      version: '1.0.0'
+      version: '1.0.0',
     };
   },
 
@@ -402,7 +395,7 @@ export const AgentFactory = {
       maxConcurrentTasks: 3,
       currentTasks: 0,
       lastHeartbeat: new Date(),
-      version: '1.0.0'
+      version: '1.0.0',
     };
   },
 
@@ -419,7 +412,7 @@ export const AgentFactory = {
       maxConcurrentTasks: 2,
       currentTasks: 0,
       lastHeartbeat: new Date(),
-      version: '1.0.0'
+      version: '1.0.0',
     };
-  }
+  },
 };

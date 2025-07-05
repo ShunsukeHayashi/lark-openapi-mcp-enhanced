@@ -28,9 +28,7 @@ export const performanceV2ActivityQuery = {
     data: z.object({
       semester_ids: z
         .array(z.string())
-        .describe(
-          '评估周期 ID 列表，可通过获取**注意**：若填写了 `activity_ids` 参数时，此参数无效',
-        )
+        .describe('评估周期 ID 列表，可通过获取**注意**：若填写了 `activity_ids` 参数时，此参数无效')
         .optional(),
       activity_ids: z.array(z.string()).describe('项目 ID 列表').optional(),
     }),
@@ -48,11 +46,7 @@ export const performanceV2AdditionalInformationImport = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      semester_id: z
-        .string()
-        .describe(
-          '评估周期 ID，可通过接口获取',
-        ),
+      semester_id: z.string().describe('评估周期 ID，可通过接口获取'),
       additional_informations: z
         .array(
           z.object({
@@ -158,16 +152,10 @@ export const performanceV2AdditionalInformationsBatchDelete = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      semester_id: z
-        .string()
-        .describe(
-          '评估周期 ID，可通过接口获取',
-        ),
+      semester_id: z.string().describe('评估周期 ID，可通过接口获取'),
       additional_informations: z
         .array(z.string().describe('飞书绩效的事项 ID'))
-        .describe(
-          '补充信息 ID 列表，可通过接口获取',
-        ),
+        .describe('补充信息 ID 列表，可通过接口获取'),
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
   },
@@ -209,27 +197,17 @@ export const performanceV2MetricDetailImport = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      semester_id: z
-        .string()
-        .describe('周期 ID，可通过接口获取'),
+      semester_id: z.string().describe('周期 ID，可通过接口获取'),
       import_record_name: z.string().describe('数据源录入人，在录入记录页面可以查看该记录名称').optional(),
       imported_metrics: z
         .array(
           z.object({
             reviewee_user_id: z.string().describe('被评估人 ID，与入参 `user_id_type` 类型一致'),
-            metric_id: z
-              .string()
-              .describe(
-                '指标 ID，可通过接口获取',
-              ),
+            metric_id: z.string().describe('指标 ID，可通过接口获取'),
             fields: z
               .array(
                 z.object({
-                  field_id: z
-                    .string()
-                    .describe(
-                      '指标字段 ID，可通过接口获取',
-                    ),
+                  field_id: z.string().describe('指标字段 ID，可通过接口获取'),
                   field_value: z.string().describe('字段值').optional(),
                   field_value_person: z.string().describe('字段值，当字段为人员信息时必填').optional(),
                 }),
@@ -255,11 +233,7 @@ export const performanceV2MetricDetailQuery = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      semester_id: z
-        .string()
-        .describe(
-          '周期 ID，1 次只允许查询 1 个周期，semester_id 可通过【】接口获得',
-        ),
+      semester_id: z.string().describe('周期 ID，1 次只允许查询 1 个周期，semester_id 可通过【】接口获得'),
       reviewee_user_ids: z.array(z.string()).describe('被评估人 ID 列表，与入参 `user_id_type` 类型一致'),
     }),
     params: z.object({
@@ -299,9 +273,7 @@ export const performanceV2MetricLibQuery = {
       is_active: z.boolean().describe('指标启用状态，填写时根据指定启用状态进行筛选').optional(),
       tag_ids: z
         .array(z.string())
-        .describe(
-          '指标标签 ID 列表，可通过接口获取，填写时筛选拥有指定标签的指标',
-        )
+        .describe('指标标签 ID 列表，可通过接口获取，填写时筛选拥有指定标签的指标')
         .optional(),
       type_ids: z
         .array(z.string())
@@ -426,11 +398,7 @@ export const performanceV2ReviewDataQuery = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      semester_ids: z
-        .array(z.string())
-        .describe(
-          '评估周期 ID 列表，semester_id 可通过获得',
-        ),
+      semester_ids: z.array(z.string()).describe('评估周期 ID 列表，semester_id 可通过获得'),
       reviewee_user_ids: z.array(z.string()).describe('被评估人 ID 列表，ID 类型与user_id_type 的取值一致'),
       stage_types: z
         .array(
@@ -540,20 +508,14 @@ export const performanceV2RevieweeQuery = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      semester_id: z
-        .string()
-        .describe(
-          '周期 ID，可通过接口获取',
-        ),
+      semester_id: z.string().describe('周期 ID，可通过接口获取'),
       user_ids: z
         .array(z.string())
         .describe('用户 ID，与入参 `user_id_type` 类型一致，查询指定的被评估人信息')
         .optional(),
       activity_ids: z
         .array(z.string())
-        .describe(
-          '项目 ID 列表，可通过接口获取，查询指定的项目下的被评估人信息',
-        )
+        .describe('项目 ID 列表，可通过接口获取，查询指定的项目下的被评估人信息')
         .optional(),
     }),
     params: z.object({

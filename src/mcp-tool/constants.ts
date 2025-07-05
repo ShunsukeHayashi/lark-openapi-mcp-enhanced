@@ -45,6 +45,14 @@ export enum PresetName {
    * Complete set of all Lark functions
    */
   COMPLETE_ALL = 'preset.complete.all',
+  /**
+   * Performance-optimized cached tools
+   */
+  CACHE_DEFAULT = 'preset.cache.default',
+  /**
+   * Security audit and validation tools
+   */
+  SECURITY_DEFAULT = 'preset.security.default',
 }
 
 export const presetLightToolNames: ToolName[] = [
@@ -138,6 +146,25 @@ export const defaultToolNames: ToolName[] = [
   ...presetContactToolNames,
 ];
 
+export const presetCacheToolNames: ToolName[] = [
+  'contact.v3.user.get.cached',
+  'im.v1.chat.get.cached',
+  'contact.v3.department.list.cached',
+  'cache.builtin.manage',
+  'bitable.v1.app.get.cached',
+  // Include commonly used non-cached tools
+  'im.v1.message.create',
+  'im.v1.message.list',
+  'bitable.v1.appTableRecord.search',
+  'bitable.v1.appTableRecord.create',
+];
+
+export const presetSecurityToolNames: ToolName[] = [
+  'security.builtin.audit',
+  // Include basic contact tools for security checks
+  'contact.v3.user.batchGetId',
+];
+
 export const presetCompleteToolNames: ToolName[] = [
   // Complete function tools
   'complete.user.get_info',
@@ -154,6 +181,8 @@ export const presetCompleteToolNames: ToolName[] = [
   ...presetGenesisToolNames,
   ...presetTaskToolNames,
   ...presetCalendarToolNames,
+  ...presetCacheToolNames,
+  ...presetSecurityToolNames,
 ];
 
 export const presetTools: Record<PresetName, ToolName[]> = {
@@ -166,5 +195,7 @@ export const presetTools: Record<PresetName, ToolName[]> = {
   [PresetName.TASK_DEFAULT]: presetTaskToolNames,
   [PresetName.CALENDAR_DEFAULT]: presetCalendarToolNames,
   [PresetName.GENESIS_DEFAULT]: presetGenesisToolNames,
+  [PresetName.CACHE_DEFAULT]: presetCacheToolNames,
+  [PresetName.SECURITY_DEFAULT]: presetSecurityToolNames,
   [PresetName.COMPLETE_ALL]: presetCompleteToolNames,
 };

@@ -11,13 +11,13 @@ export const genesisPrompts = [
       {
         name: 'template_id',
         description: 'Template ID (e.g., crm, project_management, hr_management)',
-        required: false
+        required: false,
       },
       {
         name: 'base_name',
         description: 'Name for the new Lark Base',
-        required: false
-      }
+        required: false,
+      },
     ],
     template: `# Genesis Templates - Pre-built Business Application Templates
 
@@ -76,7 +76,7 @@ Example: Create a CRM system
 - baseName: "My Sales CRM"
 - options.template: "crm"
 - options.useRealAPI: true
-{{/if}}`
+{{/if}}`,
   },
   {
     name: 'genesis_create_base',
@@ -85,8 +85,8 @@ Example: Create a CRM system
       {
         name: 'requirements',
         description: 'Natural language description of the application requirements',
-        required: true
-      }
+        required: true,
+      },
     ],
     template: `# Genesis System - AI-Powered Base Creation
 
@@ -131,7 +131,7 @@ Create a Lark Base application based on the following requirements:
 - Add descriptions to all fields
 - Create indexes for frequently searched fields
 - Implement proper access controls
-`
+`,
   },
   {
     name: 'genesis_migrate_excel',
@@ -140,8 +140,8 @@ Create a Lark Base application based on the following requirements:
       {
         name: 'excel_structure',
         description: 'Description of Excel file structure and data',
-        required: true
-      }
+        required: true,
+      },
     ],
     template: `# Excel to Lark Base Migration
 
@@ -166,7 +166,7 @@ Create a Lark Base application based on the following requirements:
    - Create automated workflows
    - Build interactive dashboards
    - Enable collaborative features
-`
+`,
   },
   {
     name: 'genesis_template_crm',
@@ -175,13 +175,13 @@ Create a Lark Base application based on the following requirements:
       {
         name: 'business_type',
         description: 'Type of business (B2B, B2C, SaaS, etc.)',
-        required: true
+        required: true,
       },
       {
         name: 'features',
         description: 'Specific CRM features needed',
-        required: false
-      }
+        required: false,
+      },
     ],
     template: `# CRM System Template
 
@@ -232,7 +232,7 @@ Create a Lark Base application based on the following requirements:
 - Best time to contact
 - Deal probability analysis
 - Churn risk assessment
-`
+`,
   },
   {
     name: 'genesis_optimize_base',
@@ -241,13 +241,13 @@ Create a Lark Base application based on the following requirements:
       {
         name: 'base_structure',
         description: 'Current base tables and relationships',
-        required: true
+        required: true,
       },
       {
         name: 'pain_points',
         description: 'Current issues or inefficiencies',
-        required: true
-      }
+        required: true,
+      },
     ],
     template: `# Lark Base Optimization
 
@@ -288,7 +288,7 @@ Create a Lark Base application based on the following requirements:
    - Trend analysis
    - Predictive metrics
    - Real-time reporting
-`
+`,
   },
   {
     name: 'genesis_ai_features',
@@ -297,13 +297,13 @@ Create a Lark Base application based on the following requirements:
       {
         name: 'base_context',
         description: 'Description of the base and its purpose',
-        required: true
+        required: true,
       },
       {
         name: 'desired_intelligence',
         description: 'What kind of AI assistance is needed',
-        required: true
-      }
+        required: true,
+      },
     ],
     template: `# AI Feature Integration
 
@@ -344,7 +344,7 @@ Create a Lark Base application based on the following requirements:
    - Clustering analysis
    - Recommendation engine
    - Sentiment analysis
-`
+`,
   },
   {
     name: 'genesis_create_view_dashboard',
@@ -353,13 +353,13 @@ Create a Lark Base application based on the following requirements:
       {
         name: 'app_type',
         description: 'Type of application (base or spreadsheet)',
-        required: true
+        required: true,
       },
       {
         name: 'requirements',
         description: 'What kind of views, dashboards, or automation needed',
-        required: true
-      }
+        required: true,
+      },
     ],
     template: `# Create Views and Dashboards
 
@@ -412,7 +412,7 @@ Create a Lark Base application based on the following requirements:
 - Use dashboards for executive summaries
 - Automate repetitive tasks
 - Set up filter views for common queries
-`
+`,
   },
   {
     name: 'genesis_automation_workflow',
@@ -421,13 +421,13 @@ Create a Lark Base application based on the following requirements:
       {
         name: 'workflow_purpose',
         description: 'What the automation should accomplish',
-        required: true
+        required: true,
       },
       {
         name: 'trigger_conditions',
         description: 'When the automation should run',
-        required: true
-      }
+        required: true,
+      },
     ],
     template: `# Automation Workflow Design
 
@@ -497,8 +497,8 @@ Create a Lark Base application based on the following requirements:
    - Validation rules
    - Auto-formatting
    - Duplicate detection
-`
-  }
+`,
+  },
 ];
 
 /**
@@ -506,29 +506,24 @@ Create a Lark Base application based on the following requirements:
  */
 export function registerGenesisPrompts(server: any): void {
   for (const prompt of genesisPrompts) {
-    server.prompt(
-      prompt.name,
-      prompt.description,
-      prompt.arguments,
-      ({ arguments: args }: any) => {
-        // Replace template variables with actual values
-        let content = prompt.template;
-        for (const [key, value] of Object.entries(args)) {
-          content = content.replace(new RegExp(`{{${key}}}`, 'g'), value as string);
-        }
-        
-        return {
-          messages: [
-            {
-              role: 'user',
-              content: {
-                type: 'text',
-                text: content
-              }
-            }
-          ]
-        };
+    server.prompt(prompt.name, prompt.description, prompt.arguments, ({ arguments: args }: any) => {
+      // Replace template variables with actual values
+      let content = prompt.template;
+      for (const [key, value] of Object.entries(args)) {
+        content = content.replace(new RegExp(`{{${key}}}`, 'g'), value as string);
       }
-    );
+
+      return {
+        messages: [
+          {
+            role: 'user',
+            content: {
+              type: 'text',
+              text: content,
+            },
+          },
+        ],
+      };
+    });
   }
 }

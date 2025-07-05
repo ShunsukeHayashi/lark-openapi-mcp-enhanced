@@ -11,11 +11,7 @@ export const docsV1ContentGet = {
   accessTokens: ['tenant', 'user'],
   schema: {
     params: z.object({
-      doc_token: z
-        .string()
-        .describe(
-          'The unique identification of the docs. Click  to learn how to get `doc_token`',
-        ),
+      doc_token: z.string().describe('The unique identification of the docs. Click  to learn how to get `doc_token`'),
       doc_type: z.literal('docx').describe('Docs type Options:docx(Upgraded Document)'),
       content_type: z.literal('markdown').describe('Content type Options:markdown(Markdown format)'),
       lang: z

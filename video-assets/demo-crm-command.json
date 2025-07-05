@@ -1,0 +1,14 @@
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "params": {
+    "name": "genesis.builtin.create_base",
+    "arguments": {
+      "requirements": "Create a comprehensive customer relationship management system for a growing sales team. \n\nKey Requirements:\n• Customer contact information (name, email, phone, company)\n• Lead tracking with status pipeline (lead → prospect → opportunity → customer)  \n• Sales opportunities with deal values, probability, and close dates\n• Communication history (calls, emails, meetings, notes)\n• Task management and follow-up reminders\n• Team assignments and territory management\n• Reporting capabilities for sales performance and pipeline analysis\n• Integration with email and calendar systems\n\nThe system should support a team of 10-15 sales representatives managing 500+ customers and 200+ active opportunities.",
+      "template_type": "crm",
+      "include_sample_data": true,
+      "optimization_level": "high"
+    }
+  },
+  "id": 1
+}

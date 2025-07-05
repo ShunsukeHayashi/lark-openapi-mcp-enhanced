@@ -1,0 +1,14 @@
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "params": {
+    "name": "genesis.builtin.create_base",
+    "arguments": {
+      "requirements": "Organize a 2-day tech conference with 500+ attendees, multiple tracks, and comprehensive logistics management.\n\nKey Requirements:\n• Speaker management with session scheduling and requirements\n• Attendee registration with ticketing and check-in process\n• Session management with tracks, rooms, and time slots\n• Venue coordination with room setup and equipment needs\n• Sponsor management with packages and deliverables\n• Budget tracking with income and expense categories\n• Feedback collection from attendees and speakers\n• Post-event analytics and reporting\n• Automated email notifications and QR code check-ins\n• Mobile app integration for schedule and networking\n\nEvent Details: 500 attendees, 50 speakers, 60 sessions, 8 sponsors, $250K budget.",
+      "template_type": "event",
+      "include_sample_data": true,
+      "optimization_level": "high"
+    }
+  },
+  "id": 3
+}

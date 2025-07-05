@@ -22,7 +22,27 @@ export interface TableSpec {
 
 export interface FieldSpec {
   name: string;
-  type: 'text' | 'number' | 'date' | 'checkbox' | 'singleSelect' | 'multiSelect' | 'attachment' | 'user' | 'formula' | 'phone' | 'email' | 'url' | 'rating' | 'currency' | 'percent' | 'duration' | 'created_time' | 'modified_time' | 'created_by' | 'modified_by';
+  type:
+    | 'text'
+    | 'number'
+    | 'date'
+    | 'checkbox'
+    | 'singleSelect'
+    | 'multiSelect'
+    | 'attachment'
+    | 'user'
+    | 'formula'
+    | 'phone'
+    | 'email'
+    | 'url'
+    | 'rating'
+    | 'currency'
+    | 'percent'
+    | 'duration'
+    | 'created_time'
+    | 'modified_time'
+    | 'created_by'
+    | 'modified_by';
   description?: string;
   required?: boolean;
   options?: {
@@ -99,10 +119,13 @@ export class LarkBaseBuilder {
   private retryAttempts: number;
   private retryDelay: number;
 
-  constructor(larkClient: LarkMcpTool, options: {
-    retryAttempts?: number;
-    retryDelay?: number;
-  } = {}) {
+  constructor(
+    larkClient: LarkMcpTool,
+    options: {
+      retryAttempts?: number;
+      retryDelay?: number;
+    } = {},
+  ) {
     this.larkClient = larkClient;
     this.retryAttempts = options.retryAttempts || 3;
     this.retryDelay = options.retryDelay || 1000;
@@ -125,8 +148,8 @@ export class LarkBaseBuilder {
         tablesCreated: 0,
         fieldsCreated: 0,
         viewsCreated: 0,
-        automationsCreated: 0
-      }
+        automationsCreated: 0,
+      },
     };
 
     try {
@@ -136,18 +159,18 @@ export class LarkBaseBuilder {
         result.errors.push(...baseResult.errors);
         return result;
       }
-      
+
       result.baseId = baseResult.baseId;
-      
+
       // 2. テーブル作成
       for (const tableSpec of spec.tables) {
         const tableResult = await this.createTable(result.baseId!, tableSpec);
-        
+
         if (tableResult.success) {
           result.tableIds![tableSpec.name] = tableResult.tableId!;
           result.fieldIds![tableSpec.name] = tableResult.fieldIds!;
           result.viewIds![tableSpec.name] = tableResult.viewIds!;
-          
+
           result.metadata.tablesCreated++;
           result.metadata.fieldsCreated += Object.keys(tableResult.fieldIds!).length;
           result.metadata.viewsCreated += Object.keys(tableResult.viewIds!).length;
@@ -161,7 +184,7 @@ export class LarkBaseBuilder {
       if (spec.automations) {
         for (const automation of spec.automations) {
           const automationResult = await this.createAutomation(result.baseId!, automation, result.tableIds!);
-          
+
           if (automationResult.success) {
             result.metadata.automationsCreated++;
           } else {
@@ -174,7 +197,6 @@ export class LarkBaseBuilder {
       result.metadata.buildTime = Date.now() - startTime;
 
       return result;
-
     } catch (error) {
       result.errors.push(`Build failed: ${error}`);
       result.metadata.buildTime = Date.now() - startTime;
@@ -196,12 +218,12 @@ export class LarkBaseBuilder {
       return {
         success: true,
         baseId: 'mock-base-id-' + Date.now(),
-        errors: []
+        errors: [],
       };
     } catch (error) {
       return {
         success: false,
-        errors: [`Base creation failed: ${error}`]
+        errors: [`Base creation failed: ${error}`],
       };
     }
   }
@@ -209,7 +231,10 @@ export class LarkBaseBuilder {
   /**
    * テーブル作成
    */
-  private async createTable(baseId: string, spec: TableSpec): Promise<{
+  private async createTable(
+    baseId: string,
+    spec: TableSpec,
+  ): Promise<{
     success: boolean;
     tableId?: string;
     fieldIds?: Record<string, string>;
@@ -239,12 +264,12 @@ export class LarkBaseBuilder {
         tableId,
         fieldIds,
         viewIds,
-        errors: []
+        errors: [],
       };
     } catch (error) {
       return {
         success: false,
-        errors: [`Table creation failed: ${error}`]
+        errors: [`Table creation failed: ${error}`],
       };
     }
   }
@@ -252,7 +277,11 @@ export class LarkBaseBuilder {
   /**
    * フィールド作成
    */
-  private async createField(baseId: string, tableId: string, spec: FieldSpec): Promise<{
+  private async createField(
+    baseId: string,
+    tableId: string,
+    spec: FieldSpec,
+  ): Promise<{
     success: boolean;
     fieldId?: string;
     errors: string[];
@@ -262,12 +291,12 @@ export class LarkBaseBuilder {
       return {
         success: true,
         fieldId: `mock-field-${spec.name}-${Date.now()}`,
-        errors: []
+        errors: [],
       };
     } catch (error) {
       return {
         success: false,
-        errors: [`Field creation failed: ${error}`]
+        errors: [`Field creation failed: ${error}`],
       };
     }
   }
@@ -275,7 +304,12 @@ export class LarkBaseBuilder {
   /**
    * ビュー作成
    */
-  private async createView(baseId: string, tableId: string, spec: ViewSpec, fieldIds: Record<string, string>): Promise<{
+  private async createView(
+    baseId: string,
+    tableId: string,
+    spec: ViewSpec,
+    fieldIds: Record<string, string>,
+  ): Promise<{
     success: boolean;
     viewId?: string;
     errors: string[];
@@ -285,12 +319,12 @@ export class LarkBaseBuilder {
       return {
         success: true,
         viewId: `mock-view-${spec.name}-${Date.now()}`,
-        errors: []
+        errors: [],
       };
     } catch (error) {
       return {
         success: false,
-        errors: [`View creation failed: ${error}`]
+        errors: [`View creation failed: ${error}`],
       };
     }
   }
@@ -298,7 +332,11 @@ export class LarkBaseBuilder {
   /**
    * 自動化作成
    */
-  private async createAutomation(baseId: string, spec: AutomationSpec, tableIds: Record<string, string>): Promise<{
+  private async createAutomation(
+    baseId: string,
+    spec: AutomationSpec,
+    tableIds: Record<string, string>,
+  ): Promise<{
     success: boolean;
     automationId?: string;
     errors: string[];
@@ -308,12 +346,12 @@ export class LarkBaseBuilder {
       return {
         success: true,
         automationId: `mock-automation-${spec.name}-${Date.now()}`,
-        errors: []
+        errors: [],
       };
     } catch (error) {
       return {
         success: false,
-        errors: [`Automation creation failed: ${error}`]
+        errors: [`Automation creation failed: ${error}`],
       };
     }
   }
@@ -322,7 +360,7 @@ export class LarkBaseBuilder {
    * フィールド仕様をLark API形式に変換
    */
   private convertFieldSpecs(specs: FieldSpec[]): any[] {
-    return specs.map(spec => this.buildFieldProperty(spec));
+    return specs.map((spec) => this.buildFieldProperty(spec));
   }
 
   /**
@@ -330,26 +368,26 @@ export class LarkBaseBuilder {
    */
   private mapFieldType(type: string): number {
     const typeMap: Record<string, number> = {
-      'text': 1,
-      'number': 2,
-      'date': 3,
-      'checkbox': 4,
-      'singleSelect': 5,
-      'multiSelect': 6,
-      'attachment': 7,
-      'user': 8,
-      'formula': 9,
-      'phone': 10,
-      'email': 11,
-      'url': 12,
-      'rating': 13,
-      'currency': 14,
-      'percent': 15,
-      'duration': 16,
-      'created_time': 17,
-      'modified_time': 18,
-      'created_by': 19,
-      'modified_by': 20
+      text: 1,
+      number: 2,
+      date: 3,
+      checkbox: 4,
+      singleSelect: 5,
+      multiSelect: 6,
+      attachment: 7,
+      user: 8,
+      formula: 9,
+      phone: 10,
+      email: 11,
+      url: 12,
+      rating: 13,
+      currency: 14,
+      percent: 15,
+      duration: 16,
+      created_time: 17,
+      modified_time: 18,
+      created_by: 19,
+      modified_by: 20,
     };
     return typeMap[type] || 1;
   }
@@ -362,7 +400,7 @@ export class LarkBaseBuilder {
       field_name: spec.name,
       type: this.mapFieldType(spec.type),
       description: spec.description || '',
-      required: spec.required || false
+      required: spec.required || false,
     };
 
     if (spec.options) {
@@ -370,15 +408,15 @@ export class LarkBaseBuilder {
         return {
           ...baseProperty,
           property: {
-            options: spec.options.choices?.map(choice => ({ name: choice })) || []
-          }
+            options: spec.options.choices?.map((choice) => ({ name: choice })) || [],
+          },
         };
       } else if (spec.type === 'formula') {
         return {
           ...baseProperty,
           property: {
-            formula: spec.options.formula || ''
-          }
+            formula: spec.options.formula || '',
+          },
         };
       }
     }
@@ -393,7 +431,7 @@ export class LarkBaseBuilder {
     const baseProperty = {
       view_name: spec.name,
       view_type: spec.type,
-      description: spec.description || ''
+      description: spec.description || '',
     };
 
     if (spec.config) {
@@ -401,8 +439,8 @@ export class LarkBaseBuilder {
         ...baseProperty,
         property: {
           ...spec.config,
-          field_order: spec.config.fieldOrder?.map(fieldName => fieldIds[fieldName]).filter(Boolean) || []
-        }
+          field_order: spec.config.fieldOrder?.map((fieldName) => fieldIds[fieldName]).filter(Boolean) || [],
+        },
       };
     }
 
@@ -414,18 +452,18 @@ export class LarkBaseBuilder {
    */
   private async executeWithRetry<T>(fn: () => Promise<T>): Promise<T> {
     let lastError: any;
-    
+
     for (let attempt = 1; attempt <= this.retryAttempts; attempt++) {
       try {
         return await fn();
       } catch (error) {
         lastError = error;
         if (attempt < this.retryAttempts) {
-          await new Promise(resolve => setTimeout(resolve, this.retryDelay * attempt));
+          await new Promise((resolve) => setTimeout(resolve, this.retryDelay * attempt));
         }
       }
     }
-    
+
     throw lastError;
   }
 
@@ -450,7 +488,7 @@ export class LarkBaseBuilder {
       return {
         app_id: baseId,
         name: 'Mock Base',
-        description: 'Mock base description'
+        description: 'Mock base description',
       };
     } catch (error) {
       throw error;
@@ -467,11 +505,11 @@ export class LarkBaseBuilder {
   } {
     const totalSteps = result.metadata.tablesCreated + result.metadata.fieldsCreated + result.metadata.viewsCreated;
     const completedSteps = totalSteps;
-    
+
     return {
       percentage: totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0,
       currentStep: result.success ? 'Completed' : 'Building',
-      estimatedTimeRemaining: 0
+      estimatedTimeRemaining: 0,
     };
   }
 }

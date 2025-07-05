@@ -96,7 +96,7 @@ export class ERDiagramGenerator {
     blob: 'blob',
     clob: 'clob',
     email: 'string',
-    phone: 'string'
+    phone: 'string',
   };
 
   private static readonly CARDINALITY_SYMBOLS: Record<string, string> = {
@@ -107,7 +107,7 @@ export class ERDiagramGenerator {
     many: '}o--o{',
     'one-to-one': '||--||',
     'one-to-many': '||--o{',
-    'many-to-many': '}o--o{'
+    'many-to-many': '}o--o{',
   };
 
   /**
@@ -116,7 +116,7 @@ export class ERDiagramGenerator {
   static generateDiagram(
     entities: Entity[],
     relationships: Relationship[],
-    config: ERDiagramConfig = {}
+    config: ERDiagramConfig = {},
   ): GenerationResult {
     const startTime = Date.now();
     const errors: string[] = [];
@@ -137,15 +137,15 @@ export class ERDiagramGenerator {
             entityCount: entities.length,
             relationshipCount: relationships.length,
             attributeCount: 0,
-            generateTime: Date.now() - startTime
-          }
+            generateTime: Date.now() - startTime,
+          },
         };
       }
       warnings.push(...validationResult.warnings);
 
       // 2. エンティティの正規化
       const normalizedEntities = this.normalizeEntities(entities);
-      
+
       // 3. リレーションシップの正規化
       const normalizedRelationships = this.normalizeRelationships(relationships, normalizedEntities);
 
@@ -166,13 +166,12 @@ export class ERDiagramGenerator {
           entityCount: normalizedEntities.length,
           relationshipCount: normalizedRelationships.length,
           attributeCount,
-          generateTime: Date.now() - startTime
-        }
+          generateTime: Date.now() - startTime,
+        },
       };
-
     } catch (error) {
       errors.push(`Diagram generation failed: ${error}`);
-      
+
       return {
         success: false,
         mermaidCode: '',
@@ -184,8 +183,8 @@ export class ERDiagramGenerator {
           entityCount: entities.length,
           relationshipCount: relationships.length,
           attributeCount: 0,
-          generateTime: Date.now() - startTime
-        }
+          generateTime: Date.now() - startTime,
+        },
       };
     }
   }
@@ -193,7 +192,10 @@ export class ERDiagramGenerator {
   /**
    * 入力データの検証
    */
-  private static validateInput(entities: Entity[], relationships: Relationship[]): {
+  private static validateInput(
+    entities: Entity[],
+    relationships: Relationship[],
+  ): {
     errors: string[];
     warnings: string[];
   } {
@@ -243,7 +245,7 @@ export class ERDiagramGenerator {
       });
 
       // 主キーの検証
-      if (entity.primaryKey && !entity.attributes.find(attr => attr.name === entity.primaryKey)) {
+      if (entity.primaryKey && !entity.attributes.find((attr) => attr.name === entity.primaryKey)) {
         errors.push(`Entity ${entity.name}: primary key ${entity.primaryKey} not found in attributes`);
       }
     });
@@ -275,19 +277,19 @@ export class ERDiagramGenerator {
    * エンティティの正規化
    */
   private static normalizeEntities(entities: Entity[]): Entity[] {
-    return entities.map(entity => ({
+    return entities.map((entity) => ({
       ...entity,
       displayName: entity.displayName || entity.name,
       description: entity.description || '',
-      attributes: entity.attributes.map(attr => ({
+      attributes: entity.attributes.map((attr) => ({
         ...attr,
         type: this.normalizeDataType(attr.type),
         nullable: attr.nullable !== false, // デフォルトはnullable
         unique: attr.unique || false,
-        description: attr.description || ''
+        description: attr.description || '',
       })),
       primaryKey: entity.primaryKey || (entity.attributes.length > 0 ? entity.attributes[0].name : undefined),
-      constraints: entity.constraints || []
+      constraints: entity.constraints || [],
     }));
   }
 
@@ -295,13 +297,13 @@ export class ERDiagramGenerator {
    * リレーションシップの正規化
    */
   private static normalizeRelationships(relationships: Relationship[], entities: Entity[]): Relationship[] {
-    return relationships.map(rel => ({
+    return relationships.map((rel) => ({
       ...rel,
       fromCardinality: rel.fromCardinality || this.inferCardinality(rel.type, 'from'),
       toCardinality: rel.toCardinality || this.inferCardinality(rel.type, 'to'),
       relationshipName: rel.relationshipName || `${rel.fromEntity}_${rel.toEntity}`,
       description: rel.description || '',
-      attributes: rel.attributes || []
+      attributes: rel.attributes || [],
     }));
   }
 
@@ -335,13 +337,13 @@ export class ERDiagramGenerator {
   private static generateMermaidCode(
     entities: Entity[],
     relationships: Relationship[],
-    config: ERDiagramConfig
+    config: ERDiagramConfig,
   ): string {
     const lines: string[] = [];
 
     // 1. ヘッダー
     lines.push('erDiagram');
-    
+
     if (config.title) {
       lines.push(`    title ${config.title}`);
     }
@@ -349,14 +351,14 @@ export class ERDiagramGenerator {
     lines.push('');
 
     // 2. エンティティの定義
-    entities.forEach(entity => {
+    entities.forEach((entity) => {
       const entityCode = this.generateEntityCode(entity, config);
       lines.push(entityCode);
       lines.push('');
     });
 
     // 3. リレーションシップの定義
-    relationships.forEach(rel => {
+    relationships.forEach((rel) => {
       const relationshipCode = this.generateRelationshipCode(rel, config);
       lines.push(relationshipCode);
     });
@@ -369,13 +371,13 @@ export class ERDiagramGenerator {
    */
   private static generateEntityCode(entity: Entity, config: ERDiagramConfig): string {
     const lines: string[] = [];
-    
+
     // エンティティ名
     lines.push(`    ${entity.name} {`);
 
     // 属性の生成
     if (config.showAttributes !== false) {
-      entity.attributes.forEach(attr => {
+      entity.attributes.forEach((attr) => {
         const attrCode = this.generateAttributeCode(attr, entity.primaryKey, config);
         lines.push(`        ${attrCode}`);
       });
@@ -392,14 +394,14 @@ export class ERDiagramGenerator {
   private static generateAttributeCode(
     attribute: Attribute,
     primaryKey?: string,
-    config: ERDiagramConfig = {}
+    config: ERDiagramConfig = {},
   ): string {
     let code = '';
 
     // データ型
     if (config.showDataTypes !== false) {
       let typeStr = attribute.type;
-      
+
       if (attribute.length) {
         typeStr += `(${attribute.length})`;
       } else if (attribute.precision && attribute.scale) {
@@ -407,7 +409,7 @@ export class ERDiagramGenerator {
       } else if (attribute.precision) {
         typeStr += `(${attribute.precision})`;
       }
-      
+
       code += `${typeStr} `;
     }
 
@@ -416,15 +418,15 @@ export class ERDiagramGenerator {
 
     // キーインジケーター
     const indicators: string[] = [];
-    
+
     if (attribute.name === primaryKey) {
       indicators.push('PK');
     }
-    
+
     if (attribute.unique) {
       indicators.push('UK');
     }
-    
+
     if (!attribute.nullable) {
       indicators.push('NOT NULL');
     }
@@ -447,7 +449,7 @@ export class ERDiagramGenerator {
   private static generateRelationshipCode(relationship: Relationship, config: ERDiagramConfig): string {
     const symbol = this.getRelationshipSymbol(relationship.type);
     const label = relationship.relationshipName || '';
-    
+
     if (label) {
       return `    ${relationship.fromEntity} ${symbol} ${relationship.toEntity} : "${label}"`;
     } else {
@@ -473,28 +475,27 @@ export class ERDiagramGenerator {
 
     try {
       const tableMatches = sqlScript.matchAll(/CREATE\s+TABLE\s+(\w+)\s*\(([\s\S]*?)\)/gi);
-      
+
       for (const match of tableMatches) {
         const tableName = match[1];
         const columnDefinitions = match[2];
-        
+
         const entity = this.parseTableDefinition(tableName, columnDefinitions);
         entities.push(entity);
       }
 
       // 外部キー制約からリレーションシップを抽出
       const foreignKeyMatches = sqlScript.matchAll(/FOREIGN\s+KEY\s*\((\w+)\)\s+REFERENCES\s+(\w+)\s*\((\w+)\)/gi);
-      
+
       for (const match of foreignKeyMatches) {
         // 外部キー制約を見つけた場合のリレーションシップ生成ロジック
         // 実装の詳細は省略
       }
 
       return this.generateDiagram(entities, relationships);
-
     } catch (error) {
       errors.push(`SQL parsing failed: ${error}`);
-      
+
       return {
         success: false,
         mermaidCode: '',
@@ -506,8 +507,8 @@ export class ERDiagramGenerator {
           entityCount: 0,
           relationshipCount: 0,
           attributeCount: 0,
-          generateTime: 0
-        }
+          generateTime: 0,
+        },
       };
     }
   }
@@ -519,8 +520,8 @@ export class ERDiagramGenerator {
     const attributes: Attribute[] = [];
     let primaryKey: string | undefined;
 
-    const lines = columnDefinitions.split(',').map(line => line.trim());
-    
+    const lines = columnDefinitions.split(',').map((line) => line.trim());
+
     for (const line of lines) {
       if (line.toUpperCase().includes('PRIMARY KEY')) {
         const pkMatch = line.match(/PRIMARY\s+KEY\s*\((\w+)\)/i);
@@ -533,12 +534,12 @@ export class ERDiagramGenerator {
       const columnMatch = line.match(/(\w+)\s+(\w+(?:\([^)]*\))?)/i);
       if (columnMatch) {
         const [, columnName, columnType] = columnMatch;
-        
+
         attributes.push({
           name: columnName,
           type: columnType,
           nullable: !line.toUpperCase().includes('NOT NULL'),
-          unique: line.toUpperCase().includes('UNIQUE')
+          unique: line.toUpperCase().includes('UNIQUE'),
         });
       }
     }
@@ -546,7 +547,7 @@ export class ERDiagramGenerator {
     return {
       name: tableName,
       attributes,
-      primaryKey
+      primaryKey,
     };
   }
 
@@ -567,7 +568,6 @@ export class ERDiagramGenerator {
       }
 
       return this.generateDiagram(entities, relationships);
-
     } catch (error) {
       return {
         success: false,
@@ -580,8 +580,8 @@ export class ERDiagramGenerator {
           entityCount: 0,
           relationshipCount: 0,
           attributeCount: 0,
-          generateTime: 0
-        }
+          generateTime: 0,
+        },
       };
     }
   }
@@ -595,12 +595,12 @@ export class ERDiagramGenerator {
     if (schema.properties) {
       for (const [propName, propSchema] of Object.entries(schema.properties)) {
         const prop = propSchema as any;
-        
+
         attributes.push({
           name: propName,
           type: this.mapJSONSchemaType(prop.type),
           nullable: !schema.required?.includes(propName),
-          description: prop.description
+          description: prop.description,
         });
       }
     }
@@ -608,7 +608,7 @@ export class ERDiagramGenerator {
     return {
       name,
       attributes,
-      description: schema.description
+      description: schema.description,
     };
   }
 
@@ -617,12 +617,12 @@ export class ERDiagramGenerator {
    */
   private static mapJSONSchemaType(type: string): string {
     const typeMap: Record<string, string> = {
-      'string': 'varchar',
-      'number': 'decimal',
-      'integer': 'int',
-      'boolean': 'boolean',
-      'array': 'json',
-      'object': 'json'
+      string: 'varchar',
+      number: 'decimal',
+      integer: 'int',
+      boolean: 'boolean',
+      array: 'json',
+      object: 'json',
     };
 
     return typeMap[type] || 'varchar';
@@ -657,13 +657,13 @@ export class ERDiagramGenerator {
     }> = [];
 
     // 検証ルール
-    result.entities.forEach(entity => {
+    result.entities.forEach((entity) => {
       // 主キーがない場合
       if (!entity.primaryKey) {
         issues.push({
           type: 'warning',
           message: 'Entity has no primary key',
-          entity: entity.name
+          entity: entity.name,
         });
       }
 
@@ -672,31 +672,31 @@ export class ERDiagramGenerator {
         issues.push({
           type: 'suggestion',
           message: 'Entity has very few attributes',
-          entity: entity.name
+          entity: entity.name,
         });
       }
     });
 
     // 孤立したエンティティの検出
     const referencedEntities = new Set<string>();
-    result.relationships.forEach(rel => {
+    result.relationships.forEach((rel) => {
       referencedEntities.add(rel.fromEntity);
       referencedEntities.add(rel.toEntity);
     });
 
-    result.entities.forEach(entity => {
+    result.entities.forEach((entity) => {
       if (!referencedEntities.has(entity.name)) {
         issues.push({
           type: 'suggestion',
           message: 'Entity has no relationships',
-          entity: entity.name
+          entity: entity.name,
         });
       }
     });
 
     return {
-      isValid: issues.filter(issue => issue.type === 'error').length === 0,
-      issues
+      isValid: issues.filter((issue) => issue.type === 'error').length === 0,
+      issues,
     };
   }
 }

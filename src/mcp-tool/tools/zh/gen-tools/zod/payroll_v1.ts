@@ -72,11 +72,7 @@ export const payrollV1CostAllocationReportList = {
           '分页标记，第一次请求不填，表示从头开始遍历；分页查询结果还有更多项时会同时返回新的 page_token，下次遍历可采用该 page_token 获取查询结果',
         )
         .optional(),
-      cost_allocation_plan_id: z
-        .string()
-        .describe(
-          '成本分摊方案ID，通过获取',
-        ),
+      cost_allocation_plan_id: z.string().describe('成本分摊方案ID，通过获取'),
       pay_period: z.string().describe('期间，成本分摊数据对应的年月，格式 为yyyy-MM'),
       report_type: z
         .number()
@@ -141,9 +137,7 @@ export const payrollV1DatasourceRecordSave = {
     data: z.object({
       source_code: z
         .string()
-        .describe(
-          '数据源code。可从或者 「飞书人事后台-设置-算薪数据设置-外部数据源配置」页面 获取',
-        ),
+        .describe('数据源code。可从或者 「飞书人事后台-设置-算薪数据设置-外部数据源配置」页面 获取'),
       records: z
         .array(
           z.object({
@@ -237,11 +231,7 @@ export const payrollV1PaymentActivityDetailList = {
     params: z.object({
       page_index: z.number().describe('页码，第一页从 1 开始'),
       page_size: z.number().describe('每页大小，范围为：[1, 100]'),
-      activity_id: z
-        .string()
-        .describe(
-          '发薪活动 ID，调用接口后，可以从返回结果中获取到发薪活动 ID',
-        ),
+      activity_id: z.string().describe('发薪活动 ID，调用接口后，可以从返回结果中获取到发薪活动 ID'),
       include_segment_data: z
         .boolean()
         .describe(
@@ -269,11 +259,7 @@ export const payrollV1PaymentActivityArchive = {
   accessTokens: ['tenant', 'user'],
   schema: {
     data: z.object({
-      activity_id: z
-        .string()
-        .describe(
-          '发薪活动ID，可通过获取',
-        ),
+      activity_id: z.string().describe('发薪活动ID，可通过获取'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -348,9 +334,7 @@ export const payrollV1PaymentDetailQuery = {
         .optional(),
       activity_ids: z
         .array(z.string())
-        .describe(
-          '发薪活动 ID 列表，调用接口后，可以从返回结果中获取到发薪活动 ID',
-        )
+        .describe('发薪活动 ID 列表，调用接口后，可以从返回结果中获取到发薪活动 ID')
         .optional(),
       include_segment_data: z
         .boolean()

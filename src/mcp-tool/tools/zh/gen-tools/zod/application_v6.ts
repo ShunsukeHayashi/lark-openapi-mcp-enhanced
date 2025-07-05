@@ -237,11 +237,7 @@ export const applicationV6ApplicationAppVersionContactsRangeSuggest = {
         .describe(
           '应用的 AppID，可以在 > **凭证与基础信息**页查看。* 仅查询本应用信息时，可填应用自身App ID 或 `me`。* 当值为其他应用的App ID时，必须申请以下权限：<md-perm name="admin:app.info:readonly" desc="获取应用信息" support_app_types="custom" tags="">获取应用信息</md-perm>',
         ),
-      version_id: z
-        .string()
-        .describe(
-          '唯一标识应用版本的 ID，可以调用接口获取',
-        ),
+      version_id: z.string().describe('唯一标识应用版本的 ID，可以调用接口获取'),
     }),
   },
 };
@@ -343,9 +339,7 @@ export const applicationV6ApplicationCollaboratorsGet = {
   schema: {
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
     path: z.object({
-      app_id: z
-        .string()
-        .describe('应用 ID，获取方式参见 '),
+      app_id: z.string().describe('应用 ID，获取方式参见 '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -376,9 +370,7 @@ export const applicationV6ApplicationCollaboratorsUpdate = {
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
     path: z.object({
-      app_id: z
-        .string()
-        .describe('应用 ID，获取方式参见 '),
+      app_id: z.string().describe('应用 ID，获取方式参见 '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -410,9 +402,7 @@ export const applicationV6ApplicationContactsRangeConfiguration = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional(),
     }),
     path: z.object({
-      app_id: z
-        .string()
-        .describe('应用的 app_id，可以在 > 凭证与基础信息页查看'),
+      app_id: z.string().describe('应用的 app_id，可以在 > 凭证与基础信息页查看'),
     }),
   },
 };
@@ -616,9 +606,7 @@ export const applicationV6ApplicationOwnerUpdate = {
     data: z.object({ owner_id: z.string().describe('新的拥有者用户ID，类型由查询参数中的user_id_type确定') }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
     path: z.object({
-      app_id: z
-        .string()
-        .describe('应用 ID，获取方式参见 '),
+      app_id: z.string().describe('应用 ID，获取方式参见 '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -680,22 +668,10 @@ export const applicationV6ApplicationVisibilityCheckWhiteBlackList = {
     data: z.object({
       user_ids: z
         .array(z.string())
-        .describe(
-          '想要查询的用户id列表，按照user_id_type录入，最多录入100个。可以调用接口获取',
-        )
+        .describe('想要查询的用户id列表，按照user_id_type录入，最多录入100个。可以调用接口获取')
         .optional(),
-      department_ids: z
-        .array(z.string())
-        .describe(
-          '想要查询的部门的 id 列表，最多录入100个。可以接口获取',
-        )
-        .optional(),
-      group_ids: z
-        .array(z.string())
-        .describe(
-          '想要查询的用户组id列表，最多录入100个。可以调用接口获取',
-        )
-        .optional(),
+      department_ids: z.array(z.string()).describe('想要查询的部门的 id 列表，最多录入100个。可以接口获取').optional(),
+      group_ids: z.array(z.string()).describe('想要查询的用户组id列表，最多录入100个。可以调用接口获取').optional(),
     }),
     params: z.object({
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional(),

@@ -61,12 +61,7 @@ export const helpdeskV1AgentScheduleCreate = {
       agent_schedules: z
         .array(
           z.object({
-            agent_id: z
-              .string()
-              .describe(
-                '客服id',
-              )
-              .optional(),
+            agent_id: z.string().describe('客服id').optional(),
             schedule: z
               .array(
                 z.object({
@@ -133,18 +128,8 @@ export const helpdeskV1AgentSkillCreate = {
       rules: z
         .array(
           z.object({
-            id: z
-              .string()
-              .describe(
-                'rule id, 参考 用于获取rules options',
-              )
-              .optional(),
-            selected_operator: z
-              .number()
-              .describe(
-                '运算符比较, 参考',
-              )
-              .optional(),
+            id: z.string().describe('rule id, 参考 用于获取rules options').optional(),
+            selected_operator: z.number().describe('运算符比较, 参考').optional(),
             operand: z.string().describe('rule 操作数的值').optional(),
             category: z.number().describe('rule 类型，1-知识库，2-工单信息，3-用户飞书信息').optional(),
           }),
@@ -207,24 +192,9 @@ export const helpdeskV1AgentSkillPatch = {
           rules: z
             .array(
               z.object({
-                id: z
-                  .string()
-                  .describe(
-                    'rule id, 参考 用于获取rules options',
-                  )
-                  .optional(),
-                selected_operator: z
-                  .number()
-                  .describe(
-                    '运算符比较, 参考',
-                  )
-                  .optional(),
-                operator_options: z
-                  .array(z.number())
-                  .describe(
-                    'rule操作数value，',
-                  )
-                  .optional(),
+                id: z.string().describe('rule id, 参考 用于获取rules options').optional(),
+                selected_operator: z.number().describe('运算符比较, 参考').optional(),
+                operator_options: z.array(z.number()).describe('rule操作数value，').optional(),
                 operand: z.string().describe('rule 操作数的值').optional(),
               }),
             )
@@ -338,11 +308,7 @@ export const helpdeskV1BotMessageCreate = {
       msg_type: z
         .enum(['text', 'post', 'image', 'interactive'])
         .describe('消息类型 Options:text(普通文本),post(富文本),image(图片),interactive(卡片消息)'),
-      content: z
-        .string()
-        .describe(
-          '消息内容，json格式结构序列化成string。格式说明参考: ',
-        ),
+      content: z.string().describe('消息内容，json格式结构序列化成string。格式说明参考: '),
       receiver_id: z.string().describe('接收消息用户id'),
       receive_type: z
         .enum(['chat', 'user'])
@@ -560,9 +526,7 @@ export const helpdeskV1FaqPatch = {
                 type: z.string().describe('内容类型。可选值：text、hyperlink、img、line break').optional(),
               }),
             )
-            .describe(
-              '富文本答案和答案必须有一个必填。Json Array格式，富文本结构请见',
-            )
+            .describe('富文本答案和答案必须有一个必填。Json Array格式，富文本结构请见')
             .optional(),
           tags: z.array(z.string()).describe('相似问题').optional(),
         })
@@ -1021,9 +985,7 @@ export const helpdeskV1TicketGet = {
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      ticket_id: z
-        .string()
-        .describe('工单 ID。可通过获取'),
+      ticket_id: z.string().describe('工单 ID。可通过获取'),
     }),
   },
 };
@@ -1079,11 +1041,7 @@ export const helpdeskV1TicketMessageCreate = {
   schema: {
     data: z.object({
       msg_type: z.string().describe('消息类型；text：纯文本；post：富文本'),
-      content: z
-        .string()
-        .describe(
-          '- 纯文本，参考中的content；- 富文本，参考中的content',
-        ),
+      content: z.string().describe('- 纯文本，参考中的content；- 富文本，参考中的content'),
     }),
     path: z.object({ ticket_id: z.string().describe('工单ID').optional() }),
   },
@@ -1119,21 +1077,10 @@ export const helpdeskV1TicketStartService = {
       human_service: z.boolean().describe('是否直接进入人工(若appointed_agents填写了，该值为必填)').optional(),
       appointed_agents: z
         .array(z.string())
-        .describe(
-          '客服 open ids (获取方式参考)，human_service需要为true',
-        )
+        .describe('客服 open ids (获取方式参考)，human_service需要为true')
         .optional(),
-      open_id: z
-        .string()
-        .describe(
-          '用户 open id,(获取方式参考)',
-        ),
-      customized_info: z
-        .string()
-        .describe(
-          '工单来源自定义信息，长度限制1024字符，如设置，会返回此信息',
-        )
-        .optional(),
+      open_id: z.string().describe('用户 open id,(获取方式参考)'),
+      customized_info: z.string().describe('工单来源自定义信息，长度限制1024字符，如设置，会返回此信息').optional(),
     }),
   },
 };

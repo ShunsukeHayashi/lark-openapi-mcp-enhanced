@@ -54,12 +54,7 @@ export const wikiV2SpaceGet = {
         .optional(),
     }),
     path: z.object({
-      space_id: z
-        .string()
-        .describe(
-          'Wiki space ID <md-text type="field-name" ></md-text>',
-        )
-        .optional(),
+      space_id: z.string().describe('Wiki space ID <md-text type="field-name" ></md-text>').optional(),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -220,10 +215,7 @@ export const wikiV2SpaceNodeCopy = {
         .optional(),
     }),
     path: z.object({
-      space_id: z
-        .string()
-        .describe('')
-        .optional(),
+      space_id: z.string().describe('').optional(),
       node_token: z.string().describe('Node token').optional(),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
@@ -261,10 +253,7 @@ export const wikiV2SpaceNodeCreate = {
       title: z.string().describe('The title of this document').optional(),
     }),
     path: z.object({
-      space_id: z
-        .string()
-        .describe('')
-        .optional(),
+      space_id: z.string().describe('').optional(),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -290,10 +279,7 @@ export const wikiV2SpaceNodeList = {
       parent_node_token: z.string().describe('Parent token').optional(),
     }),
     path: z.object({
-      space_id: z
-        .string()
-        .describe('')
-        .optional(),
+      space_id: z.string().describe('').optional(),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },

@@ -48,11 +48,7 @@ export const attendanceV1ApprovalInfoProcess = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      approval_id: z
-        .string()
-        .describe(
-          '审批实例 ID，获取方式：1） 2） 3）',
-        ),
+      approval_id: z.string().describe('审批实例 ID，获取方式：1） 2） 3）'),
       approval_type: z
         .string()
         .describe('审批类型- `leave`：请假- `out`：外出- `overtime`：加班- `trip`：出差- `remedy`：补卡'),
@@ -76,11 +72,7 @@ export const attendanceV1ArchiveRuleDelReport = {
     data: z.object({
       month: z.string().describe('月份，格式yyyyMM'),
       operator_id: z.string().describe('操作者ID，对应employee_type'),
-      archive_rule_id: z
-        .string()
-        .describe(
-          '归档规则id，可根据获得',
-        ),
+      archive_rule_id: z.string().describe('归档规则id，可根据获得'),
       user_ids: z.array(z.string()).describe('用户id，对应employee_type').optional(),
     }),
     params: z.object({
@@ -99,8 +91,7 @@ export const attendanceV1ArchiveRuleList = {
   sdkName: 'attendance.v1.archiveRule.list',
   path: '/open-apis/attendance/v1/archive_rule',
   httpMethod: 'GET',
-  description:
-    '[Feishu/Lark]-考勤打卡-归档报表-查询所有归档规则-查询所有归档规则，对应后台假勤管理-考勤统计-报表-功能',
+  description: '[Feishu/Lark]-考勤打卡-归档报表-查询所有归档规则-查询所有归档规则，对应后台假勤管理-考勤统计-报表-功能',
   accessTokens: ['tenant', 'user'],
   schema: {
     params: z.object({
@@ -137,11 +128,7 @@ export const attendanceV1ArchiveRuleUploadReport = {
             field_datas: z
               .array(
                 z.object({
-                  code: z
-                    .string()
-                    .describe(
-                      '字段编码，可根据 获取',
-                    ),
+                  code: z.string().describe('字段编码，可根据 获取'),
                   value: z.string().describe('字段结果值').optional(),
                 }),
               )
@@ -151,11 +138,7 @@ export const attendanceV1ArchiveRuleUploadReport = {
         )
         .describe('归档报表内容(不超过50个)')
         .optional(),
-      archive_rule_id: z
-        .string()
-        .describe(
-          '归档规则id，可根据获得',
-        ),
+      archive_rule_id: z.string().describe('归档规则id，可根据获得'),
     }),
     params: z.object({
       employee_type: z
@@ -180,11 +163,7 @@ export const attendanceV1ArchiveRuleUserStatsFieldsQuery = {
     data: z.object({
       locale: z.string().describe('语言类型。默认为zh。可选值有：* `en`：英语* `ja`：日语* `zh`：中文').optional(),
       month: z.string().describe('月份，日期格式为yyyyMM'),
-      archive_rule_id: z
-        .string()
-        .describe(
-          '归档规则id，可根据获得',
-        ),
+      archive_rule_id: z.string().describe('归档规则id，可根据获得'),
       operator_id: z.string().describe('操作者id，对应employee_type'),
     }),
     params: z.object({
@@ -212,9 +191,7 @@ export const attendanceV1GroupCreate = {
         .object({
           group_id: z
             .string()
-            .describe(
-              '考勤组 ID（仅修改时提供）， 需要从或接口中获取 groupId。如果不填的话，会创建新的考勤组',
-            )
+            .describe('考勤组 ID（仅修改时提供）， 需要从或接口中获取 groupId。如果不填的话，会创建新的考勤组')
             .optional(),
           group_name: z.string().describe('考勤组名称'),
           time_zone: z.string().describe('时区'),
@@ -350,11 +327,7 @@ export const attendanceV1GroupCreate = {
             .array(
               z.object({
                 punch_day: z.number().describe('打卡日期，格式为yyyyMMdd'),
-                shift_id: z
-                  .string()
-                  .describe(
-                    '班次 ID，可根据 和 获得',
-                  ),
+                shift_id: z.string().describe('班次 ID，可根据 和 获得'),
               }),
             )
             .describe('必须打卡的特殊日期')
@@ -363,11 +336,7 @@ export const attendanceV1GroupCreate = {
             .array(
               z.object({
                 punch_day: z.number().describe('打卡日期，格式为yyyyMMdd'),
-                shift_id: z
-                  .string()
-                  .describe(
-                    '班次 ID，可根据 和 获得',
-                  ),
+                shift_id: z.string().describe('班次 ID，可根据 和 获得'),
               }),
             )
             .describe('无需打卡的特殊日期')
@@ -550,12 +519,7 @@ export const attendanceV1GroupCreate = {
             .optional(),
         })
         .describe('考勤组信息'),
-      operator_id: z
-        .string()
-        .describe(
-          '操作人uid，对应employee_type，如果您未操作，则此字段为必填字段',
-        )
-        .optional(),
+      operator_id: z.string().describe('操作人uid，对应employee_type，如果您未操作，则此字段为必填字段').optional(),
     }),
     params: z.object({
       employee_type: z
@@ -565,9 +529,7 @@ export const attendanceV1GroupCreate = {
         ),
       dept_type: z
         .literal('open_id')
-        .describe(
-          '部门 ID 的类型 Options:open_id(暂时只支持部门的 openid。具体概念请参考中的open_department_id)',
-        ),
+        .describe('部门 ID 的类型 Options:open_id(暂时只支持部门的 openid。具体概念请参考中的open_department_id)'),
     }),
   },
 };
@@ -582,11 +544,7 @@ export const attendanceV1GroupDelete = {
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      group_id: z
-        .string()
-        .describe(
-          '考勤组 ID，获取方式：1） 2） 3）',
-        ),
+      group_id: z.string().describe('考勤组 ID，获取方式：1） 2） 3）'),
     }),
   },
 };
@@ -608,16 +566,10 @@ export const attendanceV1GroupGet = {
         ),
       dept_type: z
         .literal('open_id')
-        .describe(
-          '部门 ID 的类型 Options:open_id(暂时只支持部门的 openid。具体概念请参考中的open_department_id)',
-        ),
+        .describe('部门 ID 的类型 Options:open_id(暂时只支持部门的 openid。具体概念请参考中的open_department_id)'),
     }),
     path: z.object({
-      group_id: z
-        .string()
-        .describe(
-          '考勤组 ID，获取方式：1） 2） 3）',
-        ),
+      group_id: z.string().describe('考勤组 ID，获取方式：1） 2） 3）'),
     }),
   },
 };
@@ -676,11 +628,7 @@ export const attendanceV1GroupListUser = {
         ),
     }),
     path: z.object({
-      group_id: z
-        .string()
-        .describe(
-          '考勤组 ID，获取方式：1） 2） 3）',
-        ),
+      group_id: z.string().describe('考勤组 ID，获取方式：1） 2） 3）'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -709,17 +657,9 @@ export const attendanceV1LeaveAccrualRecordPatch = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      leave_granting_record_id: z
-        .string()
-        .describe(
-          '发放记录的唯一ID，可通过',
-        ),
+      leave_granting_record_id: z.string().describe('发放记录的唯一ID，可通过'),
       employment_id: z.string().describe('员工ID，类型对应user_id_type'),
-      leave_type_id: z
-        .string()
-        .describe(
-          '假期类型ID，可通过获取',
-        ),
+      leave_type_id: z.string().describe('假期类型ID，可通过获取'),
       reason: z
         .array(z.object({ lang: z.string().describe('语言码'), value: z.string().describe('语言码对应的文本') }))
         .describe('修改发放记录原因'),
@@ -731,12 +671,7 @@ export const attendanceV1LeaveAccrualRecordPatch = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id', 'people_corehr_id']).describe('用户ID类型').optional(),
     }),
     path: z.object({
-      leave_id: z
-        .string()
-        .describe(
-          '假期类型ID，可通过获取',
-        )
-        .optional(),
+      leave_id: z.string().describe('假期类型ID，可通过获取').optional(),
     }),
   },
 };
@@ -752,11 +687,7 @@ export const attendanceV1LeaveEmployExpireRecordGet = {
   schema: {
     data: z.object({
       employment_id: z.string().describe('员工ID，与user_id_type保持一致'),
-      leave_type_id: z
-        .string()
-        .describe(
-          '假期类型ID，可通过获取',
-        ),
+      leave_type_id: z.string().describe('假期类型ID，可通过获取'),
       start_expiration_date: z.string().describe('失效最早日期，格式为yyyy-MM-dd'),
       end_expiration_date: z.string().describe('失效最晚日期，格式为yyyy-MM-dd'),
       time_offset: z.number().describe('时间偏移，东八区：480 8*60， 如果没有这个参数，默认东八区').optional(),
@@ -765,12 +696,7 @@ export const attendanceV1LeaveEmployExpireRecordGet = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id', 'people_corehr_id']).describe('用户ID类型').optional(),
     }),
     path: z.object({
-      leave_id: z
-        .string()
-        .describe(
-          '假期类型ID，可通过获取',
-        )
-        .optional(),
+      leave_id: z.string().describe('假期类型ID，可通过获取').optional(),
     }),
   },
 };
@@ -915,12 +841,7 @@ export const attendanceV1ShiftCreate = {
         })
         .describe('晚走次日晚到配置规则')
         .optional(),
-      id: z
-        .string()
-        .describe(
-          '班次id(更新班次时需要传递)，获取方式：1） 2）',
-        )
-        .optional(),
+      id: z.string().describe('班次id(更新班次时需要传递)，获取方式：1） 2）').optional(),
     }),
     params: z.object({
       employee_type: z
@@ -943,11 +864,7 @@ export const attendanceV1ShiftDelete = {
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      shift_id: z
-        .string()
-        .describe(
-          '班次 ID，获取方式：1） 2）',
-        ),
+      shift_id: z.string().describe('班次 ID，获取方式：1） 2）'),
     }),
   },
 };
@@ -962,11 +879,7 @@ export const attendanceV1ShiftGet = {
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      shift_id: z
-        .string()
-        .describe(
-          '班次 ID，获取方式：1） 2）',
-        ),
+      shift_id: z.string().describe('班次 ID，获取方式：1） 2）'),
     }),
   },
 };
@@ -1106,9 +1019,7 @@ export const attendanceV1UserApprovalCreate = {
               z.object({
                 duration: z
                   .number()
-                  .describe(
-                    '加班时长，如需使用此字段进行加班时长计算，请联系开通。默认采用start_time和end_time计算',
-                  ),
+                  .describe('加班时长，如需使用此字段进行加班时长计算，请联系开通。默认采用start_time和end_time计算'),
                 unit: z
                   .number()
                   .describe('加班时长单位 Options:1(Day 天),2(Hour 小时),3(HalfDay 半天),4(HalfHour 半小时)'),
@@ -1173,12 +1084,7 @@ export const attendanceV1UserApprovalCreate = {
                       .string()
                       .describe('地理等级（国家｜省｜市｜区）l1：国家级；l2：省级；l3：市级l4：区/县级')
                       .optional(),
-                    region_id: z
-                      .string()
-                      .describe(
-                        '地理id可以通过或获取（仅支持飞书人事企业版使用）',
-                      )
-                      .optional(),
+                    region_id: z.string().describe('地理id可以通过或获取（仅支持飞书人事企业版使用）').optional(),
                   })
                   .describe('出发地（只有一个）')
                   .optional(),
@@ -1189,12 +1095,7 @@ export const attendanceV1UserApprovalCreate = {
                         .string()
                         .describe('地理等级（国家｜省｜市｜区）l1：国家级；l2：省级；l3：市级l4：区/县级')
                         .optional(),
-                      region_id: z
-                        .string()
-                        .describe(
-                          '地理id可以通过或获取（仅支持飞书人事企业版使用）',
-                        )
-                        .optional(),
+                      region_id: z.string().describe('地理id可以通过或获取（仅支持飞书人事企业版使用）').optional(),
                     }),
                   )
                   .describe('目的地（可写多个）')
@@ -1207,9 +1108,7 @@ export const attendanceV1UserApprovalCreate = {
                 remarks: z.string().describe('出差备注').optional(),
               }),
             )
-            .describe(
-              '出差信息。目前仅支持全天出差（未满全天则按全天计入）。如果你需要支持半天出差，请咨询',
-            )
+            .describe('出差信息。目前仅支持全天出差（未满全天则按全天计入）。如果你需要支持半天出差，请咨询')
             .optional(),
           time_zone: z.string().describe('此字段不再使用，以用户匹配的考勤组时区为准').optional(),
         })
@@ -1282,16 +1181,8 @@ export const attendanceV1UserDailyShiftBatchCreate = {
       user_daily_shifts: z
         .array(
           z.object({
-            group_id: z
-              .string()
-              .describe(
-                '考勤组 ID，获取方式：1） 2） 3）',
-              ),
-            shift_id: z
-              .string()
-              .describe(
-                '班次 ID，获取方式：1） 2）。传入0代表休息',
-              ),
+            group_id: z.string().describe('考勤组 ID，获取方式：1） 2） 3）'),
+            shift_id: z.string().describe('班次 ID，获取方式：1） 2）。传入0代表休息'),
             month: z.number().describe('月份，格式yyyyMM'),
             user_id: z.string().describe('用户 ID，与employee_type对应'),
             day_no: z.number().describe('日期'),
@@ -1302,12 +1193,7 @@ export const attendanceV1UserDailyShiftBatchCreate = {
           }),
         )
         .describe('排班表信息列表（数量限制50以内）'),
-      operator_id: z
-        .string()
-        .describe(
-          '操作人uid，与employee_type对应。如果您未操作，则此字段为必填字段',
-        )
-        .optional(),
+      operator_id: z.string().describe('操作人uid，与employee_type对应。如果您未操作，则此字段为必填字段').optional(),
     }),
     params: z.object({
       employee_type: z
@@ -1332,11 +1218,7 @@ export const attendanceV1UserDailyShiftBatchCreateTemp = {
       user_tmp_daily_shifts: z
         .array(
           z.object({
-            group_id: z
-              .string()
-              .describe(
-                '考勤组 ID，获取方式：1） 2） 3）',
-              ),
+            group_id: z.string().describe('考勤组 ID，获取方式：1） 2） 3）'),
             user_id: z.string().describe('用户 ID，与employee_type对应'),
             date: z.number().describe('日期，格式：yyyymmdd，如20240120'),
             shift_name: z.string().describe('班次名称'),
@@ -1465,11 +1347,7 @@ export const attendanceV1UserFlowBatchDel = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      record_ids: z
-        .array(z.string().describe('待删除的流水记录ID'))
-        .describe(
-          '打卡流水记录 ID，获取方式：1） 2） 3）',
-        ),
+      record_ids: z.array(z.string().describe('待删除的流水记录ID')).describe('打卡流水记录 ID，获取方式：1） 2） 3）'),
     }),
   },
 };
@@ -1491,11 +1369,7 @@ export const attendanceV1UserFlowGet = {
         ),
     }),
     path: z.object({
-      user_flow_id: z
-        .string()
-        .describe(
-          '打卡流水记录 ID，获取方式：1） 2） 3）',
-        ),
+      user_flow_id: z.string().describe('打卡流水记录 ID，获取方式：1） 2） 3）'),
     }),
   },
 };
@@ -1543,11 +1417,7 @@ export const attendanceV1UserSettingModify = {
       user_setting: z
         .object({
           user_id: z.string().describe('用户 ID，对应employee_type'),
-          face_key: z
-            .string()
-            .describe(
-              '人脸照片文件 ID，获取方式：',
-            ),
+          face_key: z.string().describe('人脸照片文件 ID，获取方式：'),
           face_key_update_time: z.string().describe('人脸照片更新时间，精确到秒的时间戳').optional(),
         })
         .describe('用户设置')
@@ -1689,11 +1559,7 @@ export const attendanceV1UserStatsViewUpdate = {
     data: z.object({
       view: z
         .object({
-          view_id: z
-            .string()
-            .describe(
-              '视图 ID，可通过获取',
-            ),
+          view_id: z.string().describe('视图 ID，可通过获取'),
           stats_type: z.enum(['daily', 'month']).describe('视图类型 Options:daily(日度统计),month(月度统计)'),
           user_id: z.string().describe('操作者的用户id，对应employee_type'),
           items: z
@@ -1724,11 +1590,7 @@ export const attendanceV1UserStatsViewUpdate = {
         ),
     }),
     path: z.object({
-      user_stats_view_id: z
-        .string()
-        .describe(
-          '用户视图 ID，获取方式：1）',
-        ),
+      user_stats_view_id: z.string().describe('用户视图 ID，获取方式：1）'),
     }),
   },
 };

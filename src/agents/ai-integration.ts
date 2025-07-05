@@ -36,7 +36,7 @@ export class GeminiAIService {
   async analyzeTaskForAgentAssignment(
     task: string,
     availableAgents: any[],
-    context: any = {}
+    context: any = {},
   ): Promise<{
     recommendedAgent: string;
     agentType: string;
@@ -44,14 +44,11 @@ export class GeminiAIService {
     reasoning: string;
     confidence: number;
   }> {
-    const prompt = PromptUtils.fillTemplate(
-      AGENT_COORDINATION_PROMPTS.TASK_ASSIGNMENT_ANALYZER,
-      {
-        TASK_DESCRIPTION: task,
-        AVAILABLE_TOOLS_LIST: this.formatAvailableTools(availableAgents),
-        CONTEXT: JSON.stringify(context)
-      }
-    );
+    const prompt = PromptUtils.fillTemplate(AGENT_COORDINATION_PROMPTS.TASK_ASSIGNMENT_ANALYZER, {
+      TASK_DESCRIPTION: task,
+      AVAILABLE_TOOLS_LIST: this.formatAvailableTools(availableAgents),
+      CONTEXT: JSON.stringify(context),
+    });
 
     try {
       const response = await this.generateContent(prompt);
@@ -62,17 +59,16 @@ export class GeminiAIService {
         agentType: structuredData?.assignedAgentType || 'specialist',
         tools: structuredData?.recommendedTools || [],
         reasoning: structuredData?.reasoning || 'Default assignment',
-        confidence: 0.8
+        confidence: 0.8,
       };
-
     } catch (error) {
       console.error('AI task analysis failed:', error);
       return {
         recommendedAgent: 'specialist',
-        agentType: 'specialist', 
+        agentType: 'specialist',
         tools: [],
         reasoning: 'Fallback assignment due to AI service error',
-        confidence: 0.3
+        confidence: 0.3,
       };
     }
   }
@@ -83,7 +79,7 @@ export class GeminiAIService {
   async generateWorkflowPlan(
     tasks: any[],
     availableAgents: any[],
-    constraints: any = {}
+    constraints: any = {},
   ): Promise<{
     executionOrder: string[];
     parallelGroups: string[][];
@@ -91,13 +87,10 @@ export class GeminiAIService {
     riskAssessment: any;
     recommendations: string[];
   }> {
-    const prompt = PromptUtils.fillTemplate(
-      AGENT_COORDINATION_PROMPTS.AGENT_COORDINATOR,
-      {
-        WORKFLOW_STATE: JSON.stringify({ tasks, constraints }),
-        AVAILABLE_AGENTS: JSON.stringify(availableAgents)
-      }
-    );
+    const prompt = PromptUtils.fillTemplate(AGENT_COORDINATION_PROMPTS.AGENT_COORDINATOR, {
+      WORKFLOW_STATE: JSON.stringify({ tasks, constraints }),
+      AVAILABLE_AGENTS: JSON.stringify(availableAgents),
+    });
 
     try {
       const response = await this.generateContent(prompt);
@@ -108,9 +101,8 @@ export class GeminiAIService {
         parallelGroups: coordination?.coordinationPlan?.parallelGroups || [],
         criticalPath: coordination?.coordinationPlan?.criticalPath || [],
         riskAssessment: coordination?.riskAssessment || {},
-        recommendations: coordination?.riskAssessment?.mitigationStrategies || []
+        recommendations: coordination?.riskAssessment?.mitigationStrategies || [],
       };
-
     } catch (error) {
       console.error('Workflow planning failed:', error);
       return {
@@ -118,7 +110,7 @@ export class GeminiAIService {
         parallelGroups: [],
         criticalPath: [],
         riskAssessment: {},
-        recommendations: ['Unable to generate AI-powered recommendations']
+        recommendations: ['Unable to generate AI-powered recommendations'],
       };
     }
   }
@@ -129,20 +121,17 @@ export class GeminiAIService {
   async analyzeTaskResults(
     taskId: string,
     result: any,
-    context: any = {}
+    context: any = {},
   ): Promise<{
     status: 'success' | 'partial_success' | 'failure';
     qualityScore: number;
     nextActions: string[];
     improvements: string[];
   }> {
-    const prompt = PromptUtils.fillTemplate(
-      AGENT_COORDINATION_PROMPTS.TASK_RESULT_ANALYZER,
-      {
-        TASK_RESULT: JSON.stringify(result),
-        TASK_DETAILS: JSON.stringify(context)
-      }
-    );
+    const prompt = PromptUtils.fillTemplate(AGENT_COORDINATION_PROMPTS.TASK_RESULT_ANALYZER, {
+      TASK_RESULT: JSON.stringify(result),
+      TASK_DETAILS: JSON.stringify(context),
+    });
 
     try {
       const response = await this.generateContent(prompt);
@@ -152,16 +141,15 @@ export class GeminiAIService {
         status: analysis?.executionStatus || 'success',
         qualityScore: analysis?.qualityScore || 0.8,
         nextActions: analysis?.nextActions?.map((a: any) => a.action) || [],
-        improvements: analysis?.recommendations || []
+        improvements: analysis?.recommendations || [],
       };
-
     } catch (error) {
       console.error('Result analysis failed:', error);
       return {
         status: 'success',
         qualityScore: 0.7,
         nextActions: [],
-        improvements: []
+        improvements: [],
       };
     }
   }
@@ -172,7 +160,7 @@ export class GeminiAIService {
   async generateRecoveryStrategy(
     errorDetails: any,
     failedTask: any,
-    workflowContext: any = {}
+    workflowContext: any = {},
   ): Promise<{
     strategy: 'retry' | 'revert' | 'bypass' | 'manual' | 'abort';
     steps: string[];
@@ -180,14 +168,11 @@ export class GeminiAIService {
     successProbability: number;
     preventionMeasures: string[];
   }> {
-    const prompt = PromptUtils.fillTemplate(
-      AGENT_COORDINATION_PROMPTS.ERROR_RECOVERY_ANALYZER,
-      {
-        ERROR_DETAILS: JSON.stringify(errorDetails),
-        FAILED_TASK: JSON.stringify(failedTask),
-        WORKFLOW_CONTEXT: JSON.stringify(workflowContext)
-      }
-    );
+    const prompt = PromptUtils.fillTemplate(AGENT_COORDINATION_PROMPTS.ERROR_RECOVERY_ANALYZER, {
+      ERROR_DETAILS: JSON.stringify(errorDetails),
+      FAILED_TASK: JSON.stringify(failedTask),
+      WORKFLOW_CONTEXT: JSON.stringify(workflowContext),
+    });
 
     try {
       const response = await this.generateContent(prompt);
@@ -199,9 +184,8 @@ export class GeminiAIService {
         steps: [bestOption?.description || 'Retry with same parameters'],
         estimatedTime: bestOption?.estimatedTime || 60,
         successProbability: bestOption?.successProbability || 0.7,
-        preventionMeasures: recovery?.preventionMeasures?.map((m: any) => m.measure) || []
+        preventionMeasures: recovery?.preventionMeasures?.map((m: any) => m.measure) || [],
       };
-
     } catch (error) {
       console.error('Recovery strategy generation failed:', error);
       return {
@@ -209,7 +193,7 @@ export class GeminiAIService {
         steps: ['Retry task with original parameters'],
         estimatedTime: 60,
         successProbability: 0.5,
-        preventionMeasures: []
+        preventionMeasures: [],
       };
     }
   }
@@ -224,10 +208,10 @@ export class GeminiAIService {
       audience?: 'technical' | 'business' | 'general';
       length?: 'brief' | 'detailed' | 'comprehensive';
       language?: 'en' | 'ja' | 'zh';
-    } = {}
+    } = {},
   ): Promise<string> {
     const { audience = 'general', length = 'brief', language = 'ja' } = options;
-    
+
     const prompt = `
 あなたは専門的な${contentType}作成エージェントです。
 以下の条件で内容を生成してください：
@@ -259,13 +243,17 @@ ${this.getContentTypeInstructions(contentType)}
    */
   private async generateContent(prompt: string): Promise<string> {
     const url = `${this.baseUrl}/${this.defaultModel}:generateContent?key=${this.apiKey}`;
-    
+
     const requestBody = {
-      contents: [{
-        parts: [{
-          text: prompt
-        }]
-      }],
+      contents: [
+        {
+          parts: [
+            {
+              text: prompt,
+            },
+          ],
+        },
+      ],
       generationConfig: {
         temperature: 0.3,
         topK: 40,
@@ -274,22 +262,22 @@ ${this.getContentTypeInstructions(contentType)}
       },
       safetySettings: [
         {
-          category: "HARM_CATEGORY_HARASSMENT",
-          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          category: 'HARM_CATEGORY_HARASSMENT',
+          threshold: 'BLOCK_MEDIUM_AND_ABOVE',
         },
         {
-          category: "HARM_CATEGORY_HATE_SPEECH",
-          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          category: 'HARM_CATEGORY_HATE_SPEECH',
+          threshold: 'BLOCK_MEDIUM_AND_ABOVE',
         },
         {
-          category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+          threshold: 'BLOCK_MEDIUM_AND_ABOVE',
         },
         {
-          category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-          threshold: "BLOCK_MEDIUM_AND_ABOVE"
-        }
-      ]
+          category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+          threshold: 'BLOCK_MEDIUM_AND_ABOVE',
+        },
+      ],
     };
 
     const response = await fetch(url, {
@@ -297,7 +285,7 @@ ${this.getContentTypeInstructions(contentType)}
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(requestBody)
+      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {
@@ -317,7 +305,7 @@ ${this.getContentTypeInstructions(contentType)}
       const structuredData = PromptUtils.extractStructuredData(
         response,
         RESPONSE_DELIMITERS.STRUCTURED_START,
-        RESPONSE_DELIMITERS.STRUCTURED_END
+        RESPONSE_DELIMITERS.STRUCTURED_END,
       );
 
       if (structuredData) {
@@ -344,7 +332,7 @@ ${this.getContentTypeInstructions(contentType)}
     return PromptUtils.extractStructuredData(
       response,
       RESPONSE_DELIMITERS.AGENT_COORDINATION_START,
-      RESPONSE_DELIMITERS.AGENT_COORDINATION_END
+      RESPONSE_DELIMITERS.AGENT_COORDINATION_END,
     );
   }
 
@@ -352,10 +340,12 @@ ${this.getContentTypeInstructions(contentType)}
    * Format available tools for AI analysis
    */
   private formatAvailableTools(agents: any[]): string {
-    return agents.map(agent => {
-      const capabilities = agent.capabilities?.map((cap: any) => cap.name).join(', ') || '';
-      return `- **${agent.name}**: ${capabilities}`;
-    }).join('\n');
+    return agents
+      .map((agent) => {
+        const capabilities = agent.capabilities?.map((cap: any) => cap.name).join(', ') || '';
+        return `- **${agent.name}**: ${capabilities}`;
+      })
+      .join('\n');
   }
 
   /**

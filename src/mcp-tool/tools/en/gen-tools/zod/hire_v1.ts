@@ -349,11 +349,7 @@ export const hireV1AgencyProtectSearch = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      talent_id: z
-        .string()
-        .describe(
-          'Talent ID, ',
-        ),
+      talent_id: z.string().describe('Talent ID, '),
     }),
   },
 };
@@ -390,9 +386,7 @@ export const hireV1ApplicationCancelOnboard = {
         ),
       termination_reason_id_list: z
         .array(z.string())
-        .describe(
-          'The id list of the specific reason for termination, please refer to ',
-        )
+        .describe('The id list of the specific reason for termination, please refer to ')
         .optional(),
       termination_reason_notes: z.string().describe('Remarks').optional(),
     }),
@@ -522,12 +516,7 @@ export const hireV1ApplicationGetDetail = {
         .optional(),
     }),
     path: z.object({
-      application_id: z
-        .string()
-        .describe(
-          'Delivery ID, which can be obtained through the  interface',
-        )
-        .optional(),
+      application_id: z.string().describe('Delivery ID, which can be obtained through the  interface').optional(),
     }),
   },
 };
@@ -632,11 +621,7 @@ export const hireV1ApplicationOffer = {
         .optional(),
     }),
     path: z.object({
-      application_id: z
-        .string()
-        .describe(
-          'Application ID,please refer to: ',
-        ),
+      application_id: z.string().describe('Application ID,please refer to: '),
     }),
   },
 };
@@ -651,11 +636,7 @@ export const hireV1ApplicationRecover = {
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      application_id: z
-        .string()
-        .describe(
-          'Application ID, please refer to: ',
-        ),
+      application_id: z.string().describe('Application ID, please refer to: '),
     }),
   },
 };
@@ -677,18 +658,12 @@ export const hireV1ApplicationTerminate = {
         ),
       termination_reason_list: z
         .array(z.string())
-        .describe(
-          'The id list of the specific reason for termination, please refer to ',
-        )
+        .describe('The id list of the specific reason for termination, please refer to ')
         .optional(),
       termination_reason_note: z.string().describe('Termination remarks').optional(),
     }),
     path: z.object({
-      application_id: z
-        .string()
-        .describe(
-          'Application ID, please refer to ',
-        ),
+      application_id: z.string().describe('Application ID, please refer to '),
     }),
   },
 };
@@ -809,11 +784,7 @@ export const hireV1AttachmentPreview = {
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      attachment_id: z
-        .string()
-        .describe(
-          'Attachment id, please refer to ',
-        ),
+      attachment_id: z.string().describe('Attachment id, please refer to '),
     }),
   },
 };
@@ -855,15 +826,11 @@ export const hireV1DiversityInclusionSearch = {
     data: z.object({
       talent_ids: z
         .array(z.string())
-        .describe(
-          'List of talent IDs that need to query DI data, please refer to  to get talent IDs',
-        )
+        .describe('List of talent IDs that need to query DI data, please refer to  to get talent IDs')
         .optional(),
       application_ids: z
         .array(z.string())
-        .describe(
-          'List of application IDs that need to query DI data, please refer to to get application IDs',
-        )
+        .describe('List of application IDs that need to query DI data, please refer to to get application IDs')
         .optional(),
     }),
   },
@@ -994,11 +961,7 @@ export const hireV1EcoBackgroundCheckCustomFieldBatchUpdate = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      account_id: z
-        .string()
-        .describe(
-          'The account ID can be obtained through the  event',
-        ),
+      account_id: z.string().describe('The account ID can be obtained through the  event'),
       custom_field_list: z
         .array(
           z.object({
@@ -1038,9 +1001,7 @@ export const hireV1EcoBackgroundCheckCustomFieldBatchUpdate = {
               .optional(),
           }),
         )
-        .describe(
-          'Custom field list. **Note**: The list length must be the same as the one passed in when ',
-        ),
+        .describe('Custom field list. **Note**: The list length must be the same as the one passed in when '),
     }),
   },
 };
@@ -1211,11 +1172,7 @@ export const hireV1EcoBackgroundCheckCancel = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      background_check_id: z
-        .string()
-        .describe(
-          'Backtone ID. Can be obtained by the  event',
-        ),
+      background_check_id: z.string().describe('Backtone ID. Can be obtained by the  event'),
     }),
   },
 };
@@ -1230,11 +1187,7 @@ export const hireV1EcoBackgroundCheckUpdateProgress = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      background_check_id: z
-        .string()
-        .describe(
-          'Backtone ID. Can be obtained by the  event',
-        ),
+      background_check_id: z.string().describe('Backtone ID. Can be obtained by the  event'),
       stage_id: z
         .string()
         .describe('Stage ID. This ID cannot be repeated for the same back order and is customized by the caller'),
@@ -1284,11 +1237,7 @@ export const hireV1EcoBackgroundCheckUpdateResult = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      background_check_id: z
-        .string()
-        .describe(
-          'Backtone ID. Can be obtained by the  event',
-        ),
+      background_check_id: z.string().describe('Backtone ID. Can be obtained by the  event'),
       result: z.string().describe('Result'),
       result_time: z.string().describe('Result Time. Millisecond timestamp'),
       report_file_list: z
@@ -1324,16 +1273,8 @@ export const hireV1EcoExamPaperBatchDelete = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      account_id: z
-        .string()
-        .describe(
-          'The account ID of the written test can be obtained through the  event',
-        ),
-      paper_id_list: z
-        .array(z.string())
-        .describe(
-          'List of paper IDs. The ID passed in by ',
-        ),
+      account_id: z.string().describe('The account ID of the written test can be obtained through the  event'),
+      paper_id_list: z.array(z.string()).describe('List of paper IDs. The ID passed in by '),
     }),
   },
 };
@@ -1348,19 +1289,11 @@ export const hireV1EcoExamPaperBatchUpdate = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      account_id: z
-        .string()
-        .describe(
-          'The account ID of the written test can be obtained through the  event',
-        ),
+      account_id: z.string().describe('The account ID of the written test can be obtained through the  event'),
       paper_list: z
         .array(
           z.object({
-            id: z
-              .string()
-              .describe(
-                'Paper ID, which is the ID passed in through ',
-              ),
+            id: z.string().describe('Paper ID, which is the ID passed in through '),
             name: z
               .string()
               .describe(
@@ -1397,11 +1330,7 @@ export const hireV1EcoExamPaperCreate = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      account_id: z
-        .string()
-        .describe(
-          'The account ID of the written test can be obtained through the  event',
-        ),
+      account_id: z.string().describe('The account ID of the written test can be obtained through the  event'),
       paper_list: z
         .array(
           z.object({
@@ -1474,11 +1403,7 @@ export const hireV1EcoExamLoginInfo = {
         .describe('Login Info'),
     }),
     path: z.object({
-      exam_id: z
-        .string()
-        .describe(
-          'Written test ID. Can be obtained by the  event',
-        ),
+      exam_id: z.string().describe('Written test ID. Can be obtained by the  event'),
     }),
   },
 };
@@ -1525,11 +1450,7 @@ export const hireV1EcoExamUpdateResult = {
         .optional(),
     }),
     path: z.object({
-      exam_id: z
-        .string()
-        .describe(
-          'Written test ID, which can be obtained by the  event',
-        ),
+      exam_id: z.string().describe('Written test ID, which can be obtained by the  event'),
     }),
   },
 };
@@ -1556,9 +1477,7 @@ export const hireV1EhrImportTaskPatch = {
     path: z.object({
       ehr_import_task_id: z
         .string()
-        .describe(
-          'Import the task ID, the task ID comes from the task_id in the import e-HR event, refer to ',
-        ),
+        .describe('Import the task ID, the task ID comes from the task_id in the import e-HR event, refer to '),
     }),
   },
 };
@@ -1600,11 +1519,7 @@ export const hireV1EmployeeGet = {
         .optional(),
     }),
     path: z.object({
-      employee_id: z
-        .string()
-        .describe(
-          'Employee ID,please refer to:',
-        ),
+      employee_id: z.string().describe('Employee ID,please refer to:'),
     }),
   },
 };
@@ -1619,11 +1534,7 @@ export const hireV1EmployeeGetByApplication = {
   accessTokens: ['tenant'],
   schema: {
     params: z.object({
-      application_id: z
-        .string()
-        .describe(
-          'Application ID, please refer to: ',
-        ),
+      application_id: z.string().describe('Application ID, please refer to: '),
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional(),
       department_id_type: z
         .enum(['open_department_id', 'department_id', 'people_admin_department_id'])
@@ -2446,11 +2357,7 @@ export const hireV1ExternalReferralRewardCreate = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      referral_user_id: z
-        .string()
-        .describe(
-          "Referrer's IDThe unique identifier of the referrer, obtained from ",
-        ),
+      referral_user_id: z.string().describe("Referrer's IDThe unique identifier of the referrer, obtained from "),
       create_user_id: z
         .string()
         .describe(
@@ -3117,12 +3024,7 @@ export const hireV1JobRequirementList = {
         )
         .optional(),
       page_size: z.number().describe('Page size').optional(),
-      job_id: z
-        .string()
-        .describe(
-          'Job ID,please refer to:',
-        )
-        .optional(),
+      job_id: z.string().describe('Job ID,please refer to:').optional(),
       create_time_begin: z.string().describe('Start creation time, pass in millisecond timestamp').optional(),
       create_time_end: z
         .string()
@@ -3295,9 +3197,7 @@ export const hireV1JobRequirementUpdate = {
       employment_job_id: z.string().describe('Employment Job ID').optional(),
       position_id: z
         .string()
-        .describe(
-          'Position ID, which can be obtained through  (only for Feishu personnel tenants)',
-        )
+        .describe('Position ID, which can be obtained through  (only for Feishu personnel tenants)')
         .optional(),
       update_option: z
         .object({
@@ -3461,17 +3361,8 @@ export const hireV1JobCombinedCreate = {
       max_salary: z.number().describe('Highest salary').optional(),
       requirement: z.string().describe('Job Requirements').optional(),
       description: z.string().describe('Job Description').optional(),
-      highlight_list: z
-        .array(z.string())
-        .describe(
-          'Job HighlightsPlease refer to of recruitment',
-        )
-        .optional(),
-      job_type_id: z
-        .string()
-        .describe(
-          'Job category.The enumeration is available form ',
-        ),
+      highlight_list: z.array(z.string()).describe('Job HighlightsPlease refer to of recruitment').optional(),
+      job_type_id: z.string().describe('Job category.The enumeration is available form '),
       max_level_id: z.string().describe('Highest rank').optional(),
       recruitment_type_id: z.string().describe('Type of employment'),
       required_degree: z
@@ -3509,9 +3400,7 @@ export const hireV1JobCombinedCreate = {
         .optional(),
       portal_website_apply_form_schema_id: z
         .string()
-        .describe(
-          'The official website application form ID can be obtained through the  interface',
-        )
+        .describe('The official website application form ID can be obtained through the  interface')
         .optional(),
     }),
     params: z.object({
@@ -3548,12 +3437,7 @@ export const hireV1JobCombinedUpdate = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      id: z
-        .string()
-        .describe(
-          'Job ID , which can be queried through the  interface',
-        )
-        .optional(),
+      id: z.string().describe('Job ID , which can be queried through the  interface').optional(),
       experience: z
         .number()
         .describe(
@@ -3567,12 +3451,7 @@ export const hireV1JobCombinedUpdate = {
       customized_data_list: z
         .array(
           z.object({
-            object_id: z
-              .string()
-              .describe(
-                'Structure ID, which can be queried through the  interface',
-              )
-              .optional(),
+            object_id: z.string().describe('Structure ID, which can be queried through the  interface').optional(),
             value: z.string().describe('Structure value').optional(),
           }),
         )
@@ -3583,35 +3462,20 @@ export const hireV1JobCombinedUpdate = {
       title: z.string().describe('Job title').optional(),
       job_managers: z
         .object({
-          id: z
-            .string()
-            .describe(
-              'Job ID, which can be queried through the  interface',
-            )
-            .optional(),
-          recruiter_id: z
-            .string()
-            .describe(
-              'Recruitment Manager ID, which can be queried through the  interface',
-            ),
+          id: z.string().describe('Job ID, which can be queried through the  interface').optional(),
+          recruiter_id: z.string().describe('Recruitment Manager ID, which can be queried through the  interface'),
           hiring_manager_id_list: z
             .array(z.string())
-            .describe(
-              'List of Employer Manager IDs, which can be queried through the  interface',
-            ),
+            .describe('List of Employer Manager IDs, which can be queried through the  interface'),
           assistant_id_list: z
             .array(z.string())
-            .describe(
-              'Assistant ID List, which can be queried through the  interface',
-            )
+            .describe('Assistant ID List, which can be queried through the  interface')
             .optional(),
         })
         .describe('Position-related person in charge'),
       job_process_id: z
         .string()
-        .describe(
-          'Recruitment Process, which can be queried through the  interface',
-        )
+        .describe('Recruitment Process, which can be queried through the  interface')
         .optional(),
       subject_id: z.string().describe('Project').optional(),
       job_function_id: z
@@ -3630,11 +3494,7 @@ export const hireV1JobCombinedUpdate = {
       requirement: z.string().describe('Job Requirements').optional(),
       description: z.string().describe('Description').optional(),
       highlight_list: z.array(z.string()).describe('Job Highlights').optional(),
-      job_type_id: z
-        .string()
-        .describe(
-          'Job category.The enumeration is available form ',
-        ),
+      job_type_id: z.string().describe('Job category.The enumeration is available form '),
       max_level_id: z.string().describe('Highest rank').optional(),
       required_degree: z
         .number()
@@ -3680,11 +3540,7 @@ export const hireV1JobCombinedUpdate = {
         .optional(),
     }),
     path: z.object({
-      job_id: z
-        .string()
-        .describe(
-          'Job ID , which can be queried through the  interface',
-        ),
+      job_id: z.string().describe('Job ID , which can be queried through the  interface'),
     }),
   },
 };
@@ -3889,11 +3745,7 @@ export const hireV1JobOpen = {
         ),
     }),
     path: z.object({
-      job_id: z
-        .string()
-        .describe(
-          'Job ID, available via ',
-        ),
+      job_id: z.string().describe('Job ID, available via '),
     }),
   },
 };
@@ -3944,9 +3796,7 @@ export const hireV1JobUpdateConfig = {
         .describe('Update options, pass in the configuration items to be updated'),
       assessment_template_biz_id: z
         .string()
-        .describe(
-          'Interview feedback form, enumeration is obtained through the interface ',
-        )
+        .describe('Interview feedback form, enumeration is obtained through the interface ')
         .optional(),
       interview_round_conf_list: z
         .array(
@@ -4028,9 +3878,7 @@ export const hireV1JobUpdateConfig = {
         .optional(),
       portal_website_apply_form_schema_id: z
         .string()
-        .describe(
-          'The official website application form ID can be obtained through the  interface',
-        )
+        .describe('The official website application form ID can be obtained through the  interface')
         .optional(),
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional() }),
@@ -4103,11 +3951,7 @@ export const hireV1MinutesGet = {
   accessTokens: ['tenant'],
   schema: {
     params: z.object({
-      interview_id: z
-        .string()
-        .describe(
-          'Interview ID, which can be obtained according to the  and  API',
-        ),
+      interview_id: z.string().describe('Interview ID, which can be obtained according to the  and  API'),
       page_token: z
         .string()
         .describe(
@@ -4340,11 +4184,7 @@ export const hireV1OfferCreate = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      application_id: z
-        .string()
-        .describe(
-          'Application ID,please refer to: ',
-        ),
+      application_id: z.string().describe('Application ID,please refer to: '),
       schema_id: z
         .string()
         .describe(
@@ -4389,9 +4229,7 @@ export const hireV1OfferCreate = {
           attachment_id_list: z.array(z.string()).describe('Attachment ID List').optional(),
           common_attachment_id_list: z
             .array(z.string())
-            .describe(
-              'List of common attachment IDs, you can use the  api to create common attachments',
-            )
+            .describe('List of common attachment IDs, you can use the  api to create common attachments')
             .optional(),
           attachment_description: z.string().describe('Attachment description').optional(),
           operator_user_id: z
@@ -4511,12 +4349,7 @@ export const hireV1OfferGet = {
         .optional(),
     }),
     path: z.object({
-      offer_id: z
-        .string()
-        .describe(
-          'Offer ID,please refer to: ',
-        )
-        .optional(),
+      offer_id: z.string().describe('Offer ID,please refer to: ').optional(),
     }),
   },
 };
@@ -4657,9 +4490,7 @@ export const hireV1OfferUpdate = {
           attachment_id_list: z.array(z.string()).describe('Attachment ID List').optional(),
           common_attachment_id_list: z
             .array(z.string())
-            .describe(
-              'List of common attachment IDs, you can use the  api to create common attachments',
-            )
+            .describe('List of common attachment IDs, you can use the  api to create common attachments')
             .optional(),
           attachment_description: z.string().describe('Attachment description').optional(),
           operator_user_id: z.string().describe('Offer Operator ID'),
@@ -4782,7 +4613,7 @@ export const hireV1ReferralAccountCreate = {
   path: '/open-apis/hire/v1/referral_account',
   httpMethod: 'POST',
   description:
-    '[Feishu/Lark]-Hire-referral account-Register Referral Account for External System-You can register a "Referral reward account" with the referrer\'s phone number or email address to obtain the corresponding referrer\'s account ID and query and perform actions on the referrer\'s account balance (credits/rewards) by using  and  interfaces. If you need to disable this account, call the  interface',
+    "[Feishu/Lark]-Hire-referral account-Register Referral Account for External System-You can register a \"Referral reward account\" with the referrer's phone number or email address to obtain the corresponding referrer's account ID and query and perform actions on the referrer's account balance (credits/rewards) by using  and  interfaces. If you need to disable this account, call the  interface",
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
@@ -4804,7 +4635,7 @@ export const hireV1ReferralAccountDeactivate = {
   path: '/open-apis/hire/v1/referral_account/:referral_account_id/deactivate',
   httpMethod: 'POST',
   description:
-    '[Feishu/Lark]-Hire-referral account-Disable Referral Account for External System-Once you disable this referral account, its information won\'t be able to be obtained or modified via the  or  interface',
+    "[Feishu/Lark]-Hire-referral account-Disable Referral Account for External System-Once you disable this referral account, its information won't be able to be obtained or modified via the  or  interface",
   accessTokens: ['tenant'],
   schema: {
     path: z.object({ referral_account_id: z.string().describe('Account ID').optional() }),
@@ -4999,11 +4830,7 @@ export const hireV1ReferralSearch = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      talent_id: z
-        .string()
-        .describe(
-          'Talent ID，',
-        ),
+      talent_id: z.string().describe('Talent ID，'),
       start_time: z
         .string()
         .describe(
@@ -5078,12 +4905,7 @@ export const hireV1RoleGet = {
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      role_id: z
-        .string()
-        .describe(
-          'Role ID. Call  to obtain',
-        )
-        .optional(),
+      role_id: z.string().describe('Role ID. Call  to obtain').optional(),
     }),
   },
 };
@@ -5320,16 +5142,8 @@ export const hireV1TalentAddToFolder = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      talent_id_list: z
-        .array(z.string())
-        .describe(
-          'Talent ID List, which can be queried through the  interface',
-        ),
-      folder_id: z
-        .string()
-        .describe(
-          'Folder ID, which can be queried through the  interface',
-        ),
+      talent_id_list: z.array(z.string()).describe('Talent ID List, which can be queried through the  interface'),
+      folder_id: z.string().describe('Folder ID, which can be queried through the  interface'),
     }),
   },
 };
@@ -5369,12 +5183,7 @@ export const hireV1TalentCombinedCreate = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      init_source_id: z
-        .string()
-        .describe(
-          'Resume source ID, which can be queried through the  interface',
-        )
-        .optional(),
+      init_source_id: z.string().describe('Resume source ID, which can be queried through the  interface').optional(),
       folder_id_list: z.array(z.string()).describe('List of folder IDs').optional(),
       creator_id: z.string().describe('Creator ID').optional(),
       creator_account_type: z
@@ -5722,12 +5531,7 @@ export const hireV1TalentCombinedUpdate = {
   schema: {
     data: z.object({
       talent_id: z.string().describe('Talent ID'),
-      init_source_id: z
-        .string()
-        .describe(
-          'Resume source ID, which can be queried through the  interface',
-        )
-        .optional(),
+      init_source_id: z.string().describe('Resume source ID, which can be queried through the  interface').optional(),
       folder_id_list: z.array(z.string()).describe('List of folder IDs').optional(),
       operator_id: z.string().describe('Update ID').optional(),
       operator_account_type: z
@@ -6104,11 +5908,7 @@ export const hireV1TalentGet = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id', 'people_admin_id']).describe('User ID type').optional(),
     }),
     path: z.object({
-      talent_id: z
-        .string()
-        .describe(
-          'Talent ID , which can be queried through the  interface',
-        ),
+      talent_id: z.string().describe('Talent ID , which can be queried through the  interface'),
     }),
   },
 };
@@ -6167,12 +5967,7 @@ export const hireV1TalentOnboardStatus = {
       overboard_time: z.string().describe('Millisecond Timestamp').optional(),
     }),
     path: z.object({
-      talent_id: z
-        .string()
-        .describe(
-          'Talent ID , which can be queried through the  interface',
-        )
-        .optional(),
+      talent_id: z.string().describe('Talent ID , which can be queried through the  interface').optional(),
     }),
   },
 };
@@ -7003,12 +6798,7 @@ export const hireV1WebsiteJobPostSearch = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      job_type_id_list: z
-        .array(z.string())
-        .describe(
-          'Job Type List, For details, please refer to:',
-        )
-        .optional(),
+      job_type_id_list: z.array(z.string()).describe('Job Type List, For details, please refer to:').optional(),
       city_code_list: z.array(z.string()).describe('Job City List').optional(),
       job_function_id_list: z.array(z.string()).describe('Function classification list').optional(),
       subject_id_list: z.array(z.string()).describe('Job Project List').optional(),

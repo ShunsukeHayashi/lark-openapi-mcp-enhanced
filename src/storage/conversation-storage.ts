@@ -73,36 +73,36 @@ export abstract class ConversationStorage {
   // Helper methods
   protected encrypt(data: string): string {
     if (!this.encryptionKey) return data;
-    
+
     // Generate a random IV for each encryption
     const iv = crypto.randomBytes(16);
-    
+
     // Ensure the key is exactly 32 bytes for AES-256
     const key = crypto.createHash('sha256').update(this.encryptionKey).digest();
-    
+
     const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
     let encrypted = cipher.update(data, 'utf8', 'hex');
     encrypted += cipher.final('hex');
-    
+
     // Prepend IV to the encrypted data for use in decryption
     return iv.toString('hex') + ':' + encrypted;
   }
 
   protected decrypt(encryptedData: string): string {
     if (!this.encryptionKey) return encryptedData;
-    
+
     // Extract IV from the encrypted data
     const parts = encryptedData.split(':');
     if (parts.length !== 2) {
       throw new Error('Invalid encrypted data format');
     }
-    
+
     const iv = Buffer.from(parts[0], 'hex');
     const encrypted = parts[1];
-    
+
     // Ensure the key is exactly 32 bytes for AES-256
     const key = crypto.createHash('sha256').update(this.encryptionKey).digest();
-    
+
     const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
     let decrypted = decipher.update(encrypted, 'hex', 'utf8');
     decrypted += decipher.final('utf8');
@@ -117,19 +117,19 @@ export abstract class ConversationStorage {
   protected deserializeConversation(data: string): ConversationData {
     const decrypted = this.decrypt(data);
     const conversation = JSON.parse(decrypted);
-    
+
     // Convert date strings back to Date objects
     conversation.createdAt = new Date(conversation.createdAt);
     conversation.updatedAt = new Date(conversation.updatedAt);
     if (conversation.expiresAt) {
       conversation.expiresAt = new Date(conversation.expiresAt);
     }
-    
+
     // Convert message timestamps
     conversation.messages.forEach((msg: any) => {
       msg.timestamp = new Date(msg.timestamp);
     });
-    
+
     return conversation;
   }
 }
@@ -164,7 +164,7 @@ export class SQLiteConversationStorage extends ConversationStorage {
 
     // Create tables
     await this.createTables();
-    
+
     console.log(`SQLite conversation storage initialized: ${this.dbPath}`);
   }
 
@@ -209,21 +209,25 @@ export class SQLiteConversationStorage extends ConversationStorage {
     const metadataData = JSON.stringify(conversation.metadata);
 
     return new Promise((resolve, reject) => {
-      this.db.run(sql, [
-        conversation.conversationId,
-        conversation.userId,
-        conversation.chatId,
-        conversation.agentName,
-        messagesData,
-        metadataData,
-        conversation.createdAt.toISOString(),
-        conversation.updatedAt.toISOString(),
-        conversation.expiresAt?.toISOString(),
-        conversation.messages.length
-      ], (err: Error) => {
-        if (err) reject(err);
-        else resolve();
-      });
+      this.db.run(
+        sql,
+        [
+          conversation.conversationId,
+          conversation.userId,
+          conversation.chatId,
+          conversation.agentName,
+          messagesData,
+          metadataData,
+          conversation.createdAt.toISOString(),
+          conversation.updatedAt.toISOString(),
+          conversation.expiresAt?.toISOString(),
+          conversation.messages.length,
+        ],
+        (err: Error) => {
+          if (err) reject(err);
+          else resolve();
+        },
+      );
     });
   }
 
@@ -318,7 +322,7 @@ export class SQLiteConversationStorage extends ConversationStorage {
           reject(err);
         } else {
           try {
-            const conversations = rows.map(row => this.deserializeConversation(row.messages_data));
+            const conversations = rows.map((row) => this.deserializeConversation(row.messages_data));
             resolve(conversations);
           } catch (error) {
             reject(new Error(`Failed to deserialize conversations: ${error}`));
@@ -348,7 +352,7 @@ export class SQLiteConversationStorage extends ConversationStorage {
             totalMessages: row.total_messages || 0,
             oldestConversation: row.oldest_conversation ? new Date(row.oldest_conversation) : new Date(),
             newestConversation: row.newest_conversation ? new Date(row.newest_conversation) : new Date(),
-            diskUsage: this.getDiskUsage()
+            diskUsage: this.getDiskUsage(),
           });
         }
       });
@@ -364,7 +368,7 @@ export class SQLiteConversationStorage extends ConversationStorage {
     const now = new Date().toISOString();
 
     return new Promise<number>((resolve, reject) => {
-      this.db.run(sql, [cutoffDate.toISOString(), now], function(this: any, err: Error) {
+      this.db.run(sql, [cutoffDate.toISOString(), now], function (this: any, err: Error) {
         if (err) reject(err);
         else resolve(this.changes);
       });
@@ -413,13 +417,13 @@ export class FileConversationStorage extends ConversationStorage {
   async saveConversation(conversation: ConversationData): Promise<void> {
     const filePath = this.getFilePath(conversation.conversationId);
     const data = this.serializeConversation(conversation);
-    
+
     await fs.promises.writeFile(filePath, data, 'utf8');
   }
 
   async getConversation(conversationId: string): Promise<ConversationData | null> {
     const filePath = this.getFilePath(conversationId);
-    
+
     try {
       const data = await fs.promises.readFile(filePath, 'utf8');
       return this.deserializeConversation(data);
@@ -464,7 +468,7 @@ export class FileConversationStorage extends ConversationStorage {
       try {
         const conversationId = path.basename(file, '.json');
         const conversation = await this.getConversation(conversationId);
-        
+
         if (conversation && this.matchesFilter(conversation, filter)) {
           conversations.push(conversation);
         }
@@ -479,24 +483,24 @@ export class FileConversationStorage extends ConversationStorage {
     // Apply limit and offset
     const start = filter.offset || 0;
     const end = filter.limit ? start + filter.limit : undefined;
-    
+
     return conversations.slice(start, end);
   }
 
   async getStats(): Promise<StorageStats> {
     const conversations = await this.listConversations();
     const totalMessages = conversations.reduce((sum, conv) => sum + conv.messages.length, 0);
-    
-    const dates = conversations.map(conv => conv.createdAt);
-    const oldestConversation = dates.length > 0 ? new Date(Math.min(...dates.map(d => d.getTime()))) : new Date();
-    const newestConversation = dates.length > 0 ? new Date(Math.max(...dates.map(d => d.getTime()))) : new Date();
+
+    const dates = conversations.map((conv) => conv.createdAt);
+    const oldestConversation = dates.length > 0 ? new Date(Math.min(...dates.map((d) => d.getTime()))) : new Date();
+    const newestConversation = dates.length > 0 ? new Date(Math.max(...dates.map((d) => d.getTime()))) : new Date();
 
     return {
       totalConversations: conversations.length,
       totalMessages,
       oldestConversation,
       newestConversation,
-      diskUsage: await this.calculateDiskUsage()
+      diskUsage: await this.calculateDiskUsage(),
     };
   }
 
@@ -509,9 +513,9 @@ export class FileConversationStorage extends ConversationStorage {
     let deletedCount = 0;
 
     for (const conversation of conversations) {
-      const shouldDelete = conversation.createdAt < cutoffDate || 
-                          (conversation.expiresAt && conversation.expiresAt < new Date());
-      
+      const shouldDelete =
+        conversation.createdAt < cutoffDate || (conversation.expiresAt && conversation.expiresAt < new Date());
+
       if (shouldDelete) {
         await this.deleteConversation(conversation.conversationId);
         deletedCount++;
@@ -531,7 +535,7 @@ export class FileConversationStorage extends ConversationStorage {
     if (filter.agentName && conversation.agentName !== filter.agentName) return false;
     if (filter.fromDate && conversation.createdAt < filter.fromDate) return false;
     if (filter.toDate && conversation.createdAt > filter.toDate) return false;
-    
+
     return true;
   }
 
@@ -602,7 +606,7 @@ export class ConversationManager {
       messages: context.history,
       metadata: context.metadata,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     await this.storage.saveConversation(conversation);
@@ -619,7 +623,7 @@ export class ConversationManager {
       userId: conversation.userId,
       chatId: conversation.chatId,
       history: conversation.messages,
-      metadata: conversation.metadata
+      metadata: conversation.metadata,
     };
   }
 

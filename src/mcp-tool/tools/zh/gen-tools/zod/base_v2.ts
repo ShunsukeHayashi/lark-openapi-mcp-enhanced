@@ -40,12 +40,7 @@ export const baseV2AppRoleCreate = {
                           '条件运算符 Options:is(等于),isNot(不等于),contains(包含),doesNotContain(不包含),isEmpty(为空),isNotEmpty(不为空)',
                         )
                         .optional(),
-                      values: z
-                        .array(z.string())
-                        .describe(
-                          '条件的值，可以是单个值或多个值的数组。详情参考',
-                        )
-                        .optional(),
+                      values: z.array(z.string()).describe('条件的值，可以是单个值或多个值的数组。详情参考').optional(),
                     }),
                   )
                   .describe('记录筛选条件，用于指定可编辑或可阅读的记录')
@@ -74,12 +69,7 @@ export const baseV2AppRoleCreate = {
                           '条件运算符 Options:is(等于),isNot(不等于),contains(包含),doesNotContain(不包含),isEmpty(为空),isNotEmpty(不为空)',
                         )
                         .optional(),
-                      values: z
-                        .array(z.string())
-                        .describe(
-                          '条件的值，可以是单个值或多个值的数组。详情参考',
-                        )
-                        .optional(),
+                      values: z.array(z.string()).describe('条件的值，可以是单个值或多个值的数组。详情参考').optional(),
                     }),
                   )
                   .describe('记录筛选条件，用于指定可阅读的记录')
@@ -222,12 +212,7 @@ export const baseV2AppRoleUpdate = {
                           '条件运算符 Options:is(等于),isNot(不等于),contains(包含),doesNotContain(不包含),isEmpty(为空),isNotEmpty(不为空)',
                         )
                         .optional(),
-                      values: z
-                        .array(z.string())
-                        .describe(
-                          '条件的值，可以是单个值或多个值的数组。详情参考',
-                        )
-                        .optional(),
+                      values: z.array(z.string()).describe('条件的值，可以是单个值或多个值的数组。详情参考').optional(),
                     }),
                   )
                   .describe('记录筛选条件，用于指定可编辑或可阅读的记录')
@@ -258,12 +243,7 @@ export const baseV2AppRoleUpdate = {
                           '条件运算符 Options:is(等于),isNot(不等于),contains(包含),doesNotContain(不包含),isEmpty(为空),isNotEmpty(不为空)',
                         )
                         .optional(),
-                      values: z
-                        .array(z.string())
-                        .describe(
-                          '条件的值，可以是单个值或多个值的数组。详情参考',
-                        )
-                        .optional(),
+                      values: z.array(z.string()).describe('条件的值，可以是单个值或多个值的数组。详情参考').optional(),
                     }),
                   )
                   .describe('记录筛选条件，用于指定可阅读的记录')
@@ -336,11 +316,7 @@ export const baseV2AppRoleUpdate = {
         .describe(
           '多维表格 App 的唯一标识。不同形态的多维表格，其 `app_token` 的获取方式不同：- 如果多维表格的 URL 以 ==**feishu.cn/base**== 开头，该多维表格的 `app_token` 是下图高亮部分： - 如果多维表格的 URL 以 ==**feishu.cn/wiki**== 开头，你需调用知识库相关接口获取多维表格的 app_token。当 `obj_type` 的值为 `bitable` 时，`obj_token` 字段的值才是多维表格的 `app_token`。了解更多，参考',
         ),
-      role_id: z
-        .string()
-        .describe(
-          '多维表格高级权限中自定义角色的唯一标识，以 rol 开头。获取方式：通过接口获取',
-        ),
+      role_id: z.string().describe('多维表格高级权限中自定义角色的唯一标识，以 rol 开头。获取方式：通过接口获取'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },

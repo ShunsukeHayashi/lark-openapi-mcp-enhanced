@@ -15,10 +15,7 @@ import { LarkMcpTool } from '../../mcp-tool';
 
 const program = new Command();
 
-program
-  .name('genesis')
-  .description('Lark Genesis Architect - AI-powered Lark Base generator')
-  .version('1.0.0');
+program.name('genesis').description('Lark Genesis Architect - AI-powered Lark Base generator').version('1.0.0');
 
 // 全体生成コマンド
 program
@@ -33,27 +30,33 @@ program
   .action(async (options) => {
     try {
       console.log('🚀 Starting Genesis Architect...');
-      
+
       // 要求仕様の読み込み
       const requirements = fs.readFileSync(options.requirements, 'utf-8');
-      
+
       // Larkクライアントの初期化
       const larkClient = new LarkMcpTool({
         appId: options.appId,
         appSecret: options.appSecret,
-        logger: { warn: console.warn, error: console.error, debug: options.verbose ? console.log : () => {}, info: console.info, trace: () => {} }
+        logger: {
+          warn: console.warn,
+          error: console.error,
+          debug: options.verbose ? console.log : () => {},
+          info: console.info,
+          trace: () => {},
+        },
       });
 
       // Genesis Architectの初期化
       const architect = new GenesisArchitect({
         geminiApiKey: options.geminiKey,
         larkClient,
-        enableLogging: options.verbose
+        enableLogging: options.verbose,
       });
 
       // 自動生成実行
       const result = await architect.createFromRequirements(requirements);
-      
+
       // 出力ディレクトリの作成
       if (!fs.existsSync(options.output)) {
         fs.mkdirSync(options.output, { recursive: true });
@@ -62,13 +65,10 @@ program
       // 結果の保存
       fs.writeFileSync(
         path.join(options.output, 'execution-context.json'),
-        JSON.stringify(result.executionContext, null, 2)
+        JSON.stringify(result.executionContext, null, 2),
       );
 
-      fs.writeFileSync(
-        path.join(options.output, 'build-result.json'),
-        JSON.stringify(result.buildResult, null, 2)
-      );
+      fs.writeFileSync(path.join(options.output, 'build-result.json'), JSON.stringify(result.buildResult, null, 2));
 
       if (result.success) {
         console.log('✅ Genesis completed successfully!');
@@ -76,9 +76,8 @@ program
         console.log(`📁 Output saved to: ${options.output}`);
       } else {
         console.log('❌ Genesis failed:');
-        result.errors.forEach(error => console.log(`   ${error}`));
+        result.errors.forEach((error) => console.log(`   ${error}`));
       }
-
     } catch (error) {
       console.error('❌ Error:', error);
       process.exit(1);
@@ -95,17 +94,17 @@ program
   .action(async (options) => {
     try {
       console.log('📋 Parsing requirements...');
-      
+
       const requirements = fs.readFileSync(options.requirements, 'utf-8');
       const result = RequirementParser.parse(requirements);
-      
+
       fs.writeFileSync(options.output, JSON.stringify(result, null, 2));
-      
+
       if (result.success) {
         console.log('✅ Requirements parsed successfully!');
         console.log(`📊 Confidence: ${(result.confidence * 100).toFixed(1)}%`);
         console.log(`📁 Output saved to: ${options.output}`);
-        
+
         if (options.verbose && result.form) {
           console.log('\n📝 Summary:');
           console.log(`   Title: ${result.form.title}`);
@@ -115,9 +114,8 @@ program
         }
       } else {
         console.log('❌ Requirements parsing failed:');
-        result.errors.forEach(error => console.log(`   ${error}`));
+        result.errors.forEach((error) => console.log(`   ${error}`));
       }
-
     } catch (error) {
       console.error('❌ Error:', error);
       process.exit(1);
@@ -136,10 +134,10 @@ program
   .action(async (options) => {
     try {
       console.log('🔗 Generating ER diagram...');
-      
+
       const entities = JSON.parse(fs.readFileSync(options.entities, 'utf-8'));
       let relationships = [];
-      
+
       if (options.relationships && fs.existsSync(options.relationships)) {
         relationships = JSON.parse(fs.readFileSync(options.relationships, 'utf-8'));
       }
@@ -149,23 +147,22 @@ program
         theme: options.theme,
         showAttributes: true,
         showDataTypes: true,
-        showConstraints: true
+        showConstraints: true,
       };
 
       const result = ERDiagramGenerator.generateDiagram(entities, relationships, config);
-      
+
       if (result.success) {
         fs.writeFileSync(options.output, result.mermaidCode);
-        
+
         console.log('✅ ER diagram generated successfully!');
         console.log(`📊 Entities: ${result.metadata.entityCount}`);
         console.log(`🔗 Relationships: ${result.metadata.relationshipCount}`);
         console.log(`📁 Output saved to: ${options.output}`);
       } else {
         console.log('❌ ER diagram generation failed:');
-        result.errors.forEach(error => console.log(`   ${error}`));
+        result.errors.forEach((error) => console.log(`   ${error}`));
       }
-
     } catch (error) {
       console.error('❌ Error:', error);
       process.exit(1);
@@ -184,37 +181,36 @@ program
   .action(async (options) => {
     try {
       console.log(`🔄 Executing step ${options.command}...`);
-      
+
       const requirements = fs.readFileSync(options.requirements, 'utf-8');
-      
+
       const architect = new GenesisArchitect({
         geminiApiKey: options.geminiKey,
         larkClient: null, // ステップ実行では不要
-        enableLogging: options.verbose
+        enableLogging: options.verbose,
       });
 
       const result = await architect.executeStep(requirements, options.command);
-      
+
       if (options.output) {
         fs.writeFileSync(options.output, JSON.stringify(result, null, 2));
       }
 
       if (result.success) {
         console.log('✅ Step executed successfully!');
-        
+
         if (options.verbose) {
           console.log('\n📄 Result:');
           console.log(JSON.stringify(result.result, null, 2));
         }
-        
+
         if (options.output) {
           console.log(`📁 Output saved to: ${options.output}`);
         }
       } else {
         console.log('❌ Step execution failed:');
-        result.errors.forEach(error => console.log(`   ${error}`));
+        result.errors.forEach((error) => console.log(`   ${error}`));
       }
-
     } catch (error) {
       console.error('❌ Error:', error);
       process.exit(1);
@@ -231,11 +227,11 @@ program
   .action(async (options) => {
     try {
       console.log('🔍 Validating system configuration...');
-      
+
       // Gemini API接続テスト
       const { GeminiClient } = await import('../utils/gemini-client');
       const geminiClient = new GeminiClient({
-        apiKey: options.geminiKey
+        apiKey: options.geminiKey,
       });
 
       const geminiStatus = await geminiClient.healthCheck();
@@ -247,9 +243,9 @@ program
           const larkClient = new LarkMcpTool({
             appId: options.appId,
             appSecret: options.appSecret,
-            logger: { warn: () => {}, error: () => {}, debug: () => {}, info: () => {}, trace: () => {} }
+            logger: { warn: () => {}, error: () => {}, debug: () => {}, info: () => {}, trace: () => {} },
           });
-          
+
           // 簡単なAPI呼び出しでテスト
           console.log('🚀 Lark API: ✅ Configuration valid');
         } catch (error) {
@@ -260,7 +256,7 @@ program
       // システム状況の確認
       const architect = new GenesisArchitect({
         geminiApiKey: options.geminiKey,
-        larkClient: null
+        larkClient: null,
       });
 
       const status = architect.getStatus();
@@ -268,12 +264,11 @@ program
       console.log(`   Ready: ${status.isReady ? '✅' : '❌'}`);
       console.log(`   Version: ${status.version}`);
       console.log(`   Capabilities: ${status.capabilities.length}`);
-      
+
       if (options.verbose) {
         console.log('\n🛠️ Available Capabilities:');
-        status.capabilities.forEach(cap => console.log(`   - ${cap}`));
+        status.capabilities.forEach((cap) => console.log(`   - ${cap}`));
       }
-
     } catch (error) {
       console.error('❌ Error:', error);
       process.exit(1);
@@ -289,7 +284,7 @@ program
   .action((options) => {
     try {
       console.log('📝 Generating requirements template...');
-      
+
       const templates = {
         basic: `# Project Requirements
 
@@ -435,16 +430,15 @@ Project Name: [Your Project Name]
 - [Detailed success metrics]
 - [Key Performance Indicators]
 - [Business value measurement]
-`
+`,
       };
 
       const template = templates[options.type as keyof typeof templates] || templates.basic;
       fs.writeFileSync(options.output, template);
-      
+
       console.log('✅ Template generated successfully!');
       console.log(`📄 Type: ${options.type}`);
       console.log(`📁 Saved to: ${options.output}`);
-
     } catch (error) {
       console.error('❌ Error:', error);
       process.exit(1);

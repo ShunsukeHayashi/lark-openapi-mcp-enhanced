@@ -11,12 +11,7 @@ export const securityAndComplianceV1OpenapiLogListData = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      api_keys: z
-        .array(z.string())
-        .describe(
-          'Feishu OpenAPI definition, reference: ',
-        )
-        .optional(),
+      api_keys: z.array(z.string()).describe('Feishu OpenAPI definition, reference: ').optional(),
       start_time: z.number().describe('Starting timestamp in seconds').optional(),
       end_time: z.number().describe('Termination timestamp in seconds').optional(),
       app_id: z

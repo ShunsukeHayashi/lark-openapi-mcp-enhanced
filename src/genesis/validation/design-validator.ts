@@ -14,7 +14,14 @@ export interface ValidationRule {
 }
 
 export interface DesignArtifact {
-  type: 'requirements' | 'entities' | 'base_structure' | 'business_logic' | 'workflows' | 'ui_design' | 'implementation_plan';
+  type:
+    | 'requirements'
+    | 'entities'
+    | 'base_structure'
+    | 'business_logic'
+    | 'workflows'
+    | 'ui_design'
+    | 'implementation_plan';
   id: string;
   name: string;
   version: string;
@@ -88,7 +95,7 @@ export class DesignValidationEngine {
       category: 'structural',
       severity: 'error',
       description: '要求仕様の完全性チェック',
-      validator: (design) => this.validateRequirementsCompleteness(design)
+      validator: (design) => this.validateRequirementsCompleteness(design),
     });
 
     this.registerRule({
@@ -98,7 +105,7 @@ export class DesignValidationEngine {
       severity: 'warning',
       description: 'エンティティ命名規則の検証',
       validator: (design) => this.validateEntityNaming(design),
-      autoFix: (design) => this.fixEntityNaming(design)
+      autoFix: (design) => this.fixEntityNaming(design),
     });
 
     this.registerRule({
@@ -108,7 +115,7 @@ export class DesignValidationEngine {
       severity: 'error',
       description: '主キーの存在と妥当性検証',
       validator: (design) => this.validatePrimaryKeys(design),
-      autoFix: (design) => this.fixPrimaryKeys(design)
+      autoFix: (design) => this.fixPrimaryKeys(design),
     });
 
     this.registerRule({
@@ -117,7 +124,7 @@ export class DesignValidationEngine {
       category: 'logical',
       severity: 'error',
       description: 'エンティティ間関係の整合性検証',
-      validator: (design) => this.validateRelationshipIntegrity(design)
+      validator: (design) => this.validateRelationshipIntegrity(design),
     });
 
     this.registerRule({
@@ -126,7 +133,7 @@ export class DesignValidationEngine {
       category: 'logical',
       severity: 'warning',
       description: 'フィールドタイプの一貫性検証',
-      validator: (design) => this.validateFieldTypeConsistency(design)
+      validator: (design) => this.validateFieldTypeConsistency(design),
     });
 
     this.registerRule({
@@ -135,7 +142,7 @@ export class DesignValidationEngine {
       category: 'performance',
       severity: 'suggestion',
       description: 'テーブルサイズとパフォーマンス最適化',
-      validator: (design) => this.validateTableSizeOptimization(design)
+      validator: (design) => this.validateTableSizeOptimization(design),
     });
 
     this.registerRule({
@@ -144,7 +151,7 @@ export class DesignValidationEngine {
       category: 'security',
       severity: 'warning',
       description: '機密データの保護検証',
-      validator: (design) => this.validateSensitiveDataProtection(design)
+      validator: (design) => this.validateSensitiveDataProtection(design),
     });
 
     this.registerRule({
@@ -153,7 +160,7 @@ export class DesignValidationEngine {
       category: 'logical',
       severity: 'error',
       description: 'ワークフローロジックの検証',
-      validator: (design) => this.validateWorkflowLogic(design)
+      validator: (design) => this.validateWorkflowLogic(design),
     });
 
     this.registerRule({
@@ -162,7 +169,7 @@ export class DesignValidationEngine {
       category: 'compliance',
       severity: 'warning',
       description: 'UIアクセシビリティ検証',
-      validator: (design) => this.validateUIAccessibility(design)
+      validator: (design) => this.validateUIAccessibility(design),
     });
 
     this.registerRule({
@@ -171,18 +178,21 @@ export class DesignValidationEngine {
       category: 'logical',
       severity: 'error',
       description: '実装可能性の検証',
-      validator: (design) => this.validateImplementationFeasibility(design)
+      validator: (design) => this.validateImplementationFeasibility(design),
     });
   }
 
   /**
    * 設計アーティファクトの包括的検証
    */
-  static validateDesign(design: DesignArtifact, options: {
-    includeCategories?: ValidationRule['category'][];
-    excludeRules?: string[];
-    autoFix?: boolean;
-  } = {}): ValidationReport {
+  static validateDesign(
+    design: DesignArtifact,
+    options: {
+      includeCategories?: ValidationRule['category'][];
+      excludeRules?: string[];
+      autoFix?: boolean;
+    } = {},
+  ): ValidationReport {
     const startTime = Date.now();
     const results: ValidationResult[] = [];
     const autoFixSuggestions: ValidationReport['autoFixSuggestions'] = [];
@@ -202,7 +212,7 @@ export class DesignValidationEngine {
           autoFixSuggestions.push({
             ruleId: rule.id,
             description: `Auto-fix available for: ${rule.name}`,
-            impact: this.assessAutoFixImpact(rule, result)
+            impact: this.assessAutoFixImpact(rule, result),
           });
         }
       } catch (error) {
@@ -213,7 +223,7 @@ export class DesignValidationEngine {
           message: `Validation rule execution failed: ${error}`,
           affectedElements: [],
           suggestions: [],
-          autoFixAvailable: false
+          autoFixAvailable: false,
         });
       }
     }
@@ -233,7 +243,7 @@ export class DesignValidationEngine {
       summary,
       results,
       recommendations,
-      autoFixSuggestions
+      autoFixSuggestions,
     };
   }
 
@@ -241,7 +251,7 @@ export class DesignValidationEngine {
    * バッチ検証
    */
   static validateMultipleDesigns(designs: DesignArtifact[]): Array<ValidationReport> {
-    return designs.map(design => this.validateDesign(design));
+    return designs.map((design) => this.validateDesign(design));
   }
 
   /**
@@ -263,19 +273,19 @@ export class DesignValidationEngine {
       description: string;
     }> = [];
 
-    const designMap = new Map(designs.map(d => [d.id, d]));
+    const designMap = new Map(designs.map((d) => [d.id, d]));
 
     // 依存関係の検証
     for (const design of designs) {
       for (const depId of design.metadata.dependencies) {
         const dependency = designMap.get(depId);
-        
+
         if (!dependency) {
           issues.push({
             type: 'missing_dependency',
             design: design.id,
             dependency: depId,
-            description: `Missing dependency: ${depId}`
+            description: `Missing dependency: ${depId}`,
           });
         }
       }
@@ -304,7 +314,7 @@ export class DesignValidationEngine {
               type: 'circular_dependency',
               design: designId,
               dependency: depId,
-              description: `Circular dependency detected between ${designId} and ${depId}`
+              description: `Circular dependency detected between ${designId} and ${depId}`,
             });
           }
         }
@@ -314,7 +324,7 @@ export class DesignValidationEngine {
       return false;
     };
 
-    designs.forEach(design => {
+    designs.forEach((design) => {
       if (!visited.has(design.id)) {
         detectCycle(design.id);
       }
@@ -322,7 +332,7 @@ export class DesignValidationEngine {
 
     return {
       valid: issues.length === 0,
-      issues
+      issues,
     };
   }
 
@@ -336,19 +346,21 @@ export class DesignValidationEngine {
 
     const content = design.content;
     const requiredFields = ['title', 'description', 'functionalRequirements', 'stakeholders'];
-    const missingFields = requiredFields.filter(field => !content[field] || 
-      (Array.isArray(content[field]) && content[field].length === 0));
+    const missingFields = requiredFields.filter(
+      (field) => !content[field] || (Array.isArray(content[field]) && content[field].length === 0),
+    );
 
     return {
       ruleId: 'REQ_001',
       passed: missingFields.length === 0,
       severity: 'error',
-      message: missingFields.length === 0 ? 
-        'Requirements are complete' : 
-        `Missing required fields: ${missingFields.join(', ')}`,
+      message:
+        missingFields.length === 0
+          ? 'Requirements are complete'
+          : `Missing required fields: ${missingFields.join(', ')}`,
       affectedElements: missingFields,
-      suggestions: missingFields.map(field => `Add ${field} to complete requirements specification`),
-      autoFixAvailable: false
+      suggestions: missingFields.map((field) => `Add ${field} to complete requirements specification`),
+      autoFixAvailable: false,
     };
   }
 
@@ -371,12 +383,13 @@ export class DesignValidationEngine {
       ruleId: 'ENT_001',
       passed: invalidNames.length === 0,
       severity: 'warning',
-      message: invalidNames.length === 0 ? 
-        'Entity naming follows conventions' : 
-        `Entities with invalid names: ${invalidNames.join(', ')}`,
+      message:
+        invalidNames.length === 0
+          ? 'Entity naming follows conventions'
+          : `Entities with invalid names: ${invalidNames.join(', ')}`,
       affectedElements: invalidNames,
-      suggestions: invalidNames.map(name => `Rename '${name}' to follow PascalCase convention`),
-      autoFixAvailable: true
+      suggestions: invalidNames.map((name) => `Rename '${name}' to follow PascalCase convention`),
+      autoFixAvailable: true,
     };
   }
 
@@ -398,12 +411,13 @@ export class DesignValidationEngine {
       ruleId: 'ENT_002',
       passed: entitiesWithoutPK.length === 0,
       severity: 'error',
-      message: entitiesWithoutPK.length === 0 ? 
-        'All entities have valid primary keys' : 
-        `Entities without primary keys: ${entitiesWithoutPK.join(', ')}`,
+      message:
+        entitiesWithoutPK.length === 0
+          ? 'All entities have valid primary keys'
+          : `Entities without primary keys: ${entitiesWithoutPK.join(', ')}`,
       affectedElements: entitiesWithoutPK,
-      suggestions: entitiesWithoutPK.map(name => `Add primary key to entity '${name}'`),
-      autoFixAvailable: true
+      suggestions: entitiesWithoutPK.map((name) => `Add primary key to entity '${name}'`),
+      autoFixAvailable: true,
     };
   }
 
@@ -427,12 +441,13 @@ export class DesignValidationEngine {
       ruleId: 'REL_001',
       passed: invalidRelationships.length === 0,
       severity: 'error',
-      message: invalidRelationships.length === 0 ? 
-        'All relationships are valid' : 
-        `Invalid relationships: ${invalidRelationships.join(', ')}`,
+      message:
+        invalidRelationships.length === 0
+          ? 'All relationships are valid'
+          : `Invalid relationships: ${invalidRelationships.join(', ')}`,
       affectedElements: invalidRelationships,
-      suggestions: invalidRelationships.map(rel => `Fix relationship: ${rel}`),
-      autoFixAvailable: false
+      suggestions: invalidRelationships.map((rel) => `Fix relationship: ${rel}`),
+      autoFixAvailable: false,
     };
   }
 
@@ -466,12 +481,13 @@ export class DesignValidationEngine {
       ruleId: 'FIELD_001',
       passed: inconsistencies.length === 0,
       severity: 'warning',
-      message: inconsistencies.length === 0 ? 
-        'Field types are consistent' : 
-        `Inconsistent field types: ${inconsistencies.join('; ')}`,
+      message:
+        inconsistencies.length === 0
+          ? 'Field types are consistent'
+          : `Inconsistent field types: ${inconsistencies.join('; ')}`,
       affectedElements: inconsistencies,
-      suggestions: inconsistencies.map(inc => `Standardize field type for: ${inc}`),
-      autoFixAvailable: false
+      suggestions: inconsistencies.map((inc) => `Standardize field type for: ${inc}`),
+      autoFixAvailable: false,
     };
   }
 
@@ -494,12 +510,13 @@ export class DesignValidationEngine {
       ruleId: 'PERF_001',
       passed: oversizedTables.length === 0,
       severity: 'suggestion',
-      message: oversizedTables.length === 0 ? 
-        'Table sizes are optimized' : 
-        `Consider splitting large tables: ${oversizedTables.join(', ')}`,
+      message:
+        oversizedTables.length === 0
+          ? 'Table sizes are optimized'
+          : `Consider splitting large tables: ${oversizedTables.join(', ')}`,
       affectedElements: oversizedTables,
-      suggestions: oversizedTables.map(table => `Consider normalizing: ${table}`),
-      autoFixAvailable: false
+      suggestions: oversizedTables.map((table) => `Consider normalizing: ${table}`),
+      autoFixAvailable: false,
     };
   }
 
@@ -524,12 +541,13 @@ export class DesignValidationEngine {
       ruleId: 'SEC_001',
       passed: sensitiveFields.length === 0,
       severity: 'warning',
-      message: sensitiveFields.length === 0 ? 
-        'No sensitive data detected' : 
-        `Potential sensitive fields detected: ${sensitiveFields.join(', ')}`,
+      message:
+        sensitiveFields.length === 0
+          ? 'No sensitive data detected'
+          : `Potential sensitive fields detected: ${sensitiveFields.join(', ')}`,
       affectedElements: sensitiveFields,
-      suggestions: sensitiveFields.map(field => `Consider encryption/masking for: ${field}`),
-      autoFixAvailable: false
+      suggestions: sensitiveFields.map((field) => `Consider encryption/masking for: ${field}`),
+      autoFixAvailable: false,
     };
   }
 
@@ -555,12 +573,10 @@ export class DesignValidationEngine {
       ruleId: 'FLOW_001',
       passed: logicIssues.length === 0,
       severity: 'error',
-      message: logicIssues.length === 0 ? 
-        'Workflow logic is valid' : 
-        `Workflow issues: ${logicIssues.join('; ')}`,
+      message: logicIssues.length === 0 ? 'Workflow logic is valid' : `Workflow issues: ${logicIssues.join('; ')}`,
       affectedElements: logicIssues,
-      suggestions: logicIssues.map(issue => `Fix: ${issue}`),
-      autoFixAvailable: false
+      suggestions: logicIssues.map((issue) => `Fix: ${issue}`),
+      autoFixAvailable: false,
     };
   }
 
@@ -585,12 +601,13 @@ export class DesignValidationEngine {
       ruleId: 'UI_001',
       passed: accessibilityIssues.length === 0,
       severity: 'warning',
-      message: accessibilityIssues.length === 0 ? 
-        'UI accessibility requirements met' : 
-        `Accessibility issues: ${accessibilityIssues.join('; ')}`,
+      message:
+        accessibilityIssues.length === 0
+          ? 'UI accessibility requirements met'
+          : `Accessibility issues: ${accessibilityIssues.join('; ')}`,
       affectedElements: accessibilityIssues,
-      suggestions: accessibilityIssues.map(issue => `Fix accessibility: ${issue}`),
-      autoFixAvailable: false
+      suggestions: accessibilityIssues.map((issue) => `Fix accessibility: ${issue}`),
+      autoFixAvailable: false,
     };
   }
 
@@ -607,13 +624,18 @@ export class DesignValidationEngine {
       feasibilityIssues.push('No implementation phases defined');
     }
 
-    const totalEffort = plan.phases?.reduce((total: number, phase: any) => {
-      return total + (phase.tasks?.reduce((phaseTotal: number, task: any) => {
-        return phaseTotal + (parseInt(task.effort) || 0);
-      }, 0) || 0);
-    }, 0) || 0;
+    const totalEffort =
+      plan.phases?.reduce((total: number, phase: any) => {
+        return (
+          total +
+          (phase.tasks?.reduce((phaseTotal: number, task: any) => {
+            return phaseTotal + (parseInt(task.effort) || 0);
+          }, 0) || 0)
+        );
+      }, 0) || 0;
 
-    if (totalEffort > 1000) { // 仮の閾値
+    if (totalEffort > 1000) {
+      // 仮の閾値
       feasibilityIssues.push(`High implementation effort: ${totalEffort} hours`);
     }
 
@@ -621,12 +643,13 @@ export class DesignValidationEngine {
       ruleId: 'IMPL_001',
       passed: feasibilityIssues.length === 0,
       severity: 'error',
-      message: feasibilityIssues.length === 0 ? 
-        'Implementation plan is feasible' : 
-        `Feasibility issues: ${feasibilityIssues.join('; ')}`,
+      message:
+        feasibilityIssues.length === 0
+          ? 'Implementation plan is feasible'
+          : `Feasibility issues: ${feasibilityIssues.join('; ')}`,
       affectedElements: feasibilityIssues,
-      suggestions: feasibilityIssues.map(issue => `Address: ${issue}`),
-      autoFixAvailable: false
+      suggestions: feasibilityIssues.map((issue) => `Address: ${issue}`),
+      autoFixAvailable: false,
     };
   }
 
@@ -645,7 +668,7 @@ export class DesignValidationEngine {
     entities.forEach((entity: any, index: number) => {
       const originalName = entity.name;
       const fixedName = this.toPascalCase(originalName);
-      
+
       if (originalName !== fixedName) {
         entity.name = fixedName;
         changes.push({
@@ -653,7 +676,7 @@ export class DesignValidationEngine {
           target: `entities[${index}].name`,
           oldValue: originalName,
           newValue: fixedName,
-          description: `Fixed entity name from '${originalName}' to '${fixedName}'`
+          description: `Fixed entity name from '${originalName}' to '${fixedName}'`,
         });
       }
     });
@@ -662,7 +685,7 @@ export class DesignValidationEngine {
       success: true,
       changes,
       updatedDesign,
-      warnings: []
+      warnings: [],
     };
   }
 
@@ -682,7 +705,7 @@ export class DesignValidationEngine {
           name: 'id',
           type: 'string',
           required: true,
-          description: 'Primary key field'
+          description: 'Primary key field',
         };
 
         entity.attributes.unshift(idField);
@@ -692,7 +715,7 @@ export class DesignValidationEngine {
           type: 'add',
           target: `entities[${index}].attributes`,
           newValue: idField,
-          description: `Added primary key field to entity '${entity.name}'`
+          description: `Added primary key field to entity '${entity.name}'`,
         });
       }
     });
@@ -701,7 +724,7 @@ export class DesignValidationEngine {
       success: true,
       changes,
       updatedDesign,
-      warnings: []
+      warnings: [],
     };
   }
 
@@ -713,7 +736,7 @@ export class DesignValidationEngine {
   }
 
   private static getApplicableRules(designType: string, options: any): ValidationRule[] {
-    return Array.from(this.VALIDATION_RULES.values()).filter(rule => {
+    return Array.from(this.VALIDATION_RULES.values()).filter((rule) => {
       if (options.excludeRules?.includes(rule.id)) return false;
       if (options.includeCategories && !options.includeCategories.includes(rule.category)) return false;
       return true;
@@ -728,57 +751,57 @@ export class DesignValidationEngine {
       message: `Skipped: ${reason}`,
       affectedElements: [],
       suggestions: [],
-      autoFixAvailable: false
+      autoFixAvailable: false,
     };
   }
 
   private static calculateSummary(results: ValidationResult[]) {
     return {
       total: results.length,
-      passed: results.filter(r => r.passed).length,
-      warnings: results.filter(r => !r.passed && r.severity === 'warning').length,
-      errors: results.filter(r => !r.passed && r.severity === 'error').length,
-      suggestions: results.filter(r => !r.passed && r.severity === 'suggestion').length
+      passed: results.filter((r) => r.passed).length,
+      warnings: results.filter((r) => !r.passed && r.severity === 'warning').length,
+      errors: results.filter((r) => !r.passed && r.severity === 'error').length,
+      suggestions: results.filter((r) => !r.passed && r.severity === 'suggestion').length,
     };
   }
 
   private static calculateOverallScore(results: ValidationResult[]): number {
     if (results.length === 0) return 100;
-    
+
     const weights = { error: 10, warning: 5, suggestion: 1, info: 0 };
     const totalPenalty = results.reduce((penalty, result) => {
       return penalty + (result.passed ? 0 : weights[result.severity]);
     }, 0);
-    
+
     const maxPenalty = results.length * weights.error;
     return Math.max(0, Math.round(100 - (totalPenalty / maxPenalty) * 100));
   }
 
   private static determineOverallStatus(results: ValidationResult[]): 'passed' | 'warning' | 'failed' {
-    if (results.some(r => !r.passed && r.severity === 'error')) return 'failed';
-    if (results.some(r => !r.passed && r.severity === 'warning')) return 'warning';
+    if (results.some((r) => !r.passed && r.severity === 'error')) return 'failed';
+    if (results.some((r) => !r.passed && r.severity === 'warning')) return 'warning';
     return 'passed';
   }
 
   private static generateRecommendations(results: ValidationResult[]): string[] {
     const recommendations: string[] = [];
-    
-    const errorCount = results.filter(r => !r.passed && r.severity === 'error').length;
-    const warningCount = results.filter(r => !r.passed && r.severity === 'warning').length;
-    
+
+    const errorCount = results.filter((r) => !r.passed && r.severity === 'error').length;
+    const warningCount = results.filter((r) => !r.passed && r.severity === 'warning').length;
+
     if (errorCount > 0) {
       recommendations.push(`Address ${errorCount} critical error${errorCount > 1 ? 's' : ''} before proceeding`);
     }
-    
+
     if (warningCount > 5) {
       recommendations.push('Consider reviewing design patterns to reduce warnings');
     }
-    
-    const autoFixCount = results.filter(r => !r.passed && r.autoFixAvailable).length;
+
+    const autoFixCount = results.filter((r) => !r.passed && r.autoFixAvailable).length;
     if (autoFixCount > 0) {
       recommendations.push(`${autoFixCount} issue${autoFixCount > 1 ? 's' : ''} can be automatically fixed`);
     }
-    
+
     return recommendations;
   }
 

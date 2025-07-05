@@ -65,11 +65,7 @@ export const driveV1ExportTaskCreate = {
         .describe(
           'The file extension of the local file after exporting the cloud document. To understand the file formats supported for exporting various cloud documents, refer to the . Options:docx(Microsoft Word (DOCX) format),pdf(PDF format),xlsx(Microsoft Excel (XLSX) format),csv(CSV format)',
         ),
-      token: z
-        .string()
-        .describe(
-          'The token of the cloud document. For details, see ',
-        ),
+      token: z.string().describe('The token of the cloud document. For details, see '),
       type: z
         .enum(['doc', 'sheet', 'bitable', 'docx'])
         .describe(
@@ -96,18 +92,10 @@ export const driveV1ExportTaskGet = {
   accessTokens: ['tenant', 'user'],
   schema: {
     params: z.object({
-      token: z
-        .string()
-        .describe(
-          'The token of the cloud document. For details, see ',
-        ),
+      token: z.string().describe('The token of the cloud document. For details, see '),
     }),
     path: z.object({
-      ticket: z
-        .string()
-        .describe(
-          'Export task ID, call  to get the ID',
-        ),
+      ticket: z.string().describe('Export task ID, call  to get the ID'),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -393,9 +381,7 @@ export const driveV1FileCopy = {
         .optional(),
       folder_token: z
         .string()
-        .describe(
-          'The target folder token to which the file is copied. Learn how to get the folder token, see ',
-        ),
+        .describe('The target folder token to which the file is copied. Learn how to get the folder token, see '),
       extra: z
         .array(
           z.object({
@@ -410,9 +396,7 @@ export const driveV1FileCopy = {
     path: z.object({
       file_token: z
         .string()
-        .describe(
-          'File token that needs to be copied. Learn how to get the file token, see ',
-        )
+        .describe('File token that needs to be copied. Learn how to get the file token, see ')
         .optional(),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
@@ -459,9 +443,7 @@ export const driveV1FileCreateShortcut = {
         .object({
           refer_token: z
             .string()
-            .describe(
-              'The token of the file that needs to be copied. For how to get the file token, see ',
-            ),
+            .describe('The token of the file that needs to be copied. For how to get the file token, see '),
           refer_type: z
             .enum(['file', 'docx', 'bitable', 'doc', 'sheet', 'mindnote', 'slides'])
             .describe(
@@ -526,9 +508,7 @@ export const driveV1FileDeleteSubscribe = {
         .optional(),
     }),
     path: z.object({
-      file_token: z
-        .string()
-        .describe('Document token. For details, see '),
+      file_token: z.string().describe('Document token. For details, see '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -557,9 +537,7 @@ export const driveV1FileGetSubscribe = {
         .optional(),
     }),
     path: z.object({
-      file_token: z
-        .string()
-        .describe('Document token. For details, see '),
+      file_token: z.string().describe('Document token. For details, see '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -615,12 +593,7 @@ export const driveV1FileMove = {
           'File type. If the value is empty or does not match the actual file type, the interface will return failure. Options:file(Common file type),docx(Cloud document type of upgraded docs),bitable(Cloud document type of bitable),doc(Cloud document type of docs),sheet(Cloud document type of sheet),mindnote(Cloud document type of mindnote),folder(Folder type),slides(Cloud document type of slide)',
         )
         .optional(),
-      folder_token: z
-        .string()
-        .describe(
-          'Target folder token. To learn how to get the folder token, see ',
-        )
-        .optional(),
+      folder_token: z.string().describe('Target folder token. To learn how to get the folder token, see ').optional(),
     }),
     path: z.object({
       file_token: z
@@ -650,12 +623,7 @@ export const driveV1FileStatisticsGet = {
         ),
     }),
     path: z.object({
-      file_token: z
-        .string()
-        .describe(
-          'File token. For details, see ',
-        )
-        .optional(),
+      file_token: z.string().describe('File token. For details, see ').optional(),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -684,9 +652,7 @@ export const driveV1FileSubscribe = {
         .optional(),
     }),
     path: z.object({
-      file_token: z
-        .string()
-        .describe('Document token. For details, see '),
+      file_token: z.string().describe('Document token. For details, see '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -767,11 +733,7 @@ export const driveV1FileTaskCheck = {
   accessTokens: ['tenant', 'user'],
   schema: {
     params: z.object({
-      task_id: z
-        .string()
-        .describe(
-          'File-related asynchronous `task_id`. See  or  to get the `task_id`',
-        ),
+      task_id: z.string().describe('File-related asynchronous `task_id`. See  or  to get the `task_id`'),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -787,16 +749,8 @@ export const driveV1FileUploadFinish = {
   accessTokens: ['tenant', 'user'],
   schema: {
     data: z.object({
-      upload_id: z
-        .string()
-        .describe(
-          'ID of the block upload transaction. You can call the  to get the upload ID',
-        ),
-      block_num: z
-        .number()
-        .describe(
-          'Number of blocks. You can call the  to get the number of blocks',
-        ),
+      upload_id: z.string().describe('ID of the block upload transaction. You can call the  to get the upload ID'),
+      block_num: z.number().describe('Number of blocks. You can call the  to get the number of blocks'),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -818,11 +772,7 @@ export const driveV1FileUploadPrepare = {
         .describe(
           'Type of the upload point. Fixed as "explorer", which means to upload files into the cloud space. Options:explorer(My Space.)',
         ),
-      parent_node: z
-        .string()
-        .describe(
-          'Token of the folder. For details, see ',
-        ),
+      parent_node: z.string().describe('Token of the folder. For details, see '),
       size: z.number().describe('File size. The units are in bytes'),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
@@ -854,11 +804,7 @@ export const driveV1FileVersionCreate = {
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional() }),
     path: z.object({
-      file_token: z
-        .string()
-        .describe(
-          'Document token. For how to get the document token, see ',
-        ),
+      file_token: z.string().describe('Document token. For how to get the document token, see '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -880,11 +826,7 @@ export const driveV1FileVersionDelete = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional(),
     }),
     path: z.object({
-      file_token: z
-        .string()
-        .describe(
-          'Document token. For how to get the document token, see ',
-        ),
+      file_token: z.string().describe('Document token. For how to get the document token, see '),
       version_id: z.string().describe('document version ID'),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
@@ -907,11 +849,7 @@ export const driveV1FileVersionGet = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional(),
     }),
     path: z.object({
-      file_token: z
-        .string()
-        .describe(
-          'document token. For how to get the document token, see ',
-        ),
+      file_token: z.string().describe('document token. For how to get the document token, see '),
       version_id: z.string().describe('document version ID'),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
@@ -939,11 +877,7 @@ export const driveV1FileVersionList = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional(),
     }),
     path: z.object({
-      file_token: z
-        .string()
-        .describe(
-          'parent document token. For how to get the document token. see ',
-        ),
+      file_token: z.string().describe('parent document token. For how to get the document token. see '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -979,11 +913,7 @@ export const driveV1FileViewRecordList = {
         .optional(),
     }),
     path: z.object({
-      file_token: z
-        .string()
-        .describe(
-          'File token. For how to get tokens, see ',
-        ),
+      file_token: z.string().describe('File token. For how to get tokens, see '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -1047,11 +977,7 @@ export const driveV1ImportTaskGet = {
   accessTokens: ['tenant', 'user'],
   schema: {
     path: z.object({
-      ticket: z
-        .string()
-        .describe(
-          'ID of the import task. Call  to get the ID',
-        ),
+      ticket: z.string().describe('ID of the import task. Call  to get the ID'),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -1168,9 +1094,7 @@ export const driveV1MetaBatchQuery = {
           z.object({
             doc_token: z
               .string()
-              .describe(
-                'Token of the file. For more information about how to obtain the token, see ',
-              ),
+              .describe('Token of the file. For more information about how to obtain the token, see '),
             doc_type: z
               .enum(['doc', 'sheet', 'bitable', 'mindnote', 'file', 'wiki', 'docx', 'folder', 'synced_block'])
               .describe(
@@ -1208,11 +1132,7 @@ export const driveV1PermissionMemberAuth = {
         ),
     }),
     path: z.object({
-      token: z
-        .string()
-        .describe(
-          'Token of the file. For more information about how to obtain the token, see ',
-        ),
+      token: z.string().describe('Token of the file. For more information about how to obtain the token, see '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -1332,11 +1252,7 @@ export const driveV1PermissionMemberCreate = {
         .optional(),
     }),
     path: z.object({
-      token: z
-        .string()
-        .describe(
-          'Token of the file. For more information about how to obtain the token, see ',
-        ),
+      token: z.string().describe('Token of the file. For more information about how to obtain the token, see '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -1378,11 +1294,7 @@ export const driveV1PermissionMemberDelete = {
         ),
     }),
     path: z.object({
-      token: z
-        .string()
-        .describe(
-          'Token of the file. For more information about how to obtain the token, see ',
-        ),
+      token: z.string().describe('Token of the file. For more information about how to obtain the token, see '),
       member_id: z.string().describe('Collaborator id, which needs to match the collaborator type'),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
@@ -1418,11 +1330,7 @@ export const driveV1PermissionMemberList = {
         .optional(),
     }),
     path: z.object({
-      token: z
-        .string()
-        .describe(
-          'Token of the file. For more information about how to obtain the token, see ',
-        ),
+      token: z.string().describe('Token of the file. For more information about how to obtain the token, see '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -1475,11 +1383,7 @@ export const driveV1PermissionMemberTransferOwner = {
         .optional(),
     }),
     path: z.object({
-      token: z
-        .string()
-        .describe(
-          'Token of the file. For more information about how to obtain the token, see ',
-        ),
+      token: z.string().describe('Token of the file. For more information about how to obtain the token, see '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -1532,11 +1436,7 @@ export const driveV1PermissionMemberUpdate = {
         ),
     }),
     path: z.object({
-      token: z
-        .string()
-        .describe(
-          'Token of the file. For more information about how to obtain the token, see ',
-        ),
+      token: z.string().describe('Token of the file. For more information about how to obtain the token, see '),
       member_id: z.string().describe('Collaborator ID'),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
@@ -1560,11 +1460,7 @@ export const driveV1PermissionPublicGet = {
         ),
     }),
     path: z.object({
-      token: z
-        .string()
-        .describe(
-          'Token of the file. For more information about how to obtain the token, see ',
-        ),
+      token: z.string().describe('Token of the file. For more information about how to obtain the token, see '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -1589,9 +1485,7 @@ export const driveV1PermissionPublicPasswordCreate = {
     path: z.object({
       token: z
         .string()
-        .describe(
-          'Token of the file. For more information about how to obtain the token, see ',
-        )
+        .describe('Token of the file. For more information about how to obtain the token, see ')
         .optional(),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
@@ -1617,9 +1511,7 @@ export const driveV1PermissionPublicPasswordDelete = {
     path: z.object({
       token: z
         .string()
-        .describe(
-          'Token of the file. For more information about how to obtain the token, see ',
-        )
+        .describe('Token of the file. For more information about how to obtain the token, see ')
         .optional(),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
@@ -1645,9 +1537,7 @@ export const driveV1PermissionPublicPasswordUpdate = {
     path: z.object({
       token: z
         .string()
-        .describe(
-          'Token of the file. For more information about how to obtain the token, see ',
-        )
+        .describe('Token of the file. For more information about how to obtain the token, see ')
         .optional(),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
@@ -1704,11 +1594,7 @@ export const driveV1PermissionPublicPatch = {
         ),
     }),
     path: z.object({
-      token: z
-        .string()
-        .describe(
-          'Token of the file. For more information about how to obtain the token, see ',
-        ),
+      token: z.string().describe('Token of the file. For more information about how to obtain the token, see '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },

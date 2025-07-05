@@ -193,11 +193,7 @@ export const hireV1AdvertisementPublish = {
         .optional(),
     }),
     path: z.object({
-      advertisement_id: z
-        .string()
-        .describe(
-          '职位广告 ID，可由接口创建职位后返回获取',
-        ),
+      advertisement_id: z.string().describe('职位广告 ID，可由接口创建职位后返回获取'),
     }),
   },
 };
@@ -275,11 +271,7 @@ export const hireV1AgencyGetAgencyAccount = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      supplier_id: z
-        .string()
-        .describe(
-          '猎头供应商 ID，可通过接口获取',
-        ),
+      supplier_id: z.string().describe('猎头供应商 ID，可通过接口获取'),
       status: z
         .number()
         .describe('猎头状态 Options:0(Normal 正常),1(Enabled 已禁用),2(DisabledBySupplier 已被猎头供应商停用)')
@@ -310,11 +302,7 @@ export const hireV1AgencyOperateAgencyAccount = {
   schema: {
     data: z.object({
       option: z.number().describe('操作类型 Options:1(Add 禁用),2(Remove 取消禁用)'),
-      id: z
-        .string()
-        .describe(
-          '猎头 ID，可通过接口获取',
-        ),
+      id: z.string().describe('猎头 ID，可通过接口获取'),
       reason: z.string().describe('禁用原因，仅当`option`为`1`时，必填').optional(),
     }),
   },
@@ -330,11 +318,7 @@ export const hireV1AgencyProtect = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      talent_id: z
-        .string()
-        .describe(
-          '人才ID，可通过、接口获取',
-        ),
+      talent_id: z.string().describe('人才ID，可通过、接口获取'),
       supplier_id: z.string().describe('猎头供应商ID'),
       consultant_id: z.string().describe('猎头顾问ID，需与`user_id_type`类型一致'),
       protect_create_time: z.number().describe('保护期创建时间（int64类型），毫秒时间戳'),
@@ -359,11 +343,7 @@ export const hireV1AgencyProtectSearch = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      talent_id: z
-        .string()
-        .describe(
-          '人才 ID，可通过、接口获取',
-        ),
+      talent_id: z.string().describe('人才 ID，可通过、接口获取'),
     }),
   },
 };
@@ -394,20 +374,11 @@ export const hireV1ApplicationCancelOnboard = {
   schema: {
     data: z.object({
       termination_type: z.number().describe('终止类型 Options:1(我们拒绝了候选人),22(候选人拒绝了我们),27(其他)'),
-      termination_reason_id_list: z
-        .array(z.string())
-        .describe(
-          '终止的具体原因的id列表，详细信息请参考',
-        )
-        .optional(),
+      termination_reason_id_list: z.array(z.string()).describe('终止的具体原因的id列表，详细信息请参考').optional(),
       termination_reason_notes: z.string().describe('备注').optional(),
     }),
     path: z.object({
-      application_id: z
-        .string()
-        .describe(
-          '投递 ID，如何获取投递 ID 请参考',
-        ),
+      application_id: z.string().describe('投递 ID，如何获取投递 ID 请参考'),
     }),
   },
 };
@@ -421,31 +392,18 @@ export const hireV1ApplicationCreate = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      talent_id: z
-        .string()
-        .describe(
-          '人才 ID，可通过获取',
-        ),
-      job_id: z
-        .string()
-        .describe('职位 ID，可通过获取'),
+      talent_id: z.string().describe('人才 ID，可通过获取'),
+      job_id: z.string().describe('职位 ID，可通过获取'),
       user_id: z
         .string()
         .describe(
           '人员 ID，与入参 `user_id_type` 类型一致。**注意**：若投递来源为属于「员工转岗」或「实习生转正」时必填，创建投递成功后会将该员工和对应人才进行绑定；创建其他来源投递时，不会进行人员与人才绑定',
         )
         .optional(),
-      resume_source_id: z
-        .string()
-        .describe(
-          '简历来源 ID，可通过获取',
-        )
-        .optional(),
+      resume_source_id: z.string().describe('简历来源 ID，可通过获取').optional(),
       application_preferred_city_code_list: z
         .array(z.string())
-        .describe(
-          '意向投递城市列表，可通过获取到对应的城市编码',
-        )
+        .describe('意向投递城市列表，可通过获取到对应的城市编码')
         .optional(),
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
@@ -476,11 +434,7 @@ export const hireV1ApplicationGet = {
         .optional(),
     }),
     path: z.object({
-      application_id: z
-        .string()
-        .describe(
-          '投递 ID，可通过获取',
-        ),
+      application_id: z.string().describe('投递 ID，可通过获取'),
     }),
   },
 };
@@ -544,12 +498,7 @@ export const hireV1ApplicationGetDetail = {
         .optional(),
     }),
     path: z.object({
-      application_id: z
-        .string()
-        .describe(
-          '投递 ID，可通过接口获取',
-        )
-        .optional(),
+      application_id: z.string().describe('投递 ID，可通过接口获取').optional(),
     }),
   },
 };
@@ -592,34 +541,14 @@ export const hireV1ApplicationList = {
   accessTokens: ['tenant'],
   schema: {
     params: z.object({
-      process_id: z
-        .string()
-        .describe(
-          '招聘流程 ID，可通过接口中的「流程 ID」获取',
-        )
-        .optional(),
-      stage_id: z
-        .string()
-        .describe(
-          '招聘阶段 ID，可通过接口每个流程下的「阶段列表」获取',
-        )
-        .optional(),
-      talent_id: z
-        .string()
-        .describe(
-          '人才 ID，可通过接口获取',
-        )
-        .optional(),
+      process_id: z.string().describe('招聘流程 ID，可通过接口中的「流程 ID」获取').optional(),
+      stage_id: z.string().describe('招聘阶段 ID，可通过接口每个流程下的「阶段列表」获取').optional(),
+      talent_id: z.string().describe('人才 ID，可通过接口获取').optional(),
       active_status: z
         .string()
         .describe('投递活跃状态，不传该参数则默认为“全部”**可选值有**：- `1`：活跃投递- `2`：非活跃投递- `3`：全部')
         .optional(),
-      job_id: z
-        .string()
-        .describe(
-          '职位 ID，可通过接口获取',
-        )
-        .optional(),
+      job_id: z.string().describe('职位 ID，可通过接口获取').optional(),
       lock_status: z
         .array(z.number().describe('Options:1(未锁定),2(锁定在其他职位),3(锁定在当前职位)'))
         .describe('锁定状态，无默认值，不传该参数则不对锁定状态进行筛选')
@@ -673,11 +602,7 @@ export const hireV1ApplicationOffer = {
         .optional(),
     }),
     path: z.object({
-      application_id: z
-        .string()
-        .describe(
-          '投递ID，可通过获取',
-        ),
+      application_id: z.string().describe('投递ID，可通过获取'),
     }),
   },
 };
@@ -691,11 +616,7 @@ export const hireV1ApplicationRecover = {
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      application_id: z
-        .string()
-        .describe(
-          '投递ID，详情请参考：',
-        ),
+      application_id: z.string().describe('投递ID，详情请参考：'),
     }),
   },
 };
@@ -710,20 +631,11 @@ export const hireV1ApplicationTerminate = {
   schema: {
     data: z.object({
       termination_type: z.number().describe('终止原因的类型 Options:1(我们拒绝了候选人),22(候选人拒绝了我们),27(其他)'),
-      termination_reason_list: z
-        .array(z.string())
-        .describe(
-          '终止的具体原因的id列表，可通过接口获取',
-        )
-        .optional(),
+      termination_reason_list: z.array(z.string()).describe('终止的具体原因的id列表，可通过接口获取').optional(),
       termination_reason_note: z.string().describe('终止备注').optional(),
     }),
     path: z.object({
-      application_id: z
-        .string()
-        .describe(
-          '投递ID，可通过接口获取',
-        ),
+      application_id: z.string().describe('投递ID，可通过接口获取'),
     }),
   },
 };
@@ -752,9 +664,7 @@ export const hireV1ApplicationTransferOnboard = {
       operator_id: z.string().describe('操作人ID，与入参 `user_id_type` 类型一致').optional(),
       onboard_city_code: z
         .string()
-        .describe(
-          '候选人办公地点 ID，将用于候选人内推奖规则判断，数据源可通过接口获取',
-        )
+        .describe('候选人办公地点 ID，将用于候选人内推奖规则判断，数据源可通过接口获取')
         .optional(),
       department: z
         .string()
@@ -807,11 +717,7 @@ export const hireV1ApplicationTransferOnboard = {
         .optional(),
     }),
     path: z.object({
-      application_id: z
-        .string()
-        .describe(
-          '投递ID，可通过接口  获取',
-        ),
+      application_id: z.string().describe('投递ID，可通过接口  获取'),
     }),
   },
 };
@@ -825,18 +731,10 @@ export const hireV1ApplicationTransferStage = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      stage_id: z
-        .string()
-        .describe(
-          '要转移到的阶段 ID，可通过接口获取',
-        ),
+      stage_id: z.string().describe('要转移到的阶段 ID，可通过接口获取'),
     }),
     path: z.object({
-      application_id: z
-        .string()
-        .describe(
-          '投递 ID，可通过接口获取',
-        ),
+      application_id: z.string().describe('投递 ID，可通过接口获取'),
     }),
   },
 };
@@ -861,9 +759,7 @@ export const hireV1AttachmentGet = {
     path: z.object({
       attachment_id: z
         .string()
-        .describe(
-          '附件 ID，获取方式如下：- 简历附件 ID/作品附件 ID：通过接口获取- 通用附件 ID：通过、、接口获取',
-        ),
+        .describe('附件 ID，获取方式如下：- 简历附件 ID/作品附件 ID：通过接口获取- 通用附件 ID：通过、、接口获取'),
     }),
   },
 };
@@ -878,11 +774,7 @@ export const hireV1AttachmentPreview = {
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      attachment_id: z
-        .string()
-        .describe(
-          '附件 ID，可通过接口返回数据中获取人才简历附件 ID',
-        ),
+      attachment_id: z.string().describe('附件 ID，可通过接口返回数据中获取人才简历附件 ID'),
     }),
   },
 };
@@ -904,12 +796,7 @@ export const hireV1BackgroundCheckOrderList = {
         )
         .optional(),
       page_size: z.number().describe('分页大小').optional(),
-      application_id: z
-        .string()
-        .describe(
-          '投递 ID。可通过接口获取',
-        )
-        .optional(),
+      application_id: z.string().describe('投递 ID。可通过接口获取').optional(),
       update_start_time: z.string().describe('最早更新时间。毫秒时间戳').optional(),
       update_end_time: z.string().describe('最晚更新时间。毫秒时间戳').optional(),
     }),
@@ -932,12 +819,7 @@ export const hireV1DiversityInclusionSearch = {
           '人才 ID 列表，如何获取人才 ID 请参考**特殊说明：**- 当通过人才 ID 列表查询时会返回对应人才最新投递的申请表附加信息。- 当人才 ID 列表或投递 ID 列表同时存在将以人才 ID 列表为准。- 当人才 ID 列表和投递 ID 列表都没有填写时则返回空数据',
         )
         .optional(),
-      application_ids: z
-        .array(z.string())
-        .describe(
-          '投递 ID 列表，如何获取投递 ID 请参考',
-        )
-        .optional(),
+      application_ids: z.array(z.string()).describe('投递 ID 列表，如何获取投递 ID 请参考').optional(),
     }),
   },
 };
@@ -1049,11 +931,7 @@ export const hireV1EcoBackgroundCheckCustomFieldBatchDelete = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      account_id: z
-        .string()
-        .describe(
-          '背调账号 ID，可通过事件获取',
-        ),
+      account_id: z.string().describe('背调账号 ID，可通过事件获取'),
     }),
   },
 };
@@ -1067,11 +945,7 @@ export const hireV1EcoBackgroundCheckCustomFieldBatchUpdate = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      account_id: z
-        .string()
-        .describe(
-          '背调账号 ID，可通过事件获取',
-        ),
+      account_id: z.string().describe('背调账号 ID，可通过事件获取'),
       custom_field_list: z
         .array(
           z.object({
@@ -1111,9 +985,7 @@ export const hireV1EcoBackgroundCheckCustomFieldBatchUpdate = {
               .optional(),
           }),
         )
-        .describe(
-          '自定义字段列表。**注意**：列表长度须与时传入的一致',
-        ),
+        .describe('自定义字段列表。**注意**：列表长度须与时传入的一致'),
     }),
   },
 };
@@ -1128,11 +1000,7 @@ export const hireV1EcoBackgroundCheckCustomFieldCreate = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      account_id: z
-        .string()
-        .describe(
-          '背调账号 ID，可在事件中获取',
-        ),
+      account_id: z.string().describe('背调账号 ID，可在事件中获取'),
       custom_field_list: z
         .array(
           z.object({
@@ -1189,11 +1057,7 @@ export const hireV1EcoBackgroundCheckPackageBatchDelete = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      account_id: z
-        .string()
-        .describe(
-          '背调账号 ID，可通过事件获取',
-        ),
+      account_id: z.string().describe('背调账号 ID，可通过事件获取'),
       package_id_list: z.array(z.string()).describe('要删除的套餐 ID 列表。删除套餐不影响已安排的背调').optional(),
       additional_item_id_list: z
         .array(z.string())
@@ -1213,11 +1077,7 @@ export const hireV1EcoBackgroundCheckPackageBatchUpdate = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      account_id: z
-        .string()
-        .describe(
-          '背调账号 ID，可通过事件获取',
-        ),
+      account_id: z.string().describe('背调账号 ID，可通过事件获取'),
       package_list: z
         .array(
           z.object({
@@ -1251,11 +1111,7 @@ export const hireV1EcoBackgroundCheckPackageCreate = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      account_id: z
-        .string()
-        .describe(
-          '背调账号 ID，可通过事件获取',
-        ),
+      account_id: z.string().describe('背调账号 ID，可通过事件获取'),
       package_list: z
         .array(
           z.object({
@@ -1289,11 +1145,7 @@ export const hireV1EcoBackgroundCheckCancel = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      background_check_id: z
-        .string()
-        .describe(
-          '背调 ID。可通过事件获取',
-        ),
+      background_check_id: z.string().describe('背调 ID。可通过事件获取'),
     }),
   },
 };
@@ -1308,11 +1160,7 @@ export const hireV1EcoBackgroundCheckUpdateProgress = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      background_check_id: z
-        .string()
-        .describe(
-          '背调 ID。可通过事件获取',
-        ),
+      background_check_id: z.string().describe('背调 ID。可通过事件获取'),
       stage_id: z.string().describe('阶段 ID。同一背调订单此 ID 不能重复，由调用方自定义'),
       stage_en_name: z.string().describe('背调阶段英文名称').optional(),
       stage_name: z.string().describe('背调阶段名称'),
@@ -1352,11 +1200,7 @@ export const hireV1EcoBackgroundCheckUpdateResult = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      background_check_id: z
-        .string()
-        .describe(
-          '背调 ID。可通过事件获取',
-        ),
+      background_check_id: z.string().describe('背调 ID。可通过事件获取'),
       result: z.string().describe('背调结果'),
       result_time: z.string().describe('背调结果时间。毫秒时间戳'),
       report_file_list: z
@@ -1390,16 +1234,8 @@ export const hireV1EcoExamPaperBatchDelete = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      account_id: z
-        .string()
-        .describe(
-          '笔试账号 ID，可通过事件获取',
-        ),
-      paper_id_list: z
-        .array(z.string())
-        .describe(
-          '试卷 ID 列表。为通过传入的 ID',
-        ),
+      account_id: z.string().describe('笔试账号 ID，可通过事件获取'),
+      paper_id_list: z.array(z.string()).describe('试卷 ID 列表。为通过传入的 ID'),
     }),
   },
 };
@@ -1414,19 +1250,11 @@ export const hireV1EcoExamPaperBatchUpdate = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      account_id: z
-        .string()
-        .describe(
-          '笔试账号 ID，可通过事件获取',
-        ),
+      account_id: z.string().describe('笔试账号 ID，可通过事件获取'),
       paper_list: z
         .array(
           z.object({
-            id: z
-              .string()
-              .describe(
-                '试卷 ID，为通过传入的 ID',
-              ),
+            id: z.string().describe('试卷 ID，为通过传入的 ID'),
             name: z.string().describe('试卷名称**注意**：试卷名称长度应不超过`255`字符，超出部分将被截断'),
             duration: z.number().describe('笔试时长（分钟）').optional(),
             question_count: z.number().describe('试卷题目数量').optional(),
@@ -1459,11 +1287,7 @@ export const hireV1EcoExamPaperCreate = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      account_id: z
-        .string()
-        .describe(
-          '笔试账号 ID，可通过事件获取',
-        ),
+      account_id: z.string().describe('笔试账号 ID，可通过事件获取'),
       paper_list: z
         .array(
           z.object({
@@ -1511,11 +1335,7 @@ export const hireV1EcoExamLoginInfo = {
         .describe('笔试作答信息'),
     }),
     path: z.object({
-      exam_id: z
-        .string()
-        .describe(
-          '笔试 ID。可通过事件获取',
-        ),
+      exam_id: z.string().describe('笔试 ID。可通过事件获取'),
     }),
   },
 };
@@ -1560,11 +1380,7 @@ export const hireV1EcoExamUpdateResult = {
         .optional(),
     }),
     path: z.object({
-      exam_id: z
-        .string()
-        .describe(
-          '笔试 ID，可通过事件获取',
-        ),
+      exam_id: z.string().describe('笔试 ID，可通过事件获取'),
     }),
   },
 };
@@ -1589,11 +1405,7 @@ export const hireV1EhrImportTaskPatch = {
       state: z.number().describe('导入结果 Options:1(导入成功),2(导入失败)'),
     }),
     path: z.object({
-      ehr_import_task_id: z
-        .string()
-        .describe(
-          '导入任务 ID，任务 ID 来源于导入 e-HR 事件中的 task_id，详情参考',
-        ),
+      ehr_import_task_id: z.string().describe('导入任务 ID，任务 ID 来源于导入 e-HR 事件中的 task_id，详情参考'),
     }),
   },
 };
@@ -1634,11 +1446,7 @@ export const hireV1EmployeeGet = {
         .optional(),
     }),
     path: z.object({
-      employee_id: z
-        .string()
-        .describe(
-          '员工ID，可通过接口获取',
-        ),
+      employee_id: z.string().describe('员工ID，可通过接口获取'),
     }),
   },
 };
@@ -1652,11 +1460,7 @@ export const hireV1EmployeeGetByApplication = {
   accessTokens: ['tenant'],
   schema: {
     params: z.object({
-      application_id: z
-        .string()
-        .describe(
-          '投递ID，可通过接口获取',
-        ),
+      application_id: z.string().describe('投递ID，可通过接口获取'),
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional(),
       department_id_type: z
         .enum(['open_department_id', 'department_id', 'people_admin_department_id'])
@@ -1740,11 +1544,7 @@ export const hireV1EmployeePatch = {
         .optional(),
     }),
     path: z.object({
-      employee_id: z
-        .string()
-        .describe(
-          '员工ID，请参考：',
-        ),
+      employee_id: z.string().describe('员工ID，请参考：'),
     }),
   },
 };
@@ -1793,12 +1593,7 @@ export const hireV1EvaluationList = {
         )
         .optional(),
       page_size: z.number().describe('每页获取记录数量，最大100').optional(),
-      application_id: z
-        .string()
-        .describe(
-          '投递 ID，可通过接口获取',
-        )
-        .optional(),
+      application_id: z.string().describe('投递 ID，可通过接口获取').optional(),
       update_start_time: z.string().describe('最早更新时间，毫秒时间戳').optional(),
       update_end_time: z.string().describe('最晚更新时间，毫秒时间戳').optional(),
       user_id_type: z.enum(['open_id', 'union_id', 'user_id', 'people_admin_id']).describe('用户ID类型').optional(),
@@ -1839,19 +1634,10 @@ export const hireV1ExamCreate = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      application_id: z
-        .string()
-        .describe(
-          '投递 ID，可通过获取',
-        ),
+      application_id: z.string().describe('投递 ID，可通过获取'),
       exam_resource_name: z.string().describe('试卷名称'),
       score: z.number().describe('笔试分数（精度为小数点后 1 位）'),
-      uuid: z
-        .string()
-        .describe(
-          '报告附件 ID，可通过上传报告附件，生成对应附件 ID',
-        )
-        .optional(),
+      uuid: z.string().describe('报告附件 ID，可通过上传报告附件，生成对应附件 ID').optional(),
       operator_id: z.string().describe('添加人用户 id，与入参`user_id_type` 保持一致'),
     }),
     params: z.object({
@@ -1883,11 +1669,7 @@ export const hireV1ExternalApplicationCreate = {
       job_title: z.string().describe('职位名称').optional(),
       resume_source: z.string().describe('简历来源').optional(),
       stage: z.string().describe('阶段名称').optional(),
-      talent_id: z
-        .string()
-        .describe(
-          '人才 ID，可通过接口获取',
-        ),
+      talent_id: z.string().describe('人才 ID，可通过接口获取'),
       termination_reason: z.string().describe('终止原因').optional(),
       delivery_type: z
         .number()
@@ -1911,20 +1693,10 @@ export const hireV1ExternalApplicationDelete = {
   accessTokens: ['tenant'],
   schema: {
     params: z.object({
-      talent_id: z
-        .string()
-        .describe(
-          '人才 ID，可通过接口获取',
-        )
-        .optional(),
+      talent_id: z.string().describe('人才 ID，可通过接口获取').optional(),
     }),
     path: z.object({
-      external_application_id: z
-        .string()
-        .describe(
-          '外部投递 ID，可通过接口获取',
-        )
-        .optional(),
+      external_application_id: z.string().describe('外部投递 ID，可通过接口获取').optional(),
     }),
   },
 };
@@ -1938,11 +1710,7 @@ export const hireV1ExternalApplicationList = {
   accessTokens: ['tenant'],
   schema: {
     params: z.object({
-      talent_id: z
-        .string()
-        .describe(
-          '人才 ID，可通过接口获取',
-        ),
+      talent_id: z.string().describe('人才 ID，可通过接口获取'),
       page_size: z.number().describe('分页大小**默认值：**10').optional(),
       page_token: z
         .string()
@@ -1982,12 +1750,7 @@ export const hireV1ExternalApplicationUpdate = {
       termination_type: z.string().describe('终止类型').optional(),
     }),
     path: z.object({
-      external_application_id: z
-        .string()
-        .describe(
-          '外部投递 ID，可通过接口获取',
-        )
-        .optional(),
+      external_application_id: z.string().describe('外部投递 ID，可通过接口获取').optional(),
     }),
   },
 };
@@ -2008,12 +1771,7 @@ export const hireV1ExternalBackgroundCheckBatchQuery = {
         .optional(),
     }),
     params: z.object({
-      external_application_id: z
-        .string()
-        .describe(
-          '外部投递 ID，可通过接口获取',
-        )
-        .optional(),
+      external_application_id: z.string().describe('外部投递 ID，可通过接口获取').optional(),
       page_size: z.number().describe('分页大小').optional(),
       page_token: z
         .string()
@@ -2041,20 +1799,11 @@ export const hireV1ExternalBackgroundCheckCreate = {
           '外部系统背调主键 （仅用于幂等）- 若不传此值，则不进行幂等校验- 若传此值，则用于幂等校验，同一`external_id` 24小时内仅可创建一次',
         )
         .optional(),
-      external_application_id: z
-        .string()
-        .describe(
-          '外部投递 ID，可通过接口获取',
-        ),
+      external_application_id: z.string().describe('外部投递 ID，可通过接口获取'),
       date: z.number().describe('背调日期，毫秒时间戳（字段类型为：int64）').optional(),
       name: z.string().describe('背调名称').optional(),
       result: z.string().describe('背调结果').optional(),
-      attachment_id_list: z
-        .array(z.string())
-        .describe(
-          '背调附件 ID 列表，可通过接口返回',
-        )
-        .optional(),
+      attachment_id_list: z.array(z.string()).describe('背调附件 ID 列表，可通过接口返回').optional(),
     }),
   },
 };
@@ -2068,11 +1817,7 @@ export const hireV1ExternalBackgroundCheckDelete = {
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      external_background_check_id: z
-        .string()
-        .describe(
-          '外部背调 ID，可通过接口获取',
-        ),
+      external_background_check_id: z.string().describe('外部背调 ID，可通过接口获取'),
     }),
   },
 };
@@ -2086,27 +1831,14 @@ export const hireV1ExternalBackgroundCheckUpdate = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      external_application_id: z
-        .string()
-        .describe(
-          '外部投递 ID，可通过接口获取',
-        ),
+      external_application_id: z.string().describe('外部投递 ID，可通过接口获取'),
       date: z.number().describe('背调日期，毫秒时间戳（字段类型为：int64）').optional(),
       name: z.string().describe('背调名称').optional(),
       result: z.string().describe('背调结果').optional(),
-      attachment_id_list: z
-        .array(z.string())
-        .describe(
-          '背调附件 ID 列表，可通过接口返回',
-        )
-        .optional(),
+      attachment_id_list: z.array(z.string()).describe('背调附件 ID 列表，可通过接口返回').optional(),
     }),
     path: z.object({
-      external_background_check_id: z
-        .string()
-        .describe(
-          '外部背调 ID，可通过接口获取',
-        ),
+      external_background_check_id: z.string().describe('外部背调 ID，可通过接口获取'),
     }),
   },
 };
@@ -2195,12 +1927,7 @@ export const hireV1ExternalInterviewBatchQuery = {
         .optional(),
     }),
     params: z.object({
-      external_application_id: z
-        .string()
-        .describe(
-          '外部投递 ID，可通过接口获取',
-        )
-        .optional(),
+      external_application_id: z.string().describe('外部投递 ID，可通过接口获取').optional(),
       page_size: z.number().describe('分页大小').optional(),
       page_token: z
         .string()
@@ -2228,11 +1955,7 @@ export const hireV1ExternalInterviewCreate = {
           '外部系统面试主键 （仅用于幂等）- 若不传此值，则不进行幂等校验- 若传此值，则用于幂等校验，同一`external_id` 24小时内仅可创建一次',
         )
         .optional(),
-      external_application_id: z
-        .string()
-        .describe(
-          '外部投递 ID，可通过接口获取',
-        ),
+      external_application_id: z.string().describe('外部投递 ID，可通过接口获取'),
       participate_status: z
         .number()
         .describe('参与状态 Options:1(NotStart 未参与),2(Participated 参与),3(NotPaticipated 爽约)')
@@ -2284,11 +2007,7 @@ export const hireV1ExternalInterviewDelete = {
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      external_interview_id: z
-        .string()
-        .describe(
-          '外部面试 ID，可通过接口获取',
-        ),
+      external_interview_id: z.string().describe('外部面试 ID，可通过接口获取'),
     }),
   },
 };
@@ -2302,11 +2021,7 @@ export const hireV1ExternalInterviewUpdate = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      external_application_id: z
-        .string()
-        .describe(
-          '外部投递 ID，可通过接口获取',
-        ),
+      external_application_id: z.string().describe('外部投递 ID，可通过接口获取'),
       participate_status: z
         .number()
         .describe('参与状态 Options:1(NotStart 未参与),2(Participated 参与),3(NotPaticipated 爽约)')
@@ -2347,11 +2062,7 @@ export const hireV1ExternalInterviewUpdate = {
         .optional(),
     }),
     path: z.object({
-      external_interview_id: z
-        .string()
-        .describe(
-          '外部面试 ID，可通过接口获取',
-        ),
+      external_interview_id: z.string().describe('外部面试 ID，可通过接口获取'),
     }),
   },
 };
@@ -2372,12 +2083,7 @@ export const hireV1ExternalOfferBatchQuery = {
         .optional(),
     }),
     params: z.object({
-      external_application_id: z
-        .string()
-        .describe(
-          '外部投递 ID，可通过接口获取',
-        )
-        .optional(),
+      external_application_id: z.string().describe('外部投递 ID，可通过接口获取').optional(),
       page_size: z.number().describe('分页大小').optional(),
       page_token: z
         .string()
@@ -2405,20 +2111,11 @@ export const hireV1ExternalOfferCreate = {
           '外部系统 Offer 主键（仅用于幂等）- 若不传此值，则不进行幂等校验- 若传此值，则用于幂等校验，同一`external_id` 24小时内仅可创建一次',
         )
         .optional(),
-      external_application_id: z
-        .string()
-        .describe(
-          '外部投递 ID，可通过接口获得',
-        ),
+      external_application_id: z.string().describe('外部投递 ID，可通过接口获得'),
       biz_create_time: z.string().describe('Offer 创建时间，毫秒时间戳').optional(),
       owner: z.string().describe('Offer 负责人姓名').optional(),
       offer_status: z.string().describe('Offer 状态').optional(),
-      attachment_id_list: z
-        .array(z.string())
-        .describe(
-          'Offer 详情附件 ID 列表，可通过接口返回',
-        )
-        .optional(),
+      attachment_id_list: z.array(z.string()).describe('Offer 详情附件 ID 列表，可通过接口返回').optional(),
     }),
   },
 };
@@ -2432,12 +2129,7 @@ export const hireV1ExternalOfferDelete = {
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      external_offer_id: z
-        .string()
-        .describe(
-          '外部 Offer ID，可通过接口获取',
-        )
-        .optional(),
+      external_offer_id: z.string().describe('外部 Offer ID，可通过接口获取').optional(),
     }),
   },
 };
@@ -2451,28 +2143,14 @@ export const hireV1ExternalOfferUpdate = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      external_application_id: z
-        .string()
-        .describe(
-          '外部投递 ID，可通过接口获取',
-        ),
+      external_application_id: z.string().describe('外部投递 ID，可通过接口获取'),
       biz_create_time: z.string().describe('Offer 创建时间，毫秒时间戳').optional(),
       owner: z.string().describe('Offer 负责人姓名').optional(),
       offer_status: z.string().describe('Offer 状态').optional(),
-      attachment_id_list: z
-        .array(z.string())
-        .describe(
-          'Offer 详情附件 ID 列表，可由接口返回所得',
-        )
-        .optional(),
+      attachment_id_list: z.array(z.string()).describe('Offer 详情附件 ID 列表，可由接口返回所得').optional(),
     }),
     path: z.object({
-      external_offer_id: z
-        .string()
-        .describe(
-          '外部 Offer ID，可通过接口获取',
-        )
-        .optional(),
+      external_offer_id: z.string().describe('外部 Offer ID，可通过接口获取').optional(),
     }),
   },
 };
@@ -2487,11 +2165,7 @@ export const hireV1ExternalReferralRewardCreate = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      referral_user_id: z
-        .string()
-        .describe(
-          '内推人 ID内推人的唯一标识，在中获取',
-        ),
+      referral_user_id: z.string().describe('内推人 ID内推人的唯一标识，在中获取'),
       create_user_id: z.string().describe('奖励创建人，管理员与内推人可见，若不传，则默认为「外部系统」').optional(),
       confirm_user_id: z
         .string()
@@ -2537,11 +2211,7 @@ export const hireV1ExternalReferralRewardCreate = {
           point_bonus: z.number().describe('导入积分数量，若奖励发放形式为现金为必填').optional(),
           cash: z
             .object({
-              currency_type: z
-                .string()
-                .describe(
-                  '导入现金币种，若奖励发放形式为现金为必填，币种参数可在',
-                ),
+              currency_type: z.string().describe('导入现金币种，若奖励发放形式为现金为必填，币种参数可在'),
               amount: z.number().describe('导入现金数量，若奖励发放形式为现金为必填，需传入非负数'),
             })
             .describe('现金奖励')
@@ -2586,12 +2256,7 @@ export const hireV1ExternalReferralRewardDelete = {
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      external_referral_reward_id: z
-        .string()
-        .describe(
-          '外部内推奖励ID，通过生成',
-        )
-        .optional(),
+      external_referral_reward_id: z.string().describe('外部内推奖励ID，通过生成').optional(),
     }),
   },
 };
@@ -2628,16 +2293,10 @@ export const hireV1InterviewRecordAttachmentGet = {
   accessTokens: ['tenant'],
   schema: {
     params: z.object({
-      application_id: z
-        .string()
-        .describe(
-          '投递 ID，可通过接口获取',
-        ),
+      application_id: z.string().describe('投递 ID，可通过接口获取'),
       interview_record_id: z
         .string()
-        .describe(
-          '面试评价 ID，可通过接口获取，若不填该参数，则会获取入参投递下所有的面试评价',
-        )
+        .describe('面试评价 ID，可通过接口获取，若不填该参数，则会获取入参投递下所有的面试评价')
         .optional(),
       language: z.number().describe('面试评价语言，用于指定附件的语言 Options:1(zh 中文),2(en 英文)').optional(),
     }),
@@ -2655,11 +2314,7 @@ export const hireV1InterviewRecordGet = {
   schema: {
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
     path: z.object({
-      interview_record_id: z
-        .string()
-        .describe(
-          '面试评价 ID，可通过接口获取',
-        ),
+      interview_record_id: z.string().describe('面试评价 ID，可通过接口获取'),
     }),
   },
 };
@@ -2681,12 +2336,7 @@ export const hireV1InterviewRecordList = {
           '分页标记，第一次请求不填，表示从头开始遍历；分页查询结果还有更多项时会同时返回新的 page_token，下次遍历可采用该 page_token 获取查询结果',
         )
         .optional(),
-      ids: z
-        .array(z.string())
-        .describe(
-          '面试评价 ID 列表，可通过接口获取，使用该筛选项时不会分页',
-        )
-        .optional(),
+      ids: z.array(z.string()).describe('面试评价 ID 列表，可通过接口获取，使用该筛选项时不会分页').optional(),
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional(),
     }),
   },
@@ -2759,11 +2409,7 @@ export const hireV1InterviewGetByTalent = {
   accessTokens: ['tenant'],
   schema: {
     params: z.object({
-      talent_id: z
-        .string()
-        .describe(
-          '人才 ID，可通过接口获取',
-        ),
+      talent_id: z.string().describe('人才 ID，可通过接口获取'),
       user_id_type: z.enum(['open_id', 'union_id', 'user_id', 'people_admin_id']).describe('用户ID类型').optional(),
       job_level_id_type: z
         .enum(['people_admin_job_level_id', 'job_level_id'])
@@ -2794,9 +2440,7 @@ export const hireV1InterviewList = {
         .optional(),
       application_id: z
         .string()
-        .describe(
-          '投递 ID，可通过接口获取（不允许 application_id、interview_id、start_time、end_time 同时为空）',
-        )
+        .describe('投递 ID，可通过接口获取（不允许 application_id、interview_id、start_time、end_time 同时为空）')
         .optional(),
       interview_id: z
         .string()
@@ -3028,22 +2672,12 @@ export const hireV1JobRequirementCreate = {
         .optional(),
       max_salary: z.string().describe('月薪范围-最高薪资，单位：K').optional(),
       min_salary: z.string().describe('月薪范围-最低薪资，单位：K').optional(),
-      address_id: z
-        .string()
-        .describe(
-          '工作地址 ID，可通过获取',
-        )
-        .optional(),
+      address_id: z.string().describe('工作地址 ID，可通过获取').optional(),
       description: z.string().describe('需求描述').optional(),
       customized_data_list: z
         .array(
           z.object({
-            object_id: z
-              .string()
-              .describe(
-                '自定义字段 ID，可通过获取',
-              )
-              .optional(),
+            object_id: z.string().describe('自定义字段 ID，可通过获取').optional(),
             value: z
               .string()
               .describe(
@@ -3052,29 +2686,15 @@ export const hireV1JobRequirementCreate = {
               .optional(),
           }),
         )
-        .describe(
-          '自定义字段，可通过获取自定义字段列表、类型等',
-        )
+        .describe('自定义字段，可通过获取自定义字段列表、类型等')
         .optional(),
       process_type: z.number().describe('招聘类型 Options:1(Social 社招),2(Campus 校招)').optional(),
-      job_type_id: z
-        .string()
-        .describe(
-          '职位类别，可通过获取',
-        )
-        .optional(),
+      job_type_id: z.string().describe('职位类别，可通过获取').optional(),
       job_id_list: z.array(z.string()).describe('关联的职位 ID 列表').optional(),
-      employment_job_id: z
-        .string()
-        .describe(
-          '职务 ID，可通过获取（仅限飞书人事租户使用）',
-        )
-        .optional(),
+      employment_job_id: z.string().describe('职务 ID，可通过获取（仅限飞书人事租户使用）').optional(),
       position_id: z
         .string()
-        .describe(
-          '岗位 ID，可通过获取（仅限飞书人事租户使用，若链接无法打开，则说明飞书人事未启用岗位，请联系开通）',
-        )
+        .describe('岗位 ID，可通过获取（仅限飞书人事租户使用，若链接无法打开，则说明飞书人事未启用岗位，请联系开通）')
         .optional(),
     }),
     params: z.object({
@@ -3117,11 +2737,7 @@ export const hireV1JobRequirementDelete = {
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      job_requirement_id: z
-        .string()
-        .describe(
-          '招聘需求ID，可通过获取',
-        ),
+      job_requirement_id: z.string().describe('招聘需求ID，可通过获取'),
     }),
   },
 };
@@ -3142,10 +2758,7 @@ export const hireV1JobRequirementList = {
         )
         .optional(),
       page_size: z.number().describe('分页大小，最大值100').optional(),
-      job_id: z
-        .string()
-        .describe('职位ID，详情请参考：')
-        .optional(),
+      job_id: z.string().describe('职位ID，详情请参考：').optional(),
       create_time_begin: z.string().describe('起始创建时间，传入毫秒级时间戳').optional(),
       create_time_end: z.string().describe('截止创建时间，传入毫秒级时间戳').optional(),
       update_time_begin: z.string().describe('起始更新时间，传入毫秒级时间戳').optional(),
@@ -3278,22 +2891,12 @@ export const hireV1JobRequirementUpdate = {
         .optional(),
       max_salary: z.string().describe('月薪范围-最高薪资，单位：K').optional(),
       min_salary: z.string().describe('月薪范围-最低薪资，单位：K').optional(),
-      address_id: z
-        .string()
-        .describe(
-          '工作地点 ID，可通过获取',
-        )
-        .optional(),
+      address_id: z.string().describe('工作地点 ID，可通过获取').optional(),
       description: z.string().describe('需求描述').optional(),
       customized_data_list: z
         .array(
           z.object({
-            object_id: z
-              .string()
-              .describe(
-                '自定义字段 ID，可通过获取',
-              )
-              .optional(),
+            object_id: z.string().describe('自定义字段 ID，可通过获取').optional(),
             value: z
               .string()
               .describe(
@@ -3307,27 +2910,15 @@ export const hireV1JobRequirementUpdate = {
         )
         .optional(),
       process_type: z.number().describe('招聘类型 Options:1(Social 社招),2(Campus 校招)').optional(),
-      job_type_id: z
-        .string()
-        .describe(
-          '职位类别，可通过获取',
-        )
-        .optional(),
+      job_type_id: z.string().describe('职位类别，可通过获取').optional(),
       job_id_list: z
         .array(z.string())
         .describe('关联的职位 ID 列表（与 update_option. need_update_related_job 配合使用）')
         .optional(),
-      employment_job_id: z
-        .string()
-        .describe(
-          '职务 ID，可通过获取（仅限飞书人事租户使用）',
-        )
-        .optional(),
+      employment_job_id: z.string().describe('职务 ID，可通过获取（仅限飞书人事租户使用）').optional(),
       position_id: z
         .string()
-        .describe(
-          '岗位 ID，可通过获取（仅限飞书人事租户使用，若链接无法打开，则说明飞书人事未启用岗位，请联系开通）',
-        )
+        .describe('岗位 ID，可通过获取（仅限飞书人事租户使用，若链接无法打开，则说明飞书人事未启用岗位，请联系开通）')
         .optional(),
       update_option: z
         .object({ need_update_related_job: z.boolean().describe('是否需要修改关联的职位').optional() })
@@ -3362,11 +2953,7 @@ export const hireV1JobRequirementUpdate = {
         .optional(),
     }),
     path: z.object({
-      job_requirement_id: z
-        .string()
-        .describe(
-          '招聘需求ID，可通过获取',
-        ),
+      job_requirement_id: z.string().describe('招聘需求ID，可通过获取'),
     }),
   },
 };
@@ -3424,11 +3011,7 @@ export const hireV1JobClose = {
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      job_id: z
-        .string()
-        .describe(
-          '职位 ID，可通过接口获取',
-        ),
+      job_id: z.string().describe('职位 ID，可通过接口获取'),
     }),
   },
 };
@@ -3456,12 +3039,7 @@ export const hireV1JobCombinedCreate = {
       customized_data_list: z
         .array(
           z.object({
-            object_id: z
-              .string()
-              .describe(
-                '自定义字段 ID，可通过接口获取',
-              )
-              .optional(),
+            object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
             value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
           }),
         )
@@ -3478,47 +3056,22 @@ export const hireV1JobCombinedCreate = {
           assistant_id_list: z.array(z.string()).describe('协助人 ID 列表，需与入参`user_id_type`类型一致').optional(),
         })
         .describe('职位管理者'),
-      job_process_id: z
-        .string()
-        .describe(
-          '招聘流程 ID，可通过接口获取',
-        ),
+      job_process_id: z.string().describe('招聘流程 ID，可通过接口获取'),
       process_type: z.number().describe('职位流程类型 Options:1(SocialProcess 社招),2(CampusProcess 校招)'),
-      subject_id: z
-        .string()
-        .describe(
-          '项目 ID，可通过接口获取',
-        )
-        .optional(),
-      job_function_id: z
-        .string()
-        .describe(
-          '职能分类ID，可通过接口获取',
-        )
-        .optional(),
+      subject_id: z.string().describe('项目 ID，可通过接口获取').optional(),
+      job_function_id: z.string().describe('职能分类ID，可通过接口获取').optional(),
       department_id: z.string().describe('部门 ID，需与入参中的`department_id_type`类型一致'),
       head_count: z.number().describe('招聘数量').optional(),
       is_never_expired: z.boolean().describe('是否长期有效'),
       max_salary: z.number().describe('最高月薪，单位：K').optional(),
       requirement: z.string().describe('职位要求').optional(),
       description: z.string().describe('职位描述').optional(),
-      highlight_list: z
-        .array(z.string())
-        .describe(
-          '职位亮点列表，可通过中职位亮枚举定义」获取',
-        )
-        .optional(),
-      job_type_id: z
-        .string()
-        .describe(
-          '职位类别 ID，可通过接口获取',
-        ),
+      highlight_list: z.array(z.string()).describe('职位亮点列表，可通过中职位亮枚举定义」获取').optional(),
+      job_type_id: z.string().describe('职位类别 ID，可通过接口获取'),
       max_level_id: z.string().describe('最高职级 ID，需与入参`job_level_id_type` 类型一致').optional(),
       recruitment_type_id: z
         .string()
-        .describe(
-          '雇佣类型 ID，详情请参考：中「职位性质/雇佣类型（recruitment_type）枚举定义」',
-        ),
+        .describe('雇佣类型 ID，详情请参考：中「职位性质/雇佣类型（recruitment_type）枚举定义」'),
       required_degree: z
         .number()
         .describe(
@@ -3526,12 +3079,7 @@ export const hireV1JobCombinedCreate = {
         )
         .optional(),
       job_category_id: z.string().describe('序列 ID，需与入参`job_family_id_type` 类型一致').optional(),
-      address_id_list: z
-        .array(z.string())
-        .describe(
-          '工作地址列表，可通过接口获取',
-        )
-        .optional(),
+      address_id_list: z.array(z.string()).describe('工作地址列表，可通过接口获取').optional(),
       job_attribute: z.number().describe('职位属性 Options:1(Concrete 实体职位),2(Virtual 虚拟职位)').optional(),
       expiry_timestamp: z
         .string()
@@ -3551,16 +3099,9 @@ export const hireV1JobCombinedCreate = {
         .optional(),
       target_major_id_list: z
         .array(z.string().describe('目标专业ID'))
-        .describe(
-          '目标专业 ID 列表，可通过获取',
-        )
+        .describe('目标专业 ID 列表，可通过获取')
         .optional(),
-      portal_website_apply_form_schema_id: z
-        .string()
-        .describe(
-          '官网申请表ID，可通过接口获取',
-        )
-        .optional(),
+      portal_website_apply_form_schema_id: z.string().describe('官网申请表ID，可通过接口获取').optional(),
     }),
     params: z.object({
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional(),
@@ -3595,12 +3136,7 @@ export const hireV1JobCombinedUpdate = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      id: z
-        .string()
-        .describe(
-          '职位 ID，可通过  接口获取',
-        )
-        .optional(),
+      id: z.string().describe('职位 ID，可通过  接口获取').optional(),
       experience: z
         .number()
         .describe(
@@ -3611,12 +3147,7 @@ export const hireV1JobCombinedUpdate = {
       customized_data_list: z
         .array(
           z.object({
-            object_id: z
-              .string()
-              .describe(
-                '自定义字段 ID，可通过接口获取',
-              )
-              .optional(),
+            object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
             value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
           }),
         )
@@ -3633,41 +3164,17 @@ export const hireV1JobCombinedUpdate = {
           assistant_id_list: z.array(z.string()).describe('协助人 ID 列表，需与入参`user_id_type`类型一致').optional(),
         })
         .describe('职位管理者列表'),
-      job_process_id: z
-        .string()
-        .describe(
-          '招聘流程，可通过接口获取',
-        )
-        .optional(),
-      subject_id: z
-        .string()
-        .describe(
-          '项目 ID，可通过接口获取',
-        )
-        .optional(),
-      job_function_id: z
-        .string()
-        .describe(
-          '职能分类ID，可通过接口获取',
-        )
-        .optional(),
+      job_process_id: z.string().describe('招聘流程，可通过接口获取').optional(),
+      subject_id: z.string().describe('项目 ID，可通过接口获取').optional(),
+      job_function_id: z.string().describe('职能分类ID，可通过接口获取').optional(),
       department_id: z.string().describe('部门 ID，需与入参中的`department_id_type`类型一致').optional(),
       head_count: z.number().describe('招聘数量').optional(),
       is_never_expired: z.boolean().describe('是否长期有效'),
       max_salary: z.number().describe('最高薪资，单位：K').optional(),
       requirement: z.string().describe('职位要求').optional(),
       description: z.string().describe('职位描述').optional(),
-      highlight_list: z
-        .array(z.string())
-        .describe(
-          '职位亮点 ID 列表， 详情请查看：中「职位亮点枚举定义」',
-        )
-        .optional(),
-      job_type_id: z
-        .string()
-        .describe(
-          '职位类别ID，可通过接口获取',
-        ),
+      highlight_list: z.array(z.string()).describe('职位亮点 ID 列表， 详情请查看：中「职位亮点枚举定义」').optional(),
+      job_type_id: z.string().describe('职位类别ID，可通过接口获取'),
       max_level_id: z.string().describe('最高职级 ID，需与入参`job_level_id_type` 类型一致').optional(),
       required_degree: z
         .number()
@@ -3676,12 +3183,7 @@ export const hireV1JobCombinedUpdate = {
         )
         .optional(),
       job_category_id: z.string().describe('序列 ID，需与入参`job_family_id_type` 类型一致').optional(),
-      address_id_list: z
-        .array(z.string())
-        .describe(
-          '工作地点 ID 列表，可通过接口获取',
-        )
-        .optional(),
+      address_id_list: z.array(z.string()).describe('工作地点 ID 列表，可通过接口获取').optional(),
       job_attribute: z.number().describe('职位属性 Options:1(Concrete 实体职位),2(Virtual 虚拟职位)').optional(),
       expiry_timestamp: z
         .string()
@@ -3689,9 +3191,7 @@ export const hireV1JobCombinedUpdate = {
         .optional(),
       target_major_id_list: z
         .array(z.string().describe('目标专业ID'))
-        .describe(
-          '目标专业 ID 列表，可通过获取',
-        )
+        .describe('目标专业 ID 列表，可通过获取')
         .optional(),
     }),
     params: z.object({
@@ -3716,11 +3216,7 @@ export const hireV1JobCombinedUpdate = {
         .optional(),
     }),
     path: z.object({
-      job_id: z
-        .string()
-        .describe(
-          '职位 ID，可通过  接口获取',
-        ),
+      job_id: z.string().describe('职位 ID，可通过  接口获取'),
     }),
   },
 };
@@ -3738,11 +3234,7 @@ export const hireV1JobConfig = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id', 'people_admin_id']).describe('用户ID类型').optional(),
     }),
     path: z.object({
-      job_id: z
-        .string()
-        .describe(
-          '职位 ID，可通过接口获取',
-        ),
+      job_id: z.string().describe('职位 ID，可通过接口获取'),
     }),
   },
 };
@@ -3809,11 +3301,7 @@ export const hireV1JobGetDetail = {
         .optional(),
     }),
     path: z.object({
-      job_id: z
-        .string()
-        .describe(
-          '职位 ID，可通过接口获取',
-        ),
+      job_id: z.string().describe('职位 ID，可通过接口获取'),
     }),
   },
 };
@@ -3891,11 +3379,7 @@ export const hireV1JobManagerBatchUpdate = {
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
     path: z.object({
-      job_id: z
-        .string()
-        .describe(
-          '职位 ID，可通过接口获取',
-        ),
+      job_id: z.string().describe('职位 ID，可通过接口获取'),
     }),
   },
 };
@@ -3932,9 +3416,7 @@ export const hireV1JobOpen = {
       is_never_expired: z.boolean().describe('是否长期有效**可选值有**：* `true`：长期有效* `false`：指定到期日期'),
     }),
     path: z.object({
-      job_id: z
-        .string()
-        .describe('职位 ID，可通过获取'),
+      job_id: z.string().describe('职位 ID，可通过获取'),
     }),
   },
 };
@@ -3950,11 +3432,7 @@ export const hireV1JobRecruiter = {
   schema: {
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
     path: z.object({
-      job_id: z
-        .string()
-        .describe(
-          '职位 ID, 可通过接口获取',
-        ),
+      job_id: z.string().describe('职位 ID, 可通过接口获取'),
     }),
   },
 };
@@ -3970,16 +3448,9 @@ export const hireV1JobUpdateConfig = {
     data: z.object({
       offer_apply_schema_id: z
         .string()
-        .describe(
-          'Offer 申请表 ID，可通过接口获取，当`update_option_list`包含`更新 Offer 申请表`时，该参数必填',
-        )
+        .describe('Offer 申请表 ID，可通过接口获取，当`update_option_list`包含`更新 Offer 申请表`时，该参数必填')
         .optional(),
-      offer_process_conf: z
-        .string()
-        .describe(
-          'Offer 审批流程 ID，可通过接口获取',
-        )
-        .optional(),
+      offer_process_conf: z.string().describe('Offer 审批流程 ID，可通过接口获取').optional(),
       recommended_evaluator_id_list: z
         .array(z.string())
         .describe('建议评估人 ID 列表，需与入参`user_id_type`类型一致')
@@ -4013,12 +3484,7 @@ export const hireV1JobUpdateConfig = {
         )
         .describe('建议面试官列表，当`update_option_list`包含`更新建议面试官`时，该参数必填')
         .optional(),
-      jr_id_list: z
-        .array(z.string())
-        .describe(
-          '关联招聘需求，可通过接口获取',
-        )
-        .optional(),
+      jr_id_list: z.array(z.string()).describe('关联招聘需求，可通过接口获取').optional(),
       interview_registration_schema_id: z
         .string()
         .describe(
@@ -4034,18 +3500,8 @@ export const hireV1JobUpdateConfig = {
       interview_round_type_conf_list: z
         .array(
           z.object({
-            round_biz_id: z
-              .string()
-              .describe(
-                '面试轮次类型 ID，可通过接口获取',
-              )
-              .optional(),
-            assessment_template_biz_id: z
-              .string()
-              .describe(
-                '面试评价表 ID，可通过接口获取',
-              )
-              .optional(),
+            round_biz_id: z.string().describe('面试轮次类型 ID，可通过接口获取').optional(),
+            assessment_template_biz_id: z.string().describe('面试评价表 ID，可通过接口获取').optional(),
           }),
         )
         .describe(
@@ -4054,9 +3510,7 @@ export const hireV1JobUpdateConfig = {
         .optional(),
       related_job_id_list: z
         .array(z.string())
-        .describe(
-          '关联职位列表，如职位为实体职位则关联虚拟职位 ID，如职位为虚拟职位则关联实体职位 ID，可通过接口获取',
-        )
+        .describe('关联职位列表，如职位为实体职位则关联虚拟职位 ID，如职位为虚拟职位则关联实体职位 ID，可通过接口获取')
         .optional(),
       interview_appointment_config: z
         .object({
@@ -4071,12 +3525,7 @@ export const hireV1JobUpdateConfig = {
               contact_user_id: z.string().describe('面试联系人 ID，需与入参`user_id_type`类型一致').optional(),
               contact_mobile: z.string().describe('面试联系人电话').optional(),
               contact_email: z.string().describe('面试联系人邮箱').optional(),
-              address_id: z
-                .string()
-                .describe(
-                  '面试地点 ID，可通过接口获取',
-                )
-                .optional(),
+              address_id: z.string().describe('面试地点 ID，可通过接口获取').optional(),
               video_type: z
                 .number()
                 .describe(
@@ -4094,20 +3543,11 @@ export const hireV1JobUpdateConfig = {
         })
         .describe('自助约面配置，当`update_option_list`包含`更新面试官安排面试配置`时，该参数必填')
         .optional(),
-      portal_website_apply_form_schema_id: z
-        .string()
-        .describe(
-          '官网申请表ID，可通过接口获取',
-        )
-        .optional(),
+      portal_website_apply_form_schema_id: z.string().describe('官网申请表ID，可通过接口获取').optional(),
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
     path: z.object({
-      job_id: z
-        .string()
-        .describe(
-          '职位 ID，可通过接口获取',
-        ),
+      job_id: z.string().describe('职位 ID，可通过接口获取'),
     }),
   },
 };
@@ -4174,11 +3614,7 @@ export const hireV1MinutesGet = {
   accessTokens: ['tenant'],
   schema: {
     params: z.object({
-      interview_id: z
-        .string()
-        .describe(
-          '面试ID，可根据接口、获取',
-        ),
+      interview_id: z.string().describe('面试ID，可根据接口、获取'),
       page_token: z
         .string()
         .describe(
@@ -4199,15 +3635,8 @@ export const hireV1NoteCreate = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      talent_id: z
-        .string()
-        .describe('人才ID，可通过获取'),
-      application_id: z
-        .string()
-        .describe(
-          '投递ID，可通过获取',
-        )
-        .optional(),
+      talent_id: z.string().describe('人才ID，可通过获取'),
+      application_id: z.string().describe('投递ID，可通过获取').optional(),
       creator_id: z.string().describe('创建人ID，请传入与`user_id_type`相匹配的ID').optional(),
       content: z.string().describe('备注内容'),
       privacy: z.number().describe('备注私密属性（默认为公开） Options:1(Private 私密),2(Public 公开)').optional(),
@@ -4237,10 +3666,7 @@ export const hireV1NoteDelete = {
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      note_id: z
-        .string()
-        .describe('备注 ID，可通过获取')
-        .optional(),
+      note_id: z.string().describe('备注 ID，可通过获取').optional(),
     }),
   },
 };
@@ -4258,9 +3684,7 @@ export const hireV1NoteGet = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id', 'people_admin_id']).describe('用户ID类型').optional(),
     }),
     path: z.object({
-      note_id: z
-        .string()
-        .describe('备注 ID，可通过获取'),
+      note_id: z.string().describe('备注 ID，可通过获取'),
     }),
   },
 };
@@ -4281,9 +3705,7 @@ export const hireV1NoteList = {
           '分页标记，第一次请求不填，表示从头开始遍历；分页查询结果还有更多项时会同时返回新的 page_token，下次遍历可采用该 page_token 获取查询结果',
         )
         .optional(),
-      talent_id: z
-        .string()
-        .describe('人才ID，可通过获取'),
+      talent_id: z.string().describe('人才ID，可通过获取'),
       user_id_type: z.enum(['open_id', 'union_id', 'user_id', 'people_admin_id']).describe('用户ID类型').optional(),
     }),
   },
@@ -4315,9 +3737,7 @@ export const hireV1NotePatch = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id', 'people_admin_id']).describe('用户ID类型').optional(),
     }),
     path: z.object({
-      note_id: z
-        .string()
-        .describe('备注 ID，可通过获取'),
+      note_id: z.string().describe('备注 ID，可通过获取'),
     }),
   },
 };
@@ -4332,12 +3752,7 @@ export const hireV1OfferApplicationFormGet = {
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      offer_application_form_id: z
-        .string()
-        .describe(
-          'Offer 申请表 ID，可通过接口获取',
-        )
-        .optional(),
+      offer_application_form_id: z.string().describe('Offer 申请表 ID，可通过接口获取').optional(),
     }),
   },
 };
@@ -4392,21 +3807,14 @@ export const hireV1OfferCustomFieldUpdate = {
                   .describe('选项名称，zh_cn和en_us必填其一'),
               }),
             )
-            .describe(
-              '选项列表，仅字段类型为「单选」、「多选」时需传配置选项信息。字段类型可通过接口获取',
-            )
+            .describe('选项列表，仅字段类型为「单选」、「多选」时需传配置选项信息。字段类型可通过接口获取')
             .optional(),
         })
         .describe('自定义字段配置信息')
         .optional(),
     }),
     path: z.object({
-      offer_custom_field_id: z
-        .string()
-        .describe(
-          'Offer 申请表自定义字段 ID，可通过接口获取',
-        )
-        .optional(),
+      offer_custom_field_id: z.string().describe('Offer 申请表自定义字段 ID，可通过接口获取').optional(),
     }),
   },
 };
@@ -4432,11 +3840,7 @@ export const hireV1OfferCreate = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      application_id: z
-        .string()
-        .describe(
-          '投递 ID，详情请参考：',
-        ),
+      application_id: z.string().describe('投递 ID，详情请参考：'),
       schema_id: z
         .string()
         .describe(
@@ -4446,31 +3850,15 @@ export const hireV1OfferCreate = {
       offer_type: z.number().describe('Offer 类型 Options:1(正式 Offer),2(实习 Offer)').optional(),
       basic_info: z
         .object({
-          department_id: z
-            .string()
-            .describe(
-              '部门 ID，与入参中的`department_id_type`类型一致，详情请查看：',
-            ),
+          department_id: z.string().describe('部门 ID，与入参中的`department_id_type`类型一致，详情请查看：'),
           leader_user_id: z.string().describe('直属上级 ID，与入参`user_id_type`类型一致'),
           employment_job_id: z
             .string()
-            .describe(
-              '职务 ID，可通过接口获取。**请注意**：仅支持开通飞书人事企业版的客户使用',
-            )
+            .describe('职务 ID，可通过接口获取。**请注意**：仅支持开通飞书人事企业版的客户使用')
             .optional(),
           employee_type_id: z.string().describe('人员类型 ID，与入参`employee_type_id_type` 类型一致').optional(),
-          job_family_id: z
-            .string()
-            .describe(
-              '职位序列 ID，通过接口获取',
-            )
-            .optional(),
-          job_level_id: z
-            .string()
-            .describe(
-              '职位级别 ID，通过接口获取',
-            )
-            .optional(),
+          job_family_id: z.string().describe('职位序列 ID，通过接口获取').optional(),
+          job_level_id: z.string().describe('职位级别 ID，通过接口获取').optional(),
           probation_month: z.number().describe('试用期（月）').optional(),
           contract_year: z.number().describe('合同期(年)，推荐使用「contract_period」').optional(),
           contract_period: z
@@ -4481,34 +3869,14 @@ export const hireV1OfferCreate = {
             .describe('合同期（年/月）')
             .optional(),
           expected_onboard_date: z.string().describe('预计入职日期。以下示例值未转义，使用时请注意转义').optional(),
-          onboard_address_id: z
-            .string()
-            .describe(
-              '入职地点 ID，详情请参考：',
-            )
-            .optional(),
-          work_address_id: z
-            .string()
-            .describe(
-              '办公地点 ID，详情请参考：',
-            )
-            .optional(),
+          onboard_address_id: z.string().describe('入职地点 ID，详情请参考：').optional(),
+          work_address_id: z.string().describe('办公地点 ID，详情请参考：').optional(),
           owner_user_id: z.string().describe('Offer负责人 ID，与入参`user_id_type`类型一致'),
           recommended_words: z.string().describe('Offer 推荐语').optional(),
-          job_requirement_id: z
-            .string()
-            .describe(
-              '招聘需求 ID，详情请查看：',
-            )
-            .optional(),
+          job_requirement_id: z.string().describe('招聘需求 ID，详情请查看：').optional(),
           job_process_type_id: z.number().describe('招聘流程类型 ID，可选值：「1:社招，2:校招」').optional(),
           attachment_id_list: z.array(z.string()).describe('附件 ID 列表，暂无获取附件 ID 的方式，请勿使用').optional(),
-          common_attachment_id_list: z
-            .array(z.string())
-            .describe(
-              '通用附件 ID 列表，可使用接口创建的附件',
-            )
-            .optional(),
+          common_attachment_id_list: z.array(z.string()).describe('通用附件 ID 列表，可使用接口创建的附件').optional(),
           attachment_description: z.string().describe('附件描述').optional(),
           operator_user_id: z.string().describe('Offer操作人 ID，与入参`user_id_type`类型一致'),
           position_id: z
@@ -4518,12 +3886,7 @@ export const hireV1OfferCreate = {
             )
             .optional(),
           job_offered: z.string().describe('入职职位').optional(),
-          job_grade_id: z
-            .string()
-            .describe(
-              '职等 ID，可通过 获取（仅限飞书人事租户使用）',
-            )
-            .optional(),
+          job_grade_id: z.string().describe('职等 ID，可通过 获取（仅限飞书人事租户使用）').optional(),
         })
         .describe('Offer 基本信息'),
       salary_info: z
@@ -4622,12 +3985,7 @@ export const hireV1OfferGet = {
         .optional(),
     }),
     path: z.object({
-      offer_id: z
-        .string()
-        .describe(
-          'Offer ID，可通过获取',
-        )
-        .optional(),
+      offer_id: z.string().describe('Offer ID，可通过获取').optional(),
     }),
   },
 };
@@ -4662,12 +4020,7 @@ export const hireV1OfferInternOfferStatus = {
         .optional(),
     }),
     path: z.object({
-      offer_id: z
-        .string()
-        .describe(
-          'Offer ID，如何获取请参考',
-        )
-        .optional(),
+      offer_id: z.string().describe('Offer ID，如何获取请参考').optional(),
     }),
   },
 };
@@ -4688,11 +4041,7 @@ export const hireV1OfferList = {
         )
         .optional(),
       page_size: z.number().describe('分页大小，最大为 200').optional(),
-      talent_id: z
-        .string()
-        .describe(
-          '人才 ID，如何获取人才 ID 请参考',
-        ),
+      talent_id: z.string().describe('人才 ID，如何获取人才 ID 请参考'),
       user_id_type: z.enum(['open_id', 'union_id', 'user_id', 'people_admin_id']).describe('用户ID类型').optional(),
       employee_type_id_type: z
         .enum(['people_admin_employee_type_id', 'employee_type_enum_id'])
@@ -4732,12 +4081,7 @@ export const hireV1OfferOfferStatus = {
       termination_reason_note: z.string().describe('Offer 终止备注信息').optional(),
     }),
     path: z.object({
-      offer_id: z
-        .string()
-        .describe(
-          'Offer ID，如何获取请参考',
-        )
-        .optional(),
+      offer_id: z.string().describe('Offer ID，如何获取请参考').optional(),
     }),
   },
 };
@@ -4759,17 +4103,11 @@ export const hireV1OfferUpdate = {
         ),
       basic_info: z
         .object({
-          department_id: z
-            .string()
-            .describe(
-              '部门 ID，与入参中的`department_id_type`类型一致，可通过接口获取',
-            ),
+          department_id: z.string().describe('部门 ID，与入参中的`department_id_type`类型一致，可通过接口获取'),
           leader_user_id: z.string().describe('直属上级 ID，需与入参`user_id_type`类型一致'),
           employment_job_id: z
             .string()
-            .describe(
-              '职务 ID，可通过获取，**请注意**：仅支持开通飞书人事企业版的租户使用',
-            )
+            .describe('职务 ID，可通过获取，**请注意**：仅支持开通飞书人事企业版的租户使用')
             .optional(),
           employee_type_id: z.string().describe('人员类型 ID，需与入参`employee_type_id_type` 类型一致').optional(),
           job_family_id: z.string().describe('职位序列 ID，需与入参`job_family_id_type` 类型一致').optional(),
@@ -4787,34 +4125,14 @@ export const hireV1OfferUpdate = {
             .string()
             .describe('预计入职日期，格式为：{"date":"YYYY-MM-DD"}，使用时请注意转义')
             .optional(),
-          onboard_address_id: z
-            .string()
-            .describe(
-              '入职地点 ID，可通过接口获取',
-            )
-            .optional(),
-          work_address_id: z
-            .string()
-            .describe(
-              '办公地点 ID，可通过接口获取',
-            )
-            .optional(),
+          onboard_address_id: z.string().describe('入职地点 ID，可通过接口获取').optional(),
+          work_address_id: z.string().describe('办公地点 ID，可通过接口获取').optional(),
           owner_user_id: z.string().describe('Offer负责人 ID，需与入参`user_id_type`类型一致'),
           recommended_words: z.string().describe('Offer 推荐语').optional(),
-          job_requirement_id: z
-            .string()
-            .describe(
-              '招聘需求 ID，可通过接口获取',
-            )
-            .optional(),
+          job_requirement_id: z.string().describe('招聘需求 ID，可通过接口获取').optional(),
           job_process_type_id: z.number().describe('招聘流程类型 ID**可选值**：- 1：社招- 2：校招').optional(),
           attachment_id_list: z.array(z.string()).describe('附件 ID 列表，暂无获取附件 ID 的方式，请勿使用').optional(),
-          common_attachment_id_list: z
-            .array(z.string())
-            .describe(
-              '通用附件 ID 列表，可使用接口创建的附件',
-            )
-            .optional(),
+          common_attachment_id_list: z.array(z.string()).describe('通用附件 ID 列表，可使用接口创建的附件').optional(),
           attachment_description: z.string().describe('附件描述').optional(),
           operator_user_id: z.string().describe('Offer 操作人 ID，需与入参`user_id_type`类型一致'),
           position_id: z
@@ -4824,12 +4142,7 @@ export const hireV1OfferUpdate = {
             )
             .optional(),
           job_offered: z.string().describe('入职职位').optional(),
-          job_grade_id: z
-            .string()
-            .describe(
-              '职等 ID，可通过 获取（仅限飞书人事租户使用）',
-            )
-            .optional(),
+          job_grade_id: z.string().describe('职等 ID，可通过 获取（仅限飞书人事租户使用）').optional(),
         })
         .describe('Offer 基本信息'),
       salary_info: z
@@ -4890,12 +4203,7 @@ export const hireV1OfferUpdate = {
         .optional(),
     }),
     path: z.object({
-      offer_id: z
-        .string()
-        .describe(
-          'Offer ID，可通过接口获取',
-        )
-        .optional(),
+      offer_id: z.string().describe('Offer ID，可通过接口获取').optional(),
     }),
   },
 };
@@ -4947,12 +4255,7 @@ export const hireV1ReferralAccountCreate = {
     data: z.object({
       mobile: z
         .object({
-          code: z
-            .string()
-            .describe(
-              '电话国际区号，遵守国际统一标准，请参考',
-            )
-            .optional(),
+          code: z.string().describe('电话国际区号，遵守国际统一标准，请参考').optional(),
           number: z.string().describe('手机号码，在传 mobile 参数的情况下必传').optional(),
         })
         .describe('电话，该参数与 email 参数必传一个')
@@ -4967,17 +4270,11 @@ export const hireV1ReferralAccountDeactivate = {
   sdkName: 'hire.v1.referralAccount.deactivate',
   path: '/open-apis/hire/v1/referral_account/:referral_account_id/deactivate',
   httpMethod: 'POST',
-  description:
-    '[Feishu/Lark]-招聘-内推账户-停用内推账户-停用内推账户，停用后，将不再发送，也无法通过提取',
+  description: '[Feishu/Lark]-招聘-内推账户-停用内推账户-停用内推账户，停用后，将不再发送，也无法通过提取',
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      referral_account_id: z
-        .string()
-        .describe(
-          '账户ID，注册账户后获取：',
-        )
-        .optional(),
+      referral_account_id: z.string().describe('账户ID，注册账户后获取：').optional(),
     }),
   },
 };
@@ -4987,17 +4284,11 @@ export const hireV1ReferralAccountEnable = {
   sdkName: 'hire.v1.referralAccount.enable',
   path: '/open-apis/hire/v1/referral_account/enable',
   httpMethod: 'POST',
-  description:
-    '[Feishu/Lark]-招聘-内推账户-启用内推账户-根据账户 ID 启用账户，启用后可通过监听余额变更、通过提取余额',
+  description: '[Feishu/Lark]-招聘-内推账户-启用内推账户-根据账户 ID 启用账户，启用后可通过监听余额变更、通过提取余额',
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      referral_account_id: z
-        .string()
-        .describe(
-          '账户 ID，注册账户后获取：',
-        )
-        .optional(),
+      referral_account_id: z.string().describe('账户 ID，注册账户后获取：').optional(),
     }),
   },
 };
@@ -5011,11 +4302,7 @@ export const hireV1ReferralAccountGetAccountAssets = {
   accessTokens: ['tenant'],
   schema: {
     params: z.object({
-      referral_account_id: z
-        .string()
-        .describe(
-          '账户 ID，注册账户后获取：',
-        ),
+      referral_account_id: z.string().describe('账户 ID，注册账户后获取：'),
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional(),
     }),
   },
@@ -5036,11 +4323,7 @@ export const hireV1ReferralAccountReconciliation = {
       trade_details: z
         .array(
           z.object({
-            account_id: z
-              .string()
-              .describe(
-                '内推账户ID，通过生成',
-              ),
+            account_id: z.string().describe('内推账户ID，通过生成'),
             total_recharge_reward_info: z
               .object({ point_bonus: z.number().describe('变动的积分数量').optional() })
               .describe('时段内该账户发生在调用方系统的积分之和')
@@ -5073,12 +4356,7 @@ export const hireV1ReferralAccountWithdraw = {
         ),
     }),
     path: z.object({
-      referral_account_id: z
-        .string()
-        .describe(
-          '账户 ID，通过生成',
-        )
-        .optional(),
+      referral_account_id: z.string().describe('账户 ID，通过生成').optional(),
     }),
   },
 };
@@ -5108,11 +4386,7 @@ export const hireV1ReferralWebsiteJobPostGet = {
         .optional(),
     }),
     path: z.object({
-      job_post_id: z
-        .string()
-        .describe(
-          '职位广告 ID，可通过获取',
-        ),
+      job_post_id: z.string().describe('职位广告 ID，可通过获取'),
     }),
   },
 };
@@ -5165,11 +4439,7 @@ export const hireV1ReferralGetByApplication = {
   accessTokens: ['tenant'],
   schema: {
     params: z.object({
-      application_id: z
-        .string()
-        .describe(
-          '投递 ID，可通过获取',
-        ),
+      application_id: z.string().describe('投递 ID，可通过获取'),
       user_id_type: z.enum(['open_id', 'union_id', 'user_id', 'people_admin_id']).describe('用户ID类型').optional(),
     }),
   },
@@ -5185,11 +4455,7 @@ export const hireV1ReferralSearch = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      talent_id: z
-        .string()
-        .describe(
-          '人才 ID ，可通过获取',
-        ),
+      talent_id: z.string().describe('人才 ID ，可通过获取'),
       start_time: z
         .string()
         .describe('内推记录最早创建时间，毫秒时间戳。若不填，默认为指定人才下的全部记录，但最多返回200条')
@@ -5260,10 +4526,7 @@ export const hireV1RoleGet = {
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      role_id: z
-        .string()
-        .describe('角色 ID，调用 获取')
-        .optional(),
+      role_id: z.string().describe('角色 ID，调用 获取').optional(),
     }),
   },
 };
@@ -5320,11 +4583,7 @@ export const hireV1TalentBlocklistChangeTalentBlock = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      talent_id: z
-        .string()
-        .describe(
-          '人才 ID，可通过接口获取',
-        ),
+      talent_id: z.string().describe('人才 ID，可通过接口获取'),
       option: z.number().describe('操作类型 Options:1(Add 加入屏蔽名单),2(Remove 从屏蔽名单中移除)'),
       reason: z.string().describe('屏蔽原因，当`option`为`1`时必填').optional(),
     }),
@@ -5373,18 +4632,9 @@ export const hireV1TalentOperationLogSearch = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      job_id_list: z
-        .array(z.string())
-        .describe(
-          '职位 ID 列表，可通过接口获取',
-        )
-        .optional(),
+      job_id_list: z.array(z.string()).describe('职位 ID 列表，可通过接口获取').optional(),
       operator_id_list: z.array(z.string()).describe('操作人 ID 列表，与入参 `user_id_type` 类型一致'),
-      operation_list: z
-        .array(z.number())
-        .describe(
-          '操作类型 ID 列表，操作类型枚举可查看中 `操作类型枚举定义`',
-        ),
+      operation_list: z.array(z.number()).describe('操作类型 ID 列表，操作类型枚举可查看中 `操作类型枚举定义`'),
     }),
     params: z.object({
       page_token: z
@@ -5409,21 +4659,13 @@ export const hireV1TalentPoolBatchChangeTalentPool = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      talent_id_list: z
-        .array(z.string())
-        .describe(
-          '人才 ID 列表，可通过接口获取',
-        ),
+      talent_id_list: z.array(z.string()).describe('人才 ID 列表，可通过接口获取'),
       option_type: z
         .number()
         .describe('操作类型 Options:1(Add 将人才添加至指定人才库),2(Remove 将人才从指定人才库中移除)'),
     }),
     path: z.object({
-      talent_pool_id: z
-        .string()
-        .describe(
-          '人才库 ID，可通过接口获取',
-        ),
+      talent_pool_id: z.string().describe('人才库 ID，可通过接口获取'),
     }),
   },
 };
@@ -5437,22 +4679,13 @@ export const hireV1TalentPoolMoveTalent = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      talent_id: z
-        .string()
-        .describe(
-          '人才 ID，可通过接口  获取',
-        ),
+      talent_id: z.string().describe('人才 ID，可通过接口  获取'),
       add_type: z
         .number()
         .describe('加入类型，加入后是否从其他库移出 Options:1(OnlyAdd 否),2(AddAndRemoveFromOrigin 是)'),
     }),
     path: z.object({
-      talent_pool_id: z
-        .string()
-        .describe(
-          '人才库 ID，可通过接口  获取',
-        )
-        .optional(),
+      talent_pool_id: z.string().describe('人才库 ID，可通过接口  获取').optional(),
     }),
   },
 };
@@ -5516,16 +4749,8 @@ export const hireV1TalentAddToFolder = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      talent_id_list: z
-        .array(z.string())
-        .describe(
-          '人才 ID 列表，可通过接口获得',
-        ),
-      folder_id: z
-        .string()
-        .describe(
-          '文件夹 ID，可通过接口获取',
-        ),
+      talent_id_list: z.array(z.string()).describe('人才 ID 列表，可通过接口获得'),
+      folder_id: z.string().describe('文件夹 ID，可通过接口获取'),
     }),
   },
 };
@@ -5541,17 +4766,13 @@ export const hireV1TalentBatchGetId = {
     data: z.object({
       mobile_code: z
         .string()
-        .describe(
-          '国际区号，遵守国际统一标准，请参考。传入手机号但没传区号的情况下，默认为中国大陆区号："86"',
-        )
+        .describe('国际区号，遵守国际统一标准，请参考。传入手机号但没传区号的情况下，默认为中国大陆区号："86"')
         .optional(),
       mobile_number_list: z.array(z.string()).describe('手机号列表').optional(),
       email_list: z.array(z.string()).describe('邮箱列表').optional(),
       identification_type: z
         .number()
-        .describe(
-          '证件类型，枚举定义详见文档：的 IdentificationType。传入证件号的情况下必须传入该参数',
-        )
+        .describe('证件类型，枚举定义详见文档：的 IdentificationType。传入证件号的情况下必须传入该参数')
         .optional(),
       identification_number_list: z.array(z.string()).describe('证件号列表').optional(),
     }),
@@ -5569,18 +4790,8 @@ export const hireV1TalentCombinedCreate = {
   schema: {
     data: z.object({
       init_source_id: z.string().describe('简历来源 ID，已弃用，请使用 resume_source_id 字段').optional(),
-      resume_source_id: z
-        .string()
-        .describe(
-          '简历来源 ID，可通过接口查询',
-        )
-        .optional(),
-      folder_id_list: z
-        .array(z.string())
-        .describe(
-          '文件夹 ID 列表，可通过接口获取',
-        )
-        .optional(),
+      resume_source_id: z.string().describe('简历来源 ID，可通过接口查询').optional(),
+      folder_id_list: z.array(z.string()).describe('文件夹 ID 列表，可通过接口获取').optional(),
       creator_id: z
         .string()
         .describe(
@@ -5588,22 +4799,12 @@ export const hireV1TalentCombinedCreate = {
         )
         .optional(),
       creator_account_type: z.number().describe('创建人类型 Options:1(员工体系 员工),3(系统)').optional(),
-      resume_attachment_id: z
-        .string()
-        .describe(
-          '简历附件 ID，如何创建附件请参考',
-        )
-        .optional(),
+      resume_attachment_id: z.string().describe('简历附件 ID，如何创建附件请参考').optional(),
       basic_info: z
         .object({
           name: z.string().describe('名字'),
           mobile: z.string().describe('手机').optional(),
-          mobile_country_code: z
-            .string()
-            .describe(
-              '手机国家代码，可通过接口获取',
-            )
-            .optional(),
+          mobile_country_code: z.string().describe('手机国家代码，可通过接口获取').optional(),
           email: z.string().describe('邮箱').optional(),
           identification: z
             .object({
@@ -5620,42 +4821,17 @@ export const hireV1TalentCombinedCreate = {
           start_work_time: z.string().describe('开始工作时间，毫秒时间戳').optional(),
           birthday: z.string().describe('出生日期时间，毫秒时间戳').optional(),
           gender: z.number().describe('性别 Options:1(Male 男),2(Female 女),3(Other 其他)').optional(),
-          nationality_id: z
-            .string()
-            .describe(
-              '国籍编码，可通过获取',
-            )
-            .optional(),
-          current_city_code: z
-            .string()
-            .describe(
-              '所在地点编码，可通过获取',
-            )
-            .optional(),
-          hometown_city_code: z
-            .string()
-            .describe(
-              '家乡编码，可通过获取',
-            )
-            .optional(),
+          nationality_id: z.string().describe('国籍编码，可通过获取').optional(),
+          current_city_code: z.string().describe('所在地点编码，可通过获取').optional(),
+          hometown_city_code: z.string().describe('家乡编码，可通过获取').optional(),
           customized_data: z
             .array(
               z.object({
-                object_id: z
-                  .string()
-                  .describe(
-                    '自定义字段 ID，可通过接口获取',
-                  )
-                  .optional(),
+                object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                 children: z
                   .array(
                     z.object({
-                      object_id: z
-                        .string()
-                        .describe(
-                          '自定义字段 ID，可通过接口获取',
-                        )
-                        .optional(),
+                      object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                       value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                     }),
                   )
@@ -5698,21 +4874,11 @@ export const hireV1TalentCombinedCreate = {
             customized_data: z
               .array(
                 z.object({
-                  object_id: z
-                    .string()
-                    .describe(
-                      '自定义字段 ID，可通过接口获取',
-                    )
-                    .optional(),
+                  object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                   children: z
                     .array(
                       z.object({
-                        object_id: z
-                          .string()
-                          .describe(
-                            '自定义字段 ID，可通过接口获取',
-                          )
-                          .optional(),
+                        object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                         value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                       }),
                     )
@@ -5744,21 +4910,11 @@ export const hireV1TalentCombinedCreate = {
             customized_data: z
               .array(
                 z.object({
-                  object_id: z
-                    .string()
-                    .describe(
-                      '自定义字段 ID，可通过接口获取',
-                    )
-                    .optional(),
+                  object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                   children: z
                     .array(
                       z.object({
-                        object_id: z
-                          .string()
-                          .describe(
-                            '自定义字段 ID，可通过接口获取',
-                          )
-                          .optional(),
+                        object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                         value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                       }),
                     )
@@ -5787,21 +4943,11 @@ export const hireV1TalentCombinedCreate = {
             customized_data: z
               .array(
                 z.object({
-                  object_id: z
-                    .string()
-                    .describe(
-                      '自定义字段 ID，可通过接口获取',
-                    )
-                    .optional(),
+                  object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                   children: z
                     .array(
                       z.object({
-                        object_id: z
-                          .string()
-                          .describe(
-                            '自定义字段 ID，可通过接口获取',
-                          )
-                          .optional(),
+                        object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                         value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                       }),
                     )
@@ -5827,21 +4973,11 @@ export const hireV1TalentCombinedCreate = {
             customized_data: z
               .array(
                 z.object({
-                  object_id: z
-                    .string()
-                    .describe(
-                      '自定义字段 ID，可通过接口获取',
-                    )
-                    .optional(),
+                  object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                   children: z
                     .array(
                       z.object({
-                        object_id: z
-                          .string()
-                          .describe(
-                            '自定义字段 ID，可通过接口获取',
-                          )
-                          .optional(),
+                        object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                         value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                       }),
                     )
@@ -5867,21 +5003,11 @@ export const hireV1TalentCombinedCreate = {
             customized_data: z
               .array(
                 z.object({
-                  object_id: z
-                    .string()
-                    .describe(
-                      '自定义字段 ID，可通过接口获取',
-                    )
-                    .optional(),
+                  object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                   children: z
                     .array(
                       z.object({
-                        object_id: z
-                          .string()
-                          .describe(
-                            '自定义字段 ID，可通过接口获取',
-                          )
-                          .optional(),
+                        object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                         value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                       }),
                     )
@@ -5916,21 +5042,11 @@ export const hireV1TalentCombinedCreate = {
             customized_data: z
               .array(
                 z.object({
-                  object_id: z
-                    .string()
-                    .describe(
-                      '自定义字段 ID，可通过接口获取',
-                    )
-                    .optional(),
+                  object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                   children: z
                     .array(
                       z.object({
-                        object_id: z
-                          .string()
-                          .describe(
-                            '自定义字段 ID，可通过接口获取',
-                          )
-                          .optional(),
+                        object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                         value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                       }),
                     )
@@ -5960,21 +5076,11 @@ export const hireV1TalentCombinedCreate = {
             customized_data: z
               .array(
                 z.object({
-                  object_id: z
-                    .string()
-                    .describe(
-                      '自定义字段 ID，可通过接口获取',
-                    )
-                    .optional(),
+                  object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                   children: z
                     .array(
                       z.object({
-                        object_id: z
-                          .string()
-                          .describe(
-                            '自定义字段 ID，可通过接口获取',
-                          )
-                          .optional(),
+                        object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                         value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                       }),
                     )
@@ -5990,12 +5096,7 @@ export const hireV1TalentCombinedCreate = {
         )
         .describe('社交账号')
         .optional(),
-      preferred_city_code_list: z
-        .array(z.string())
-        .describe(
-          '意向地点，可通过接口获取',
-        )
-        .optional(),
+      preferred_city_code_list: z.array(z.string()).describe('意向地点，可通过接口获取').optional(),
       self_evaluation: z
         .object({
           id: z.string().describe('自我评价 ID，无效字段，请勿使用').optional(),
@@ -6003,21 +5104,11 @@ export const hireV1TalentCombinedCreate = {
           customized_data: z
             .array(
               z.object({
-                object_id: z
-                  .string()
-                  .describe(
-                    '自定义字段 ID，可通过接口获取',
-                  )
-                  .optional(),
+                object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                 children: z
                   .array(
                     z.object({
-                      object_id: z
-                        .string()
-                        .describe(
-                          '自定义字段 ID，可通过接口获取',
-                        )
-                        .optional(),
+                      object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                       value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                     }),
                   )
@@ -6035,21 +5126,11 @@ export const hireV1TalentCombinedCreate = {
       customized_data: z
         .array(
           z.object({
-            object_id: z
-              .string()
-              .describe(
-                '自定义模块 ID，可通过接口获取',
-              )
-              .optional(),
+            object_id: z.string().describe('自定义模块 ID，可通过接口获取').optional(),
             children: z
               .array(
                 z.object({
-                  object_id: z
-                    .string()
-                    .describe(
-                      '自定义字段 ID，可通过接口获取',
-                    )
-                    .optional(),
+                  object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                   value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                 }),
               )
@@ -6076,23 +5157,9 @@ export const hireV1TalentCombinedUpdate = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      talent_id: z
-        .string()
-        .describe(
-          '人才 ID，可通过接口获取',
-        ),
-      init_source_id: z
-        .string()
-        .describe(
-          '简历来源 ID，可通过接口查询',
-        )
-        .optional(),
-      folder_id_list: z
-        .array(z.string())
-        .describe(
-          '文件夹 ID 列表，可通过接口获取',
-        )
-        .optional(),
+      talent_id: z.string().describe('人才 ID，可通过接口获取'),
+      init_source_id: z.string().describe('简历来源 ID，可通过接口查询').optional(),
+      folder_id_list: z.array(z.string()).describe('文件夹 ID 列表，可通过接口获取').optional(),
       operator_id: z.string().describe('更新人 ID，与入参 `user_id_type` 类型一致').optional(),
       operator_account_type: z.number().describe('更新人类型 Options:1(员工体系 员工),3(系统)').optional(),
       resume_attachment_id: z
@@ -6105,12 +5172,7 @@ export const hireV1TalentCombinedUpdate = {
         .object({
           name: z.string().describe('名字').optional(),
           mobile: z.string().describe('手机').optional(),
-          mobile_country_code: z
-            .string()
-            .describe(
-              '手机国家代码，可通过接口获取',
-            )
-            .optional(),
+          mobile_country_code: z.string().describe('手机国家代码，可通过接口获取').optional(),
           email: z.string().describe('邮箱').optional(),
           identification: z
             .object({
@@ -6127,42 +5189,17 @@ export const hireV1TalentCombinedUpdate = {
           start_work_time: z.string().describe('开始工作时间，毫秒时间戳').optional(),
           birthday: z.string().describe('出生日期时间，毫秒时间戳').optional(),
           gender: z.number().describe('性别 Options:1(Male 男),2(Female 女),3(Other 其他)').optional(),
-          nationality_id: z
-            .string()
-            .describe(
-              '国籍编码，可通过获取',
-            )
-            .optional(),
-          current_city_code: z
-            .string()
-            .describe(
-              '所在地点编码，可通过获取',
-            )
-            .optional(),
-          hometown_city_code: z
-            .string()
-            .describe(
-              '家乡编码，可通过获取',
-            )
-            .optional(),
+          nationality_id: z.string().describe('国籍编码，可通过获取').optional(),
+          current_city_code: z.string().describe('所在地点编码，可通过获取').optional(),
+          hometown_city_code: z.string().describe('家乡编码，可通过获取').optional(),
           customized_data: z
             .array(
               z.object({
-                object_id: z
-                  .string()
-                  .describe(
-                    '自定义字段 ID，可通过接口获取',
-                  )
-                  .optional(),
+                object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                 children: z
                   .array(
                     z.object({
-                      object_id: z
-                        .string()
-                        .describe(
-                          '自定义字段 ID，可通过接口获取',
-                        )
-                        .optional(),
+                      object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                       value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                     }),
                   )
@@ -6205,21 +5242,11 @@ export const hireV1TalentCombinedUpdate = {
             customized_data: z
               .array(
                 z.object({
-                  object_id: z
-                    .string()
-                    .describe(
-                      '自定义字段 ID，可通过接口获取',
-                    )
-                    .optional(),
+                  object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                   children: z
                     .array(
                       z.object({
-                        object_id: z
-                          .string()
-                          .describe(
-                            '自定义字段 ID，可通过接口获取',
-                          )
-                          .optional(),
+                        object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                         value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                       }),
                     )
@@ -6251,21 +5278,11 @@ export const hireV1TalentCombinedUpdate = {
             customized_data: z
               .array(
                 z.object({
-                  object_id: z
-                    .string()
-                    .describe(
-                      '自定义字段 ID，可通过接口获取',
-                    )
-                    .optional(),
+                  object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                   children: z
                     .array(
                       z.object({
-                        object_id: z
-                          .string()
-                          .describe(
-                            '自定义字段 ID，可通过接口获取',
-                          )
-                          .optional(),
+                        object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                         value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                       }),
                     )
@@ -6294,21 +5311,11 @@ export const hireV1TalentCombinedUpdate = {
             customized_data: z
               .array(
                 z.object({
-                  object_id: z
-                    .string()
-                    .describe(
-                      '自定义字段 ID，可通过接口获取',
-                    )
-                    .optional(),
+                  object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                   children: z
                     .array(
                       z.object({
-                        object_id: z
-                          .string()
-                          .describe(
-                            '自定义字段 ID，可通过接口获取',
-                          )
-                          .optional(),
+                        object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                         value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                       }),
                     )
@@ -6334,21 +5341,11 @@ export const hireV1TalentCombinedUpdate = {
             customized_data: z
               .array(
                 z.object({
-                  object_id: z
-                    .string()
-                    .describe(
-                      '自定义字段 ID，可通过接口获取',
-                    )
-                    .optional(),
+                  object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                   children: z
                     .array(
                       z.object({
-                        object_id: z
-                          .string()
-                          .describe(
-                            '自定义字段 ID，可通过接口获取',
-                          )
-                          .optional(),
+                        object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                         value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                       }),
                     )
@@ -6374,21 +5371,11 @@ export const hireV1TalentCombinedUpdate = {
             customized_data: z
               .array(
                 z.object({
-                  object_id: z
-                    .string()
-                    .describe(
-                      '自定义字段 ID，可通过接口获取',
-                    )
-                    .optional(),
+                  object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                   children: z
                     .array(
                       z.object({
-                        object_id: z
-                          .string()
-                          .describe(
-                            '自定义字段 ID，可通过接口获取',
-                          )
-                          .optional(),
+                        object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                         value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                       }),
                     )
@@ -6423,21 +5410,11 @@ export const hireV1TalentCombinedUpdate = {
             customized_data: z
               .array(
                 z.object({
-                  object_id: z
-                    .string()
-                    .describe(
-                      '自定义字段 ID，可通过接口获取',
-                    )
-                    .optional(),
+                  object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                   children: z
                     .array(
                       z.object({
-                        object_id: z
-                          .string()
-                          .describe(
-                            '自定义字段 ID，可通过接口获取',
-                          )
-                          .optional(),
+                        object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                         value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                       }),
                     )
@@ -6467,21 +5444,11 @@ export const hireV1TalentCombinedUpdate = {
             customized_data: z
               .array(
                 z.object({
-                  object_id: z
-                    .string()
-                    .describe(
-                      '自定义字段 ID，可通过接口获取',
-                    )
-                    .optional(),
+                  object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                   children: z
                     .array(
                       z.object({
-                        object_id: z
-                          .string()
-                          .describe(
-                            '自定义字段 ID，可通过接口获取',
-                          )
-                          .optional(),
+                        object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                         value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                       }),
                     )
@@ -6497,12 +5464,7 @@ export const hireV1TalentCombinedUpdate = {
         )
         .describe('社交账号**注意**：更新时会全量覆盖')
         .optional(),
-      preferred_city_code_list: z
-        .array(z.string())
-        .describe(
-          '意向地点，可通过接口获取',
-        )
-        .optional(),
+      preferred_city_code_list: z.array(z.string()).describe('意向地点，可通过接口获取').optional(),
       self_evaluation: z
         .object({
           id: z.string().describe('自我评价 ID，无效字段，请勿使用').optional(),
@@ -6510,21 +5472,11 @@ export const hireV1TalentCombinedUpdate = {
           customized_data: z
             .array(
               z.object({
-                object_id: z
-                  .string()
-                  .describe(
-                    '自定义字段 ID，可通过接口获取',
-                  )
-                  .optional(),
+                object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                 children: z
                   .array(
                     z.object({
-                      object_id: z
-                        .string()
-                        .describe(
-                          '自定义字段 ID，可通过接口获取',
-                        )
-                        .optional(),
+                      object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                       value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                     }),
                   )
@@ -6542,21 +5494,11 @@ export const hireV1TalentCombinedUpdate = {
       customized_data: z
         .array(
           z.object({
-            object_id: z
-              .string()
-              .describe(
-                '自定义模块 ID，可通过接口获取',
-              )
-              .optional(),
+            object_id: z.string().describe('自定义模块 ID，可通过接口获取').optional(),
             children: z
               .array(
                 z.object({
-                  object_id: z
-                    .string()
-                    .describe(
-                      '自定义字段 ID，可通过接口获取',
-                    )
-                    .optional(),
+                  object_id: z.string().describe('自定义字段 ID，可通过接口获取').optional(),
                   value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                 }),
               )
@@ -6584,11 +5526,7 @@ export const hireV1TalentExternalInfoCreate = {
   schema: {
     data: z.object({ external_create_time: z.string().describe('人才在外部系统的创建时间，毫秒时间戳') }),
     path: z.object({
-      talent_id: z
-        .string()
-        .describe(
-          '人才 ID，可通过获取',
-        ),
+      talent_id: z.string().describe('人才 ID，可通过获取'),
     }),
   },
 };
@@ -6604,11 +5542,7 @@ export const hireV1TalentExternalInfoUpdate = {
   schema: {
     data: z.object({ external_create_time: z.string().describe('人才在外部系统的创建时间，毫秒时间戳') }),
     path: z.object({
-      talent_id: z
-        .string()
-        .describe(
-          '人才 ID，可通过接口获取',
-        ),
+      talent_id: z.string().describe('人才 ID，可通过接口获取'),
     }),
   },
 };
@@ -6625,11 +5559,7 @@ export const hireV1TalentGet = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id', 'people_admin_id']).describe('用户ID类型').optional(),
     }),
     path: z.object({
-      talent_id: z
-        .string()
-        .describe(
-          '人才ID，可通过接口获取',
-        ),
+      talent_id: z.string().describe('人才ID，可通过接口获取'),
     }),
   },
 };
@@ -6681,12 +5611,7 @@ export const hireV1TalentOnboardStatus = {
       overboard_time: z.string().describe('离职时间，毫秒时间戳').optional(),
     }),
     path: z.object({
-      talent_id: z
-        .string()
-        .describe(
-          '人才ID，可通过接口获取',
-        )
-        .optional(),
+      talent_id: z.string().describe('人才ID，可通过接口获取').optional(),
     }),
   },
 };
@@ -6700,16 +5625,8 @@ export const hireV1TalentRemoveToFolder = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      talent_id_list: z
-        .array(z.string())
-        .describe(
-          '人才 ID 列表，可通过接口获得',
-        ),
-      folder_id: z
-        .string()
-        .describe(
-          '文件夹 ID，可通过接口获取',
-        ),
+      talent_id_list: z.array(z.string()).describe('人才 ID 列表，可通过接口获得'),
+      folder_id: z.string().describe('文件夹 ID，可通过接口获取'),
     }),
   },
 };
@@ -6724,18 +5641,10 @@ export const hireV1TalentTag = {
   schema: {
     data: z.object({
       operation: z.number().describe('操作类型 Options:1(新增),2(删除)'),
-      tag_id_list: z
-        .array(z.string().describe('标签 ID'))
-        .describe(
-          '标签 ID 列表，可通过以下接口获取',
-        ),
+      tag_id_list: z.array(z.string().describe('标签 ID')).describe('标签 ID 列表，可通过以下接口获取'),
     }),
     path: z.object({
-      talent_id: z
-        .string()
-        .describe(
-          '人才 ID，可通过获取',
-        ),
+      talent_id: z.string().describe('人才 ID，可通过获取'),
     }),
   },
 };
@@ -6771,12 +5680,7 @@ export const hireV1TestSearch = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      application_id_list: z
-        .array(z.string())
-        .describe(
-          '投递 ID 列表，可通过接口获取',
-        )
-        .optional(),
+      application_id_list: z.array(z.string()).describe('投递 ID 列表，可通过接口获取').optional(),
       test_start_time_min: z.string().describe('笔试最早开始时间（毫秒时间戳）').optional(),
       test_start_time_max: z.string().describe('笔试最晚开始时间（毫秒时间戳）').optional(),
     }),
@@ -6829,11 +5733,7 @@ export const hireV1TripartiteAgreementCreate = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      application_id: z
-        .string()
-        .describe(
-          '投递 ID，可通过接口获取',
-        ),
+      application_id: z.string().describe('投递 ID，可通过接口获取'),
       state: z
         .number()
         .describe(
@@ -6853,12 +5753,7 @@ export const hireV1TripartiteAgreementDelete = {
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      tripartite_agreement_id: z
-        .string()
-        .describe(
-          '三方协议 ID，由接口返回或通过获取',
-        )
-        .optional(),
+      tripartite_agreement_id: z.string().describe('三方协议 ID，由接口返回或通过获取').optional(),
     }),
   },
 };
@@ -6880,18 +5775,8 @@ export const hireV1TripartiteAgreementList = {
           '分页标记，第一次请求不填，表示从头开始遍历；分页查询结果还有更多项时会同时返回新的 page_token，下次遍历可采用该 page_token 获取查询结果',
         )
         .optional(),
-      application_id: z
-        .string()
-        .describe(
-          '投递 ID，可通过接口获取',
-        )
-        .optional(),
-      tripartite_agreement_id: z
-        .string()
-        .describe(
-          '三方协议 ID，由接口返回',
-        )
-        .optional(),
+      application_id: z.string().describe('投递 ID，可通过接口获取').optional(),
+      tripartite_agreement_id: z.string().describe('三方协议 ID，由接口返回').optional(),
     }),
   },
 };
@@ -6913,12 +5798,7 @@ export const hireV1TripartiteAgreementUpdate = {
       modify_time: z.string().describe('三方协议修改时间，毫秒时间戳**注意**：不可小于创建时间或者上次修改时间'),
     }),
     path: z.object({
-      tripartite_agreement_id: z
-        .string()
-        .describe(
-          '三方协议 ID，可通过获取',
-        )
-        .optional(),
+      tripartite_agreement_id: z.string().describe('三方协议 ID，可通过获取').optional(),
     }),
   },
 };
@@ -6941,12 +5821,7 @@ export const hireV1UserRoleList = {
         .optional(),
       page_size: z.number().describe('每页获取记录数量').optional(),
       user_id: z.string().describe('用户 ID，与入参 `user_id_type` 类型一致').optional(),
-      role_id: z
-        .string()
-        .describe(
-          '角色 ID，可通过接口  获取',
-        )
-        .optional(),
+      role_id: z.string().describe('角色 ID，可通过接口  获取').optional(),
       update_start_time: z.string().describe('最早更新时间，毫秒时间戳').optional(),
       update_end_time: z.string().describe('最晚更新时间，毫秒时间戳').optional(),
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional(),
@@ -6965,12 +5840,7 @@ export const hireV1WebsiteChannelCreate = {
   schema: {
     data: z.object({ channel_name: z.string().describe('推广渠道名称') }),
     path: z.object({
-      website_id: z
-        .string()
-        .describe(
-          '官网 ID，可通过获取',
-        )
-        .optional(),
+      website_id: z.string().describe('官网 ID，可通过获取').optional(),
     }),
   },
 };
@@ -6984,18 +5854,8 @@ export const hireV1WebsiteChannelDelete = {
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      website_id: z
-        .string()
-        .describe(
-          '官网 ID，可通过获取',
-        )
-        .optional(),
-      channel_id: z
-        .string()
-        .describe(
-          '推广渠道 ID，可通过获取',
-        )
-        .optional(),
+      website_id: z.string().describe('官网 ID，可通过获取').optional(),
+      channel_id: z.string().describe('推广渠道 ID，可通过获取').optional(),
     }),
   },
 };
@@ -7018,12 +5878,7 @@ export const hireV1WebsiteChannelList = {
         .optional(),
     }),
     path: z.object({
-      website_id: z
-        .string()
-        .describe(
-          '官网 ID，可通过获取',
-        )
-        .optional(),
+      website_id: z.string().describe('官网 ID，可通过获取').optional(),
     }),
   },
 };
@@ -7039,18 +5894,8 @@ export const hireV1WebsiteChannelUpdate = {
   schema: {
     data: z.object({ channel_name: z.string().describe('推广渠道名称') }),
     path: z.object({
-      website_id: z
-        .string()
-        .describe(
-          '官网 ID，通过获取',
-        )
-        .optional(),
-      channel_id: z
-        .string()
-        .describe(
-          '推广渠道 ID，可通过获取',
-        )
-        .optional(),
+      website_id: z.string().describe('官网 ID，通过获取').optional(),
+      channel_id: z.string().describe('推广渠道 ID，可通过获取').optional(),
     }),
   },
 };
@@ -7065,16 +5910,8 @@ export const hireV1WebsiteDeliveryTaskGet = {
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      website_id: z
-        .string()
-        .describe(
-          '官网 ID，可通过获取',
-        ),
-      delivery_task_id: z
-        .string()
-        .describe(
-          '投递任务 ID，可通过获取',
-        ),
+      website_id: z.string().describe('官网 ID，可通过获取'),
+      delivery_task_id: z.string().describe('投递任务 ID，可通过获取'),
     }),
   },
 };
@@ -7089,36 +5926,17 @@ export const hireV1WebsiteDeliveryCreateByAttachment = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      job_post_id: z
-        .string()
-        .describe(
-          '职位广告 ID，可通过获取',
-        ),
-      user_id: z
-        .string()
-        .describe(
-          '官网用户ID，暂无直接查询接口，需在获取并保存',
-        ),
-      resume_file_id: z
-        .string()
-        .describe('简历文件 ID，通过生成'),
-      channel_id: z
-        .string()
-        .describe(
-          '官网推广渠道 ID，可通过获取',
-        )
-        .optional(),
+      job_post_id: z.string().describe('职位广告 ID，可通过获取'),
+      user_id: z.string().describe('官网用户ID，暂无直接查询接口，需在获取并保存'),
+      resume_file_id: z.string().describe('简历文件 ID，通过生成'),
+      channel_id: z.string().describe('官网推广渠道 ID，可通过获取').optional(),
       application_preferred_city_code_list: z
         .array(z.string())
-        .describe(
-          '意向投递城市列表，最多可填入一个意向城市，可通过获取',
-        )
+        .describe('意向投递城市列表，最多可填入一个意向城市，可通过获取')
         .optional(),
       mobile_country_code: z
         .string()
-        .describe(
-          '电话国际区号，遵守国际统一标准，请参考（当该参数值与简历附件中的相关值不一致时，将以该参数值为准）',
-        )
+        .describe('电话国际区号，遵守国际统一标准，请参考（当该参数值与简历附件中的相关值不一致时，将以该参数值为准）')
         .optional(),
       mobile: z.string().describe('电话号码（当该参数值与简历附件中的相关值不一致时，将以该参数值为准）').optional(),
       email: z.string().describe('邮箱（当该参数值与简历附件中的相关值不一致时，将以该参数值为准）').optional(),
@@ -7136,11 +5954,7 @@ export const hireV1WebsiteDeliveryCreateByAttachment = {
         .optional(),
     }),
     path: z.object({
-      website_id: z
-        .string()
-        .describe(
-          '官网 ID，可通过获取',
-        ),
+      website_id: z.string().describe('官网 ID，可通过获取'),
     }),
   },
 };
@@ -7154,11 +5968,7 @@ export const hireV1WebsiteDeliveryCreateByResume = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      job_post_id: z
-        .string()
-        .describe(
-          '职位广告 ID，可通过或者获取',
-        ),
+      job_post_id: z.string().describe('职位广告 ID，可通过或者获取'),
       resume: z
         .object({
           internship_list: z
@@ -7172,12 +5982,7 @@ export const hireV1WebsiteDeliveryCreateByResume = {
                 customized_data: z
                   .array(
                     z.object({
-                      object_id: z
-                        .string()
-                        .describe(
-                          '自定义字段 ID，可通过获取',
-                        )
-                        .optional(),
+                      object_id: z.string().describe('自定义字段 ID，可通过获取').optional(),
                       value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                     }),
                   )
@@ -7189,26 +5994,11 @@ export const hireV1WebsiteDeliveryCreateByResume = {
             .optional(),
           basic_info: z
             .object({
-              nationality_id: z
-                .string()
-                .describe(
-                  '国家码，可通过获取',
-                )
-                .optional(),
+              nationality_id: z.string().describe('国家码，可通过获取').optional(),
               start_work_time: z.number().describe('起始工作时间，毫秒时间戳').optional(),
               current_home_address: z.string().describe('家庭住址').optional(),
-              hometown_city_code: z
-                .string()
-                .describe(
-                  '家乡，可通过获取',
-                )
-                .optional(),
-              mobile_country_code: z
-                .string()
-                .describe(
-                  '手机国家代码，可通过获取',
-                )
-                .optional(),
+              hometown_city_code: z.string().describe('家乡，可通过获取').optional(),
+              mobile_country_code: z.string().describe('手机国家代码，可通过获取').optional(),
               identification: z
                 .object({
                   identification_number: z.string().describe('身份证件号码').optional(),
@@ -7223,38 +6013,18 @@ export const hireV1WebsiteDeliveryCreateByResume = {
                 .optional(),
               marital_status: z.number().describe('婚姻状况 Options:1(已婚),2(未婚)').optional(),
               mobile: z.string().describe('电话').optional(),
-              current_city_code: z
-                .string()
-                .describe(
-                  '所在城市，可通过获取',
-                )
-                .optional(),
+              current_city_code: z.string().describe('所在城市，可通过获取').optional(),
               experience_years: z.number().describe('工作年限').optional(),
               gender: z.number().describe('性别 Options:1(Male 男),2(Female 女),3(Other 其他)').optional(),
               birthday: z.number().describe('出生日期，毫秒时间戳').optional(),
               name: z.string().describe('姓名'),
-              preferred_city_code_list: z
-                .array(z.string())
-                .describe(
-                  '意向城市列表，可通过获取',
-                )
-                .optional(),
-              resume_source_id: z
-                .string()
-                .describe(
-                  '简历来源，可通过获取',
-                )
-                .optional(),
+              preferred_city_code_list: z.array(z.string()).describe('意向城市列表，可通过获取').optional(),
+              resume_source_id: z.string().describe('简历来源，可通过获取').optional(),
               age: z.number().describe('年龄').optional(),
               customized_data: z
                 .array(
                   z.object({
-                    object_id: z
-                      .string()
-                      .describe(
-                        '自定义字段 ID，可通过获取',
-                      )
-                      .optional(),
+                    object_id: z.string().describe('自定义字段 ID，可通过获取').optional(),
                     value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                   }),
                 )
@@ -7296,12 +6066,7 @@ export const hireV1WebsiteDeliveryCreateByResume = {
                 customized_data: z
                   .array(
                     z.object({
-                      object_id: z
-                        .string()
-                        .describe(
-                          '自定义字段 ID，可通过获取',
-                        )
-                        .optional(),
+                      object_id: z.string().describe('自定义字段 ID，可通过获取').optional(),
                       value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                     }),
                   )
@@ -7323,12 +6088,7 @@ export const hireV1WebsiteDeliveryCreateByResume = {
               customized_data: z
                 .array(
                   z.object({
-                    object_id: z
-                      .string()
-                      .describe(
-                        '自定义字段 ID，可通过获取',
-                      )
-                      .optional(),
+                    object_id: z.string().describe('自定义字段 ID，可通过获取').optional(),
                     value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                   }),
                 )
@@ -7348,12 +6108,7 @@ export const hireV1WebsiteDeliveryCreateByResume = {
                 customized_data: z
                   .array(
                     z.object({
-                      object_id: z
-                        .string()
-                        .describe(
-                          '自定义字段 ID，可通过获取',
-                        )
-                        .optional(),
+                      object_id: z.string().describe('自定义字段 ID，可通过获取').optional(),
                       value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                     }),
                   )
@@ -7366,21 +6121,11 @@ export const hireV1WebsiteDeliveryCreateByResume = {
           customized_data: z
             .array(
               z.object({
-                object_id: z
-                  .string()
-                  .describe(
-                    '自定义模块ID，可通过获取',
-                  )
-                  .optional(),
+                object_id: z.string().describe('自定义模块ID，可通过获取').optional(),
                 children: z
                   .array(
                     z.object({
-                      object_id: z
-                        .string()
-                        .describe(
-                          '自定义字段 ID，可通过获取',
-                        )
-                        .optional(),
+                      object_id: z.string().describe('自定义字段 ID，可通过获取').optional(),
                       value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                     }),
                   )
@@ -7390,12 +6135,7 @@ export const hireV1WebsiteDeliveryCreateByResume = {
             )
             .describe('自定义模块')
             .optional(),
-          resume_attachment_id: z
-            .string()
-            .describe(
-              '简历附件ID，需通过生成',
-            )
-            .optional(),
+          resume_attachment_id: z.string().describe('简历附件ID，需通过生成').optional(),
           sns_list: z
             .array(
               z.object({
@@ -7408,12 +6148,7 @@ export const hireV1WebsiteDeliveryCreateByResume = {
                 customized_data: z
                   .array(
                     z.object({
-                      object_id: z
-                        .string()
-                        .describe(
-                          '自定义字段 ID，可通过获取',
-                        )
-                        .optional(),
+                      object_id: z.string().describe('自定义字段 ID，可通过获取').optional(),
                       value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                     }),
                   )
@@ -7431,24 +6166,14 @@ export const hireV1WebsiteDeliveryCreateByResume = {
                 link: z.string().describe('作品链接').optional(),
                 attachment: z
                   .object({
-                    file_id: z
-                      .string()
-                      .describe(
-                        '文件ID，需通过生成',
-                      )
-                      .optional(),
+                    file_id: z.string().describe('文件ID，需通过生成').optional(),
                   })
                   .describe('附件')
                   .optional(),
                 customized_data: z
                   .array(
                     z.object({
-                      object_id: z
-                        .string()
-                        .describe(
-                          '自定义字段 ID，可通过获取',
-                        )
-                        .optional(),
+                      object_id: z.string().describe('自定义字段 ID，可通过获取').optional(),
                       value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                     }),
                   )
@@ -7464,12 +6189,7 @@ export const hireV1WebsiteDeliveryCreateByResume = {
                 customized_data: z
                   .array(
                     z.object({
-                      object_id: z
-                        .string()
-                        .describe(
-                          '自定义字段 ID，可通过获取',
-                        )
-                        .optional(),
+                      object_id: z.string().describe('自定义字段 ID，可通过获取').optional(),
                       value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                     }),
                   )
@@ -7488,12 +6208,7 @@ export const hireV1WebsiteDeliveryCreateByResume = {
                 customized_data: z
                   .array(
                     z.object({
-                      object_id: z
-                        .string()
-                        .describe(
-                          '自定义字段 ID，可通过获取',
-                        )
-                        .optional(),
+                      object_id: z.string().describe('自定义字段 ID，可通过获取').optional(),
                       value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                     }),
                   )
@@ -7515,12 +6230,7 @@ export const hireV1WebsiteDeliveryCreateByResume = {
                 customized_data: z
                   .array(
                     z.object({
-                      object_id: z
-                        .string()
-                        .describe(
-                          '自定义字段 ID，可通过获取',
-                        )
-                        .optional(),
+                      object_id: z.string().describe('自定义字段 ID，可通过获取').optional(),
                       value: z.string().describe('自定义字段值，请参考本文「自定义字段数据格式说明」').optional(),
                     }),
                   )
@@ -7544,31 +6254,13 @@ export const hireV1WebsiteDeliveryCreateByResume = {
             .optional(),
         })
         .describe('人才信息'),
-      user_id: z
-        .string()
-        .describe(
-          '官网用户 ID，需通过生成',
-        ),
-      application_preferred_city_code_list: z
-        .array(z.string())
-        .describe(
-          '意向投递城市列表，可通过获取',
-        )
-        .optional(),
-      channel_id: z
-        .string()
-        .describe(
-          '官网推广渠道 ID，可通过获取',
-        )
-        .optional(),
+      user_id: z.string().describe('官网用户 ID，需通过生成'),
+      application_preferred_city_code_list: z.array(z.string()).describe('意向投递城市列表，可通过获取').optional(),
+      channel_id: z.string().describe('官网推广渠道 ID，可通过获取').optional(),
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
     path: z.object({
-      website_id: z
-        .string()
-        .describe(
-          '官网 ID，可通过获取',
-        ),
+      website_id: z.string().describe('官网 ID，可通过获取'),
     }),
   },
 };
@@ -7598,16 +6290,8 @@ export const hireV1WebsiteJobPostGet = {
         .optional(),
     }),
     path: z.object({
-      website_id: z
-        .string()
-        .describe(
-          '官网 ID，可通过获取',
-        ),
-      job_post_id: z
-        .string()
-        .describe(
-          '职位广告 ID，可通过或获取',
-        ),
+      website_id: z.string().describe('官网 ID，可通过获取'),
+      job_post_id: z.string().describe('职位广告 ID，可通过或获取'),
     }),
   },
 };
@@ -7647,12 +6331,7 @@ export const hireV1WebsiteJobPostList = {
       create_end_time: z.string().describe('最晚创建时间，毫秒级时间戳').optional(),
     }),
     path: z.object({
-      website_id: z
-        .string()
-        .describe(
-          '官网 ID，通过接口获得',
-        )
-        .optional(),
+      website_id: z.string().describe('官网 ID，通过接口获得').optional(),
     }),
   },
 };
@@ -7666,30 +6345,10 @@ export const hireV1WebsiteJobPostSearch = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      job_type_id_list: z
-        .array(z.string())
-        .describe(
-          '职位类别列表，详情请参考：',
-        )
-        .optional(),
-      city_code_list: z
-        .array(z.string())
-        .describe(
-          '职位城市列表，详情请参考：',
-        )
-        .optional(),
-      job_function_id_list: z
-        .array(z.string())
-        .describe(
-          '职能分类列表，详情请参考：',
-        )
-        .optional(),
-      subject_id_list: z
-        .array(z.string())
-        .describe(
-          '职位项目列表，详情请参考：',
-        )
-        .optional(),
+      job_type_id_list: z.array(z.string()).describe('职位类别列表，详情请参考：').optional(),
+      city_code_list: z.array(z.string()).describe('职位城市列表，详情请参考：').optional(),
+      job_function_id_list: z.array(z.string()).describe('职能分类列表，详情请参考：').optional(),
+      subject_id_list: z.array(z.string()).describe('职位项目列表，详情请参考：').optional(),
       keyword: z.string().describe('关键字').optional(),
       update_start_time: z.string().describe('最早更新时间，毫秒级时间戳').optional(),
       update_end_time: z.string().describe('最晚更新时间，毫秒级时间戳').optional(),
@@ -7719,12 +6378,7 @@ export const hireV1WebsiteJobPostSearch = {
         .optional(),
     }),
     path: z.object({
-      website_id: z
-        .string()
-        .describe(
-          '官网 ID，可通过获取',
-        )
-        .optional(),
+      website_id: z.string().describe('官网 ID，可通过获取').optional(),
     }),
   },
 };
@@ -7768,19 +6422,10 @@ export const hireV1WebsiteSiteUserCreate = {
           '外部 ID，幂等字段，同一外部 ID只会创建1个官网用户；当系统中已存在`external_id`对应的官网用户时，接口会返回已存在的官网用户信息',
         ),
       mobile: z.string().describe('电话，若填写了该字段，国家码(mobile_country_code)字段必填').optional(),
-      mobile_country_code: z
-        .string()
-        .describe(
-          '国家码，若填写了该字段，电话（mobile）字段必填，可通过获取',
-        )
-        .optional(),
+      mobile_country_code: z.string().describe('国家码，若填写了该字段，电话（mobile）字段必填，可通过获取').optional(),
     }),
     path: z.object({
-      website_id: z
-        .string()
-        .describe(
-          '官网 ID，可通过获取',
-        ),
+      website_id: z.string().describe('官网 ID，可通过获取'),
     }),
   },
 };

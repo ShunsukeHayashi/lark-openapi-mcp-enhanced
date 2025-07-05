@@ -38,11 +38,7 @@ export const cardkitV1CardBatchUpdate = {
         ),
     }),
     path: z.object({
-      card_id: z
-        .string()
-        .describe(
-          'Card entity ID. Get it by ',
-        ),
+      card_id: z.string().describe('Card entity ID. Get it by '),
     }),
   },
 };
@@ -89,11 +85,7 @@ export const cardkitV1CardElementContent = {
         ),
     }),
     path: z.object({
-      card_id: z
-        .string()
-        .describe(
-          'Card entity ID. Get it by ',
-        ),
+      card_id: z.string().describe('Card entity ID. Get it by '),
       element_id: z.string().describe('Component ID'),
     }),
   },
@@ -133,11 +125,7 @@ export const cardkitV1CardElementCreate = {
       elements: z.string().describe('Component List'),
     }),
     path: z.object({
-      card_id: z
-        .string()
-        .describe(
-          'Card entity ID. Get it by ',
-        ),
+      card_id: z.string().describe('Card entity ID. Get it by '),
     }),
   },
 };
@@ -164,11 +152,7 @@ export const cardkitV1CardElementDelete = {
         ),
     }),
     path: z.object({
-      card_id: z
-        .string()
-        .describe(
-          'Card entity ID. Get it by ',
-        ),
+      card_id: z.string().describe('Card entity ID. Get it by '),
       element_id: z.string().describe('Component ID'),
     }),
   },
@@ -201,11 +185,7 @@ export const cardkitV1CardElementPatch = {
         ),
     }),
     path: z.object({
-      card_id: z
-        .string()
-        .describe(
-          'Card entity ID. Get it by ',
-        ),
+      card_id: z.string().describe('Card entity ID. Get it by '),
       element_id: z.string().describe('Component ID'),
     }),
   },
@@ -234,11 +214,7 @@ export const cardkitV1CardElementUpdate = {
         ),
     }),
     path: z.object({
-      card_id: z
-        .string()
-        .describe(
-          'Card entity ID. Get it by ',
-        ),
+      card_id: z.string().describe('Card entity ID. Get it by '),
       element_id: z.string().describe('Component ID'),
     }),
   },
@@ -253,11 +229,7 @@ export const cardkitV1CardIdConvert = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      message_id: z
-        .string()
-        .describe(
-          'Message ID. Get via ',
-        ),
+      message_id: z.string().describe('Message ID. Get via '),
     }),
   },
 };
@@ -290,11 +262,7 @@ export const cardkitV1CardSettings = {
         ),
     }),
     path: z.object({
-      card_id: z
-        .string()
-        .describe(
-          'Card entity ID. Get it by ',
-        ),
+      card_id: z.string().describe('Card entity ID. Get it by '),
     }),
   },
 };
@@ -333,11 +301,7 @@ export const cardkitV1CardUpdate = {
         ),
     }),
     path: z.object({
-      card_id: z
-        .string()
-        .describe(
-          'Card entity ID. Get it by ',
-        ),
+      card_id: z.string().describe('Card entity ID. Get it by '),
     }),
   },
 };

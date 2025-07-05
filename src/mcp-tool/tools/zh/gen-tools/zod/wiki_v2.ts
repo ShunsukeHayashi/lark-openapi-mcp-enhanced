@@ -231,8 +231,7 @@ export const wikiV2SpaceNodeCreate = {
   sdkName: 'wiki.v2.spaceNode.create',
   path: '/open-apis/wiki/v2/spaces/:space_id/nodes',
   httpMethod: 'POST',
-  description:
-    '[Feishu/Lark]-云文档-知识库-节点-创建知识空间节点-此接口用于在知识节点里创建到指定位置',
+  description: '[Feishu/Lark]-云文档-知识库-节点-创建知识空间节点-此接口用于在知识节点里创建到指定位置',
   accessTokens: ['tenant', 'user'],
   schema: {
     data: z.object({
@@ -249,10 +248,7 @@ export const wikiV2SpaceNodeCreate = {
       title: z.string().describe('文档标题').optional(),
     }),
     path: z.object({
-      space_id: z
-        .string()
-        .describe('知识空间id')
-        .optional(),
+      space_id: z.string().describe('知识空间id').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -380,11 +376,7 @@ export const wikiV2TaskGet = {
   accessTokens: ['tenant', 'user'],
   schema: {
     params: z.object({
-      task_type: z
-        .literal('move')
-        .describe(
-          '任务类型 Options:move(任务)',
-        ),
+      task_type: z.literal('move').describe('任务类型 Options:move(任务)'),
     }),
     path: z.object({ task_id: z.string().describe('任务id').optional() }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),

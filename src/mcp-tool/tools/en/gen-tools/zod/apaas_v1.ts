@@ -132,11 +132,7 @@ export const apaasV1ApplicationAuditLogGet = {
   accessTokens: ['user'],
   schema: {
     params: z.object({
-      log_id: z
-        .string()
-        .describe(
-          'Audit log ID information (obtain a single log ID by )',
-        ),
+      log_id: z.string().describe('Audit log ID information (obtain a single log ID by )'),
     }),
     path: z.object({ namespace: z.string().describe('Application namespace') }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),

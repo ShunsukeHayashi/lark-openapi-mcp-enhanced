@@ -61,12 +61,7 @@ export const sheetsV3SpreadsheetGet = {
   schema: {
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional() }),
     path: z.object({
-      spreadsheet_token: z
-        .string()
-        .describe(
-          'Table token. Refer to the  to obtain the token',
-        )
-        .optional(),
+      spreadsheet_token: z.string().describe('Table token. Refer to the  to obtain the token').optional(),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -90,12 +85,7 @@ export const sheetsV3SpreadsheetPatch = {
         .optional(),
     }),
     path: z.object({
-      spreadsheet_token: z
-        .string()
-        .describe(
-          'Table token. Refer to the  to obtain the token',
-        )
-        .optional(),
+      spreadsheet_token: z.string().describe('Table token. Refer to the  to obtain the token').optional(),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -402,9 +392,7 @@ export const sheetsV3SpreadsheetSheetFind = {
     data: z.object({
       find_condition: z
         .object({
-          range: z
-            .string()
-            .describe('Search range, '),
+          range: z.string().describe('Search range, '),
           match_case: z
             .boolean()
             .describe(
@@ -436,12 +424,7 @@ export const sheetsV3SpreadsheetSheetFind = {
           'Sheet token,[how to get related cloud document resources]((https://open.feishu.cn/document/ukTMukTMukTM/uczNzUjL3czM14yN3MTN))',
         )
         .optional(),
-      sheet_id: z
-        .string()
-        .describe(
-          'Sheet ID, ',
-        )
-        .optional(),
+      sheet_id: z.string().describe('Sheet ID, ').optional(),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -644,12 +627,7 @@ export const sheetsV3SpreadsheetSheetMoveDimension = {
       destination_index: z.number().describe('Row or column number of the target location').optional(),
     }),
     path: z.object({
-      spreadsheet_token: z
-        .string()
-        .describe(
-          'Sheet token, For details, see ',
-        )
-        .optional(),
+      spreadsheet_token: z.string().describe('Sheet token, For details, see ').optional(),
       sheet_id: z.string().describe('Sheet ID').optional(),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
@@ -689,9 +667,7 @@ export const sheetsV3SpreadsheetSheetReplace = {
     data: z.object({
       find_condition: z
         .object({
-          range: z
-            .string()
-            .describe('Search range, '),
+          range: z.string().describe('Search range, '),
           match_case: z
             .boolean()
             .describe(

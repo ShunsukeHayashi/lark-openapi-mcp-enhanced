@@ -46,7 +46,7 @@ export class ExecutionEngine extends EventEmitter {
   private plans: Map<string, ExecutionPlan> = new Map();
   private activeExecutions: Map<string, Promise<any>> = new Map();
   private config: ConcurrencyConfig;
-  
+
   // Inspired by AIstudio's CONCURRENT_TASK_LIMIT
   private readonly DEFAULT_MAX_CONCURRENT = 3;
   private readonly DEPENDENCY_TIMEOUT_MS = 300000; // 5 minutes
@@ -54,12 +54,12 @@ export class ExecutionEngine extends EventEmitter {
 
   constructor(config: Partial<ConcurrencyConfig> = {}) {
     super();
-    
+
     this.config = {
       maxConcurrentTasks: config.maxConcurrentTasks || this.DEFAULT_MAX_CONCURRENT,
       dependencyTimeout: config.dependencyTimeout || this.DEPENDENCY_TIMEOUT_MS,
       retryDelay: config.retryDelay || this.RETRY_DELAY_MS,
-      enableAdaptiveConcurrency: config.enableAdaptiveConcurrency || true
+      enableAdaptiveConcurrency: config.enableAdaptiveConcurrency || true,
     };
   }
 
@@ -72,13 +72,13 @@ export class ExecutionEngine extends EventEmitter {
     options: {
       maxRetries?: number;
       timeoutMs?: number;
-    } = {}
+    } = {},
   ): Promise<string> {
     const planId = this.generatePlanId();
-    
+
     // Create execution nodes
     const nodes = new Map<string, ExecutionNode>();
-    
+
     for (const task of tasks) {
       const node: ExecutionNode = {
         taskId: task.id,
@@ -87,9 +87,9 @@ export class ExecutionEngine extends EventEmitter {
         dependents: new Set(),
         status: 'waiting',
         retryCount: 0,
-        maxRetries: options.maxRetries || 3
+        maxRetries: options.maxRetries || 3,
       };
-      
+
       nodes.set(task.id, node);
     }
 
@@ -109,7 +109,7 @@ export class ExecutionEngine extends EventEmitter {
       criticalPath,
       estimatedDuration,
       status: 'pending',
-      createdAt: new Date()
+      createdAt: new Date(),
     };
 
     this.plans.set(planId, plan);
@@ -148,7 +148,7 @@ export class ExecutionEngine extends EventEmitter {
         await this.executeTaskGroup(plan, group);
 
         // Check for failures that should stop execution
-        const failedTasks = group.filter(taskId => {
+        const failedTasks = group.filter((taskId) => {
           const node = plan.nodes.get(taskId);
           return node?.status === 'failed';
         });
@@ -165,7 +165,6 @@ export class ExecutionEngine extends EventEmitter {
 
       console.log(`🎉 Execution plan completed: ${plan.name}`);
       return true;
-
     } catch (error) {
       plan.status = 'failed';
       plan.completedAt = new Date();
@@ -180,7 +179,7 @@ export class ExecutionEngine extends EventEmitter {
    * Execute a group of tasks concurrently with dependency checking
    */
   private async executeTaskGroup(plan: ExecutionPlan, taskIds: string[]): Promise<void> {
-    const readyTasks = taskIds.filter(taskId => {
+    const readyTasks = taskIds.filter((taskId) => {
       const node = plan.nodes.get(taskId);
       return node && this.isTaskReady(node, plan.nodes);
     });
@@ -243,10 +242,9 @@ export class ExecutionEngine extends EventEmitter {
 
         console.log(`✅ Task completed: ${node.task.name}`);
         return;
-
       } catch (error) {
         node.retryCount = attempt + 1;
-        
+
         if (attempt < node.maxRetries) {
           console.warn(`⚠️ Task failed, retrying (${attempt + 1}/${node.maxRetries}): ${node.task.name} - ${error}`);
           await this.delay(this.config.retryDelay);
@@ -255,7 +253,7 @@ export class ExecutionEngine extends EventEmitter {
           node.error = String(error);
           node.executionEndTime = new Date();
           this.emit('task_failed', node);
-          
+
           console.error(`❌ Task failed permanently: ${node.task.name} - ${error}`);
           throw error;
         }
@@ -274,7 +272,7 @@ export class ExecutionEngine extends EventEmitter {
       assignedAgentType: agent.type,
       recommendedTools: this.getRecommendedTools(task),
       priority: task.priority,
-      context: task.context
+      context: task.context,
     };
 
     // Send task to agent via communication bus
@@ -285,7 +283,7 @@ export class ExecutionEngine extends EventEmitter {
       type: 'request' as const,
       payload: { assignment, task },
       timestamp: new Date(),
-      priority: task.priority
+      priority: task.priority,
     };
 
     await globalCommBus.sendMessage(message);
@@ -366,7 +364,7 @@ export class ExecutionEngine extends EventEmitter {
       for (const node of nodesArray) {
         if (visited.has(node.taskId)) continue;
 
-        const hasUnvisitedDeps = Array.from(node.dependencies).some(depId => !visited.has(depId));
+        const hasUnvisitedDeps = Array.from(node.dependencies).some((depId) => !visited.has(depId));
         if (!hasUnvisitedDeps) {
           currentGroup.push(node.taskId);
         }
@@ -377,7 +375,7 @@ export class ExecutionEngine extends EventEmitter {
       }
 
       groups.push(currentGroup);
-      currentGroup.forEach(taskId => visited.add(taskId));
+      currentGroup.forEach((taskId) => visited.add(taskId));
     }
 
     return groups;
@@ -405,9 +403,7 @@ export class ExecutionEngine extends EventEmitter {
         return taskDuration;
       }
 
-      const maxDepPath = Math.max(
-        ...Array.from(node.dependencies).map(depId => calculateLongestPath(depId))
-      );
+      const maxDepPath = Math.max(...Array.from(node.dependencies).map((depId) => calculateLongestPath(depId)));
 
       const totalPath = maxDepPath + taskDuration;
       longestPaths.set(nodeId, totalPath);
@@ -437,12 +433,11 @@ export class ExecutionEngine extends EventEmitter {
         return [nodeId];
       }
 
-      const criticalDep = Array.from(node.dependencies)
-        .reduce((max, depId) => {
-          const maxPath = longestPaths.get(max) || 0;
-          const depPath = longestPaths.get(depId) || 0;
-          return depPath > maxPath ? depId : max;
-        });
+      const criticalDep = Array.from(node.dependencies).reduce((max, depId) => {
+        const maxPath = longestPaths.get(max) || 0;
+        const depPath = longestPaths.get(depId) || 0;
+        return depPath > maxPath ? depId : max;
+      });
 
       return [...reconstructPath(criticalDep), nodeId];
     };
@@ -476,7 +471,7 @@ export class ExecutionEngine extends EventEmitter {
    */
   private getRecommendedTools(task: Task): string[] {
     const tools: string[] = [];
-    
+
     for (const capability of task.requiredCapabilities) {
       switch (capability) {
         case 'base_operations':
@@ -510,16 +505,16 @@ export class ExecutionEngine extends EventEmitter {
 
     return {
       totalPlans: plans.length,
-      activePlans: plans.filter(p => p.status === 'executing').length,
-      completedPlans: plans.filter(p => p.status === 'completed').length,
-      failedPlans: plans.filter(p => p.status === 'failed').length,
+      activePlans: plans.filter((p) => p.status === 'executing').length,
+      completedPlans: plans.filter((p) => p.status === 'completed').length,
+      failedPlans: plans.filter((p) => p.status === 'failed').length,
       activeExecutions,
-      averageExecutionTime: this.calculateAverageExecutionTime(plans)
+      averageExecutionTime: this.calculateAverageExecutionTime(plans),
     };
   }
 
   private calculateAverageExecutionTime(plans: ExecutionPlan[]): number {
-    const completedPlans = plans.filter(p => p.status === 'completed' && p.startedAt && p.completedAt);
+    const completedPlans = plans.filter((p) => p.status === 'completed' && p.startedAt && p.completedAt);
     if (completedPlans.length === 0) return 0;
 
     const totalTime = completedPlans.reduce((sum, plan) => {
@@ -530,7 +525,7 @@ export class ExecutionEngine extends EventEmitter {
   }
 
   private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   private generatePlanId(): string {

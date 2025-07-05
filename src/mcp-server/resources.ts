@@ -7,129 +7,123 @@ export const mcpResources = [
     name: 'genesis_template_examples',
     description: 'Examples and details of Genesis templates for creating Lark Base applications',
     mimeType: 'application/json',
-    content: JSON.stringify({
-      templates: {
-        crm: {
-          name: 'Customer Relationship Management',
-          tables: [
-            {
-              name: 'Customers',
-              fields: ['Company Name', 'Industry', 'Status', 'Annual Revenue', 'Account Owner'],
-              purpose: 'Manage customer organizations'
-            },
-            {
-              name: 'Contacts',
-              fields: ['Full Name', 'Email', 'Phone', 'Job Title', 'Company'],
-              purpose: 'Individual contact records'
-            },
-            {
-              name: 'Opportunities',
-              fields: ['Opportunity Name', 'Stage', 'Amount', 'Expected Close Date', 'Owner'],
-              purpose: 'Sales pipeline tracking'
-            },
-            {
-              name: 'Activities',
-              fields: ['Subject', 'Type', 'Date', 'Status', 'Related To'],
-              purpose: 'Track all customer interactions'
-            }
-          ],
-          views: ['Pipeline Kanban', 'My Activities', 'High-Value Customers', 'Forecast Report'],
-          automations: ['New opportunity notifications', 'Follow-up reminders', 'Stage change alerts'],
-          dashboards: ['Sales Overview', 'Activity Metrics', 'Revenue Forecast'],
-          useCases: [
-            'B2B sales management',
-            'Customer success tracking',
-            'Account management',
-            'Sales forecasting'
-          ]
+    content: JSON.stringify(
+      {
+        templates: {
+          crm: {
+            name: 'Customer Relationship Management',
+            tables: [
+              {
+                name: 'Customers',
+                fields: ['Company Name', 'Industry', 'Status', 'Annual Revenue', 'Account Owner'],
+                purpose: 'Manage customer organizations',
+              },
+              {
+                name: 'Contacts',
+                fields: ['Full Name', 'Email', 'Phone', 'Job Title', 'Company'],
+                purpose: 'Individual contact records',
+              },
+              {
+                name: 'Opportunities',
+                fields: ['Opportunity Name', 'Stage', 'Amount', 'Expected Close Date', 'Owner'],
+                purpose: 'Sales pipeline tracking',
+              },
+              {
+                name: 'Activities',
+                fields: ['Subject', 'Type', 'Date', 'Status', 'Related To'],
+                purpose: 'Track all customer interactions',
+              },
+            ],
+            views: ['Pipeline Kanban', 'My Activities', 'High-Value Customers', 'Forecast Report'],
+            automations: ['New opportunity notifications', 'Follow-up reminders', 'Stage change alerts'],
+            dashboards: ['Sales Overview', 'Activity Metrics', 'Revenue Forecast'],
+            useCases: ['B2B sales management', 'Customer success tracking', 'Account management', 'Sales forecasting'],
+          },
+          project_management: {
+            name: 'Project Management System',
+            tables: [
+              {
+                name: 'Projects',
+                fields: ['Project Name', 'Status', 'Priority', 'Start Date', 'End Date', 'Manager'],
+                purpose: 'Project portfolio management',
+              },
+              {
+                name: 'Tasks',
+                fields: ['Task Name', 'Project', 'Assignee', 'Due Date', 'Status', 'Dependencies'],
+                purpose: 'Detailed task tracking',
+              },
+              {
+                name: 'Milestones',
+                fields: ['Milestone Name', 'Target Date', 'Status', 'Owner', 'Success Criteria'],
+                purpose: 'Key project checkpoints',
+              },
+              {
+                name: 'Time Tracking',
+                fields: ['Date', 'Team Member', 'Task', 'Hours', 'Billable'],
+                purpose: 'Track time spent on tasks',
+              },
+            ],
+            views: ['Sprint Board', 'Gantt Chart', 'Team Workload', 'Milestone Calendar'],
+            automations: ['Task assignment notifications', 'Due date reminders', 'Progress updates'],
+            dashboards: ['Project Overview', 'Resource Utilization', 'Sprint Metrics'],
+            useCases: ['Software development', 'Marketing campaigns', 'Product launches', 'Construction projects'],
+          },
+          hr_management: {
+            name: 'Human Resources Management',
+            tables: [
+              {
+                name: 'Employees',
+                fields: ['Employee ID', 'Full Name', 'Department', 'Job Title', 'Manager', 'Start Date'],
+                purpose: 'Employee master records',
+              },
+              {
+                name: 'Leave Requests',
+                fields: ['Employee', 'Leave Type', 'Start Date', 'End Date', 'Status', 'Approver'],
+                purpose: 'Time-off management',
+              },
+              {
+                name: 'Performance Reviews',
+                fields: ['Employee', 'Review Period', 'Rating', 'Goals Achievement', 'Next Review Date'],
+                purpose: 'Performance evaluations',
+              },
+              {
+                name: 'Onboarding Tasks',
+                fields: ['Task Name', 'Employee', 'Category', 'Due Date', 'Status', 'Assigned To'],
+                purpose: 'New hire checklist',
+              },
+            ],
+            views: ['Organization Chart', 'Leave Calendar', 'Pending Approvals', 'Onboarding Progress'],
+            automations: ['Onboarding task creation', 'Leave approval workflow', 'Review reminders'],
+            dashboards: ['HR Analytics', 'Headcount Trends', 'Leave Utilization'],
+            useCases: [
+              'Employee lifecycle management',
+              'Leave management',
+              'Performance tracking',
+              'Organizational planning',
+            ],
+          },
         },
-        project_management: {
-          name: 'Project Management System',
-          tables: [
-            {
-              name: 'Projects',
-              fields: ['Project Name', 'Status', 'Priority', 'Start Date', 'End Date', 'Manager'],
-              purpose: 'Project portfolio management'
-            },
-            {
-              name: 'Tasks',
-              fields: ['Task Name', 'Project', 'Assignee', 'Due Date', 'Status', 'Dependencies'],
-              purpose: 'Detailed task tracking'
-            },
-            {
-              name: 'Milestones',
-              fields: ['Milestone Name', 'Target Date', 'Status', 'Owner', 'Success Criteria'],
-              purpose: 'Key project checkpoints'
-            },
-            {
-              name: 'Time Tracking',
-              fields: ['Date', 'Team Member', 'Task', 'Hours', 'Billable'],
-              purpose: 'Track time spent on tasks'
-            }
+        implementation_guide: {
+          quick_start: [
+            '1. Choose a template that matches your needs',
+            '2. Use genesis.builtin.list_templates for details',
+            '3. Create base with genesis.builtin.create_base',
+            '4. Customize fields and views as needed',
+            '5. Set up automation rules',
+            '6. Configure user permissions',
           ],
-          views: ['Sprint Board', 'Gantt Chart', 'Team Workload', 'Milestone Calendar'],
-          automations: ['Task assignment notifications', 'Due date reminders', 'Progress updates'],
-          dashboards: ['Project Overview', 'Resource Utilization', 'Sprint Metrics'],
-          useCases: [
-            'Software development',
-            'Marketing campaigns',
-            'Product launches',
-            'Construction projects'
-          ]
+          customization_tips: [
+            'Add custom fields specific to your business',
+            'Create filtered views for different teams',
+            'Set up approval workflows',
+            'Build dashboards for executives',
+            'Integrate with other systems via API',
+          ],
         },
-        hr_management: {
-          name: 'Human Resources Management',
-          tables: [
-            {
-              name: 'Employees',
-              fields: ['Employee ID', 'Full Name', 'Department', 'Job Title', 'Manager', 'Start Date'],
-              purpose: 'Employee master records'
-            },
-            {
-              name: 'Leave Requests',
-              fields: ['Employee', 'Leave Type', 'Start Date', 'End Date', 'Status', 'Approver'],
-              purpose: 'Time-off management'
-            },
-            {
-              name: 'Performance Reviews',
-              fields: ['Employee', 'Review Period', 'Rating', 'Goals Achievement', 'Next Review Date'],
-              purpose: 'Performance evaluations'
-            },
-            {
-              name: 'Onboarding Tasks',
-              fields: ['Task Name', 'Employee', 'Category', 'Due Date', 'Status', 'Assigned To'],
-              purpose: 'New hire checklist'
-            }
-          ],
-          views: ['Organization Chart', 'Leave Calendar', 'Pending Approvals', 'Onboarding Progress'],
-          automations: ['Onboarding task creation', 'Leave approval workflow', 'Review reminders'],
-          dashboards: ['HR Analytics', 'Headcount Trends', 'Leave Utilization'],
-          useCases: [
-            'Employee lifecycle management',
-            'Leave management',
-            'Performance tracking',
-            'Organizational planning'
-          ]
-        }
       },
-      implementation_guide: {
-        quick_start: [
-          '1. Choose a template that matches your needs',
-          '2. Use genesis.builtin.list_templates for details',
-          '3. Create base with genesis.builtin.create_base',
-          '4. Customize fields and views as needed',
-          '5. Set up automation rules',
-          '6. Configure user permissions'
-        ],
-        customization_tips: [
-          'Add custom fields specific to your business',
-          'Create filtered views for different teams',
-          'Set up approval workflows',
-          'Build dashboards for executives',
-          'Integrate with other systems via API'
-        ]
-      }
-    }, null, 2)
+      null,
+      2,
+    ),
   },
   {
     name: 'lark_api_reference',
@@ -210,152 +204,164 @@ export const mcpResources = [
 3. Cache frequently accessed data
 4. Use webhooks for real-time updates
 5. Handle errors gracefully
-`
+`,
   },
   {
     name: 'automation_templates',
     description: 'Ready-to-use automation workflow templates',
     mimeType: 'application/json',
-    content: JSON.stringify({
-      templates: [
-        {
-          name: 'employee_onboarding',
-          description: 'Complete employee onboarding workflow',
-          steps: [
-            'Create user account',
-            'Add to departments',
-            'Assign to groups',
-            'Create email',
-            'Book desk/equipment',
-            'Schedule orientation',
-            'Assign buddy',
-            'Create tasks for manager',
-            'Send welcome message'
-          ],
-          automations: [
-            {
-              trigger: 'New employee record created',
-              actions: [
-                'Create Lark account',
-                'Send welcome email',
-                'Create onboarding checklist',
-                'Notify IT for equipment',
-                'Schedule HR meeting'
-              ]
-            }
-          ]
-        },
-        {
-          name: 'project_kickoff',
-          description: 'Project initialization workflow',
-          steps: [
-            'Create project base',
-            'Set up team chat',
-            'Create document space',
-            'Schedule kickoff meeting',
-            'Create task list',
-            'Set up status reporting'
-          ],
-          automations: [
-            {
-              trigger: 'Project approved',
-              actions: [
-                'Create project workspace',
-                'Add team members',
-                'Generate project template',
-                'Schedule weekly standups',
-                'Create status dashboard'
-              ]
-            }
-          ]
-        },
-        {
-          name: 'expense_approval',
-          description: 'Expense claim approval workflow',
-          routing_rules: [
-            { condition: 'amount < 100', approver: 'Direct manager' },
-            { condition: 'amount >= 100 AND amount < 1000', approver: 'Department head' },
-            { condition: 'amount >= 1000', approver: 'Finance director' }
-          ],
-          notifications: [
-            'Submission confirmation',
-            'Approval needed reminder',
-            'Status updates',
-            'Final approval/rejection'
-          ]
-        }
-      ]
-    }, null, 2)
+    content: JSON.stringify(
+      {
+        templates: [
+          {
+            name: 'employee_onboarding',
+            description: 'Complete employee onboarding workflow',
+            steps: [
+              'Create user account',
+              'Add to departments',
+              'Assign to groups',
+              'Create email',
+              'Book desk/equipment',
+              'Schedule orientation',
+              'Assign buddy',
+              'Create tasks for manager',
+              'Send welcome message',
+            ],
+            automations: [
+              {
+                trigger: 'New employee record created',
+                actions: [
+                  'Create Lark account',
+                  'Send welcome email',
+                  'Create onboarding checklist',
+                  'Notify IT for equipment',
+                  'Schedule HR meeting',
+                ],
+              },
+            ],
+          },
+          {
+            name: 'project_kickoff',
+            description: 'Project initialization workflow',
+            steps: [
+              'Create project base',
+              'Set up team chat',
+              'Create document space',
+              'Schedule kickoff meeting',
+              'Create task list',
+              'Set up status reporting',
+            ],
+            automations: [
+              {
+                trigger: 'Project approved',
+                actions: [
+                  'Create project workspace',
+                  'Add team members',
+                  'Generate project template',
+                  'Schedule weekly standups',
+                  'Create status dashboard',
+                ],
+              },
+            ],
+          },
+          {
+            name: 'expense_approval',
+            description: 'Expense claim approval workflow',
+            routing_rules: [
+              { condition: 'amount < 100', approver: 'Direct manager' },
+              { condition: 'amount >= 100 AND amount < 1000', approver: 'Department head' },
+              { condition: 'amount >= 1000', approver: 'Finance director' },
+            ],
+            notifications: [
+              'Submission confirmation',
+              'Approval needed reminder',
+              'Status updates',
+              'Final approval/rejection',
+            ],
+          },
+        ],
+      },
+      null,
+      2,
+    ),
   },
   {
     name: 'base_table_schemas',
     description: 'Common Lark Base table schemas',
     mimeType: 'application/json',
-    content: JSON.stringify({
-      schemas: [
-        {
-          name: 'CRM',
-          tables: [
-            {
-              name: 'Customers',
-              fields: [
-                { name: 'Company Name', type: 'text', required: true },
-                { name: 'Contact Person', type: 'user' },
-                { name: 'Email', type: 'email' },
-                { name: 'Phone', type: 'phone' },
-                { name: 'Status', type: 'select', options: ['Lead', 'Prospect', 'Customer', 'Churned'] },
-                { name: 'Industry', type: 'select' },
-                { name: 'Deal Size', type: 'currency' },
-                { name: 'Last Contact', type: 'date' },
-                { name: 'Notes', type: 'text_long' }
-              ]
-            },
-            {
-              name: 'Deals',
-              fields: [
-                { name: 'Deal Name', type: 'text' },
-                { name: 'Customer', type: 'link', link_to: 'Customers' },
-                { name: 'Stage', type: 'select', options: ['Prospecting', 'Qualification', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'] },
-                { name: 'Amount', type: 'currency' },
-                { name: 'Probability', type: 'percent' },
-                { name: 'Close Date', type: 'date' },
-                { name: 'Owner', type: 'user' }
-              ]
-            }
-          ]
-        },
-        {
-          name: 'Project Management',
-          tables: [
-            {
-              name: 'Projects',
-              fields: [
-                { name: 'Project Name', type: 'text' },
-                { name: 'Status', type: 'select', options: ['Planning', 'In Progress', 'On Hold', 'Completed'] },
-                { name: 'Start Date', type: 'date' },
-                { name: 'End Date', type: 'date' },
-                { name: 'Project Lead', type: 'user' },
-                { name: 'Budget', type: 'currency' },
-                { name: 'Progress', type: 'percent' }
-              ]
-            },
-            {
-              name: 'Tasks',
-              fields: [
-                { name: 'Task Name', type: 'text' },
-                { name: 'Project', type: 'link', link_to: 'Projects' },
-                { name: 'Assignee', type: 'user' },
-                { name: 'Status', type: 'select', options: ['To Do', 'In Progress', 'Review', 'Done'] },
-                { name: 'Priority', type: 'select', options: ['Low', 'Medium', 'High', 'Urgent'] },
-                { name: 'Due Date', type: 'date' },
-                { name: 'Estimated Hours', type: 'number' },
-                { name: 'Actual Hours', type: 'number' }
-              ]
-            }
-          ]
-        }
-      ]
-    }, null, 2)
+    content: JSON.stringify(
+      {
+        schemas: [
+          {
+            name: 'CRM',
+            tables: [
+              {
+                name: 'Customers',
+                fields: [
+                  { name: 'Company Name', type: 'text', required: true },
+                  { name: 'Contact Person', type: 'user' },
+                  { name: 'Email', type: 'email' },
+                  { name: 'Phone', type: 'phone' },
+                  { name: 'Status', type: 'select', options: ['Lead', 'Prospect', 'Customer', 'Churned'] },
+                  { name: 'Industry', type: 'select' },
+                  { name: 'Deal Size', type: 'currency' },
+                  { name: 'Last Contact', type: 'date' },
+                  { name: 'Notes', type: 'text_long' },
+                ],
+              },
+              {
+                name: 'Deals',
+                fields: [
+                  { name: 'Deal Name', type: 'text' },
+                  { name: 'Customer', type: 'link', link_to: 'Customers' },
+                  {
+                    name: 'Stage',
+                    type: 'select',
+                    options: ['Prospecting', 'Qualification', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'],
+                  },
+                  { name: 'Amount', type: 'currency' },
+                  { name: 'Probability', type: 'percent' },
+                  { name: 'Close Date', type: 'date' },
+                  { name: 'Owner', type: 'user' },
+                ],
+              },
+            ],
+          },
+          {
+            name: 'Project Management',
+            tables: [
+              {
+                name: 'Projects',
+                fields: [
+                  { name: 'Project Name', type: 'text' },
+                  { name: 'Status', type: 'select', options: ['Planning', 'In Progress', 'On Hold', 'Completed'] },
+                  { name: 'Start Date', type: 'date' },
+                  { name: 'End Date', type: 'date' },
+                  { name: 'Project Lead', type: 'user' },
+                  { name: 'Budget', type: 'currency' },
+                  { name: 'Progress', type: 'percent' },
+                ],
+              },
+              {
+                name: 'Tasks',
+                fields: [
+                  { name: 'Task Name', type: 'text' },
+                  { name: 'Project', type: 'link', link_to: 'Projects' },
+                  { name: 'Assignee', type: 'user' },
+                  { name: 'Status', type: 'select', options: ['To Do', 'In Progress', 'Review', 'Done'] },
+                  { name: 'Priority', type: 'select', options: ['Low', 'Medium', 'High', 'Urgent'] },
+                  { name: 'Due Date', type: 'date' },
+                  { name: 'Estimated Hours', type: 'number' },
+                  { name: 'Actual Hours', type: 'number' },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      null,
+      2,
+    ),
   },
   {
     name: 'integration_examples',
@@ -479,8 +485,8 @@ app.post('/lark-events', (req, res) => {
   res.json({ challenge: req.body.challenge });
 });
 \`\`\`
-`
-  }
+`,
+  },
 ];
 
 /**
@@ -488,15 +494,10 @@ app.post('/lark-events', (req, res) => {
  */
 export function registerResources(server: any): void {
   for (const resource of mcpResources) {
-    server.resource(
-      resource.name,
-      resource.description,
-      resource.mimeType,
-      async () => {
-        return {
-          content: resource.content
-        };
-      }
-    );
+    server.resource(resource.name, resource.description, resource.mimeType, async () => {
+      return {
+        content: resource.content,
+      };
+    });
   }
 }

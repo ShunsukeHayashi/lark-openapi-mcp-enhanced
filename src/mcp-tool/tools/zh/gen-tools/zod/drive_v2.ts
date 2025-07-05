@@ -29,11 +29,7 @@ export const driveV2FileLikeList = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional(),
     }),
     path: z.object({
-      file_token: z
-        .string()
-        .describe(
-          '需要查询点赞者列表的云文档 token。',
-        ),
+      file_token: z.string().describe('需要查询点赞者列表的云文档 token。'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -55,11 +51,7 @@ export const driveV2PermissionPublicGet = {
         ),
     }),
     path: z.object({
-      token: z
-        .string()
-        .describe(
-          '文件的 token，获取方式见 ',
-        ),
+      token: z.string().describe('文件的 token，获取方式见 '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -133,11 +125,7 @@ export const driveV2PermissionPublicPatch = {
         ),
     }),
     path: z.object({
-      token: z
-        .string()
-        .describe(
-          '文件的 token，获取方式见 ',
-        ),
+      token: z.string().describe('文件的 token，获取方式见 '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },

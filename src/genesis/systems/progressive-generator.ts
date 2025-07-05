@@ -148,7 +148,7 @@ export class ProgressiveGenerator {
           type: 'text',
           required: true,
           description: '要求仕様書またはプロジェクト概要',
-          validation: { minLength: 100 }
+          validation: { minLength: 100 },
         },
         {
           name: 'priority',
@@ -156,8 +156,8 @@ export class ProgressiveGenerator {
           required: true,
           description: 'プロジェクト優先度',
           options: ['高', '中', '低'],
-          defaultValue: '中'
-        }
+          defaultValue: '中',
+        },
       ],
       outputs: [
         {
@@ -165,15 +165,15 @@ export class ProgressiveGenerator {
           type: 'json',
           description: '構造化された要求仕様',
           previewable: true,
-          editable: true
+          editable: true,
         },
         {
           name: 'stakeholder_matrix',
           type: 'report',
           description: 'ステークホルダー分析レポート',
           previewable: true,
-          editable: false
-        }
+          editable: false,
+        },
       ],
       validationRules: [
         {
@@ -183,10 +183,10 @@ export class ProgressiveGenerator {
           severity: 'warning',
           validator: (data) => ({
             valid: true,
-            issues: []
-          })
-        }
-      ]
+            issues: [],
+          }),
+        },
+      ],
     },
     {
       name: 'データモデル設計',
@@ -201,8 +201,8 @@ export class ProgressiveGenerator {
           required: true,
           description: 'モデリング手法',
           options: ['標準的', '詳細', '簡略'],
-          defaultValue: '標準的'
-        }
+          defaultValue: '標準的',
+        },
       ],
       outputs: [
         {
@@ -210,16 +210,16 @@ export class ProgressiveGenerator {
           type: 'json',
           description: 'エンティティモデル定義',
           previewable: true,
-          editable: true
+          editable: true,
         },
         {
           name: 'er_diagram',
           type: 'diagram',
           description: 'ER図',
           previewable: true,
-          editable: false
-        }
-      ]
+          editable: false,
+        },
+      ],
     },
     {
       name: 'Base構造設計',
@@ -234,8 +234,8 @@ export class ProgressiveGenerator {
           required: true,
           description: 'フィールドの複雑さ',
           options: ['シンプル', '標準', '高度'],
-          defaultValue: '標準'
-        }
+          defaultValue: '標準',
+        },
       ],
       outputs: [
         {
@@ -243,9 +243,9 @@ export class ProgressiveGenerator {
           type: 'json',
           description: 'Base構造定義',
           previewable: true,
-          editable: true
-        }
-      ]
+          editable: true,
+        },
+      ],
     },
     {
       name: 'ビジネスロジック設計',
@@ -260,8 +260,8 @@ export class ProgressiveGenerator {
           required: true,
           description: '自動化レベル',
           options: ['最小限', '標準', '最大'],
-          defaultValue: '標準'
-        }
+          defaultValue: '標準',
+        },
       ],
       outputs: [
         {
@@ -269,16 +269,16 @@ export class ProgressiveGenerator {
           type: 'json',
           description: 'ビジネスロジック定義',
           previewable: true,
-          editable: true
+          editable: true,
         },
         {
           name: 'formula_list',
           type: 'report',
           description: '数式一覧',
           previewable: true,
-          editable: false
-        }
-      ]
+          editable: false,
+        },
+      ],
     },
     {
       name: 'ワークフロー設計',
@@ -293,8 +293,8 @@ export class ProgressiveGenerator {
           required: true,
           description: 'ワークフローの複雑さ',
           options: ['基本', '標準', '高度'],
-          defaultValue: '標準'
-        }
+          defaultValue: '標準',
+        },
       ],
       outputs: [
         {
@@ -302,9 +302,9 @@ export class ProgressiveGenerator {
           type: 'json',
           description: 'ワークフロー定義',
           previewable: true,
-          editable: true
-        }
-      ]
+          editable: true,
+        },
+      ],
     },
     {
       name: 'UI設計',
@@ -319,8 +319,8 @@ export class ProgressiveGenerator {
           required: true,
           description: 'UI複雑さ',
           options: ['シンプル', '標準', 'カスタム'],
-          defaultValue: '標準'
-        }
+          defaultValue: '標準',
+        },
       ],
       outputs: [
         {
@@ -328,9 +328,9 @@ export class ProgressiveGenerator {
           type: 'json',
           description: 'UI設計仕様',
           previewable: true,
-          editable: true
-        }
-      ]
+          editable: true,
+        },
+      ],
     },
     {
       name: '実装計画',
@@ -345,17 +345,17 @@ export class ProgressiveGenerator {
           type: 'report',
           description: '実装計画書',
           previewable: true,
-          editable: true
+          editable: true,
         },
         {
           name: 'deployment_guide',
           type: 'report',
           description: 'デプロイメントガイド',
           previewable: true,
-          editable: false
-        }
-      ]
-    }
+          editable: false,
+        },
+      ],
+    },
   ];
 
   /**
@@ -370,17 +370,17 @@ export class ProgressiveGenerator {
       requireApproval?: boolean;
       enableValidation?: boolean;
       customSteps?: GenerationStep[];
-    } = {}
+    } = {},
   ): ProgressiveSession {
     const sessionId = `session_${Date.now()}_${userId}`;
-    
+
     // ステップの初期化
     const steps = (options.customSteps || this.DEFAULT_STEPS).map((stepTemplate, index) => ({
       id: `step_${index + 1}`,
       ...stepTemplate,
       status: 'pending' as const,
       result: null,
-      userFeedback: undefined
+      userFeedback: undefined,
     }));
 
     return {
@@ -399,9 +399,9 @@ export class ProgressiveGenerator {
         autoAdvance: options.autoAdvance !== false,
         requireApproval: options.requireApproval !== false,
         enableValidation: options.enableValidation !== false,
-        saveHistory: true
+        saveHistory: true,
       },
-      history: []
+      history: [],
     };
   }
 
@@ -410,7 +410,7 @@ export class ProgressiveGenerator {
    */
   static async executeNextStep(
     session: ProgressiveSession,
-    stepInputs: Record<string, any> = {}
+    stepInputs: Record<string, any> = {},
   ): Promise<{
     success: boolean;
     session: ProgressiveSession;
@@ -422,12 +422,12 @@ export class ProgressiveGenerator {
 
     try {
       const currentStep = session.steps[session.currentStepIndex];
-      
+
       if (!currentStep) {
         return {
           success: false,
           session,
-          errors: ['No more steps to execute']
+          errors: ['No more steps to execute'],
         };
       }
 
@@ -437,7 +437,7 @@ export class ProgressiveGenerator {
         return {
           success: false,
           session,
-          errors: [`Dependencies not satisfied: ${dependencyCheck.missing.join(', ')}`]
+          errors: [`Dependencies not satisfied: ${dependencyCheck.missing.join(', ')}`],
         };
       }
 
@@ -447,7 +447,7 @@ export class ProgressiveGenerator {
         return {
           success: false,
           session,
-          errors: inputValidation.errors
+          errors: inputValidation.errors,
         };
       }
 
@@ -456,23 +456,23 @@ export class ProgressiveGenerator {
       this.addHistory(session, currentStep.id, 'started');
 
       const executionResult = await this.executeStep(session, currentStep, stepInputs);
-      
+
       if (executionResult.success) {
         session.steps[session.currentStepIndex].status = 'completed';
         session.steps[session.currentStepIndex].result = executionResult.result;
-        
+
         // 検証実行
         if (session.settings.enableValidation && currentStep.validationRules) {
           const validationResults = this.runValidations(currentStep, executionResult.result);
-          if (validationResults.some(v => !v.valid)) {
+          if (validationResults.some((v) => !v.valid)) {
             // 検証エラーがある場合は警告として記録
-            errors.push(...validationResults.flatMap(v => v.issues.map(i => i.message)));
+            errors.push(...validationResults.flatMap((v) => v.issues.map((i) => i.message)));
           }
         }
 
         // フィードバック要求の生成
         let feedbackRequest: FeedbackRequest | undefined;
-        
+
         if (session.settings.requireApproval) {
           feedbackRequest = this.generateFeedbackRequest(session, currentStep, executionResult.result);
         }
@@ -485,25 +485,24 @@ export class ProgressiveGenerator {
           session,
           stepResult: executionResult.result,
           feedbackRequest,
-          errors
+          errors,
         };
       } else {
         session.steps[session.currentStepIndex].status = 'failed';
-        
+
         return {
           success: false,
           session,
-          errors: executionResult.errors
+          errors: executionResult.errors,
         };
       }
-
     } catch (error) {
       session.steps[session.currentStepIndex].status = 'failed';
-      
+
       return {
         success: false,
         session,
-        errors: [`Step execution failed: ${error}`]
+        errors: [`Step execution failed: ${error}`],
       };
     }
   }
@@ -514,7 +513,7 @@ export class ProgressiveGenerator {
   static async processFeedback(
     session: ProgressiveSession,
     stepId: string,
-    feedback: UserFeedback
+    feedback: UserFeedback,
   ): Promise<{
     success: boolean;
     session: ProgressiveSession;
@@ -522,13 +521,13 @@ export class ProgressiveGenerator {
     revisionResult?: IterationResult;
   }> {
     try {
-      const stepIndex = session.steps.findIndex(step => step.id === stepId);
-      
+      const stepIndex = session.steps.findIndex((step) => step.id === stepId);
+
       if (stepIndex === -1) {
         return {
           success: false,
           session,
-          needsRevision: false
+          needsRevision: false,
         };
       }
 
@@ -542,16 +541,16 @@ export class ProgressiveGenerator {
       // 承認されていないか、修正要求がある場合
       if (!feedback.approved || feedback.requestRevision) {
         needsRevision = true;
-        
+
         // リビジョンの実行
         if (feedback.modifications.length > 0) {
           revisionResult = await this.executeRevision(session, stepIndex, feedback);
-          
+
           if (revisionResult.improved) {
             session.steps[stepIndex].result = revisionResult.newResult;
             this.addHistory(session, stepId, 'revision_requested', {
               changes: revisionResult.changes,
-              confidence: revisionResult.confidenceScore
+              confidence: revisionResult.confidenceScore,
             });
           }
         }
@@ -568,14 +567,13 @@ export class ProgressiveGenerator {
         success: true,
         session,
         needsRevision,
-        revisionResult
+        revisionResult,
       };
-
     } catch (error) {
       return {
         success: false,
         session,
-        needsRevision: false
+        needsRevision: false,
       };
     }
   }
@@ -584,7 +582,7 @@ export class ProgressiveGenerator {
    * セッションの進捗を更新
    */
   private static updateProgress(session: ProgressiveSession): void {
-    const completedSteps = session.steps.filter(step => step.status === 'completed').length;
+    const completedSteps = session.steps.filter((step) => step.status === 'completed').length;
     session.overallProgress = Math.round((completedSteps / session.steps.length) * 100);
     session.updatedAt = Date.now();
 
@@ -601,12 +599,12 @@ export class ProgressiveGenerator {
    */
   private static checkDependencies(
     session: ProgressiveSession,
-    step: GenerationStep
+    step: GenerationStep,
   ): { satisfied: boolean; missing: string[] } {
     const missing: string[] = [];
 
-    step.dependencies.forEach(depName => {
-      const depStep = session.steps.find(s => s.name === depName);
+    step.dependencies.forEach((depName) => {
+      const depStep = session.steps.find((s) => s.name === depName);
       if (!depStep || depStep.status !== 'completed') {
         missing.push(depName);
       }
@@ -614,7 +612,7 @@ export class ProgressiveGenerator {
 
     return {
       satisfied: missing.length === 0,
-      missing
+      missing,
     };
   }
 
@@ -623,11 +621,11 @@ export class ProgressiveGenerator {
    */
   private static validateStepInputs(
     step: GenerationStep,
-    inputs: Record<string, any>
+    inputs: Record<string, any>,
   ): { valid: boolean; errors: string[] } {
     const errors: string[] = [];
 
-    step.inputs.forEach(input => {
+    step.inputs.forEach((input) => {
       const value = inputs[input.name];
 
       if (input.required && (value === undefined || value === null || value === '')) {
@@ -637,7 +635,7 @@ export class ProgressiveGenerator {
 
       if (value !== undefined && input.validation) {
         const validation = input.validation;
-        
+
         if (validation.pattern && typeof value === 'string') {
           const regex = new RegExp(validation.pattern);
           if (!regex.test(value)) {
@@ -665,7 +663,7 @@ export class ProgressiveGenerator {
 
     return {
       valid: errors.length === 0,
-      errors
+      errors,
     };
   }
 
@@ -675,30 +673,29 @@ export class ProgressiveGenerator {
   private static async executeStep(
     session: ProgressiveSession,
     step: GenerationStep,
-    inputs: Record<string, any>
+    inputs: Record<string, any>,
   ): Promise<{ success: boolean; result?: any; errors: string[] }> {
     try {
       // 実際の実装では、各ステップに応じた処理を実行
       // ここではダミーの実装
-      
+
       const result = {
         stepId: step.id,
         stepName: step.name,
         inputs,
         timestamp: Date.now(),
-        data: this.generateMockStepResult(step, inputs)
+        data: this.generateMockStepResult(step, inputs),
       };
 
       return {
         success: true,
         result,
-        errors: []
+        errors: [],
       };
-
     } catch (error) {
       return {
         success: false,
-        errors: [`Step execution failed: ${error}`]
+        errors: [`Step execution failed: ${error}`],
       };
     }
   }
@@ -714,9 +711,9 @@ export class ProgressiveGenerator {
           domain: 'Business Management',
           functionalRequirements: [
             { id: 'FR001', description: 'User management functionality' },
-            { id: 'FR002', description: 'Data reporting capabilities' }
+            { id: 'FR002', description: 'Data reporting capabilities' },
           ],
-          stakeholders: ['Business Users', 'System Administrators']
+          stakeholders: ['Business Users', 'System Administrators'],
         };
 
       case 'データモデル設計':
@@ -727,18 +724,18 @@ export class ProgressiveGenerator {
               attributes: [
                 { name: 'id', type: 'string', primaryKey: true },
                 { name: 'name', type: 'string' },
-                { name: 'email', type: 'string' }
-              ]
-            }
+                { name: 'email', type: 'string' },
+              ],
+            },
           ],
-          relationships: []
+          relationships: [],
         };
 
       default:
         return {
           generated: true,
           stepName: step.name,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         };
     }
   }
@@ -747,7 +744,7 @@ export class ProgressiveGenerator {
    * 検証の実行
    */
   private static runValidations(step: GenerationStep, result: any): ValidationResult[] {
-    return (step.validationRules || []).map(rule => rule.validator(result));
+    return (step.validationRules || []).map((rule) => rule.validator(result));
   }
 
   /**
@@ -756,7 +753,7 @@ export class ProgressiveGenerator {
   private static generateFeedbackRequest(
     session: ProgressiveSession,
     step: GenerationStep,
-    result: any
+    result: any,
   ): FeedbackRequest {
     return {
       sessionId: session.id,
@@ -769,28 +766,28 @@ export class ProgressiveGenerator {
           id: 'overall_rating',
           type: 'rating',
           question: '全体的な結果の品質はいかがですか？',
-          required: true
+          required: true,
         },
         {
           id: 'accuracy',
           type: 'rating',
           question: '要求に対する正確性はいかがですか？',
-          required: true
+          required: true,
         },
         {
           id: 'comments',
           type: 'text',
           question: 'ご意見やご要望がございましたらお聞かせください。',
-          required: false
+          required: false,
         },
         {
           id: 'approve',
           type: 'boolean',
           question: 'この結果を承認しますか？',
-          required: true
-        }
+          required: true,
+        },
       ],
-      timeout: 3600 // 1時間
+      timeout: 3600, // 1時間
     };
   }
 
@@ -800,7 +797,7 @@ export class ProgressiveGenerator {
   private static async executeRevision(
     session: ProgressiveSession,
     stepIndex: number,
-    feedback: UserFeedback
+    feedback: UserFeedback,
   ): Promise<IterationResult> {
     const changes: Array<{
       type: 'addition' | 'modification' | 'removal';
@@ -811,16 +808,16 @@ export class ProgressiveGenerator {
     let newResult = { ...session.steps[stepIndex].result };
 
     // フィードバックに基づく修正の適用
-    feedback.modifications.forEach(mod => {
+    feedback.modifications.forEach((mod) => {
       try {
         // 簡単な実装：フィールド値の直接変更
         if (mod.field in newResult) {
           newResult[mod.field] = mod.newValue;
-          
+
           changes.push({
             type: 'modification',
             description: `Modified ${mod.field}: ${mod.reason}`,
-            impact: 'medium'
+            impact: 'medium',
           });
         }
       } catch (error) {
@@ -828,13 +825,13 @@ export class ProgressiveGenerator {
       }
     });
 
-    const confidenceScore = Math.max(0.5, 1.0 - (feedback.modifications.length * 0.1));
+    const confidenceScore = Math.max(0.5, 1.0 - feedback.modifications.length * 0.1);
 
     return {
       improved: changes.length > 0,
       changes,
       newResult,
-      confidenceScore
+      confidenceScore,
     };
   }
 
@@ -845,13 +842,13 @@ export class ProgressiveGenerator {
     session: ProgressiveSession,
     stepId: string,
     action: 'started' | 'completed' | 'feedback_received' | 'revision_requested',
-    data?: any
+    data?: any,
   ): void {
     session.history.push({
       stepId,
       action,
       timestamp: Date.now(),
-      data
+      data,
     });
   }
 
@@ -897,13 +894,15 @@ export class ProgressiveGenerator {
   } {
     const currentStep = session.steps[session.currentStepIndex] || null;
     const nextStep = session.steps[session.currentStepIndex + 1] || null;
-    const completedSteps = session.steps.filter(step => step.status === 'completed').length;
-    
+    const completedSteps = session.steps.filter((step) => step.status === 'completed').length;
+
     const remainingSteps = session.steps.slice(session.currentStepIndex);
     const estimatedTimeRemaining = remainingSteps.reduce((total, step) => total + step.estimatedTime, 0);
-    
-    const canProceed = !currentStep || 
-                      (currentStep.status === 'completed' && (!session.settings.requireApproval || currentStep.userFeedback?.approved !== undefined));
+
+    const canProceed =
+      !currentStep ||
+      (currentStep.status === 'completed' &&
+        (!session.settings.requireApproval || currentStep.userFeedback?.approved !== undefined));
 
     return {
       currentStep,
@@ -911,7 +910,7 @@ export class ProgressiveGenerator {
       completedSteps,
       totalSteps: session.steps.length,
       estimatedTimeRemaining,
-      canProceed
+      canProceed,
     };
   }
 
@@ -925,12 +924,12 @@ export class ProgressiveGenerator {
     recommendations: string[];
     nextSteps: string[];
   } {
-    const completedSteps = session.steps.filter(step => step.status === 'completed');
-    const failedSteps = session.steps.filter(step => step.status === 'failed');
-    
-    const achievements = completedSteps.map(step => `✅ ${step.name}が完了`);
-    const issues = failedSteps.map(step => `❌ ${step.name}が失敗`);
-    
+    const completedSteps = session.steps.filter((step) => step.status === 'completed');
+    const failedSteps = session.steps.filter((step) => step.status === 'failed');
+
+    const achievements = completedSteps.map((step) => `✅ ${step.name}が完了`);
+    const issues = failedSteps.map((step) => `❌ ${step.name}が失敗`);
+
     const recommendations: string[] = [];
     const nextSteps: string[] = [];
 
@@ -949,7 +948,7 @@ export class ProgressiveGenerator {
       achievements,
       issues,
       recommendations,
-      nextSteps
+      nextSteps,
     };
   }
 }

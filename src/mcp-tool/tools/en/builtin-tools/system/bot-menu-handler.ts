@@ -1,9 +1,9 @@
 import { McpTool } from '../../../../types';
 import { z } from 'zod';
 
-export type SystemBotMenuToolName = 
-  | 'system.bot.help' 
-  | 'system.bot.preset' 
+export type SystemBotMenuToolName =
+  | 'system.bot.help'
+  | 'system.bot.preset'
   | 'system.bot.settings'
   | 'system.bot.status';
 
@@ -17,14 +17,14 @@ export const systemBotHelpTool: McpTool = {
     data: z.object({
       category: z.string().optional().describe('Tool category (bitable, messaging, document, calendar, contact)'),
       chat_id: z.string().describe('Chat ID to send response to'),
-    })
+    }),
   },
   customHandler: async (client, params): Promise<any> => {
     try {
       const { category, chat_id } = params.data;
-      
+
       let helpContent = '';
-      
+
       if (!category) {
         helpContent = `🔧 **MCP Tool Categories**
 
@@ -86,12 +86,12 @@ Available tools:
 • Manage user groups
 • Directory operations
 
-Example: Find contact info for team members.`
+Example: Find contact info for team members.`,
         };
-        
+
         helpContent = helpTexts[category] || `❌ Unknown category: ${category}`;
       }
-      
+
       // Send response message
       const response = await client.request({
         method: 'POST',
@@ -100,26 +100,30 @@ Example: Find contact info for team members.`
         data: {
           receive_id: chat_id,
           msg_type: 'text',
-          content: JSON.stringify({ text: helpContent })
-        }
+          content: JSON.stringify({ text: helpContent }),
+        },
       });
-      
+
       return {
-        content: [{
-          type: 'text' as const,
-          text: `Help message sent successfully`
-        }]
+        content: [
+          {
+            type: 'text' as const,
+            text: `Help message sent successfully`,
+          },
+        ],
       };
     } catch (error) {
       return {
         isError: true,
-        content: [{
-          type: 'text' as const,
-          text: `Failed to send help: ${error}`
-        }]
+        content: [
+          {
+            type: 'text' as const,
+            text: `Failed to send help: ${error}`,
+          },
+        ],
       };
     }
-  }
+  },
 };
 
 // プリセット切り替えツール
@@ -132,13 +136,13 @@ export const systemBotPresetTool: McpTool = {
     data: z.object({
       preset_name: z.string().describe('Preset name (light, default, im.default, base.default)'),
       chat_id: z.string().describe('Chat ID to send response to'),
-    })
+    }),
   },
   customHandler: async (client, params): Promise<any> => {
     try {
       const { preset_name, chat_id } = params.data;
-      
-      const presetInfo: Record<string, { tools: number, description: string }> = {
+
+      const presetInfo: Record<string, { tools: number; description: string }> = {
         'preset.light': { tools: 10, description: 'Basic operations - lightweight tool set' },
         'preset.default': { tools: 19, description: 'Standard comprehensive tool set' },
         'preset.im.default': { tools: 5, description: 'Instant messaging focused tools' },
@@ -146,12 +150,12 @@ export const systemBotPresetTool: McpTool = {
         'preset.base.batch': { tools: 7, description: 'Lark Base with batch operations' },
         'preset.doc.default': { tools: 6, description: 'Document and wiki tools' },
         'preset.task.default': { tools: 4, description: 'Task management tools' },
-        'preset.calendar.default': { tools: 5, description: 'Calendar event tools' }
+        'preset.calendar.default': { tools: 5, description: 'Calendar event tools' },
       };
-      
+
       const info = presetInfo[preset_name];
       let responseText = '';
-      
+
       if (info) {
         responseText = `✅ **Preset Changed Successfully**
 
@@ -164,11 +168,13 @@ The MCP server configuration has been updated. You can now use the tools include
         responseText = `❌ **Unknown Preset**
 
 Available presets:
-${Object.keys(presetInfo).map(name => `• ${name}`).join('\n')}
+${Object.keys(presetInfo)
+  .map((name) => `• ${name}`)
+  .join('\n')}
 
 Type 'use [preset_name]' to switch presets.`;
       }
-      
+
       // Send response message
       await client.request({
         method: 'POST',
@@ -177,26 +183,30 @@ Type 'use [preset_name]' to switch presets.`;
         data: {
           receive_id: chat_id,
           msg_type: 'text',
-          content: JSON.stringify({ text: responseText })
-        }
+          content: JSON.stringify({ text: responseText }),
+        },
       });
-      
+
       return {
-        content: [{
-          type: 'text' as const,
-          text: `Preset switch response sent`
-        }]
+        content: [
+          {
+            type: 'text' as const,
+            text: `Preset switch response sent`,
+          },
+        ],
       };
     } catch (error) {
       return {
         isError: true,
-        content: [{
-          type: 'text' as const,
-          text: `Failed to process preset switch: ${error}`
-        }]
+        content: [
+          {
+            type: 'text' as const,
+            text: `Failed to process preset switch: ${error}`,
+          },
+        ],
       };
     }
-  }
+  },
 };
 
 // 設定情報ツール
@@ -208,13 +218,13 @@ export const systemBotSettingsTool: McpTool = {
   schema: {
     data: z.object({
       chat_id: z.string().describe('Chat ID to send response to'),
-      action: z.string().optional().describe('Settings action (view, language, mode)')
-    })
+      action: z.string().optional().describe('Settings action (view, language, mode)'),
+    }),
   },
   customHandler: async (client, params): Promise<any> => {
     try {
       const { chat_id, action } = params.data;
-      
+
       let settingsText = `⚙️ **MCP Tool Settings**
 
 🌐 **Language**: English/中文 (Current: English)
@@ -229,7 +239,7 @@ export const systemBotSettingsTool: McpTool = {
 • \`settings status\` - View detailed status
 
 For configuration changes, please contact your administrator.`;
-      
+
       if (action === 'status') {
         settingsText = `📊 **Detailed MCP Status**
 
@@ -246,7 +256,7 @@ For configuration changes, please contact your administrator.`;
 • 14:25 - Message sent to #sales
 • 14:20 - Document accessed`;
       }
-      
+
       // Send response message
       await client.request({
         method: 'POST',
@@ -255,26 +265,30 @@ For configuration changes, please contact your administrator.`;
         data: {
           receive_id: chat_id,
           msg_type: 'text',
-          content: JSON.stringify({ text: settingsText })
-        }
+          content: JSON.stringify({ text: settingsText }),
+        },
       });
-      
+
       return {
-        content: [{
-          type: 'text' as const,
-          text: `Settings information sent`
-        }]
+        content: [
+          {
+            type: 'text' as const,
+            text: `Settings information sent`,
+          },
+        ],
       };
     } catch (error) {
       return {
         isError: true,
-        content: [{
-          type: 'text' as const,
-          text: `Failed to display settings: ${error}`
-        }]
+        content: [
+          {
+            type: 'text' as const,
+            text: `Failed to display settings: ${error}`,
+          },
+        ],
       };
     }
-  }
+  },
 };
 
 // ステータス確認ツール
@@ -286,12 +300,12 @@ export const systemBotStatusTool: McpTool = {
   schema: {
     data: z.object({
       chat_id: z.string().describe('Chat ID to send response to'),
-    })
+    }),
   },
   customHandler: async (client, params): Promise<any> => {
     try {
       const { chat_id } = params.data;
-      
+
       const statusText = `🚀 **MCP Integration Tool Status**
 
 ✅ **System**: Online
@@ -306,7 +320,7 @@ export const systemBotStatusTool: McpTool = {
 • Type 'settings' for configuration
 
 Ready to assist! 🎉`;
-      
+
       // Send response message
       await client.request({
         method: 'POST',
@@ -315,31 +329,30 @@ Ready to assist! 🎉`;
         data: {
           receive_id: chat_id,
           msg_type: 'text',
-          content: JSON.stringify({ text: statusText })
-        }
+          content: JSON.stringify({ text: statusText }),
+        },
       });
-      
+
       return {
-        content: [{
-          type: 'text' as const,
-          text: `Status information sent`
-        }]
+        content: [
+          {
+            type: 'text' as const,
+            text: `Status information sent`,
+          },
+        ],
       };
     } catch (error) {
       return {
         isError: true,
-        content: [{
-          type: 'text' as const,
-          text: `Failed to display status: ${error}`
-        }]
+        content: [
+          {
+            type: 'text' as const,
+            text: `Failed to display status: ${error}`,
+          },
+        ],
       };
     }
-  }
+  },
 };
 
-export const systemBotMenuTools = [
-  systemBotHelpTool,
-  systemBotPresetTool, 
-  systemBotSettingsTool,
-  systemBotStatusTool
-];
+export const systemBotMenuTools = [systemBotHelpTool, systemBotPresetTool, systemBotSettingsTool, systemBotStatusTool];

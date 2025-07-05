@@ -7,7 +7,6 @@ import { RESPONSE_DELIMITERS } from './types';
 
 // System prompts for agent coordination
 export const AGENT_COORDINATION_PROMPTS = {
-  
   /**
    * Task Analysis and Agent Assignment System Prompt
    * Based on AIstudio's AGENT_ASSIGNMENT_SYSTEM_PROMPT
@@ -198,14 +197,13 @@ ${RESPONSE_DELIMITERS.STRUCTURED_END}
 
 **ワークフロー状況:**
 {{WORKFLOW_CONTEXT}}
-`
+`,
 };
 
 /**
  * Tool-specific prompts for different Lark operations
  */
 export const TOOL_OPERATION_PROMPTS = {
-  
   /**
    * Bitable/Base operations
    */
@@ -304,37 +302,32 @@ ${RESPONSE_DELIMITERS.STRUCTURED_START}
   "error": "エラー詳細（該当時）"
 }
 ${RESPONSE_DELIMITERS.STRUCTURED_END}
-`
+`,
 };
 
 /**
  * Utility functions for prompt processing
  */
 export const PromptUtils = {
-  
   /**
    * Replace placeholders in prompt templates
    */
   fillTemplate(template: string, variables: Record<string, any>): string {
     let result = template;
-    
+
     for (const [key, value] of Object.entries(variables)) {
       const placeholder = `{{${key}}}`;
       const replacement = typeof value === 'string' ? value : JSON.stringify(value);
       result = result.replace(new RegExp(placeholder, 'g'), replacement);
     }
-    
+
     return result;
   },
 
   /**
    * Extract structured data from delimited response
    */
-  extractStructuredData(
-    response: string, 
-    startDelimiter: string, 
-    endDelimiter: string
-  ): any | null {
+  extractStructuredData(response: string, startDelimiter: string, endDelimiter: string): any | null {
     const startIdx = response.indexOf(startDelimiter);
     const endIdx = response.indexOf(endDelimiter);
 
@@ -343,10 +336,7 @@ export const PromptUtils = {
     }
 
     try {
-      const structuredPart = response.substring(
-        startIdx + startDelimiter.length,
-        endIdx
-      ).trim();
+      const structuredPart = response.substring(startIdx + startDelimiter.length, endIdx).trim();
 
       return JSON.parse(structuredPart);
     } catch (error) {
@@ -363,18 +353,18 @@ export const PromptUtils = {
       return false;
     }
 
-    return requiredFields.every(field => {
+    return requiredFields.every((field) => {
       const keys = field.split('.');
       let current = data;
-      
+
       for (const key of keys) {
         if (!current || typeof current !== 'object' || !(key in current)) {
           return false;
         }
         current = current[key];
       }
-      
+
       return true;
     });
-  }
+  },
 };

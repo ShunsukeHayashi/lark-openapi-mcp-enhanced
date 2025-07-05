@@ -65,75 +65,78 @@ export class GeminiClient {
       baseURL: 'https://generativelanguage.googleapis.com',
       maxRetries: 3,
       timeoutMs: 30000,
-      ...config
+      ...config,
     };
 
     this.httpClient = axios.create({
       baseURL: this.config.baseURL,
       timeout: this.config.timeoutMs,
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     });
   }
 
   /**
    * テキスト生成リクエスト
    */
-  async generateContent(prompt: string, options: {
-    temperature?: number;
-    maxOutputTokens?: number;
-    responseFormat?: 'text' | 'json';
-  } = {}): Promise<string> {
+  async generateContent(
+    prompt: string,
+    options: {
+      temperature?: number;
+      maxOutputTokens?: number;
+      responseFormat?: 'text' | 'json';
+    } = {},
+  ): Promise<string> {
     const request: GeminiRequest = {
       contents: [
         {
           parts: [
             {
-              text: prompt
-            }
-          ]
-        }
+              text: prompt,
+            },
+          ],
+        },
       ],
       generationConfig: {
         temperature: options.temperature || 0.1,
         maxOutputTokens: options.maxOutputTokens || 8192,
-        responseMimeType: options.responseFormat === 'json' ? 'application/json' : 'text/plain'
+        responseMimeType: options.responseFormat === 'json' ? 'application/json' : 'text/plain',
       },
       safetySettings: [
         {
           category: 'HARM_CATEGORY_HARASSMENT',
-          threshold: 'BLOCK_MEDIUM_AND_ABOVE'
+          threshold: 'BLOCK_MEDIUM_AND_ABOVE',
         },
         {
           category: 'HARM_CATEGORY_HATE_SPEECH',
-          threshold: 'BLOCK_MEDIUM_AND_ABOVE'
+          threshold: 'BLOCK_MEDIUM_AND_ABOVE',
         },
         {
           category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-          threshold: 'BLOCK_MEDIUM_AND_ABOVE'
+          threshold: 'BLOCK_MEDIUM_AND_ABOVE',
         },
         {
           category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
-          threshold: 'BLOCK_MEDIUM_AND_ABOVE'
-        }
-      ]
+          threshold: 'BLOCK_MEDIUM_AND_ABOVE',
+        },
+      ],
     };
 
     const url = `/v1beta/models/${this.config.model}:generateContent?key=${this.config.apiKey}`;
-    
+
     let lastError: Error | null = null;
-    
+
     for (let attempt = 0; attempt < this.config.maxRetries; attempt++) {
       try {
         const response = await this.httpClient.post<GeminiResponse>(url, request);
-        
+
         if (!response.data.candidates || response.data.candidates.length === 0) {
           throw new Error('No candidates returned from Gemini API');
         }
 
         const candidate = response.data.candidates[0];
-        
+
         if (candidate.finishReason !== 'STOP') {
           throw new Error(`Generation failed with reason: ${candidate.finishReason}`);
         }
@@ -144,31 +147,31 @@ export class GeminiClient {
         }
 
         return content;
-        
       } catch (error: any) {
         lastError = error;
-        
+
         // Handle authentication errors - don't retry
         if (error.response?.status === 401) {
           throw new Error(`Authentication failed: ${error.response?.data?.error?.message || 'Invalid API key'}`);
         }
-        
+
         // Handle API logic errors - don't retry
-        if (error.message && (
-          error.message.includes('No candidates returned') ||
-          error.message.includes('Generation failed with reason') ||
-          error.message.includes('No text content in response')
-        )) {
+        if (
+          error.message &&
+          (error.message.includes('No candidates returned') ||
+            error.message.includes('Generation failed with reason') ||
+            error.message.includes('No text content in response'))
+        ) {
           throw error;
         }
-        
+
         // Handle rate limit errors with backoff
         if (error.response?.status === 429 && attempt < this.config.maxRetries - 1) {
           const delay = Math.pow(2, attempt + 1) * 1000; // 指数バックオフ
-          await new Promise(resolve => setTimeout(resolve, delay));
+          await new Promise((resolve) => setTimeout(resolve, delay));
         } else if (attempt < this.config.maxRetries - 1) {
           const delay = Math.pow(2, attempt + 1) * 1000; // 指数バックオフ
-          await new Promise(resolve => setTimeout(resolve, delay));
+          await new Promise((resolve) => setTimeout(resolve, delay));
         }
       }
     }
@@ -179,10 +182,14 @@ export class GeminiClient {
   /**
    * 構造化データ生成（JSONレスポンス）
    */
-  async generateStructuredContent(prompt: string, schema: any, options: {
-    temperature?: number;
-    maxOutputTokens?: number;
-  } = {}): Promise<any> {
+  async generateStructuredContent(
+    prompt: string,
+    schema: any,
+    options: {
+      temperature?: number;
+      maxOutputTokens?: number;
+    } = {},
+  ): Promise<any> {
     // スキーマ情報をプロンプトに追加
     const enhancedPrompt = `
 ${prompt}
@@ -199,18 +206,17 @@ JSONレスポンス：
 
     const content = await this.generateContent(enhancedPrompt, {
       ...options,
-      responseFormat: 'json'
+      responseFormat: 'json',
     });
 
     try {
       // JSONパース
       const parsed = JSON.parse(content);
-      
+
       // 基本的なスキーマ検証
       this.validateSchema(parsed, schema);
-      
+
       return parsed;
-      
     } catch (error) {
       throw new Error(`Failed to parse JSON response: ${error}`);
     }
@@ -219,15 +225,19 @@ JSONレスポンス：
   /**
    * バッチ処理用のマルチプロンプト生成
    */
-  async generateBatch(prompts: Array<{
-    id: string;
-    prompt: string;
-    options?: any;
-  }>): Promise<Array<{
-    id: string;
-    result: string;
-    error?: string;
-  }>> {
+  async generateBatch(
+    prompts: Array<{
+      id: string;
+      prompt: string;
+      options?: any;
+    }>,
+  ): Promise<
+    Array<{
+      id: string;
+      result: string;
+      error?: string;
+    }>
+  > {
     const results = await Promise.allSettled(
       prompts.map(async ({ id, prompt, options }) => {
         try {
@@ -236,7 +246,7 @@ JSONレスポンス：
         } catch (error: any) {
           return { id, result: '', error: error.message };
         }
-      })
+      }),
     );
 
     return results.map((result, index) => {
@@ -246,7 +256,7 @@ JSONレスポンス：
         return {
           id: prompts[index].id,
           result: '',
-          error: result.reason?.message || 'Unknown error'
+          error: result.reason?.message || 'Unknown error',
         };
       }
     });
@@ -271,7 +281,7 @@ JSONレスポンス：
         if (key in data) {
           const value = data[key];
           const expectedType = (propSchema as any).type;
-          
+
           if (expectedType && !this.isValidType(value, expectedType)) {
             throw new Error(`Field '${key}' has invalid type. Expected: ${expectedType}`);
           }
@@ -312,7 +322,7 @@ JSONレスポンス：
     return {
       totalRequests: 0,
       totalTokens: 0,
-      averageResponseTime: 0
+      averageResponseTime: 0,
     };
   }
 

@@ -171,16 +171,10 @@ export const performanceV2AdditionalInformationsBatchDelete = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      semester_id: z
-        .string()
-        .describe(
-          'The evaluation period ID can be obtained through the  interface',
-        ),
+      semester_id: z.string().describe('The evaluation period ID can be obtained through the  interface'),
       additional_informations: z
         .array(z.string())
-        .describe(
-          'The list of supplementary information IDs can be obtained through the  interface',
-        ),
+        .describe('The list of supplementary information IDs can be obtained through the  interface'),
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional() }),
   },
@@ -223,11 +217,7 @@ export const performanceV2MetricDetailImport = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      semester_id: z
-        .string()
-        .describe(
-          'Period ID, which can be obtained through the  interface',
-        ),
+      semester_id: z.string().describe('Period ID, which can be obtained through the  interface'),
       import_record_name: z
         .string()
         .describe('Data source input person, you can view the record name on the input record page')
@@ -236,19 +226,11 @@ export const performanceV2MetricDetailImport = {
         .array(
           z.object({
             reviewee_user_id: z.string().describe('Assessor ID, the same type as imported parameter user_id_type'),
-            metric_id: z
-              .string()
-              .describe(
-                'The indicator ID can be obtained through the  interface',
-              ),
+            metric_id: z.string().describe('The indicator ID can be obtained through the  interface'),
             fields: z
               .array(
                 z.object({
-                  field_id: z
-                    .string()
-                    .describe(
-                      'The indicator field ID can be obtained through the  interface',
-                    ),
+                  field_id: z.string().describe('The indicator field ID can be obtained through the  interface'),
                   field_value: z.string().describe('field value').optional(),
                   field_value_person: z
                     .string()
@@ -464,11 +446,7 @@ export const performanceV2ReviewDataQuery = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      semester_ids: z
-        .array(z.string())
-        .describe(
-          'Evaluation period ID list, semester_id can be obtained through ',
-        ),
+      semester_ids: z.array(z.string()).describe('Evaluation period ID list, semester_id can be obtained through '),
       reviewee_user_ids: z.array(z.string()).describe('List of assessee IDs'),
       stage_types: z
         .array(

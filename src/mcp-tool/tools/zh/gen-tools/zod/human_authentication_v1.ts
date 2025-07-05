@@ -16,11 +16,7 @@ export const humanAuthenticationV1IdentityCreate = {
       mobile: z.string().describe('手机号').optional(),
     }),
     params: z.object({
-      user_id: z
-        .string()
-        .describe(
-          '用户的唯一标识（使用的ID类型见下一参数描述，不同ID类型的区别和获取，参考文档：）',
-        ),
+      user_id: z.string().describe('用户的唯一标识（使用的ID类型见下一参数描述，不同ID类型的区别和获取，参考文档：）'),
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional(),
     }),
   },

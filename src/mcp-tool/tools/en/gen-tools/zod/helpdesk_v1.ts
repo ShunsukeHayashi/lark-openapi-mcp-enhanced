@@ -61,12 +61,7 @@ export const helpdeskV1AgentScheduleCreate = {
       agent_schedules: z
         .array(
           z.object({
-            agent_id: z
-              .string()
-              .describe(
-                'Agent ID',
-              )
-              .optional(),
+            agent_id: z.string().describe('Agent ID').optional(),
             schedule: z
               .array(
                 z.object({
@@ -135,18 +130,8 @@ export const helpdeskV1AgentSkillCreate = {
       rules: z
         .array(
           z.object({
-            id: z
-              .string()
-              .describe(
-                'Rule ID. See  for how to obtain the rules options',
-              )
-              .optional(),
-            selected_operator: z
-              .number()
-              .describe(
-                'Operator compare. See ',
-              )
-              .optional(),
+            id: z.string().describe('Rule ID. See  for how to obtain the rules options').optional(),
+            selected_operator: z.number().describe('Operator compare. See ').optional(),
             operand: z.string().describe('Rule operand value').optional(),
             category: z
               .number()
@@ -212,24 +197,9 @@ export const helpdeskV1AgentSkillPatch = {
           rules: z
             .array(
               z.object({
-                id: z
-                  .string()
-                  .describe(
-                    'Rule ID. See  for how to obtain the rules options',
-                  )
-                  .optional(),
-                selected_operator: z
-                  .number()
-                  .describe(
-                    'Operator compare. See ',
-                  )
-                  .optional(),
-                operator_options: z
-                  .array(z.number())
-                  .describe(
-                    'Rule operand value. See ',
-                  )
-                  .optional(),
+                id: z.string().describe('Rule ID. See  for how to obtain the rules options').optional(),
+                selected_operator: z.number().describe('Operator compare. See ').optional(),
+                operator_options: z.array(z.number()).describe('Rule operand value. See ').optional(),
                 operand: z.string().describe('Rule operand value').optional(),
               }),
             )
@@ -349,9 +319,7 @@ export const helpdeskV1BotMessageCreate = {
         .describe('Message type Options:text(Plain text),post(Rich text),image(Image),interactive(Card message)'),
       content: z
         .string()
-        .describe(
-          'Message content, JSON structure serialized to string. For format description, refer to ',
-        ),
+        .describe('Message content, JSON structure serialized to string. For format description, refer to '),
       receiver_id: z.string().describe('User ID of the message recipient'),
       receive_type: z
         .enum(['chat', 'user'])
@@ -1128,11 +1096,7 @@ export const helpdeskV1TicketMessageCreate = {
   schema: {
     data: z.object({
       msg_type: z.string().describe('Message type. text: plain text; post: rich text'),
-      content: z
-        .string()
-        .describe(
-          '- Plain text, (see content in )- Rich text (see content in )',
-        ),
+      content: z.string().describe('- Plain text, (see content in )- Rich text (see content in )'),
     }),
     path: z.object({ ticket_id: z.string().describe('Ticket ID').optional() }),
   },
@@ -1173,15 +1137,9 @@ export const helpdeskV1TicketStartService = {
         .optional(),
       appointed_agents: z
         .array(z.string())
-        .describe(
-          'Agent Open IDs (for how to obtain them, see ). human_service should be true',
-        )
+        .describe('Agent Open IDs (for how to obtain them, see ). human_service should be true')
         .optional(),
-      open_id: z
-        .string()
-        .describe(
-          'User Open ID, (for how to obtain them, see .)',
-        ),
+      open_id: z.string().describe('User Open ID, (for how to obtain them, see .)'),
       customized_info: z
         .string()
         .describe(

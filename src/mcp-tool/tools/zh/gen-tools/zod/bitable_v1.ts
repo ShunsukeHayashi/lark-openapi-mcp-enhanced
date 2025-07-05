@@ -68,10 +68,7 @@ export const bitableV1AppCopy = {
         .boolean()
         .describe('是否复制多维表格中的内容，默认 false，即复制多维表格中的内容。可取值：* true：不复制* false：复制')
         .optional(),
-      time_zone: z
-        .string()
-        .describe('文档时区，详情参考')
-        .optional(),
+      time_zone: z.string().describe('文档时区，详情参考').optional(),
     }),
     path: z.object({ app_token: z.string().describe('多维表格 App 的唯一标识') }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
@@ -95,10 +92,7 @@ export const bitableV1AppCreate = {
           '多维表格 App 归属文件夹。默认为空，表示多维表格将被创建在云空间根目录。了解如何获取文件夹 Token，参考。**注意**：请确保调用身份拥有在该文件夹中的编辑权限。若应用使用的是 `tenant_access_token` 权限，此处仅可指定应用创建的文件夹。详情参考',
         )
         .optional(),
-      time_zone: z
-        .string()
-        .describe('文档时区，详情参考')
-        .optional(),
+      time_zone: z.string().describe('文档时区，详情参考').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -195,12 +189,7 @@ export const bitableV1AppRoleCreate = {
                           '条件运算符 Options:is(等于),isNot(不等于),contains(包含),doesNotContain(不包含),isEmpty(为空),isNotEmpty(不为空)',
                         )
                         .optional(),
-                      value: z
-                        .array(z.string())
-                        .describe(
-                          '条件的值，可以是单个值或多个值的数组。详情参考',
-                        )
-                        .optional(),
+                      value: z.array(z.string()).describe('条件的值，可以是单个值或多个值的数组。详情参考').optional(),
                     }),
                   )
                   .describe('记录筛选条件，用于指定可编辑或可阅读的记录'),
@@ -261,9 +250,7 @@ export const bitableV1AppRoleDelete = {
       app_token: z.string().describe('多维表格 App 的唯一标识').optional(),
       role_id: z
         .string()
-        .describe(
-          '多维表格高级权限中自定义角色的唯一标识，以 rol 开头。获取方式：通过接口获取',
-        )
+        .describe('多维表格高级权限中自定义角色的唯一标识，以 rol 开头。获取方式：通过接口获取')
         .optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
@@ -317,11 +304,7 @@ export const bitableV1AppRoleMemberBatchCreate = {
     }),
     path: z.object({
       app_token: z.string().describe('多维表格 App 的唯一标识'),
-      role_id: z
-        .string()
-        .describe(
-          '多维表格高级权限中自定义角色的唯一标识，以 rol 开头。获取方式：通过接口获取',
-        ),
+      role_id: z.string().describe('多维表格高级权限中自定义角色的唯一标识，以 rol 开头。获取方式：通过接口获取'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -352,11 +335,7 @@ export const bitableV1AppRoleMemberBatchDelete = {
     }),
     path: z.object({
       app_token: z.string().describe('多维表格 App 的唯一标识'),
-      role_id: z
-        .string()
-        .describe(
-          '多维表格高级权限中自定义角色的唯一标识，以 rol 开头。获取方式：通过接口获取',
-        ),
+      role_id: z.string().describe('多维表格高级权限中自定义角色的唯一标识，以 rol 开头。获取方式：通过接口获取'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -389,9 +368,7 @@ export const bitableV1AppRoleMemberCreate = {
       app_token: z.string().describe('多维表格 App 的唯一标识').optional(),
       role_id: z
         .string()
-        .describe(
-          '多维表格高级权限中自定义角色的唯一标识，以 rol 开头。获取方式：通过接口获取',
-        )
+        .describe('多维表格高级权限中自定义角色的唯一标识，以 rol 开头。获取方式：通过接口获取')
         .optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
@@ -418,9 +395,7 @@ export const bitableV1AppRoleMemberDelete = {
       app_token: z.string().describe('多维表格 App 的唯一标识').optional(),
       role_id: z
         .string()
-        .describe(
-          '多维表格高级权限中自定义角色的唯一标识，以 rol 开头。获取方式：通过接口获取',
-        )
+        .describe('多维表格高级权限中自定义角色的唯一标识，以 rol 开头。获取方式：通过接口获取')
         .optional(),
       member_id: z
         .string()
@@ -451,11 +426,7 @@ export const bitableV1AppRoleMemberList = {
     }),
     path: z.object({
       app_token: z.string().describe('多维表格 App 的唯一标识'),
-      role_id: z
-        .string()
-        .describe(
-          '多维表格高级权限中自定义角色的唯一标识，以 rol 开头。获取方式：通过接口获取',
-        ),
+      role_id: z.string().describe('多维表格高级权限中自定义角色的唯一标识，以 rol 开头。获取方式：通过接口获取'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -495,12 +466,7 @@ export const bitableV1AppRoleUpdate = {
                           '条件运算符 Options:is(等于),isNot(不等于),contains(包含),doesNotContain(不包含),isEmpty(为空),isNotEmpty(不为空)',
                         )
                         .optional(),
-                      value: z
-                        .array(z.string())
-                        .describe(
-                          '条件的值，可以是单个值或多个值的数组。详情参考',
-                        )
-                        .optional(),
+                      value: z.array(z.string()).describe('条件的值，可以是单个值或多个值的数组。详情参考').optional(),
                     }),
                   )
                   .describe('记录筛选条件，用于指定可编辑或可阅读的记录'),
@@ -548,9 +514,7 @@ export const bitableV1AppRoleUpdate = {
       app_token: z.string().describe('多维表格 App 的唯一标识').optional(),
       role_id: z
         .string()
-        .describe(
-          '多维表格高级权限中自定义角色的唯一标识，以 rol 开头。获取方式：通过接口获取',
-        )
+        .describe('多维表格高级权限中自定义角色的唯一标识，以 rol 开头。获取方式：通过接口获取')
         .optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
@@ -680,27 +644,15 @@ export const bitableV1AppTableCreate = {
                         z.object({
                           name: z.string().describe('选项名').optional(),
                           id: z.string().describe('选项 ID，创建时不可指定 ID').optional(),
-                          color: z
-                            .number()
-                            .describe(
-                              '选项颜色，详情参考',
-                            )
-                            .optional(),
+                          color: z.number().describe('选项颜色，详情参考').optional(),
                         }),
                       )
                       .describe('单选、多选字段的选项信息')
                       .optional(),
-                    formatter: z
-                      .string()
-                      .describe(
-                        '数字、公式字段的显示格式。详情参考',
-                      )
-                      .optional(),
+                    formatter: z.string().describe('数字、公式字段的显示格式。详情参考').optional(),
                     date_formatter: z
                       .string()
-                      .describe(
-                        '日期、创建时间、最后更新时间字段的显示格式。详情参考',
-                      )
+                      .describe('日期、创建时间、最后更新时间字段的显示格式。详情参考')
                       .optional(),
                     auto_fill: z.boolean().describe('日期字段中新纪录自动填写创建时间').optional(),
                     multiple: z
@@ -829,22 +781,12 @@ export const bitableV1AppTableFieldCreate = {
               z.object({
                 name: z.string().describe('选项名称').optional(),
                 id: z.string().describe('选项 ID，创建字段时不允许指定 ID').optional(),
-                color: z
-                  .number()
-                  .describe(
-                    '选项颜色，详情参考',
-                  )
-                  .optional(),
+                color: z.number().describe('选项颜色，详情参考').optional(),
               }),
             )
             .describe('单选、多选字段的选项信息')
             .optional(),
-          formatter: z
-            .string()
-            .describe(
-              '数字和公式字段的显示格式。详情参考',
-            )
-            .optional(),
+          formatter: z.string().describe('数字和公式字段的显示格式。详情参考').optional(),
           date_formatter: z
             .string()
             .describe(
@@ -895,12 +837,7 @@ export const bitableV1AppTableFieldCreate = {
             })
             .describe('地理位置输入方式')
             .optional(),
-          formula_expression: z
-            .string()
-            .describe(
-              '公式字段的表达式。参考了解如何设置公式',
-            )
-            .optional(),
+          formula_expression: z.string().describe('公式字段的表达式。参考了解如何设置公式').optional(),
           allowed_edit_modes: z
             .object({
               manual: z.boolean().describe('是否允许手动录入。默认为 true').optional(),
@@ -910,15 +847,11 @@ export const bitableV1AppTableFieldCreate = {
             .optional(),
           min: z
             .number()
-            .describe(
-              '进度和评分字段的数据范围最小值。不同字段类型中，该参数的必填属性和取值范围不同，详情参考',
-            )
+            .describe('进度和评分字段的数据范围最小值。不同字段类型中，该参数的必填属性和取值范围不同，详情参考')
             .optional(),
           max: z
             .number()
-            .describe(
-              '进度和评分字段的数据范围最大值。不同字段类型中，该参数的必填属性和取值范围不同，详情参考',
-            )
+            .describe('进度和评分字段的数据范围最大值。不同字段类型中，该参数的必填属性和取值范围不同，详情参考')
             .optional(),
           range_customize: z.boolean().describe('进度字段是否允许自定义进度条值，默认为 false').optional(),
           currency_code: z
@@ -972,9 +905,7 @@ export const bitableV1AppTableFieldCreate = {
             )
             .optional(),
         })
-        .describe(
-          '字段属性，了解如何填写字段，参考',
-        )
+        .describe('字段属性，了解如何填写字段，参考')
         .optional(),
       description: z
         .object({
@@ -1109,28 +1040,13 @@ export const bitableV1AppTableFieldUpdate = {
               z.object({
                 name: z.string().describe('选项名称').optional(),
                 id: z.string().describe('选项 ID').optional(),
-                color: z
-                  .number()
-                  .describe(
-                    '选项颜色，详情参考',
-                  )
-                  .optional(),
+                color: z.number().describe('选项颜色，详情参考').optional(),
               }),
             )
             .describe('单选、多选字段的选项信息')
             .optional(),
-          formatter: z
-            .string()
-            .describe(
-              '数字、公式字段的显示格式。详情参考',
-            )
-            .optional(),
-          date_formatter: z
-            .string()
-            .describe(
-              '日期、创建时间、最后更新时间字段的显示格式。详情参考',
-            )
-            .optional(),
+          formatter: z.string().describe('数字、公式字段的显示格式。详情参考').optional(),
+          date_formatter: z.string().describe('日期、创建时间、最后更新时间字段的显示格式。详情参考').optional(),
           auto_fill: z.boolean().describe('日期字段中新纪录自动填写创建时间').optional(),
           multiple: z.boolean().describe('人员字段中允许添加多个成员，单向关联、双向关联中允许添加多个记录').optional(),
           table_id: z.string().describe('多维表格数据表的唯一标识').optional(),
@@ -1219,9 +1135,7 @@ export const bitableV1AppTableFieldUpdate = {
             )
             .optional(),
         })
-        .describe(
-          '字段属性，了解如何填写字段，参考',
-        )
+        .describe('字段属性，了解如何填写字段，参考')
         .optional(),
       description: z
         .object({
@@ -1512,11 +1426,7 @@ export const bitableV1AppTableRecordBatchDelete = {
   accessTokens: ['tenant', 'user'],
   schema: {
     data: z.object({
-      records: z
-        .array(z.string())
-        .describe(
-          '删除的多条记录 ID 列表。通过接口获取',
-        ),
+      records: z.array(z.string()).describe('删除的多条记录 ID 列表。通过接口获取'),
     }),
     path: z.object({
       app_token: z.string().describe('多维表格 App 的唯一标识'),
@@ -1536,11 +1446,7 @@ export const bitableV1AppTableRecordBatchGet = {
   accessTokens: ['tenant', 'user'],
   schema: {
     data: z.object({
-      record_ids: z
-        .array(z.string())
-        .describe(
-          '记录 ID 列表。调用获取',
-        ),
+      record_ids: z.array(z.string()).describe('记录 ID 列表。调用获取'),
       user_id_type: z.enum(['user_id', 'union_id', 'open_id']).describe('用户ID类型').optional(),
       with_shared_url: z
         .boolean()
@@ -2100,11 +2006,7 @@ export const bitableV1AppWorkflowUpdate = {
     }),
     path: z.object({
       app_token: z.string().describe('多维表格 App 的唯一标识').optional(),
-      workflow_id: z
-        .string()
-        .describe(
-          '自动化工作流 ID，通过接口获取',
-        ),
+      workflow_id: z.string().describe('自动化工作流 ID，通过接口获取'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },

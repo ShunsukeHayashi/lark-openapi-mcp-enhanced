@@ -203,8 +203,7 @@ export const vcV1MeetingListGet = {
   sdkName: 'vc.v1.meetingList.get',
   path: '/open-apis/vc/v1/meeting_list',
   httpMethod: 'GET',
-  description:
-    '[Feishu/Lark]-视频会议-会议数据-查询会议明细-查询会议明细，具体权限要求请参考',
+  description: '[Feishu/Lark]-视频会议-会议数据-查询会议明细-查询会议明细，具体权限要求请参考',
   accessTokens: ['tenant', 'user'],
   schema: {
     params: z.object({
@@ -484,8 +483,7 @@ export const vcV1ParticipantListGet = {
   sdkName: 'vc.v1.participantList.get',
   path: '/open-apis/vc/v1/participant_list',
   httpMethod: 'GET',
-  description:
-    '[Feishu/Lark]-视频会议-会议数据-查询参会人明细-查询参会人明细，具体权限要求请参考',
+  description: '[Feishu/Lark]-视频会议-会议数据-查询参会人明细-查询参会人明细，具体权限要求请参考',
   accessTokens: ['tenant', 'user'],
   schema: {
     params: z.object({

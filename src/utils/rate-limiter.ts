@@ -108,7 +108,7 @@ export class TokenBucketRateLimiter {
    */
   getMetrics(): RateLimiterMetrics {
     this.refill(); // Update tokens before returning metrics
-    
+
     return {
       availableTokens: this.tokens,
       totalRequests: this.totalRequests,
@@ -134,7 +134,7 @@ export class TokenBucketRateLimiter {
    */
   updateConfig(newConfig: Partial<RateLimiterConfig>): void {
     this.config = { ...this.config, ...newConfig };
-    
+
     // Ensure tokens don't exceed new capacity
     if (newConfig.capacity !== undefined) {
       this.tokens = Math.min(this.tokens, newConfig.capacity);
@@ -142,7 +142,7 @@ export class TokenBucketRateLimiter {
   }
 
   private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }
 
@@ -220,7 +220,7 @@ export const DEFAULT_RATE_LIMITS: Record<string, RateLimiterConfig> = {
     intervalMs: 60000, // 50 requests per minute
     maxWaitTimeMs: 5000,
   },
-  
+
   // More restrictive for high-impact operations
   write: {
     capacity: 20,
@@ -228,7 +228,7 @@ export const DEFAULT_RATE_LIMITS: Record<string, RateLimiterConfig> = {
     intervalMs: 60000, // 10 writes per minute
     maxWaitTimeMs: 10000,
   },
-  
+
   // Less restrictive for read operations
   read: {
     capacity: 200,
@@ -236,7 +236,7 @@ export const DEFAULT_RATE_LIMITS: Record<string, RateLimiterConfig> = {
     intervalMs: 60000, // 100 reads per minute
     maxWaitTimeMs: 2000,
   },
-  
+
   // Very restrictive for administrative operations
   admin: {
     capacity: 5,

@@ -5,11 +5,11 @@ import { chatAgentTools, ChatAgentToolName } from './chat-agent';
 import { larkChatAgentTools, LarkChatAgentToolName } from './lark-chat-agent';
 
 // Tool name type
-export type systemBuiltinToolName = 
-  | 'system.builtin.info' 
-  | 'system.builtin.time' 
-  | SystemBotMenuToolName 
-  | ChatAgentToolName 
+export type systemBuiltinToolName =
+  | 'system.builtin.info'
+  | 'system.builtin.time'
+  | SystemBotMenuToolName
+  | ChatAgentToolName
   | LarkChatAgentToolName;
 
 export const larkSystemBuiltinInfoTool: McpTool = {
@@ -81,7 +81,7 @@ export const larkSystemBuiltinTimeTool: McpTool = {
     try {
       const now = new Date();
       const format = params.data.format || 'iso';
-      
+
       let result: any = {
         requested_format: format,
       };
@@ -130,9 +130,9 @@ export const larkSystemBuiltinTimeTool: McpTool = {
 };
 
 export const systemBuiltinTools = [
-  larkSystemBuiltinInfoTool, 
-  larkSystemBuiltinTimeTool, 
+  larkSystemBuiltinInfoTool,
+  larkSystemBuiltinTimeTool,
   ...systemBotMenuTools,
   ...chatAgentTools,
-  ...larkChatAgentTools
+  ...larkChatAgentTools,
 ];

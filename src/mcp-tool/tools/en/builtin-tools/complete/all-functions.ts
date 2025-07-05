@@ -19,31 +19,33 @@ export const getUserInfo: McpTool = {
       userIdType: z.enum(['open_id', 'union_id', 'user_id', 'email', 'mobile']).describe('Type of user identifier'),
       userId: z.string().describe('User identifier value'),
       departmentIdType: z.enum(['department_id', 'open_department_id']).optional(),
-    })
+    }),
   },
   customHandler: async (client: lark.Client, params: any) => {
     try {
       const response = await client.contact.user.get({
         path: { user_id: params.userId },
-        params: { 
+        params: {
           user_id_type: params.userIdType,
-          department_id_type: params.departmentIdType 
-        }
+          department_id_type: params.departmentIdType,
+        },
       });
-      
+
       return {
-        content: [{
-          type: 'text' as const,
-          text: `User info retrieved:\n${JSON.stringify(response.data, null, 2)}`
-        }]
+        content: [
+          {
+            type: 'text' as const,
+            text: `User info retrieved:\n${JSON.stringify(response.data, null, 2)}`,
+          },
+        ],
       };
     } catch (error) {
       return {
         isError: true,
-        content: [{ type: 'text' as const, text: `Error: ${(error as Error).message}` }]
+        content: [{ type: 'text' as const, text: `Error: ${(error as Error).message}` }],
       };
     }
-  }
+  },
 };
 
 export const createUser: McpTool = {
@@ -59,7 +61,7 @@ export const createUser: McpTool = {
       departmentIds: z.array(z.string()).optional().describe('Department IDs to add user to'),
       employeeNo: z.string().optional().describe('Employee number'),
       employeeType: z.enum(['full_time', 'part_time', 'contractor', 'intern']).optional(),
-    })
+    }),
   },
   customHandler: async (client: lark.Client, params: any) => {
     try {
@@ -71,22 +73,24 @@ export const createUser: McpTool = {
           department_ids: params.departmentIds,
           employee_no: params.employeeNo,
           employee_type: 1, // Required: 1=full_time
-        }
+        },
       });
-      
+
       return {
-        content: [{
-          type: 'text' as const,
-          text: `User created successfully:\n${JSON.stringify(response.data, null, 2)}`
-        }]
+        content: [
+          {
+            type: 'text' as const,
+            text: `User created successfully:\n${JSON.stringify(response.data, null, 2)}`,
+          },
+        ],
       };
     } catch (error) {
       return {
         isError: true,
-        content: [{ type: 'text' as const, text: `Error: ${(error as Error).message}` }]
+        content: [{ type: 'text' as const, text: `Error: ${(error as Error).message}` }],
       };
     }
-  }
+  },
 };
 
 // ========== Department Management Tools ==========
@@ -103,7 +107,7 @@ export const createDepartment: McpTool = {
       leaderUserId: z.string().optional().describe('Department leader user ID'),
       order: z.number().optional().describe('Display order'),
       unitIds: z.array(z.string()).optional().describe('Associated unit IDs'),
-    })
+    }),
   },
   customHandler: async (client: lark.Client, params: any) => {
     try {
@@ -114,22 +118,24 @@ export const createDepartment: McpTool = {
           leader_user_id: params.leaderUserId,
           order: params.order,
           // unit_ids: params.unitIds, // Not available in current API
-        }
+        },
       });
-      
+
       return {
-        content: [{
-          type: 'text' as const,
-          text: `Department created:\n${JSON.stringify(response.data, null, 2)}`
-        }]
+        content: [
+          {
+            type: 'text' as const,
+            text: `Department created:\n${JSON.stringify(response.data, null, 2)}`,
+          },
+        ],
       };
     } catch (error) {
       return {
         isError: true,
-        content: [{ type: 'text' as const, text: `Error: ${(error as Error).message}` }]
+        content: [{ type: 'text' as const, text: `Error: ${(error as Error).message}` }],
       };
     }
-  }
+  },
 };
 
 // ========== Group Management Tools ==========
@@ -145,7 +151,7 @@ export const createGroup: McpTool = {
       description: z.string().optional().describe('Group description'),
       memberIdList: z.array(z.string()).optional().describe('Initial member user IDs'),
       groupType: z.enum(['static', 'dynamic']).default('static').describe('Group type'),
-    })
+    }),
   },
   customHandler: async (client: lark.Client, params: any) => {
     try {
@@ -155,22 +161,24 @@ export const createGroup: McpTool = {
           description: params.description,
           // member_id_list: params.memberIdList, // Field name might be different
           type: params.groupType === 'dynamic' ? 1 : 0,
-        }
+        },
       });
-      
+
       return {
-        content: [{
-          type: 'text' as const,
-          text: `Group created:\n${JSON.stringify(response.data, null, 2)}`
-        }]
+        content: [
+          {
+            type: 'text' as const,
+            text: `Group created:\n${JSON.stringify(response.data, null, 2)}`,
+          },
+        ],
       };
     } catch (error) {
       return {
         isError: true,
-        content: [{ type: 'text' as const, text: `Error: ${(error as Error).message}` }]
+        content: [{ type: 'text' as const, text: `Error: ${(error as Error).message}` }],
       };
     }
-  }
+  },
 };
 
 // ========== Approval Tools ==========
@@ -185,12 +193,17 @@ export const createApproval: McpTool = {
       approvalCode: z.string().describe('Approval definition code'),
       userId: z.string().describe('User ID who initiates the approval'),
       form: z.record(z.any()).describe('Form data as key-value pairs'),
-      nodeApprovers: z.array(z.object({
-        key: z.string().describe('Node key'),
-        value: z.array(z.string()).describe('Approver user IDs')
-      })).optional().describe('Custom approvers for nodes'),
+      nodeApprovers: z
+        .array(
+          z.object({
+            key: z.string().describe('Node key'),
+            value: z.array(z.string()).describe('Approver user IDs'),
+          }),
+        )
+        .optional()
+        .describe('Custom approvers for nodes'),
       uuid: z.string().optional().describe('Unique ID for deduplication'),
-    })
+    }),
   },
   customHandler: async (client: lark.Client, params: any) => {
     try {
@@ -201,25 +214,27 @@ export const createApproval: McpTool = {
           form: JSON.stringify(params.form),
           node_approver_user_id_list: params.nodeApprovers?.map((n: any) => ({
             key: n.key,
-            value: n.value
+            value: n.value,
           })),
           uuid: params.uuid,
-        }
+        },
       });
-      
+
       return {
-        content: [{
-          type: 'text' as const,
-          text: `Approval instance created:\n${JSON.stringify(response.data, null, 2)}`
-        }]
+        content: [
+          {
+            type: 'text' as const,
+            text: `Approval instance created:\n${JSON.stringify(response.data, null, 2)}`,
+          },
+        ],
       };
     } catch (error) {
       return {
         isError: true,
-        content: [{ type: 'text' as const, text: `Error: ${(error as Error).message}` }]
+        content: [{ type: 'text' as const, text: `Error: ${(error as Error).message}` }],
       };
     }
-  }
+  },
 };
 
 // ========== Wiki/Knowledge Base Tools ==========
@@ -235,12 +250,17 @@ export const createWikiSpace: McpTool = {
       description: z.string().optional().describe('Space description'),
       openSetting: z.enum(['public', 'private']).default('private').describe('Access setting'),
       memberIdType: z.enum(['user_id', 'union_id', 'open_id']).default('open_id'),
-      members: z.array(z.object({
-        memberId: z.string(),
-        memberType: z.enum(['user', 'group', 'department']),
-        memberRole: z.enum(['owner', 'editor', 'viewer'])
-      })).optional().describe('Initial members'),
-    })
+      members: z
+        .array(
+          z.object({
+            memberId: z.string(),
+            memberType: z.enum(['user', 'group', 'department']),
+            memberRole: z.enum(['owner', 'editor', 'viewer']),
+          }),
+        )
+        .optional()
+        .describe('Initial members'),
+    }),
   },
   customHandler: async (client: lark.Client, params: any) => {
     try {
@@ -249,22 +269,24 @@ export const createWikiSpace: McpTool = {
           name: params.name,
           description: params.description,
           // Additional implementation needed for full wiki space creation
-        }
+        },
       });
-      
+
       return {
-        content: [{
-          type: 'text' as const,
-          text: `Wiki space created:\n${JSON.stringify(response.data, null, 2)}`
-        }]
+        content: [
+          {
+            type: 'text' as const,
+            text: `Wiki space created:\n${JSON.stringify(response.data, null, 2)}`,
+          },
+        ],
       };
     } catch (error) {
       return {
         isError: true,
-        content: [{ type: 'text' as const, text: `Error: ${(error as Error).message}` }]
+        content: [{ type: 'text' as const, text: `Error: ${(error as Error).message}` }],
       };
     }
-  }
+  },
 };
 
 // ========== Meeting Room Tools ==========
@@ -282,7 +304,7 @@ export const bookMeetingRoom: McpTool = {
       eventSubject: z.string().describe('Meeting subject'),
       attendees: z.array(z.string()).optional().describe('Attendee user IDs'),
       needNotification: z.boolean().default(true).describe('Send booking notification'),
-    })
+    }),
   },
   customHandler: async (client: lark.Client, params: any) => {
     try {
@@ -296,20 +318,22 @@ export const bookMeetingRoom: McpTool = {
         bookingId: `booking_${Date.now()}`,
         message: 'Meeting room booked successfully',
       };
-      
+
       return {
-        content: [{
-          type: 'text' as const,
-          text: `Meeting room booked:\n${JSON.stringify(result, null, 2)}`
-        }]
+        content: [
+          {
+            type: 'text' as const,
+            text: `Meeting room booked:\n${JSON.stringify(result, null, 2)}`,
+          },
+        ],
       };
     } catch (error) {
       return {
         isError: true,
-        content: [{ type: 'text' as const, text: `Error: ${(error as Error).message}` }]
+        content: [{ type: 'text' as const, text: `Error: ${(error as Error).message}` }],
       };
     }
-  }
+  },
 };
 
 // ========== OKR Tools ==========
@@ -327,13 +351,17 @@ export const createOKR: McpTool = {
         confidential: z.boolean().default(false),
         position: z.number().default(0),
       }),
-      keyResults: z.array(z.object({
-        content: z.string().describe('Key result content'),
-        score: z.number().min(0).max(100).default(0),
-        weight: z.number().min(0).max(100).default(100),
-        progressRate: z.number().min(0).max(100).default(0),
-      })).optional(),
-    })
+      keyResults: z
+        .array(
+          z.object({
+            content: z.string().describe('Key result content'),
+            score: z.number().min(0).max(100).default(0),
+            weight: z.number().min(0).max(100).default(100),
+            progressRate: z.number().min(0).max(100).default(0),
+          }),
+        )
+        .optional(),
+    }),
   },
   customHandler: async (client: lark.Client, params: any) => {
     try {
@@ -346,20 +374,22 @@ export const createOKR: McpTool = {
         keyResults: params.keyResults?.length || 0,
         message: 'OKR created successfully (simulated)',
       };
-      
+
       return {
-        content: [{
-          type: 'text' as const,
-          text: `OKR created:\n${JSON.stringify(result, null, 2)}`
-        }]
+        content: [
+          {
+            type: 'text' as const,
+            text: `OKR created:\n${JSON.stringify(result, null, 2)}`,
+          },
+        ],
       };
     } catch (error) {
       return {
         isError: true,
-        content: [{ type: 'text' as const, text: `Error: ${(error as Error).message}` }]
+        content: [{ type: 'text' as const, text: `Error: ${(error as Error).message}` }],
       };
     }
-  }
+  },
 };
 
 // ========== HR Tools ==========
@@ -383,7 +413,7 @@ export const createEmployee: McpTool = {
       hireDate: z.string().describe('Hire date (YYYY-MM-DD)'),
       employmentType: z.enum(['full_time', 'part_time', 'contractor', 'intern']),
       managerId: z.string().optional().describe('Direct manager employee ID'),
-    })
+    }),
   },
   customHandler: async (client: lark.Client, params: any) => {
     try {
@@ -396,20 +426,22 @@ export const createEmployee: McpTool = {
         status: 'active',
         message: 'Employee record created successfully',
       };
-      
+
       return {
-        content: [{
-          type: 'text' as const,
-          text: `Employee created:\n${JSON.stringify(result, null, 2)}`
-        }]
+        content: [
+          {
+            type: 'text' as const,
+            text: `Employee created:\n${JSON.stringify(result, null, 2)}`,
+          },
+        ],
       };
     } catch (error) {
       return {
         isError: true,
-        content: [{ type: 'text' as const, text: `Error: ${(error as Error).message}` }]
+        content: [{ type: 'text' as const, text: `Error: ${(error as Error).message}` }],
       };
     }
-  }
+  },
 };
 
 // ========== Export all tools ==========
@@ -418,31 +450,31 @@ export const completeTools: McpTool[] = [
   // User Management
   getUserInfo,
   createUser,
-  
+
   // Department Management
   createDepartment,
-  
+
   // Group Management
   createGroup,
-  
+
   // Approval
   createApproval,
-  
+
   // Wiki/Knowledge Base
   createWikiSpace,
-  
+
   // Meeting Room
   bookMeetingRoom,
-  
+
   // OKR
   createOKR,
-  
+
   // HR
   createEmployee,
 ];
 
 // Export tool names type
-export type CompleteToolName = 
+export type CompleteToolName =
   | 'complete.user.get_info'
   | 'complete.user.create'
   | 'complete.department.create'

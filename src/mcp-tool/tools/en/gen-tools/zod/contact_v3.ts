@@ -1869,12 +1869,7 @@ export const contactV3JobTitleGet = {
   accessTokens: ['tenant', 'user'],
   schema: {
     path: z.object({
-      job_title_id: z
-        .string()
-        .describe(
-          'Job title ID. You can call the  interface to obtain the job ID',
-        )
-        .optional(),
+      job_title_id: z.string().describe('Job title ID. You can call the  interface to obtain the job ID').optional(),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -2275,9 +2270,7 @@ export const contactV3UserCreate = {
         .optional(),
       country: z
         .string()
-        .describe(
-          'Country or region code. Refer to the  for details.**Default value**: empty',
-        )
+        .describe('Country or region code. Refer to the  for details.**Default value**: empty')
         .optional(),
       work_station: z
         .string()
@@ -2413,15 +2406,11 @@ export const contactV3UserCreate = {
         .optional(),
       job_level_id: z
         .string()
-        .describe(
-          'Job level. You can call the  interface to query the corresponding job level.**Default**: empty',
-        )
+        .describe('Job level. You can call the  interface to query the corresponding job level.**Default**: empty')
         .optional(),
       job_family_id: z
         .string()
-        .describe(
-          'Job family. You can call the  interface to query the corresponding job family.**Default**: empty',
-        )
+        .describe('Job family. You can call the  interface to query the corresponding job family.**Default**: empty')
         .optional(),
       subscription_ids: z
         .array(z.string())
@@ -2668,9 +2657,7 @@ export const contactV3UserPatch = {
       gender: z.number().describe('Gender Options:0(unkown Unknown),1(male),2(female),3(others Other)').optional(),
       avatar_key: z
         .string()
-        .describe(
-          'The file key of the avatar. You can upload and obtain the avatar file Key through the  interface',
-        )
+        .describe('The file key of the avatar. You can upload and obtain the avatar file Key through the  interface')
         .optional(),
       department_ids: z
         .array(z.string())
@@ -2690,12 +2677,7 @@ export const contactV3UserPatch = {
           'Work city. The maximum character length is 100.- Call  to get the list of existing work cities in the current tenant.- If the work city name you pass in does not exist, the system will automatically generate the work city. The maximum number of enumeration values ​​for working cities is 10,000',
         )
         .optional(),
-      country: z
-        .string()
-        .describe(
-          'Country or region code. Refer to the  for details',
-        )
-        .optional(),
+      country: z.string().describe('Country or region code. Refer to the  for details').optional(),
       work_station: z.string().describe('Seat ID. The maximum character length is 255').optional(),
       join_time: z.number().describe('Entry time, in timestamp format, in seconds since January 1, 1970').optional(),
       employee_no: z.string().describe('Employee ID. The maximum character length is 255').optional(),
@@ -2812,15 +2794,11 @@ export const contactV3UserPatch = {
         .optional(),
       job_level_id: z
         .string()
-        .describe(
-          'Job level ID. You can call the  interface to query the corresponding job level ID',
-        )
+        .describe('Job level ID. You can call the  interface to query the corresponding job level ID')
         .optional(),
       job_family_id: z
         .string()
-        .describe(
-          'Job family ID. You can call the  interface to query the corresponding job family ID',
-        )
+        .describe('Job family ID. You can call the  interface to query the corresponding job family ID')
         .optional(),
       subscription_ids: z
         .array(z.string())
@@ -2964,12 +2942,7 @@ export const contactV3UserUpdate = {
         )
         .optional(),
       city: z.string().describe('work city').optional(),
-      country: z
-        .string()
-        .describe(
-          'Country or region code. Refer to the  for details',
-        )
-        .optional(),
+      country: z.string().describe('Country or region code. Refer to the  for details').optional(),
       work_station: z.string().describe('Seat ID').optional(),
       join_time: z.number().describe('Entry time, in timestamp format, in seconds since January 1, 1970').optional(),
       employee_no: z.string().describe('Employee ID').optional(),
@@ -3108,12 +3081,7 @@ export const contactV3WorkCityGet = {
   accessTokens: ['tenant', 'user'],
   schema: {
     path: z.object({
-      work_city_id: z
-        .string()
-        .describe(
-          'Work city ID. You can call the  interface to get the work city ID',
-        )
-        .optional(),
+      work_city_id: z.string().describe('Work city ID. You can call the  interface to get the work city ID').optional(),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },

@@ -126,11 +126,7 @@ export const baseV2AppRoleCreate = {
         .optional(),
     }),
     path: z.object({
-      app_token: z
-        .string()
-        .describe(
-          'Base unique device identifier ',
-        ),
+      app_token: z.string().describe('Base unique device identifier '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -154,11 +150,7 @@ export const baseV2AppRoleList = {
         .optional(),
     }),
     path: z.object({
-      app_token: z
-        .string()
-        .describe(
-          'Base unique device identifier ',
-        ),
+      app_token: z.string().describe('Base unique device identifier '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -289,11 +281,7 @@ export const baseV2AppRoleUpdate = {
         .optional(),
     }),
     path: z.object({
-      app_token: z
-        .string()
-        .describe(
-          'Base unique device identifier ',
-        ),
+      app_token: z.string().describe('Base unique device identifier '),
       role_id: z.string().describe('Role id'),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),

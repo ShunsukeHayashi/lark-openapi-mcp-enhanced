@@ -60,7 +60,14 @@ export interface ErrorContext {
   id: string;
   sessionId: string;
   stepId?: string;
-  errorType: 'api_error' | 'validation_error' | 'timeout' | 'permission_error' | 'rate_limit' | 'network_error' | 'system_error';
+  errorType:
+    | 'api_error'
+    | 'validation_error'
+    | 'timeout'
+    | 'permission_error'
+    | 'rate_limit'
+    | 'network_error'
+    | 'system_error';
   severity: 'low' | 'medium' | 'high' | 'critical';
   message: string;
   stackTrace?: string;
@@ -118,7 +125,7 @@ export class ErrorRecoverySystem {
     name: string,
     description: string,
     state: any,
-    stepId?: string
+    stepId?: string,
   ): Promise<{
     success: boolean;
     checkpointId?: string;
@@ -126,16 +133,16 @@ export class ErrorRecoverySystem {
   }> {
     try {
       const checkpointId = `checkpoint_${Date.now()}_${sessionId}`;
-      
+
       // システム状態の収集
       const systemState = await this.collectSystemState(sessionId);
-      
+
       // Larkリソースの収集
       const larkResources = await this.collectLarkResources(sessionId);
-      
+
       // 状態のチェックサム計算
       const checksumState = this.calculateChecksum(state);
-      
+
       const checkpoint: Checkpoint = {
         id: checkpointId,
         name,
@@ -147,30 +154,29 @@ export class ErrorRecoverySystem {
           session: this.deepClone(state),
           generatedArtifacts: this.collectGeneratedArtifacts(sessionId),
           larkResources,
-          systemState
+          systemState,
         },
         metadata: {
           version: '1.0.0',
           checksumState,
           size: JSON.stringify(state).length,
-          dependencies: this.extractDependencies(state)
-        }
+          dependencies: this.extractDependencies(state),
+        },
       };
 
       this.checkpoints.set(checkpointId, checkpoint);
-      
+
       // 古いチェックポイントのクリーンアップ
       await this.cleanupOldCheckpoints(sessionId);
 
       return {
         success: true,
-        checkpointId
+        checkpointId,
       };
-
     } catch (error) {
       return {
         success: false,
-        error: `Failed to create checkpoint: ${error}`
+        error: `Failed to create checkpoint: ${error}`,
       };
     }
   }
@@ -185,10 +191,10 @@ export class ErrorRecoverySystem {
       operation: string;
       parameters: any;
       stepId?: string;
-    }
+    },
   ): ErrorContext {
     const errorId = `error_${Date.now()}_${sessionId}`;
-    
+
     const errorContext: ErrorContext = {
       id: errorId,
       sessionId,
@@ -202,27 +208,25 @@ export class ErrorRecoverySystem {
         operation: context.operation,
         parameters: context.parameters,
         environment: this.getEnvironmentInfo(),
-        userContext: this.getUserContext(sessionId)
+        userContext: this.getUserContext(sessionId),
       },
       impact: this.assessImpact(error, context),
       recovery: {
         automated: false,
         attempted: false,
-        retryCount: 0
-      }
+        retryCount: 0,
+      },
     };
 
     this.errorLog.set(errorId, errorContext);
-    
+
     return errorContext;
   }
 
   /**
    * 自動復旧の実行
    */
-  static async executeAutoRecovery(
-    errorContext: ErrorContext
-  ): Promise<{
+  static async executeAutoRecovery(errorContext: ErrorContext): Promise<{
     success: boolean;
     recoveryPlan?: RecoveryPlan;
     result?: any;
@@ -233,17 +237,17 @@ export class ErrorRecoverySystem {
     try {
       // 復旧計画の生成
       const recoveryPlan = this.generateRecoveryPlan(errorContext);
-      
+
       if (!recoveryPlan) {
         return {
           success: false,
-          errors: ['No suitable recovery plan found']
+          errors: ['No suitable recovery plan found'],
         };
       }
 
       // 復旧計画の記録
       this.recoveryPlans.set(recoveryPlan.id, recoveryPlan);
-      
+
       // エラーコンテキストの更新
       errorContext.recovery.automated = true;
       errorContext.recovery.attempted = true;
@@ -251,22 +255,21 @@ export class ErrorRecoverySystem {
 
       // 復旧アクションの実行
       const executionResult = await this.executeRecoveryPlan(recoveryPlan, errorContext);
-      
+
       errorContext.recovery.successful = executionResult.success;
 
       return {
         success: executionResult.success,
         recoveryPlan,
         result: executionResult.result,
-        errors: executionResult.errors
+        errors: executionResult.errors,
       };
-
     } catch (error) {
       errors.push(`Auto recovery failed: ${error}`);
-      
+
       return {
         success: false,
-        errors
+        errors,
       };
     }
   }
@@ -281,7 +284,7 @@ export class ErrorRecoverySystem {
       cleanupResources?: boolean;
       preserveUserData?: boolean;
       notifyUsers?: boolean;
-    } = {}
+    } = {},
   ): Promise<RollbackResult> {
     const result: RollbackResult = {
       success: false,
@@ -290,12 +293,12 @@ export class ErrorRecoverySystem {
       deletedResources: [],
       errors: [],
       warnings: [],
-      timeline: []
+      timeline: [],
     };
 
     try {
       const checkpoint = this.checkpoints.get(checkpointId);
-      
+
       if (!checkpoint) {
         result.errors.push(`Checkpoint not found: ${checkpointId}`);
         return result;
@@ -313,7 +316,7 @@ export class ErrorRecoverySystem {
         sessionId,
         'Pre-rollback backup',
         'Automatic backup before rollback',
-        await this.collectCurrentState(sessionId)
+        await this.collectCurrentState(sessionId),
       );
 
       if (!backupCheckpoint.success) {
@@ -322,21 +325,18 @@ export class ErrorRecoverySystem {
 
       // 2. Larkリソースの削除（作成後のもの）
       if (options.cleanupResources !== false) {
-        const cleanupResult = await this.cleanupLarkResources(
-          checkpoint,
-          options.preserveUserData
-        );
-        
+        const cleanupResult = await this.cleanupLarkResources(checkpoint, options.preserveUserData);
+
         result.deletedResources.push(...cleanupResult.deletedResources);
         result.errors.push(...cleanupResult.errors);
         result.warnings.push(...cleanupResult.warnings);
-        
+
         this.addTimelineEntry(result, `Cleaned up ${cleanupResult.deletedResources.length} resources`);
       }
 
       // 3. 状態の復元
       const restorationResult = await this.restoreSystemState(checkpoint);
-      
+
       if (restorationResult.success) {
         result.restoredState = restorationResult.state;
         this.addTimelineEntry(result, 'System state restored');
@@ -347,7 +347,7 @@ export class ErrorRecoverySystem {
 
       // 4. 整合性チェック
       const integrityCheck = await this.verifyRollbackIntegrity(checkpoint, result);
-      
+
       if (!integrityCheck.valid) {
         result.warnings.push(...integrityCheck.issues);
       }
@@ -358,14 +358,16 @@ export class ErrorRecoverySystem {
       }
 
       result.success = result.errors.length === 0;
-      this.addTimelineEntry(result, result.success ? 'Rollback completed successfully' : 'Rollback completed with errors');
+      this.addTimelineEntry(
+        result,
+        result.success ? 'Rollback completed successfully' : 'Rollback completed with errors',
+      );
 
       return result;
-
     } catch (error) {
       result.errors.push(`Rollback failed: ${error}`);
       this.addTimelineEntry(result, 'Rollback failed with exception');
-      
+
       return result;
     }
   }
@@ -375,14 +377,14 @@ export class ErrorRecoverySystem {
    */
   private static classifyError(error: Error): ErrorContext['errorType'] {
     const message = error.message.toLowerCase();
-    
+
     if (message.includes('timeout')) return 'timeout';
     if (message.includes('permission') || message.includes('unauthorized')) return 'permission_error';
     if (message.includes('rate limit')) return 'rate_limit';
     if (message.includes('network') || message.includes('connection')) return 'network_error';
     if (message.includes('validation')) return 'validation_error';
     if (message.includes('api')) return 'api_error';
-    
+
     return 'system_error';
   }
 
@@ -391,22 +393,22 @@ export class ErrorRecoverySystem {
    */
   private static assessSeverity(error: Error, context: any): ErrorContext['severity'] {
     const errorType = this.classifyError(error);
-    
+
     // 重要な操作での失敗は高重要度
     if (context.operation.includes('create') || context.operation.includes('delete')) {
       return 'high';
     }
-    
+
     // 権限エラーやAPI エラーは中重要度
     if (errorType === 'permission_error' || errorType === 'api_error') {
       return 'medium';
     }
-    
+
     // タイムアウトやネットワークエラーは低重要度（リトライ可能）
     if (errorType === 'timeout' || errorType === 'network_error') {
       return 'low';
     }
-    
+
     return 'medium';
   }
 
@@ -418,7 +420,7 @@ export class ErrorRecoverySystem {
       affectedResources: this.extractAffectedResources(context),
       dataLoss: context.operation.includes('delete') || context.operation.includes('clear'),
       serviceInterruption: context.operation.includes('create') || context.operation.includes('deploy'),
-      userImpact: this.assessUserImpact(error, context)
+      userImpact: this.assessUserImpact(error, context),
     };
   }
 
@@ -427,7 +429,7 @@ export class ErrorRecoverySystem {
    */
   private static generateRecoveryPlan(errorContext: ErrorContext): RecoveryPlan | null {
     const planId = `plan_${Date.now()}_${errorContext.sessionId}`;
-    
+
     let strategy: RecoveryPlan['strategy'];
     let actions: RecoveryAction[] = [];
     let estimatedTime = 0;
@@ -446,12 +448,12 @@ export class ErrorRecoverySystem {
             parameters: {
               maxRetries: 3,
               backoffMultiplier: 2,
-              initialDelay: 1000
+              initialDelay: 1000,
             },
             order: 1,
             critical: false,
-            rollbackable: true
-          }
+            rollbackable: true,
+          },
         ];
         estimatedTime = 5;
         break;
@@ -464,12 +466,12 @@ export class ErrorRecoverySystem {
             type: 'repair_data',
             description: 'Fix validation issues and retry',
             parameters: {
-              validationRules: errorContext.context.parameters
+              validationRules: errorContext.context.parameters,
             },
             order: 1,
             critical: true,
-            rollbackable: true
-          }
+            rollbackable: true,
+          },
         ];
         estimatedTime = 10;
         riskLevel = 'medium';
@@ -484,12 +486,12 @@ export class ErrorRecoverySystem {
             description: 'Notify user about permission issues',
             parameters: {
               message: 'Permission denied. Please check your access rights.',
-              severity: 'high'
+              severity: 'high',
             },
             order: 1,
             critical: true,
-            rollbackable: false
-          }
+            rollbackable: false,
+          },
         ];
         estimatedTime = 0;
         riskLevel = 'high';
@@ -504,12 +506,12 @@ export class ErrorRecoverySystem {
               type: 'restore_state',
               description: 'Rollback to last stable checkpoint',
               parameters: {
-                checkpointId: this.findLastStableCheckpoint(errorContext.sessionId)
+                checkpointId: this.findLastStableCheckpoint(errorContext.sessionId),
               },
               order: 1,
               critical: true,
-              rollbackable: false
-            }
+              rollbackable: false,
+            },
           ];
           estimatedTime = 15;
           riskLevel = 'high';
@@ -523,8 +525,8 @@ export class ErrorRecoverySystem {
               parameters: { maxRetries: 2 },
               order: 1,
               critical: false,
-              rollbackable: true
-            }
+              rollbackable: true,
+            },
           ];
           estimatedTime = 3;
         }
@@ -539,12 +541,12 @@ export class ErrorRecoverySystem {
             description: 'Manual intervention required',
             parameters: {
               errorContext,
-              requiresUserAction: true
+              requiresUserAction: true,
             },
             order: 1,
             critical: true,
-            rollbackable: false
-          }
+            rollbackable: false,
+          },
         ];
         estimatedTime = 0;
         riskLevel = 'high';
@@ -559,7 +561,7 @@ export class ErrorRecoverySystem {
       estimatedTime,
       riskLevel,
       affectedResources: errorContext.impact.affectedResources,
-      prerequisites: []
+      prerequisites: [],
     };
   }
 
@@ -568,7 +570,7 @@ export class ErrorRecoverySystem {
    */
   private static async executeRecoveryPlan(
     plan: RecoveryPlan,
-    errorContext: ErrorContext
+    errorContext: ErrorContext,
   ): Promise<{
     success: boolean;
     result?: any;
@@ -580,11 +582,11 @@ export class ErrorRecoverySystem {
     try {
       for (const action of plan.actions.sort((a, b) => a.order - b.order)) {
         const actionResult = await this.executeRecoveryAction(action, errorContext);
-        
+
         if (!actionResult.success) {
           overallSuccess = false;
           errors.push(`Action ${action.id} failed: ${actionResult.error}`);
-          
+
           if (action.critical) {
             break; // 重要なアクションが失敗した場合は停止
           }
@@ -594,13 +596,12 @@ export class ErrorRecoverySystem {
       return {
         success: overallSuccess,
         result: overallSuccess ? 'Recovery completed' : 'Recovery partially failed',
-        errors
+        errors,
       };
-
     } catch (error) {
       return {
         success: false,
-        errors: [`Recovery plan execution failed: ${error}`]
+        errors: [`Recovery plan execution failed: ${error}`],
       };
     }
   }
@@ -610,7 +611,7 @@ export class ErrorRecoverySystem {
    */
   private static async executeRecoveryAction(
     action: RecoveryAction,
-    errorContext: ErrorContext
+    errorContext: ErrorContext,
   ): Promise<{
     success: boolean;
     result?: any;
@@ -620,33 +621,32 @@ export class ErrorRecoverySystem {
       switch (action.type) {
         case 'retry_operation':
           return await this.retryOperation(action.parameters, errorContext);
-          
+
         case 'restore_state':
           return await this.restoreFromCheckpoint(action.parameters.checkpointId);
-          
+
         case 'repair_data':
           return await this.repairData(action.parameters, errorContext);
-          
+
         case 'notify_user':
           return await this.notifyUser(action.parameters, errorContext);
-          
+
         case 'delete_resource':
           return await this.deleteResource(action.parameters);
-          
+
         case 'create_fallback':
           return await this.createFallback(action.parameters, errorContext);
-          
+
         default:
           return {
             success: false,
-            error: `Unknown action type: ${action.type}`
+            error: `Unknown action type: ${action.type}`,
           };
       }
-
     } catch (error) {
       return {
         success: false,
-        error: `Action execution failed: ${error}`
+        error: `Action execution failed: ${error}`,
       };
     }
   }
@@ -661,7 +661,7 @@ export class ErrorRecoverySystem {
       memory: process.memoryUsage(),
       uptime: process.uptime(),
       nodeVersion: process.version,
-      environment: process.env.NODE_ENV || 'development'
+      environment: process.env.NODE_ENV || 'development',
     };
   }
 
@@ -683,7 +683,7 @@ export class ErrorRecoverySystem {
     let hash = 0;
     for (let i = 0; i < stateString.length; i++) {
       const char = stateString.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // 32bit整数に変換
     }
     return hash.toString(16);
@@ -709,13 +709,13 @@ export class ErrorRecoverySystem {
    */
   private static async cleanupOldCheckpoints(sessionId: string): Promise<void> {
     const sessionCheckpoints = Array.from(this.checkpoints.values())
-      .filter(cp => cp.sessionId === sessionId)
+      .filter((cp) => cp.sessionId === sessionId)
       .sort((a, b) => b.timestamp - a.timestamp);
 
     // 最新の5つを保持、古いものは削除
     const toDelete = sessionCheckpoints.slice(5);
-    
-    toDelete.forEach(cp => {
+
+    toDelete.forEach((cp) => {
       this.checkpoints.delete(cp.id);
     });
   }
@@ -728,14 +728,14 @@ export class ErrorRecoverySystem {
       nodeVersion: process.version,
       platform: process.platform,
       memory: process.memoryUsage(),
-      uptime: process.uptime()
+      uptime: process.uptime(),
     };
   }
 
   private static getUserContext(sessionId: string): any {
     return {
       sessionId,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 
@@ -752,7 +752,7 @@ export class ErrorRecoverySystem {
 
   private static findLastStableCheckpoint(sessionId: string): string | null {
     const sessionCheckpoints = Array.from(this.checkpoints.values())
-      .filter(cp => cp.sessionId === sessionId)
+      .filter((cp) => cp.sessionId === sessionId)
       .sort((a, b) => b.timestamp - a.timestamp);
 
     return sessionCheckpoints[0]?.id || null;
@@ -807,7 +807,7 @@ export class ErrorRecoverySystem {
     return {
       deletedResources: [],
       errors: [],
-      warnings: []
+      warnings: [],
     };
   }
 
@@ -816,7 +816,7 @@ export class ErrorRecoverySystem {
     return {
       success: true,
       state: checkpoint.state,
-      errors: []
+      errors: [],
     };
   }
 
@@ -824,7 +824,7 @@ export class ErrorRecoverySystem {
     // ロールバック整合性の検証
     return {
       valid: true,
-      issues: []
+      issues: [],
     };
   }
 
@@ -837,7 +837,7 @@ export class ErrorRecoverySystem {
     result.timeline.push({
       timestamp: Date.now(),
       action,
-      result: 'success'
+      result: 'success',
     });
   }
 }

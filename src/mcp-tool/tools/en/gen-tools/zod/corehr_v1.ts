@@ -577,15 +577,11 @@ export const corehrV1CompanyCreate = {
             .optional(),
           numeric_code: z
             .number()
-            .describe(
-              'The reference code of the corresponding currency. obtained through the ',
-            )
+            .describe('The reference code of the corresponding currency. obtained through the ')
             .optional(),
           currency_alpha_3_code: z
             .string()
-            .describe(
-              'Legal currency corresponding codes, such as CNY, USD, etc.obtained through the ',
-            )
+            .describe('Legal currency corresponding codes, such as CNY, USD, etc.obtained through the ')
             .optional(),
         })
         .describe('Default currency')
@@ -619,24 +615,9 @@ export const corehrV1CompanyCreate = {
             .describe(
               'Country/region ID.The fields for each country/region can be queried by referring to Query and obtain',
             ),
-          region_id: z
-            .string()
-            .describe(
-              'main administrative region ID.Query and obtain',
-            )
-            .optional(),
-          city_id: z
-            .string()
-            .describe(
-              'City ID.Query and obtain',
-            )
-            .optional(),
-          distinct_id: z
-            .string()
-            .describe(
-              'District/County ID,Query and obtain',
-            )
-            .optional(),
+          region_id: z.string().describe('main administrative region ID.Query and obtain').optional(),
+          city_id: z.string().describe('City ID.Query and obtain').optional(),
+          distinct_id: z.string().describe('District/County ID,Query and obtain').optional(),
           address_line1: z.string().describe('Address line 1').optional(),
           address_line2: z.string().describe('Address line 2').optional(),
           address_line3: z.string().describe('Address line 3').optional(),
@@ -666,24 +647,9 @@ export const corehrV1CompanyCreate = {
             .describe(
               'Country/region ID.The fields for each country/region can be queried by referring to 。Query and obtain',
             ),
-          region_id: z
-            .string()
-            .describe(
-              'main administrative region ID.Query and obtain',
-            )
-            .optional(),
-          city_id: z
-            .string()
-            .describe(
-              'City ID.Query and obtain',
-            )
-            .optional(),
-          distinct_id: z
-            .string()
-            .describe(
-              'District/County Id. Query and obtain',
-            )
-            .optional(),
+          region_id: z.string().describe('main administrative region ID.Query and obtain').optional(),
+          city_id: z.string().describe('City ID.Query and obtain').optional(),
+          distinct_id: z.string().describe('District/County Id. Query and obtain').optional(),
           address_line1: z.string().describe('Address line 1').optional(),
           address_line2: z.string().describe('Address line 2').optional(),
           address_line3: z.string().describe('Address line 3').optional(),
@@ -900,9 +866,7 @@ export const corehrV1CompanyPatch = {
             .optional(),
           currency_alpha_3_code: z
             .string()
-            .describe(
-              'Legal tender corresponding codes, such as CNY, USD, etc.obtained through the ',
-            )
+            .describe('Legal tender corresponding codes, such as CNY, USD, etc.obtained through the ')
             .optional(),
         })
         .describe('Default currency')
@@ -944,24 +908,9 @@ export const corehrV1CompanyPatch = {
             .describe(
               'Country/Region ID. The fields for each country/region can be queried by referring to。.Query and obtain',
             ),
-          region_id: z
-            .string()
-            .describe(
-              'main administrative region ID.Query and obtain',
-            )
-            .optional(),
-          city_id: z
-            .string()
-            .describe(
-              'City ID, Query and obtain',
-            )
-            .optional(),
-          distinct_id: z
-            .string()
-            .describe(
-              'District/County ID, Query and obtain.this field is pending',
-            )
-            .optional(),
+          region_id: z.string().describe('main administrative region ID.Query and obtain').optional(),
+          city_id: z.string().describe('City ID, Query and obtain').optional(),
+          distinct_id: z.string().describe('District/County ID, Query and obtain.this field is pending').optional(),
           address_line1: z.string().describe('Address line 1').optional(),
           address_line2: z.string().describe('Address line 2').optional(),
           address_line3: z.string().describe('Address line 3').optional(),
@@ -991,24 +940,9 @@ export const corehrV1CompanyPatch = {
             .describe(
               'Country/Region ID. The fields for each country/region can be queried by referring to。Query and obtain',
             ),
-          region_id: z
-            .string()
-            .describe(
-              'main administrative region ID.Query and obtain',
-            )
-            .optional(),
-          city_id: z
-            .string()
-            .describe(
-              'City ID,Query and obtain',
-            )
-            .optional(),
-          distinct_id: z
-            .string()
-            .describe(
-              'District/County ID,Query and obtain',
-            )
-            .optional(),
+          region_id: z.string().describe('main administrative region ID.Query and obtain').optional(),
+          city_id: z.string().describe('City ID,Query and obtain').optional(),
+          distinct_id: z.string().describe('District/County ID,Query and obtain').optional(),
           address_line1: z.string().describe('Address line 1').optional(),
           address_line2: z.string().describe('Address line 2').optional(),
           address_line3: z.string().describe('Address line 3').optional(),
@@ -1066,11 +1000,7 @@ export const corehrV1CompensationStandardMatch = {
           'The department ID type used in this call. When passing in the department ID, this parameter needs to be passed in. Options:open_department_id([FeiShu]Identify departments by open_department_id),department_id([FeiShu]Identify departments by department_id),people_corehr_department_id([FeiShu_People]Identify departments by people_corehr_department_id)',
         )
         .optional(),
-      employment_id: z
-        .string()
-        .describe(
-          'Employment ID，obtain through the interface',
-        ),
+      employment_id: z.string().describe('Employment ID，obtain through the interface'),
       reference_object_api: z
         .enum(['cpst_item', 'cpst_indicator'])
         .describe(
@@ -1082,42 +1012,12 @@ export const corehrV1CompensationStandardMatch = {
         .describe(
           'Salary Standard Associated Object ID，cpst_item ID / cpst_indicator ID, obtain through the interface and the interface',
         ),
-      department_id: z
-        .string()
-        .describe(
-          'Department ID，obtain through the interface',
-        )
-        .optional(),
-      work_location_id: z
-        .string()
-        .describe(
-          'Workplace ID，obtain through the interface',
-        )
-        .optional(),
-      company_id: z
-        .string()
-        .describe(
-          'Company ID，obtain through the interface',
-        )
-        .optional(),
-      job_family_id: z
-        .string()
-        .describe(
-          'Job Serial ID，obtain through the interface',
-        )
-        .optional(),
-      job_level_id: z
-        .string()
-        .describe(
-          'Rank ID，obtain through the interface',
-        )
-        .optional(),
-      employee_type_id: z
-        .string()
-        .describe(
-          'Person type ID，obtain through the interface',
-        )
-        .optional(),
+      department_id: z.string().describe('Department ID，obtain through the interface').optional(),
+      work_location_id: z.string().describe('Workplace ID，obtain through the interface').optional(),
+      company_id: z.string().describe('Company ID，obtain through the interface').optional(),
+      job_family_id: z.string().describe('Job Serial ID，obtain through the interface').optional(),
+      job_level_id: z.string().describe('Rank ID，obtain through the interface').optional(),
+      employee_type_id: z.string().describe('Person type ID，obtain through the interface').optional(),
       recruitment_type: z
         .enum(['experienced_professionals', 'recent_graduates', 'routine_intern'])
         .describe(
@@ -1126,16 +1026,9 @@ export const corehrV1CompensationStandardMatch = {
         .optional(),
       cpst_change_reason_id: z
         .string()
-        .describe(
-          'Reason for fixed salary adjustment ID, obtain through the interface',
-        )
+        .describe('Reason for fixed salary adjustment ID, obtain through the interface')
         .optional(),
-      cpst_plan_id: z
-        .string()
-        .describe(
-          'Salary Plan ID, obtain through the interface',
-        )
-        .optional(),
+      cpst_plan_id: z.string().describe('Salary Plan ID, obtain through the interface').optional(),
       cpst_salary_level_id: z.string().describe('Salary Scale Salary Level ID').optional(),
       effective_time: z.string().describe('Effective time(Millisecond-level timestamp)').optional(),
     }),
@@ -1547,15 +1440,11 @@ export const corehrV1DepartmentCreate = {
               ),
           }),
         )
-        .describe(
-          'custom field type，See ',
-        )
+        .describe('custom field type，See ')
         .optional(),
       cost_center_id: z
         .string()
-        .describe(
-          'Cost center idDetailed information can be obtained through the  interface query',
-        )
+        .describe('Cost center idDetailed information can be obtained through the  interface query')
         .optional(),
       staffing_model: z
         .object({ enum_name: z.string().describe('enumeration value') })
@@ -1592,9 +1481,7 @@ export const corehrV1DepartmentDelete = {
     path: z.object({
       department_id: z
         .string()
-        .describe(
-          'The department ID that needs to be deleted can be obtained through the  interface query',
-        ),
+        .describe('The department ID that needs to be deleted can be obtained through the  interface query'),
     }),
   },
 };
@@ -1725,9 +1612,7 @@ export const corehrV1DepartmentPatch = {
         .optional(),
       cost_center_id: z
         .string()
-        .describe(
-          'Cost center ID, you can get the corresponding cost center information through the  interface',
-        )
+        .describe('Cost center ID, you can get the corresponding cost center information through the  interface')
         .optional(),
       staffing_model: z
         .object({ enum_name: z.string().describe('enumeration value') })
@@ -2930,12 +2815,7 @@ export const corehrV1JobCreate = {
           'Job sequence ID list- Details can be obtained by [Batch Query Sequence] (/ssl: ttdoc/uAjLw4CM/ukTMukTMukTM/corehr-v2/job_family/batch_get)',
         )
         .optional(),
-      job_level_id_list: z
-        .array(z.string())
-        .describe(
-          'Job Level ID List- Details can be obtained by ',
-        )
-        .optional(),
+      job_level_id_list: z.array(z.string()).describe('Job Level ID List- Details can be obtained by ').optional(),
       working_hours_type_id: z
         .string()
         .describe(
@@ -3193,11 +3073,7 @@ export const corehrV1LeaveGrantingRecordDelete = {
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      leave_granting_record_id: z
-        .string()
-        .describe(
-          'Vacation Issuance Record ID, which can be obtained from ',
-        ),
+      leave_granting_record_id: z.string().describe('Vacation Issuance Record ID, which can be obtained from '),
     }),
   },
 };
@@ -3218,42 +3094,21 @@ export const corehrV1LeaveCalendarByScope = {
           'List of IDs of the department to which the user belongs.You can obtain the ID of the department through ',
         )
         .optional(),
-      wk_country_region_id: z
-        .string()
-        .describe(
-          'Country ID.You can get the country/region ID through ',
-        )
-        .optional(),
+      wk_country_region_id: z.string().describe('Country ID.You can get the country/region ID through ').optional(),
       wk_employee_type_id: z
         .string()
-        .describe(
-          'Employee Type ID.You can obtain the personnel type ID through ',
-        )
+        .describe('Employee Type ID.You can obtain the personnel type ID through ')
         .optional(),
       wk_work_location_id: z
         .string()
-        .describe(
-          'Work Location ID.You can obtain the work location ID through ',
-        )
+        .describe('Work Location ID.You can obtain the work location ID through ')
         .optional(),
       wk_working_hours_type_id: z
         .string()
-        .describe(
-          'Working hours system ID.You can obtain the working hours system ID through ',
-        )
+        .describe('Working hours system ID.You can obtain the working hours system ID through ')
         .optional(),
-      wk_job_family_id: z
-        .string()
-        .describe(
-          'Job Family ID.You can obtain the job sequence ID through ',
-        )
-        .optional(),
-      wk_company_id: z
-        .string()
-        .describe(
-          'Company ID.You can get the company ID through ',
-        )
-        .optional(),
+      wk_job_family_id: z.string().describe('Job Family ID.You can obtain the job sequence ID through ').optional(),
+      wk_company_id: z.string().describe('Company ID.You can get the company ID through ').optional(),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -3531,9 +3386,7 @@ export const corehrV1LeaveWorkCalendarDate = {
     data: z.object({
       wk_calendar_ids: z
         .array(z.string())
-        .describe(
-          'List of IDs in the work calendar, up to 100. You can obtain the work calendar ID through the API ',
-        ),
+        .describe('List of IDs in the work calendar, up to 100. You can obtain the work calendar ID through the API '),
       dates: z
         .array(z.string())
         .describe(
@@ -3623,16 +3476,10 @@ export const corehrV1LocationCreate = {
       address: z
         .array(
           z.object({
-            country_region_id: z
-              .string()
-              .describe(
-                'Country IDIt can be obtained through the  interface',
-              ),
+            country_region_id: z.string().describe('Country IDIt can be obtained through the  interface'),
             region_id: z
               .string()
-              .describe(
-                'Main administrative region IDIt can be obtained through the  interface',
-              )
+              .describe('Main administrative region IDIt can be obtained through the  interface')
               .optional(),
             city_id: z
               .string()
@@ -4155,9 +4002,7 @@ export const corehrV1OffboardingSubmit = {
       offboarding_date: z.string().describe('Offboarding date,parameter format should be YYYY-MM-DD'),
       offboarding_reason_unique_identifier: z
         .string()
-        .describe(
-          'The reason for offboarding,can be obtained through the interface',
-        ),
+        .describe('The reason for offboarding,can be obtained through the interface'),
       offboarding_reason_explanation: z
         .string()
         .describe(

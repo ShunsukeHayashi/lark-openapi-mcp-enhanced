@@ -1137,11 +1137,7 @@ export const mailV1UserMailboxFolderDelete = {
       user_mailbox_id: z
         .string()
         .describe('User email address, or enter me to represent the current calling interface user'),
-      folder_id: z
-        .string()
-        .describe(
-          'Folder ID. The method for obtaining ID is shown in ',
-        ),
+      folder_id: z.string().describe('Folder ID. The method for obtaining ID is shown in '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -1188,11 +1184,7 @@ export const mailV1UserMailboxFolderPatch = {
       user_mailbox_id: z
         .string()
         .describe('User email address, or enter me to represent the current calling interface user'),
-      folder_id: z
-        .string()
-        .describe(
-          'Folder ID. The method for obtaining ID is shown in ',
-        ),
+      folder_id: z.string().describe('Folder ID. The method for obtaining ID is shown in '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -1232,11 +1224,7 @@ export const mailV1UserMailboxMailContactDelete = {
       user_mailbox_id: z
         .string()
         .describe('User email address or enter "me" to represent the current user making the API call'),
-      mail_contact_id: z
-        .string()
-        .describe(
-          "Email Contact's ID. For the acquisition method, see ",
-        ),
+      mail_contact_id: z.string().describe("Email Contact's ID. For the acquisition method, see "),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -1290,11 +1278,7 @@ export const mailV1UserMailboxMailContactPatch = {
       user_mailbox_id: z
         .string()
         .describe('User email address or enter "me" to represent the current user making the API call'),
-      mail_contact_id: z
-        .string()
-        .describe(
-          "Email Contact's ID. For the acquisition method, see ",
-        ),
+      mail_contact_id: z.string().describe("Email Contact's ID. For the acquisition method, see "),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -1314,11 +1298,7 @@ export const mailV1UserMailboxMessageAttachmentDownloadUrl = {
       user_mailbox_id: z
         .string()
         .describe('User email address, or enter me to represent the current calling interface user'),
-      message_id: z
-        .string()
-        .describe(
-          'Message ID, the method for obtaining ID is shown in ',
-        ),
+      message_id: z.string().describe('Message ID, the method for obtaining ID is shown in '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -1336,11 +1316,7 @@ export const mailV1UserMailboxMessageGet = {
       user_mailbox_id: z
         .string()
         .describe('User email address, or enter me to represent the current calling interface user'),
-      message_id: z
-        .string()
-        .describe(
-          'Message ID, the method for obtaining ID is shown in ',
-        ),
+      message_id: z.string().describe('Message ID, the method for obtaining ID is shown in '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -1392,11 +1368,7 @@ export const mailV1UserMailboxMessageList = {
           'Page identifier. It is not filled in the first request, indicating traversal from the beginning; when there will be more groups, the new page_token will be returned at the same time, and the next traversal can use the page_token to get more groups',
         )
         .optional(),
-      folder_id: z
-        .string()
-        .describe(
-          'Folder ID. The method for obtaining ID is shown in ',
-        ),
+      folder_id: z.string().describe('Folder ID. The method for obtaining ID is shown in '),
       only_unread: z.boolean().describe('Only query unread emails').optional(),
     }),
     path: z.object({
@@ -1534,11 +1506,7 @@ export const mailV1UserMailboxRuleDelete = {
   schema: {
     path: z.object({
       user_mailbox_id: z.string(),
-      rule_id: z
-        .string()
-        .describe(
-          'Rule ID. The method for obtaining ID is shown in ',
-        ),
+      rule_id: z.string().describe('Rule ID. The method for obtaining ID is shown in '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -1570,11 +1538,7 @@ export const mailV1UserMailboxRuleReorder = {
   accessTokens: ['tenant', 'user'],
   schema: {
     data: z.object({
-      rule_ids: z
-        .array(z.string())
-        .describe(
-          'Auto filter ID list. The method for obtaining ID is shown in ',
-        ),
+      rule_ids: z.array(z.string()).describe('Auto filter ID list. The method for obtaining ID is shown in '),
     }),
     path: z.object({ user_mailbox_id: z.string() }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
@@ -1641,11 +1605,7 @@ export const mailV1UserMailboxRuleUpdate = {
       user_mailbox_id: z
         .string()
         .describe('User email address, or enter me to represent the current calling interface user'),
-      rule_id: z
-        .string()
-        .describe(
-          'Rule ID. The method for obtaining ID is shown in ',
-        ),
+      rule_id: z.string().describe('Rule ID. The method for obtaining ID is shown in '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },

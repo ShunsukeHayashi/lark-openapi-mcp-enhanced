@@ -252,13 +252,13 @@ export class ToolSelectionModel {
    * Calculate keyword matching score
    */
   private calculateKeywordMatch(tool: McpTool, keywords: string[]): number {
-    if (keywords.length === 0) return 0.5;
+    if (!keywords || keywords.length === 0) return 0.5;
     
-    const toolText = `${tool.name} ${tool.description}`.toLowerCase();
+    const toolText = `${tool.name} ${tool.description || ''}`.toLowerCase();
     let matches = 0;
     
     for (const keyword of keywords) {
-      if (toolText.includes(keyword.toLowerCase())) {
+      if (keyword && toolText.includes(keyword.toLowerCase())) {
         matches++;
       }
     }
@@ -310,11 +310,23 @@ export class ToolSelectionModel {
    */
   private adjustWeights(data: ToolPerformanceData): void {
     // Simple gradient descent update
-    const prediction = this.calculateToolScore(
-      { name: data.toolName } as McpTool,
-      { taskType: data.taskType } as TaskFeatures
-    );
+    const mockTool: McpTool = {
+      name: data.toolName,
+      description: '',
+      project: '',
+      accessTokens: ['tenant'],
+      schema: { data: {} },
+    };
     
+    const mockFeatures: TaskFeatures = {
+      taskType: data.taskType,
+      keywords: [],
+      priority: 'medium',
+      estimatedComplexity: 0.5,
+      contextualFactors: new Map(),
+    };
+    
+    const prediction = this.calculateToolScore(mockTool, mockFeatures);
     const error = data.successRate - prediction;
     
     // Update weights based on error
@@ -393,6 +405,7 @@ export class ToolSelectionModel {
       this.taskPatterns = new Map(data.taskPatterns.map(([k, v]: [string, string[]]) => [k, new Set(v)]));
     } catch (error) {
       console.error('Failed to import model:', error);
+      throw error; // Re-throw to allow caller to handle
     }
   }
 }

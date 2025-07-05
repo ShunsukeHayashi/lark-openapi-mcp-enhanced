@@ -8,6 +8,7 @@ import { AgentCapability, AgentMetadata, Task, TaskAssignment } from '../types';
 import { globalRegistry } from '../registry';
 import { McpTool, LarkMcpToolOptions } from '../../mcp-tool/types';
 import { LarkMcpTool } from '../../mcp-tool/mcp-tool';
+import { ConfigManager, toolPriorityConfig } from '../config/config-manager';
 
 export class CoordinatorAgent extends Agent {
   private activeTasks: Map<string, Task> = new Map();
@@ -21,6 +22,8 @@ export class CoordinatorAgent extends Agent {
   private toolFallbackMap: Map<string, string[]> = new Map();
   private maxRetryAttempts: number = 3;
   private retryDelay: number = 1000; // 1 second base delay
+  private configManager: ConfigManager = toolPriorityConfig;
+  private configAutoReload: boolean = true;
 
   constructor(config: Partial<AgentConfig> = {}, mcpOptions?: LarkMcpToolOptions) {
     const coordinatorConfig: AgentConfig = {
@@ -40,7 +43,15 @@ Monitor progress and handle task dependencies.
     };
 
     super(coordinatorConfig);
-    this.initializeMcpTools(mcpOptions);
+    
+    // Initialize MCP tools asynchronously
+    this.initializeMcpTools(mcpOptions).catch((error) => {
+      console.warn('Failed to initialize MCP tools with configuration:', error);
+      // Fall back to default setup
+      this.setupToolPriorities();
+      this.setupToolFallbacks();
+    });
+    
     this.config.tools = this.createCoordinatorTools();
 
     // Add tools to the parent's tools map
@@ -49,12 +60,18 @@ Monitor progress and handle task dependencies.
     }
   }
 
-  private initializeMcpTools(mcpOptions?: LarkMcpToolOptions): void {
+  private async initializeMcpTools(mcpOptions?: LarkMcpToolOptions): Promise<void> {
     if (mcpOptions) {
       this.mcpTool = new LarkMcpTool(mcpOptions);
       this.loadAvailableMcpTools();
-      this.setupToolPriorities();
-      this.setupToolFallbacks();
+      await this.loadConfigurationFromFile();
+      
+      // Watch for configuration changes
+      if (this.configAutoReload) {
+        this.configManager.watchConfig(async (config) => {
+          await this.applyConfiguration(config);
+        });
+      }
     }
   }
 
@@ -505,6 +522,136 @@ Monitor progress and handle task dependencies.
             useFallbacks: { type: 'boolean', description: 'Enable fallback mechanism' },
           },
           required: ['toolName', 'toolParams'],
+        },
+      },
+
+      {
+        name: 'reload_configuration',
+        description: 'Reload tool priorities and fallbacks from configuration file',
+        execute: async () => {
+          try {
+            await this.loadConfigurationFromFile();
+            return {
+              success: true,
+              message: 'Configuration reloaded successfully',
+              priorities: this.toolPriorities.size,
+              fallbacks: this.toolFallbackMap.size,
+              retryPolicy: {
+                maxAttempts: this.maxRetryAttempts,
+                baseDelay: this.retryDelay,
+              },
+            };
+          } catch (error) {
+            return {
+              success: false,
+              error: `Failed to reload configuration: ${error}`,
+            };
+          }
+        },
+        schema: {
+          type: 'object',
+          properties: {},
+        },
+      },
+
+      {
+        name: 'update_tool_priority',
+        description: 'Update priority for a specific tool pattern',
+        execute: async (params: any) => {
+          const { pattern, priority, group = 'customTools' } = params;
+
+          try {
+            await this.configManager.updateToolPriority(pattern, priority, group);
+            await this.loadConfigurationFromFile();
+
+            return {
+              success: true,
+              pattern,
+              priority,
+              group,
+              message: 'Tool priority updated and configuration reloaded',
+            };
+          } catch (error) {
+            return {
+              success: false,
+              error: `Failed to update tool priority: ${error}`,
+            };
+          }
+        },
+        schema: {
+          type: 'object',
+          properties: {
+            pattern: { type: 'string', description: 'Tool name pattern' },
+            priority: { type: 'number', minimum: 1, maximum: 10, description: 'Priority level (1=highest)' },
+            group: { type: 'string', description: 'Priority group name' },
+          },
+          required: ['pattern', 'priority'],
+        },
+      },
+
+      {
+        name: 'add_tool_fallback',
+        description: 'Add or update fallback tools for a primary tool',
+        execute: async (params: any) => {
+          const { primaryTool, fallbackTools, description } = params;
+
+          try {
+            await this.configManager.addFallbackMapping(primaryTool, fallbackTools, description);
+            await this.loadConfigurationFromFile();
+
+            return {
+              success: true,
+              primaryTool,
+              fallbackTools,
+              description,
+              message: 'Fallback mapping added and configuration reloaded',
+            };
+          } catch (error) {
+            return {
+              success: false,
+              error: `Failed to add fallback mapping: ${error}`,
+            };
+          }
+        },
+        schema: {
+          type: 'object',
+          properties: {
+            primaryTool: { type: 'string', description: 'Primary tool name' },
+            fallbackTools: { type: 'array', items: { type: 'string' }, description: 'List of fallback tools' },
+            description: { type: 'string', description: 'Mapping description' },
+          },
+          required: ['primaryTool', 'fallbackTools'],
+        },
+      },
+
+      {
+        name: 'toggle_config_auto_reload',
+        description: 'Enable or disable automatic configuration reloading',
+        execute: async (params: any) => {
+          const { enabled } = params;
+
+          this.configAutoReload = enabled;
+
+          if (enabled) {
+            this.configManager.watchConfig(async (config) => {
+              await this.applyConfiguration(config);
+            });
+          } else {
+            this.configManager.stopWatching();
+          }
+
+          return {
+            success: true,
+            autoReloadEnabled: this.configAutoReload,
+            message: `Configuration auto-reload ${enabled ? 'enabled' : 'disabled'}`,
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {
+            enabled: { type: 'boolean', description: 'Enable auto-reload' },
+          },
+          required: ['enabled'],
         },
       },
     ];
@@ -1034,6 +1181,56 @@ Monitor progress and handle task dependencies.
     });
 
     return metrics;
+  }
+
+  /**
+   * Load configuration from file
+   */
+  private async loadConfigurationFromFile(): Promise<void> {
+    try {
+      const config = await this.configManager.loadConfig();
+      await this.applyConfiguration(config);
+    } catch (error) {
+      console.error('Failed to load configuration from file:', error);
+      // Fall back to default configuration
+      this.setupToolPriorities();
+      this.setupToolFallbacks();
+    }
+  }
+
+  /**
+   * Apply configuration
+   */
+  private async applyConfiguration(config: any): Promise<void> {
+    // Clear existing priorities and fallbacks
+    this.toolPriorities.clear();
+    this.toolFallbackMap.clear();
+
+    // Apply tool priorities
+    const priorities = await this.configManager.getToolPriorities();
+    priorities.forEach((priority, pattern) => {
+      this.setToolPriorityByPattern(pattern, priority);
+    });
+
+    // Apply fallback mappings
+    const fallbacks = await this.configManager.getToolFallbacks();
+    fallbacks.forEach((fallbackTools, primaryTool) => {
+      this.toolFallbackMap.set(primaryTool, fallbackTools);
+    });
+
+    // Apply retry policy
+    const retryPolicy = await this.configManager.getRetryPolicy();
+    this.maxRetryAttempts = retryPolicy.maxAttempts;
+    this.retryDelay = retryPolicy.baseDelay;
+
+    console.log(`Configuration applied: ${this.toolPriorities.size} priorities, ${this.toolFallbackMap.size} fallbacks`);
+  }
+
+  /**
+   * Cleanup resources
+   */
+  public cleanup(): void {
+    this.configManager.stopWatching();
   }
 }
 

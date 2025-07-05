@@ -1010,6 +1010,9 @@ Monitor progress and handle task dependencies.
       }
       this.toolExecutionHistory.get(toolName)?.push(historyEntry);
 
+      // Train ML model with failed execution
+      this.trainMLModel(toolName, 'failure', executionTime);
+
       return {
         success: false,
         error: `Failed to execute tool ${toolName}: ${error}`,
@@ -1361,6 +1364,47 @@ Monitor progress and handle task dependencies.
    */
   public cleanup(): void {
     this.configManager.stopWatching();
+  }
+
+  /**
+   * Train ML model with execution data
+   */
+  private trainMLModel(toolName: string, result: 'success' | 'failure', executionTime: number): void {
+    const task = Array.from(this.activeTasks.values()).find(t => t.status === 'in_progress');
+    const taskType = task ? this.extractTaskType(task.description) : 'unknown';
+    
+    const performanceData: ToolPerformanceData = {
+      toolName,
+      taskType,
+      successRate: result === 'success' ? 1 : 0,
+      avgExecutionTime: executionTime,
+      totalExecutions: 1,
+      recentFailures: result === 'failure' ? 1 : 0,
+      contextFeatures: new Map([
+        ['time_of_day', new Date().getHours() / 24],
+        ['day_of_week', new Date().getDay() / 7],
+      ]),
+      timestamp: new Date(),
+    };
+    
+    this.mlModel.train(performanceData);
+  }
+
+  /**
+   * Get ML model metrics
+   */
+  public getMLModelMetrics(): any {
+    const history = this.toolExecutionHistory;
+    const modelState = this.mlModel.exportModel();
+    const modelData = JSON.parse(modelState);
+    
+    return {
+      totalTrainingSamples: modelData.performanceHistory?.length || 0,
+      totalToolsTracked: modelData.performanceHistory ? Object.keys(modelData.performanceHistory).length : 0,
+      featureWeights: modelData.featureWeights || {},
+      taskPatterns: modelData.taskPatterns ? Object.keys(modelData.taskPatterns).length : 0,
+      mlEnabled: this.useMLSelection,
+    };
   }
 }
 

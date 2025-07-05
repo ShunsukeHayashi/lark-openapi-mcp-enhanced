@@ -1,5 +1,4 @@
 {
-  "$schema": "./tool-priorities.schema.json",
   "version": "1.0.0",
   "description": "Tool priority configuration for coordinator agent",
   "priorities": {
@@ -55,7 +54,13 @@
     },
     "customTools": {
       "description": "Custom tool priorities can be added here",
-      "patterns": []
+      "patterns": [
+        {
+          "pattern": "test.custom.tool",
+          "priority": 7,
+          "description": "Added via API"
+        }
+      ]
     }
   },
   "fallbacks": {
@@ -63,33 +68,59 @@
     "mappings": [
       {
         "primary": "bitable.v1.appTableRecord.search",
-        "fallbacks": ["bitable.v1.appTableRecord.list", "bitable.v1.appTable.list"],
+        "fallbacks": [
+          "bitable.v1.appTableRecord.list",
+          "bitable.v1.appTable.list"
+        ],
         "description": "Fallback from search to list operations"
       },
       {
         "primary": "bitable.v1.appTableRecord.create",
-        "fallbacks": ["bitable.v1.appTableRecord.batchCreate", "base.v2.record.create"],
+        "fallbacks": [
+          "bitable.v1.appTableRecord.batchCreate",
+          "base.v2.record.create"
+        ],
         "description": "Fallback for record creation"
       },
       {
         "primary": "im.v1.message.create",
-        "fallbacks": ["im.v1.message.reply", "im.v2.message.create"],
+        "fallbacks": [
+          "im.v1.message.reply",
+          "im.v2.message.create"
+        ],
         "description": "Fallback for message sending"
       },
       {
         "primary": "docx.v1.document.create",
-        "fallbacks": ["docs.v1.create", "wiki.v2.space.node.create"],
+        "fallbacks": [
+          "docs.v1.create",
+          "wiki.v2.space.node.create"
+        ],
         "description": "Fallback for document creation"
       },
       {
         "primary": "calendar.v4.calendar.event.create",
-        "fallbacks": ["calendar.v4.calendar.event.patch", "event.v1.create"],
+        "fallbacks": [
+          "calendar.v4.calendar.event.patch",
+          "event.v1.create"
+        ],
         "description": "Fallback for calendar events"
       },
       {
         "primary": "chrome.mcp.search",
-        "fallbacks": ["search.v2.app.search", "bitable.v1.appTableRecord.search"],
+        "fallbacks": [
+          "search.v2.app.search",
+          "bitable.v1.appTableRecord.search"
+        ],
         "description": "Fallback from Chrome search to Lark search"
+      },
+      {
+        "primary": "test.primary.tool",
+        "fallbacks": [
+          "test.fallback1",
+          "test.fallback2"
+        ],
+        "description": "Test fallback mapping"
       }
     ]
   },

@@ -44,13 +44,29 @@ Monitor progress and handle task dependencies.
 
     super(coordinatorConfig);
     
+    // Set up default priorities and fallbacks first
+    this.setupToolPriorities();
+    this.setupToolFallbacks();
+    
     // Initialize MCP tools asynchronously
-    this.initializeMcpTools(mcpOptions).catch((error) => {
-      console.warn('Failed to initialize MCP tools with configuration:', error);
-      // Fall back to default setup
-      this.setupToolPriorities();
-      this.setupToolFallbacks();
-    });
+    if (mcpOptions) {
+      this.mcpTool = new LarkMcpTool(mcpOptions);
+      this.loadAvailableMcpTools();
+      
+      // Load configuration asynchronously
+      this.loadConfigurationFromFile().catch((error) => {
+        if (process.env.NODE_ENV !== 'test') {
+          console.warn('Failed to load configuration:', error);
+        }
+      });
+      
+      // Watch for configuration changes
+      if (this.configAutoReload && process.env.NODE_ENV !== 'test') {
+        this.configManager.watchConfig(async (config) => {
+          await this.applyConfiguration(config);
+        });
+      }
+    }
     
     this.config.tools = this.createCoordinatorTools();
 
@@ -126,32 +142,35 @@ Monitor progress and handle task dependencies.
 
   private setupToolFallbacks(): void {
     // Define fallback chains for critical tools
+    
+    // Only set up default fallbacks if the map is empty
+    if (this.toolFallbackMap.size === 0) {
+      // Base/Bitable operations fallbacks
+      this.toolFallbackMap.set('bitable.v1.appTableRecord.search', [
+        'bitable.v1.appTableRecord.list',
+        'bitable.v1.appTable.list',
+      ]);
 
-    // Base/Bitable operations fallbacks
-    this.toolFallbackMap.set('bitable.v1.appTableRecord.search', [
-      'bitable.v1.appTableRecord.list',
-      'bitable.v1.appTable.list',
-    ]);
+      this.toolFallbackMap.set('bitable.v1.appTableRecord.create', [
+        'bitable.v1.appTableRecord.batchCreate',
+        'base.v2.record.create',
+      ]);
 
-    this.toolFallbackMap.set('bitable.v1.appTableRecord.create', [
-      'bitable.v1.appTableRecord.batchCreate',
-      'base.v2.record.create',
-    ]);
+      // IM/Message operations fallbacks
+      this.toolFallbackMap.set('im.v1.message.create', ['im.v1.message.reply', 'im.v2.message.create']);
 
-    // IM/Message operations fallbacks
-    this.toolFallbackMap.set('im.v1.message.create', ['im.v1.message.reply', 'im.v2.message.create']);
+      // Document operations fallbacks
+      this.toolFallbackMap.set('docx.v1.document.create', ['docs.v1.create', 'wiki.v2.space.node.create']);
 
-    // Document operations fallbacks
-    this.toolFallbackMap.set('docx.v1.document.create', ['docs.v1.create', 'wiki.v2.space.node.create']);
+      // Calendar operations fallbacks
+      this.toolFallbackMap.set('calendar.v4.calendar.event.create', [
+        'calendar.v4.calendar.event.patch',
+        'event.v1.create',
+      ]);
 
-    // Calendar operations fallbacks
-    this.toolFallbackMap.set('calendar.v4.calendar.event.create', [
-      'calendar.v4.calendar.event.patch',
-      'event.v1.create',
-    ]);
-
-    // Apply fallbacks for Chrome MCP tools to Lark MCP alternatives
-    this.toolFallbackMap.set('chrome.mcp.search', ['search.v2.app.search', 'bitable.v1.appTableRecord.search']);
+      // Apply fallbacks for Chrome MCP tools to Lark MCP alternatives
+      this.toolFallbackMap.set('chrome.mcp.search', ['search.v2.app.search', 'bitable.v1.appTableRecord.search']);
+    }
   }
 
   private createCoordinatorTools(): AgentTool[] {
@@ -1223,7 +1242,10 @@ Monitor progress and handle task dependencies.
     this.maxRetryAttempts = retryPolicy.maxAttempts;
     this.retryDelay = retryPolicy.baseDelay;
 
-    console.log(`Configuration applied: ${this.toolPriorities.size} priorities, ${this.toolFallbackMap.size} fallbacks`);
+    // Only log in development mode
+    if (process.env.NODE_ENV !== 'test') {
+      console.log(`Configuration applied: ${this.toolPriorities.size} priorities, ${this.toolFallbackMap.size} fallbacks`);
+    }
   }
 
   /**

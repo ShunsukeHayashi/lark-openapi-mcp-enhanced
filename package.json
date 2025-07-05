@@ -48,7 +48,11 @@
     "docker:sse": "./scripts/docker-run.sh --mode sse",
     "docker:compose:dev": "docker-compose --profile development up",
     "docker:compose:prod": "docker-compose --profile production up",
-    "docker:compose:genesis": "docker-compose --profile genesis up"
+    "docker:compose:genesis": "docker-compose --profile genesis up",
+    "discord:setup": "node src/integrations/discord/setup.js",
+    "discord:sync": "node src/integrations/discord/sync.js",
+    "discord:webhook": "node src/integrations/discord/webhook.js",
+    "discord:dev": "NODE_ENV=development node src/integrations/discord/dev.js"
   },
   "keywords": [
     "feishu",
@@ -66,6 +70,7 @@
     "@modelcontextprotocol/sdk": "^1.11.0",
     "axios": "^1.8.4",
     "commander": "^13.1.0",
+    "discord.js": "^14.16.3",
     "dotenv": "^16.4.7",
     "express": "^5.1.0"
   },

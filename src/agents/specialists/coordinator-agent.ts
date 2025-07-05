@@ -701,6 +701,63 @@ Monitor progress and handle task dependencies.
   private selectOptimalMcpTools(taskType: string, requirements: string[]): McpTool[] {
     if (!this.availableMcpTools.size) return [];
 
+    // Use ML model if enabled
+    if (this.useMLSelection) {
+      return this.selectOptimalMcpToolsWithML(taskType, requirements);
+    }
+
+    // Fallback to rule-based selection
+    return this.selectOptimalMcpToolsRuleBased(taskType, requirements);
+  }
+
+  /**
+   * ML-based tool selection
+   */
+  private selectOptimalMcpToolsWithML(taskType: string, requirements: string[]): McpTool[] {
+    const availableToolsArray = Array.from(this.availableMcpTools.values());
+    
+    // Extract task features
+    const taskFeatures: TaskFeatures = {
+      taskType,
+      keywords: this.extractKeywords(requirements),
+      priority: this.estimatePriority(requirements),
+      estimatedComplexity: this.estimateComplexity(requirements),
+      contextualFactors: new Map([
+        ['time_of_day', new Date().getHours() / 24],
+        ['tool_count', availableToolsArray.length / 100],
+      ]),
+    };
+
+    // Get ML predictions
+    const predictions = this.mlModel.predict(taskFeatures, availableToolsArray, 5);
+    
+    // Log predictions for monitoring
+    if (process.env.NODE_ENV !== 'test') {
+      console.log('ML Tool Selection:', predictions.map(p => ({
+        tool: p.tool.name,
+        score: p.score.toFixed(3),
+        confidence: p.confidence.toFixed(3),
+        reasoning: p.reasoning,
+      })));
+    }
+
+    // Apply priority overrides from configuration
+    const toolsWithConfigPriority = predictions.map(pred => {
+      const configPriority = this.toolPriorities.get(pred.tool.name) || 10;
+      // Combine ML score with config priority (70% ML, 30% config)
+      const combinedScore = pred.score * 0.7 + (1 - configPriority / 10) * 0.3;
+      return { tool: pred.tool, score: combinedScore };
+    });
+
+    // Sort by combined score and return tools
+    toolsWithConfigPriority.sort((a, b) => b.score - a.score);
+    return toolsWithConfigPriority.slice(0, 5).map(item => item.tool);
+  }
+
+  /**
+   * Rule-based tool selection (fallback)
+   */
+  private selectOptimalMcpToolsRuleBased(taskType: string, requirements: string[]): McpTool[] {
     const relevantTools: Array<{ tool: McpTool; score: number; priority: number }> = [];
 
     // Analyze task requirements and match with available tools
@@ -723,6 +780,64 @@ Monitor progress and handle task dependencies.
 
     // Return top 5 tools
     return relevantTools.slice(0, 5).map((item) => item.tool);
+  }
+
+  /**
+   * Extract keywords from requirements
+   */
+  private extractKeywords(requirements: string[]): string[] {
+    const keywords: Set<string> = new Set();
+    
+    for (const req of requirements) {
+      // Extract important words (simple implementation)
+      const words = req.toLowerCase().split(/\s+/);
+      for (const word of words) {
+        if (word.length > 3 && !this.isStopWord(word)) {
+          keywords.add(word);
+        }
+      }
+    }
+    
+    return Array.from(keywords);
+  }
+
+  /**
+   * Check if word is a stop word
+   */
+  private isStopWord(word: string): boolean {
+    const stopWords = new Set(['the', 'and', 'for', 'with', 'from', 'this', 'that', 'these', 'those']);
+    return stopWords.has(word);
+  }
+
+  /**
+   * Estimate task priority from requirements
+   */
+  private estimatePriority(requirements: string[]): 'low' | 'medium' | 'high' | 'urgent' {
+    const text = requirements.join(' ').toLowerCase();
+    
+    if (text.includes('urgent') || text.includes('asap') || text.includes('immediately')) {
+      return 'urgent';
+    }
+    if (text.includes('high priority') || text.includes('important')) {
+      return 'high';
+    }
+    if (text.includes('low priority') || text.includes('when possible')) {
+      return 'low';
+    }
+    
+    return 'medium';
+  }
+
+  /**
+   * Estimate task complexity
+   */
+  private estimateComplexity(requirements: string[]): number {
+    // Simple heuristic based on requirement count and length
+    const totalLength = requirements.reduce((sum, req) => sum + req.length, 0);
+    const avgLength = totalLength / Math.max(1, requirements.length);
+    
+    // Normalize to 0-1 range
+    return Math.min(1, (requirements.length * avgLength) / 500);
   }
 
   private calculateRelevanceScore(tool: McpTool, taskType: string, requirements: string[]): number {
@@ -863,6 +978,9 @@ Monitor progress and handle task dependencies.
         this.toolExecutionHistory.set(toolName, []);
       }
       this.toolExecutionHistory.get(toolName)?.push(historyEntry);
+
+      // Train ML model with successful execution
+      this.trainMLModel(toolName, 'success', executionTime);
 
       return {
         success: true,

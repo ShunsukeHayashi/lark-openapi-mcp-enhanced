@@ -9,6 +9,7 @@ import { globalRegistry } from '../registry';
 import { McpTool, LarkMcpToolOptions } from '../../mcp-tool/types';
 import { LarkMcpTool } from '../../mcp-tool/mcp-tool';
 import { ConfigManager, toolPriorityConfig } from '../config/config-manager';
+import { ToolSelectionModel, TaskFeatures, ToolPerformanceData } from '../ml/tool-selection-model';
 
 export class CoordinatorAgent extends Agent {
   private activeTasks: Map<string, Task> = new Map();
@@ -24,6 +25,8 @@ export class CoordinatorAgent extends Agent {
   private retryDelay: number = 1000; // 1 second base delay
   private configManager: ConfigManager = toolPriorityConfig;
   private configAutoReload: boolean = true;
+  private mlModel: ToolSelectionModel = new ToolSelectionModel();
+  private useMLSelection: boolean = true;
 
   constructor(config: Partial<AgentConfig> = {}, mcpOptions?: LarkMcpToolOptions) {
     const coordinatorConfig: AgentConfig = {

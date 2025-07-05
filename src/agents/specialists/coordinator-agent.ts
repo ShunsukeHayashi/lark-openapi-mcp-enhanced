@@ -663,6 +663,185 @@ Monitor progress and handle task dependencies.
           required: ['enabled'],
         },
       },
+
+      {
+        name: 'toggle_ml_selection',
+        description: 'Enable or disable ML-based tool selection',
+        execute: async (params: any) => {
+          const { enabled } = params;
+
+          this.useMLSelection = enabled;
+
+          return {
+            success: true,
+            mlEnabled: this.useMLSelection,
+            message: `ML-based tool selection ${enabled ? 'enabled' : 'disabled'}`,
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {
+            enabled: { type: 'boolean', description: 'Enable ML selection' },
+          },
+          required: ['enabled'],
+        },
+      },
+
+      {
+        name: 'get_ml_model_metrics',
+        description: 'Get ML model training metrics and statistics',
+        execute: async () => {
+          const metrics = this.getMLModelMetrics();
+          const performanceByTool: any = {};
+
+          // Calculate performance by tool
+          this.toolExecutionHistory.forEach((history, toolName) => {
+            const recentHistory = history.slice(-20);
+            const successCount = recentHistory.filter(h => h.success).length;
+            const avgTime = recentHistory.reduce((sum, h) => sum + h.executionTime, 0) / recentHistory.length;
+            
+            performanceByTool[toolName] = {
+              recentSuccessRate: (successCount / recentHistory.length * 100).toFixed(1) + '%',
+              avgExecutionTime: avgTime.toFixed(0) + 'ms',
+              totalExecutions: history.length,
+            };
+          });
+
+          return {
+            success: true,
+            modelMetrics: metrics,
+            performanceByTool,
+            summary: {
+              mlEnabled: this.useMLSelection,
+              totalToolsTracked: Object.keys(performanceByTool).length,
+              totalExecutions: Object.values(this.toolExecutionHistory).reduce((sum: number, h: any[]) => sum + h.length, 0),
+            },
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {},
+        },
+      },
+
+      {
+        name: 'export_ml_model',
+        description: 'Export ML model state for backup or analysis',
+        execute: async () => {
+          const modelState = this.mlModel.exportModel();
+
+          return {
+            success: true,
+            modelState,
+            exportedAt: new Date().toISOString(),
+            size: new Blob([modelState]).size,
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {},
+        },
+      },
+
+      {
+        name: 'import_ml_model',
+        description: 'Import ML model state from backup',
+        execute: async (params: any) => {
+          const { modelState } = params;
+
+          try {
+            this.mlModel.importModel(modelState);
+            
+            return {
+              success: true,
+              message: 'ML model imported successfully',
+              metrics: this.getMLModelMetrics(),
+            };
+          } catch (error) {
+            return {
+              success: false,
+              error: `Failed to import ML model: ${error}`,
+            };
+          }
+        },
+        schema: {
+          type: 'object',
+          properties: {
+            modelState: { type: 'string', description: 'Exported model state JSON' },
+          },
+          required: ['modelState'],
+        },
+      },
+
+      {
+        name: 'analyze_tool_selection',
+        description: 'Analyze tool selection for a given task using ML',
+        execute: async (params: any) => {
+          const { taskDescription, showAlternatives = true } = params;
+
+          // Extract features
+          const taskType = this.extractTaskType(taskDescription);
+          const requirements = [taskDescription];
+          
+          // Get both ML and rule-based selections for comparison
+          const mlTools = this.selectOptimalMcpToolsWithML(taskType, requirements);
+          const ruleTools = this.selectOptimalMcpToolsRuleBased(taskType, requirements);
+
+          // Get detailed ML predictions
+          const taskFeatures: TaskFeatures = {
+            taskType,
+            keywords: this.extractKeywords(requirements),
+            priority: this.estimatePriority(requirements),
+            estimatedComplexity: this.estimateComplexity(requirements),
+            contextualFactors: new Map([
+              ['time_of_day', new Date().getHours() / 24],
+              ['tool_count', Array.from(this.availableMcpTools.values()).length / 100],
+            ]),
+          };
+
+          const predictions = this.mlModel.predict(
+            taskFeatures,
+            Array.from(this.availableMcpTools.values()),
+            showAlternatives ? 10 : 5
+          );
+
+          return {
+            success: true,
+            taskAnalysis: {
+              taskType,
+              keywords: taskFeatures.keywords,
+              priority: taskFeatures.priority,
+              complexity: taskFeatures.estimatedComplexity.toFixed(2),
+            },
+            mlSelection: mlTools.map(t => ({
+              name: t.name,
+              description: t.description,
+            })),
+            ruleBasedSelection: ruleTools.map(t => ({
+              name: t.name,
+              priority: this.toolPriorities.get(t.name) || 10,
+            })),
+            mlPredictions: predictions.map(p => ({
+              tool: p.tool.name,
+              score: p.score.toFixed(3),
+              confidence: p.confidence.toFixed(3),
+              reasoning: p.reasoning,
+              alternatives: showAlternatives ? p.alternativeTools.map(a => ({
+                tool: a.tool.name,
+                score: a.score.toFixed(3),
+              })) : undefined,
+            })),
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {
+            taskDescription: { type: 'string', description: 'Task description to analyze' },
+            showAlternatives: { type: 'boolean', description: 'Include alternative tool suggestions' },
+          },
+          required: ['taskDescription'],
+        },
+      },
     ];
   }
 

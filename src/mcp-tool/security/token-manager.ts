@@ -43,6 +43,19 @@ export class TokenSecurityManager {
   private auditLogs: TokenAuditLog[] = [];
 
   constructor(options: TokenSecurityOptions = {}) {
+    // Determine secure storage path based on environment
+    let defaultSecurePath: string;
+    if (process.env.HOME) {
+      // Use user's home directory
+      defaultSecurePath = path.join(process.env.HOME, '.lark-mcp', '.secure');
+    } else if (process.env.TMPDIR) {
+      // Use temp directory as fallback
+      defaultSecurePath = path.join(process.env.TMPDIR, 'lark-mcp', '.secure');
+    } else {
+      // Last resort: use current directory
+      defaultSecurePath = path.join(process.cwd(), '.secure');
+    }
+
     this.options = {
       enableEncryption: true,
       encryptionKey: options.encryptionKey || this.generateEncryptionKey(),
@@ -50,12 +63,23 @@ export class TokenSecurityManager {
       tokenRotationInterval: 110, // Just before token expiry
       enableTokenMasking: true,
       enableAuditLogging: true,
-      secureStoragePath: options.secureStoragePath || path.join(process.cwd(), '.secure'),
+      secureStoragePath: options.secureStoragePath || defaultSecurePath,
       ...options,
     };
 
     this.encryptionKey = this.options.encryptionKey;
-    this.ensureSecureStorage();
+    
+    // Only try to create directory if not in read-only environment
+    try {
+      this.ensureSecureStorage();
+    } catch (error: any) {
+      if (error.code === 'EROFS' || error.code === 'EACCES') {
+        // Running in read-only or restricted environment, disable file-based storage
+        console.warn('Unable to create secure storage directory, using memory-only storage');
+      } else {
+        throw error;
+      }
+    }
   }
 
   private generateEncryptionKey(): string {
@@ -64,7 +88,7 @@ export class TokenSecurityManager {
 
   private ensureSecureStorage(): void {
     if (!fs.existsSync(this.options.secureStoragePath)) {
-      fs.mkdirSync(this.options.secureStoragePath, { mode: 0o700 });
+      fs.mkdirSync(this.options.secureStoragePath, { mode: 0o700, recursive: true });
     }
   }
 
@@ -443,4 +467,8 @@ export class TokenSecurityManager {
 }
 
 // Global token security manager instance
-export const globalTokenManager = new TokenSecurityManager();
+// Create with disabled file storage for environments like Claude Desktop
+export const globalTokenManager = new TokenSecurityManager({
+  enableAuditLogging: false, // Disable file-based audit logging
+  secureStoragePath: process.env.TMPDIR ? path.join(process.env.TMPDIR, 'lark-mcp-secure') : undefined,
+});

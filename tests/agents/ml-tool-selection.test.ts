@@ -177,24 +177,35 @@ describe('ML-based Tool Selection', () => {
 
   describe('ML Training via Tool Execution', () => {
     test('should train model on tool execution', async () => {
+      // First assign a task so the training knows the task type
+      await coordinator.assignTask('Search for test records in the base', 'high');
+      
       // Get initial metrics
       const metricsTool = coordinator.tools.get('get_ml_model_metrics');
       const initialMetrics = await metricsTool?.execute({});
-      const initialSamples = initialMetrics.modelMetrics.totalTrainingSamples;
 
       // Execute a tool (this will fail but still train the model)
       const executeTool = coordinator.tools.get('execute_mcp_tool');
-      await executeTool?.execute({
+      const result = await executeTool?.execute({
         toolName: 'bitable.v1.appTableRecord.search',
         toolParams: { app_token: 'test', table_id: 'test' }
       });
 
-      // Check if model was trained
-      const newMetrics = await metricsTool?.execute({});
+      // The execution should fail but still be recorded
+      expect(result.success).toBe(false);
       
-      // Training happens asynchronously, so we check the execution history instead
-      expect(newMetrics.performanceByTool).toBeDefined();
-      expect(newMetrics.summary.totalExecutions).toBeGreaterThan(0);
+      // Get execution history metrics
+      const metrics = coordinator.getToolExecutionMetrics();
+      
+      // Should have recorded the execution
+      expect(metrics).toBeDefined();
+      expect(Object.keys(metrics).length).toBeGreaterThan(0);
+      
+      // The specific tool should have execution history
+      const toolMetrics = metrics['bitable.v1.appTableRecord.search'];
+      expect(toolMetrics).toBeDefined();
+      expect(toolMetrics.totalExecutions).toBe(1);
+      expect(toolMetrics.failureCount).toBe(1);
     });
   });
 

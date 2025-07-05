@@ -10,6 +10,12 @@ import { McpTool, LarkMcpToolOptions } from '../../mcp-tool/types';
 import { LarkMcpTool } from '../../mcp-tool/mcp-tool';
 import { ConfigManager, toolPriorityConfig } from '../config/config-manager';
 import { ToolSelectionModel, TaskFeatures, ToolPerformanceData } from '../ml/tool-selection-model';
+import { CircuitBreakerManager, CircuitState } from '../ml/circuit-breaker';
+import { RecommendationEngine, RecommendationContext } from '../ml/recommendation-engine';
+import { TaskQueue, QueuedTask, QueueStats, PriorityQueueManager } from '../queue/task-queue';
+import { PerformanceMonitor } from '../monitoring/performance-monitor';
+import { DashboardServer } from '../monitoring/dashboard-server';
+import { AdaptiveLoadBalancer, LoadBalancerConfig } from '../load-balancing/adaptive-balancer';
 
 export class CoordinatorAgent extends Agent {
   private activeTasks: Map<string, Task> = new Map();
@@ -27,6 +33,15 @@ export class CoordinatorAgent extends Agent {
   private configAutoReload: boolean = true;
   private mlModel: ToolSelectionModel = new ToolSelectionModel();
   private useMLSelection: boolean = true;
+  private circuitBreakerManager: CircuitBreakerManager = new CircuitBreakerManager();
+  private recommendationEngine: RecommendationEngine = new RecommendationEngine();
+  private recentTasks: string[] = [];
+  private taskQueue: TaskQueue;
+  private queueManager: PriorityQueueManager = new PriorityQueueManager();
+  private performanceMonitor: PerformanceMonitor;
+  private dashboardServer?: DashboardServer;
+  private monitoringEnabled: boolean = true;
+  private loadBalancer: AdaptiveLoadBalancer;
 
   constructor(config: Partial<AgentConfig> = {}, mcpOptions?: LarkMcpToolOptions) {
     const coordinatorConfig: AgentConfig = {
@@ -50,6 +65,40 @@ Monitor progress and handle task dependencies.
     // Set up default priorities and fallbacks first
     this.setupToolPriorities();
     this.setupToolFallbacks();
+    
+    // Initialize task queue
+    this.taskQueue = new TaskQueue({
+      maxRetries: 3,
+      retryDelay: 5000,
+      maxConcurrency: 10,
+      enablePersistence: false,
+      backendType: 'memory',
+    });
+    
+    // Set up task queue event handlers
+    this.setupTaskQueueHandlers();
+    
+    // Initialize performance monitoring
+    this.performanceMonitor = new PerformanceMonitor({
+      refreshInterval: 1000,
+      retentionPeriod: 3600000, // 1 hour
+      aggregationInterval: 60000, // 1 minute
+    });
+    
+    // Set up monitoring event handlers
+    this.setupMonitoringHandlers();
+    
+    // Initialize load balancer
+    this.loadBalancer = new AdaptiveLoadBalancer(this.performanceMonitor, {
+      algorithm: 'adaptive',
+      adaptiveThreshold: 0.8,
+      maxTasksPerAgent: 10,
+      rebalanceInterval: 30000,
+      enableAutoScaling: true,
+    });
+    
+    // Set up load balancer event handlers
+    this.setupLoadBalancerHandlers();
     
     // Initialize MCP tools asynchronously
     if (mcpOptions) {
@@ -77,6 +126,9 @@ Monitor progress and handle task dependencies.
     for (const tool of this.config.tools) {
       this.tools.set(tool.name, tool);
     }
+    
+    // Start task queue processing
+    this.taskQueue.start();
   }
 
   // Remove the duplicate initializeMcpTools method since we moved the logic to constructor
@@ -842,6 +894,939 @@ Monitor progress and handle task dependencies.
           required: ['taskDescription'],
         },
       },
+
+      {
+        name: 'get_circuit_breaker_status',
+        description: 'Get circuit breaker status for all tools',
+        execute: async () => {
+          const summary = this.circuitBreakerManager.getSummary();
+          
+          return {
+            success: true,
+            circuitBreakers: summary.map(item => ({
+              tool: item.tool,
+              state: item.state,
+              stats: {
+                totalCalls: item.stats.totalCalls,
+                failedCalls: item.stats.failedCalls,
+                successRate: ((item.stats.successfulCalls / Math.max(1, item.stats.totalCalls)) * 100).toFixed(1) + '%',
+                averageResponseTime: item.stats.averageResponseTime.toFixed(0) + 'ms',
+                errorRate: (item.stats.errorRate * 100).toFixed(1) + '%',
+                slowCallRate: (item.stats.slowCallRate * 100).toFixed(1) + '%',
+              },
+              timeUntilRetry: item.timeUntilRetry ? `${Math.ceil(item.timeUntilRetry / 1000)}s` : null,
+            })),
+            summary: {
+              total: summary.length,
+              open: summary.filter(s => s.state === CircuitState.OPEN).length,
+              closed: summary.filter(s => s.state === CircuitState.CLOSED).length,
+              halfOpen: summary.filter(s => s.state === CircuitState.HALF_OPEN).length,
+            },
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {},
+        },
+      },
+
+      {
+        name: 'reset_circuit_breaker',
+        description: 'Reset circuit breaker for a specific tool or all tools',
+        execute: async (params: any) => {
+          const { toolName, resetAll = false } = params;
+
+          if (resetAll) {
+            this.circuitBreakerManager.resetAll();
+            return {
+              success: true,
+              message: 'All circuit breakers have been reset',
+              resetCount: this.circuitBreakerManager.getAllBreakers().size,
+            };
+          }
+
+          if (toolName) {
+            this.circuitBreakerManager.reset(toolName);
+            return {
+              success: true,
+              message: `Circuit breaker for ${toolName} has been reset`,
+              toolName,
+            };
+          }
+
+          return {
+            success: false,
+            error: 'Either toolName or resetAll must be specified',
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {
+            toolName: { type: 'string', description: 'Tool name to reset circuit breaker for' },
+            resetAll: { type: 'boolean', description: 'Reset all circuit breakers' },
+          },
+        },
+      },
+
+      {
+        name: 'configure_circuit_breaker',
+        description: 'Configure circuit breaker settings for a tool',
+        execute: async (params: any) => {
+          const { 
+            toolName, 
+            failureThreshold, 
+            timeout, 
+            errorRate,
+            slowCallDuration,
+            slowCallRateThreshold 
+          } = params;
+
+          if (!toolName) {
+            return {
+              success: false,
+              error: 'Tool name is required',
+            };
+          }
+
+          const config: any = {};
+          if (failureThreshold !== undefined) config.failureThreshold = failureThreshold;
+          if (timeout !== undefined) config.timeout = timeout;
+          if (errorRate !== undefined) config.errorRate = errorRate;
+          if (slowCallDuration !== undefined) config.slowCallDuration = slowCallDuration;
+          if (slowCallRateThreshold !== undefined) config.slowCallRateThreshold = slowCallRateThreshold;
+
+          // Get or create breaker with new config
+          const breaker = this.circuitBreakerManager.getBreaker(toolName, config);
+
+          return {
+            success: true,
+            message: `Circuit breaker configured for ${toolName}`,
+            toolName,
+            configuration: config,
+            currentState: breaker.getState(),
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {
+            toolName: { type: 'string', description: 'Tool name to configure' },
+            failureThreshold: { type: 'number', description: 'Number of failures before opening circuit' },
+            timeout: { type: 'number', description: 'Time in ms before attempting recovery' },
+            errorRate: { type: 'number', minimum: 0, maximum: 1, description: 'Error rate threshold (0-1)' },
+            slowCallDuration: { type: 'number', description: 'Duration in ms to consider a call slow' },
+            slowCallRateThreshold: { type: 'number', minimum: 0, maximum: 1, description: 'Slow call rate threshold (0-1)' },
+          },
+          required: ['toolName'],
+        },
+      },
+
+      {
+        name: 'force_circuit_breaker_state',
+        description: 'Force a circuit breaker to open or closed state',
+        execute: async (params: any) => {
+          const { toolName, state } = params;
+
+          const breaker = this.circuitBreakerManager.getBreaker(toolName);
+          
+          if (state === 'open') {
+            breaker.forceOpen();
+          } else if (state === 'closed') {
+            breaker.forceClose();
+          } else {
+            return {
+              success: false,
+              error: 'State must be either "open" or "closed"',
+            };
+          }
+
+          return {
+            success: true,
+            message: `Circuit breaker for ${toolName} forced to ${state} state`,
+            toolName,
+            newState: breaker.getState(),
+            stats: breaker.getStats(),
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {
+            toolName: { type: 'string', description: 'Tool name' },
+            state: { type: 'string', enum: ['open', 'closed'], description: 'State to force' },
+          },
+          required: ['toolName', 'state'],
+        },
+      },
+
+      {
+        name: 'get_tool_recommendations',
+        description: 'Get tool recommendations based on task patterns',
+        execute: async (params: any) => {
+          const { task, includeRecentContext = true, topK = 5 } = params;
+
+          const context: RecommendationContext = {
+            currentTask: task,
+            recentTasks: includeRecentContext ? this.recentTasks.slice(-5) : [],
+            taskCategory: this.extractTaskType(task),
+            timeOfDay: new Date().getHours() / 24,
+          };
+
+          const recommendations = this.recommendationEngine.recommendTools(
+            context,
+            Array.from(this.availableMcpTools.values()),
+            topK
+          );
+
+          return {
+            success: true,
+            task,
+            recommendations: recommendations.map(rec => ({
+              tool: rec.tool.name,
+              confidence: rec.confidence.toFixed(3),
+              reason: rec.reason,
+              patterns: rec.similarPatterns.map(p => ({
+                id: p.id,
+                description: p.description,
+                usageCount: p.usageCount,
+              })),
+              alternatives: rec.alternativeTools.map(alt => ({
+                tool: alt.tool.name,
+                confidence: alt.confidence.toFixed(3),
+              })),
+              usageStats: rec.usageStats,
+            })),
+            context: {
+              recentTasks: context.recentTasks,
+              taskCategory: context.taskCategory,
+            },
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {
+            task: { type: 'string', description: 'Task description to get recommendations for' },
+            includeRecentContext: { type: 'boolean', description: 'Include recent task context' },
+            topK: { type: 'number', description: 'Number of recommendations to return' },
+          },
+          required: ['task'],
+        },
+      },
+
+      {
+        name: 'view_task_patterns',
+        description: 'View learned task patterns',
+        execute: async () => {
+          const patterns = this.recommendationEngine.getAllPatterns();
+
+          return {
+            success: true,
+            patterns: patterns.map(pattern => ({
+              id: pattern.id,
+              pattern: pattern.pattern,
+              description: pattern.description,
+              category: pattern.category,
+              keywords: pattern.keywords,
+              usageCount: pattern.usageCount,
+              lastUsed: pattern.lastUsed.toISOString(),
+              commonTools: pattern.commonTools.slice(0, 3).map(t => ({
+                tool: t.toolName,
+                frequency: (t.frequency * 100).toFixed(1) + '%',
+                successRate: (t.avgSuccessRate * 100).toFixed(1) + '%',
+              })),
+              exampleCount: pattern.examples.length,
+            })),
+            summary: {
+              totalPatterns: patterns.length,
+              customPatterns: patterns.filter(p => p.category === 'custom').length,
+              totalUsage: patterns.reduce((sum, p) => sum + p.usageCount, 0),
+            },
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {},
+        },
+      },
+
+      {
+        name: 'export_recommendation_model',
+        description: 'Export recommendation patterns for backup',
+        execute: async () => {
+          const modelData = this.recommendationEngine.exportPatterns();
+
+          return {
+            success: true,
+            modelData,
+            exportedAt: new Date().toISOString(),
+            size: new Blob([modelData]).size,
+            patternCount: this.recommendationEngine.getAllPatterns().length,
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {},
+        },
+      },
+
+      {
+        name: 'import_recommendation_model',
+        description: 'Import recommendation patterns from backup',
+        execute: async (params: any) => {
+          const { modelData } = params;
+
+          try {
+            this.recommendationEngine.importPatterns(modelData);
+            
+            return {
+              success: true,
+              message: 'Recommendation patterns imported successfully',
+              patternCount: this.recommendationEngine.getAllPatterns().length,
+            };
+          } catch (error) {
+            return {
+              success: false,
+              error: `Failed to import patterns: ${error}`,
+            };
+          }
+        },
+        schema: {
+          type: 'object',
+          properties: {
+            modelData: { type: 'string', description: 'Exported pattern data JSON' },
+          },
+          required: ['modelData'],
+        },
+      },
+
+      {
+        name: 'analyze_task_patterns',
+        description: 'Analyze task patterns for insights',
+        execute: async () => {
+          const patterns = this.recommendationEngine.getAllPatterns();
+          
+          // Analyze tool usage across patterns
+          const toolUsage = new Map<string, number>();
+          const categoryStats = new Map<string, number>();
+          
+          patterns.forEach(pattern => {
+            categoryStats.set(pattern.category, (categoryStats.get(pattern.category) || 0) + pattern.usageCount);
+            
+            pattern.commonTools.forEach(tool => {
+              toolUsage.set(tool.toolName, (toolUsage.get(tool.toolName) || 0) + pattern.usageCount * tool.frequency);
+            });
+          });
+
+          // Get top tools
+          const topTools = Array.from(toolUsage.entries())
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 10)
+            .map(([tool, usage]) => ({ tool, usage: usage.toFixed(1) }));
+
+          // Get category distribution
+          const categoryDistribution = Array.from(categoryStats.entries())
+            .map(([category, count]) => ({
+              category,
+              count,
+              percentage: ((count / patterns.reduce((sum, p) => sum + p.usageCount, 0)) * 100).toFixed(1) + '%',
+            }));
+
+          return {
+            success: true,
+            insights: {
+              totalPatterns: patterns.length,
+              totalUsage: patterns.reduce((sum, p) => sum + p.usageCount, 0),
+              averageToolsPerPattern: (patterns.reduce((sum, p) => sum + p.commonTools.length, 0) / patterns.length).toFixed(1),
+              mostUsedPattern: patterns.sort((a, b) => b.usageCount - a.usageCount)[0]?.description || 'None',
+              topTools,
+              categoryDistribution,
+              recentActivity: {
+                patternsUsedToday: patterns.filter(p => 
+                  new Date().getTime() - p.lastUsed.getTime() < 24 * 60 * 60 * 1000
+                ).length,
+                newPatternsThisWeek: patterns.filter(p => 
+                  new Date().getTime() - p.createdAt.getTime() < 7 * 24 * 60 * 60 * 1000
+                ).length,
+              },
+            },
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {},
+        },
+      },
+
+      // Task Queue Management Tools
+      {
+        name: 'enqueue_task',
+        description: 'Add a task to the distributed queue with priority and dependencies',
+        execute: async (params: any) => {
+          const { description, priority = 'medium', dependencies = [], metadata = {} } = params;
+          
+          const task: Task = {
+            id: `task_${Date.now()}`,
+            name: description.substring(0, 50),
+            description,
+            type: 'simple',
+            priority,
+            status: 'pending',
+            requiredCapabilities: [],
+            context: {
+              ...metadata,
+              enqueueSource: 'manual',
+            },
+            createdAt: new Date(),
+          };
+          
+          await this.taskQueue.enqueue(task, { dependencies, metadata });
+          
+          return {
+            success: true,
+            taskId: task.id,
+            priority,
+            dependencies,
+            message: `Task ${task.id} added to queue`,
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {
+            description: { type: 'string', description: 'Task description' },
+            priority: { type: 'string', enum: ['urgent', 'high', 'medium', 'low'], description: 'Task priority' },
+            dependencies: { type: 'array', items: { type: 'string' }, description: 'Task IDs this task depends on' },
+            metadata: { type: 'object', description: 'Additional task metadata' },
+          },
+          required: ['description'],
+        },
+      },
+
+      {
+        name: 'get_queue_status',
+        description: 'Get current queue statistics and status',
+        execute: async () => {
+          const stats = await this.taskQueue.getStats();
+          const pendingTasks = await this.taskQueue.getPendingTasks(10);
+          
+          return {
+            success: true,
+            stats: {
+              ...stats,
+              queueRunning: this.taskQueue['isRunning'],
+            },
+            pendingTasks: pendingTasks.map(task => ({
+              id: task.id,
+              description: task.description,
+              priority: task.priority,
+              attempts: task.attempts,
+              queuedAt: task.queuedAt,
+              dependencies: task.dependencies,
+            })),
+            activeTasks: Array.from(this.activeTasks.values()).map(task => ({
+              id: task.id,
+              description: task.description,
+              status: task.status,
+              startedAt: task.startedAt,
+            })),
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {},
+        },
+      },
+
+      {
+        name: 'manage_queue',
+        description: 'Start, stop, or clear the task queue',
+        execute: async (params: any) => {
+          const { action } = params;
+          
+          switch (action) {
+            case 'start':
+              this.taskQueue.start();
+              return { success: true, message: 'Task queue started' };
+            
+            case 'stop':
+              this.taskQueue.stop();
+              return { success: true, message: 'Task queue stopped' };
+            
+            case 'clear':
+              await this.taskQueue.clear();
+              return { success: true, message: 'Task queue cleared' };
+            
+            default:
+              return { success: false, error: `Unknown action: ${action}` };
+          }
+        },
+        schema: {
+          type: 'object',
+          properties: {
+            action: { type: 'string', enum: ['start', 'stop', 'clear'], description: 'Queue management action' },
+          },
+          required: ['action'],
+        },
+      },
+
+      {
+        name: 'update_task_priority',
+        description: 'Change the priority of a queued task',
+        execute: async (params: any) => {
+          const { taskId, priority } = params;
+          
+          try {
+            await this.taskQueue.updateTaskPriority(taskId, priority);
+            return {
+              success: true,
+              taskId,
+              newPriority: priority,
+              message: `Task ${taskId} priority updated to ${priority}`,
+            };
+          } catch (error) {
+            return {
+              success: false,
+              error: error instanceof Error ? error.message : 'Failed to update task priority',
+            };
+          }
+        },
+        schema: {
+          type: 'object',
+          properties: {
+            taskId: { type: 'string', description: 'Task ID to update' },
+            priority: { type: 'string', enum: ['urgent', 'high', 'medium', 'low'], description: 'New priority' },
+          },
+          required: ['taskId', 'priority'],
+        },
+      },
+
+      {
+        name: 'remove_task_from_queue',
+        description: 'Remove a specific task from the queue',
+        execute: async (params: any) => {
+          const { taskId } = params;
+          
+          try {
+            await this.taskQueue.removeTask(taskId);
+            return {
+              success: true,
+              taskId,
+              message: `Task ${taskId} removed from queue`,
+            };
+          } catch (error) {
+            return {
+              success: false,
+              error: error instanceof Error ? error.message : 'Failed to remove task',
+            };
+          }
+        },
+        schema: {
+          type: 'object',
+          properties: {
+            taskId: { type: 'string', description: 'Task ID to remove' },
+          },
+          required: ['taskId'],
+        },
+      },
+
+      {
+        name: 'create_named_queue',
+        description: 'Create a named queue with specific configuration',
+        execute: async (params: any) => {
+          const { name, config = {} } = params;
+          
+          const queue = this.queueManager.getQueue(name, config);
+          queue.start();
+          
+          return {
+            success: true,
+            queueName: name,
+            config,
+            message: `Named queue '${name}' created and started`,
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {
+            name: { type: 'string', description: 'Queue name' },
+            config: {
+              type: 'object',
+              properties: {
+                maxRetries: { type: 'number' },
+                retryDelay: { type: 'number' },
+                maxConcurrency: { type: 'number' },
+              },
+            },
+          },
+          required: ['name'],
+        },
+      },
+
+      {
+        name: 'get_all_queues_status',
+        description: 'Get status of all named queues',
+        execute: async () => {
+          const allStats = await this.queueManager.getCombinedStats();
+          
+          return {
+            success: true,
+            queues: Object.entries(allStats).map(([name, stats]) => ({
+              name,
+              stats,
+            })),
+            totalQueues: Object.keys(allStats).length,
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {},
+        },
+      },
+
+      // Performance Monitoring Tools
+      {
+        name: 'start_monitoring_dashboard',
+        description: 'Start the real-time performance monitoring dashboard',
+        execute: async (params: any) => {
+          const { port = 3001 } = params;
+          
+          try {
+            await this.startDashboard(port);
+            return {
+              success: true,
+              message: `Dashboard started on port ${port}`,
+              url: `http://localhost:${port}`,
+            };
+          } catch (error) {
+            return {
+              success: false,
+              error: error instanceof Error ? error.message : 'Failed to start dashboard',
+            };
+          }
+        },
+        schema: {
+          type: 'object',
+          properties: {
+            port: { type: 'number', description: 'Port for dashboard server' },
+          },
+        },
+      },
+
+      {
+        name: 'stop_monitoring_dashboard',
+        description: 'Stop the performance monitoring dashboard',
+        execute: async () => {
+          try {
+            await this.stopDashboard();
+            return {
+              success: true,
+              message: 'Dashboard stopped',
+            };
+          } catch (error) {
+            return {
+              success: false,
+              error: error instanceof Error ? error.message : 'Failed to stop dashboard',
+            };
+          }
+        },
+        schema: {
+          type: 'object',
+          properties: {},
+        },
+      },
+
+      {
+        name: 'get_performance_metrics',
+        description: 'Get current performance metrics',
+        execute: async () => {
+          const data = this.performanceMonitor.getDashboardData();
+          
+          return {
+            success: true,
+            metrics: {
+              agents: data.agents.length,
+              activeAgents: data.agents.filter(a => 
+                new Date().getTime() - a.lastActive.getTime() < 60000
+              ).length,
+              tools: data.tools.length,
+              system: data.system,
+              activeAlerts: data.alerts.length,
+              recentMetrics: data.recentMetrics.length,
+            },
+            topTools: data.tools
+              .sort((a, b) => b.executionCount - a.executionCount)
+              .slice(0, 5)
+              .map(t => ({
+                name: t.toolName,
+                executions: t.executionCount,
+                errorRate: (t.errorRate * 100).toFixed(1) + '%',
+                avgTime: t.averageExecutionTime.toFixed(0) + 'ms',
+              })),
+            alerts: data.alerts,
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {},
+        },
+      },
+
+      {
+        name: 'get_performance_timeseries',
+        description: 'Get time series data for a specific metric',
+        execute: async (params: any) => {
+          const { metricType, metricName, duration = 3600000 } = params;
+          
+          const timeseries = this.performanceMonitor.getTimeSeries(
+            metricType,
+            metricName,
+            duration
+          );
+          
+          return {
+            success: true,
+            metricType,
+            metricName,
+            duration,
+            dataPoints: timeseries.length,
+            timeseries: timeseries.slice(-100), // Last 100 points
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {
+            metricType: { type: 'string', description: 'Type of metric (task, tool, agent, system)' },
+            metricName: { type: 'string', description: 'Name of the metric' },
+            duration: { type: 'number', description: 'Duration in milliseconds' },
+          },
+          required: ['metricType', 'metricName'],
+        },
+      },
+
+      {
+        name: 'create_performance_alert',
+        description: 'Create a performance alert',
+        execute: async (params: any) => {
+          const { type, source, message, metadata } = params;
+          
+          const alertId = this.performanceMonitor.createAlert(
+            type,
+            source,
+            message,
+            metadata
+          );
+          
+          return {
+            success: true,
+            alertId,
+            message: 'Alert created',
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {
+            type: { type: 'string', enum: ['warning', 'error', 'critical'], description: 'Alert type' },
+            source: { type: 'string', description: 'Source of the alert' },
+            message: { type: 'string', description: 'Alert message' },
+            metadata: { type: 'object', description: 'Additional alert metadata' },
+          },
+          required: ['type', 'source', 'message'],
+        },
+      },
+
+      {
+        name: 'resolve_performance_alert',
+        description: 'Resolve a performance alert',
+        execute: async (params: any) => {
+          const { alertId } = params;
+          
+          this.performanceMonitor.resolveAlert(alertId);
+          
+          return {
+            success: true,
+            alertId,
+            message: 'Alert resolved',
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {
+            alertId: { type: 'string', description: 'Alert ID to resolve' },
+          },
+          required: ['alertId'],
+        },
+      },
+
+      {
+        name: 'export_performance_metrics',
+        description: 'Export performance metrics data',
+        execute: async () => {
+          const data = this.performanceMonitor.exportMetrics();
+          
+          return {
+            success: true,
+            data,
+            size: data.length,
+            message: 'Metrics exported',
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {},
+        },
+      },
+
+      {
+        name: 'toggle_monitoring',
+        description: 'Enable or disable performance monitoring',
+        execute: async (params: any) => {
+          const { enabled } = params;
+          
+          this.monitoringEnabled = enabled;
+          
+          return {
+            success: true,
+            monitoringEnabled: this.monitoringEnabled,
+            message: `Monitoring ${enabled ? 'enabled' : 'disabled'}`,
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {
+            enabled: { type: 'boolean', description: 'Enable or disable monitoring' },
+          },
+          required: ['enabled'],
+        },
+      },
+
+      // Load Balancer Tools
+      {
+        name: 'get_load_balancer_metrics',
+        description: 'Get current load balancer metrics',
+        execute: async () => {
+          const metrics = this.loadBalancer.getMetrics();
+          const loads = this.loadBalancer.getAgentLoads();
+          
+          return {
+            success: true,
+            metrics,
+            agentLoads: loads,
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {},
+        },
+      },
+
+      {
+        name: 'set_load_balancing_algorithm',
+        description: 'Change the load balancing algorithm',
+        execute: async (params: any) => {
+          const { algorithm } = params;
+          
+          this.loadBalancer.setAlgorithm(algorithm);
+          
+          return {
+            success: true,
+            algorithm,
+            message: `Algorithm changed to ${algorithm}`,
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {
+            algorithm: { 
+              type: 'string', 
+              enum: ['round-robin', 'least-loaded', 'weighted', 'adaptive'],
+              description: 'Load balancing algorithm' 
+            },
+          },
+          required: ['algorithm'],
+        },
+      },
+
+      {
+        name: 'toggle_auto_scaling',
+        description: 'Enable or disable auto-scaling',
+        execute: async (params: any) => {
+          const { enabled } = params;
+          
+          this.loadBalancer.setAutoScaling(enabled);
+          
+          return {
+            success: true,
+            autoScalingEnabled: enabled,
+            message: `Auto-scaling ${enabled ? 'enabled' : 'disabled'}`,
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {
+            enabled: { type: 'boolean', description: 'Enable or disable auto-scaling' },
+          },
+          required: ['enabled'],
+        },
+      },
+
+      {
+        name: 'register_agent_with_balancer',
+        description: 'Register an agent with the load balancer',
+        execute: async (params: any) => {
+          const { agentId } = params;
+          
+          // Get agent from registry - returns AgentMetadata
+          const agentMetadata = globalRegistry.getAgent(agentId);
+          if (!agentMetadata) {
+            return {
+              success: false,
+              error: `Agent ${agentId} not found in registry`,
+            };
+          }
+          
+          // Create a mock agent object for the load balancer
+          const agentForBalancer = {
+            getId: () => agentId,
+            name: agentMetadata.name,
+            getCapabilities: () => agentMetadata.capabilities || [],
+          };
+          
+          this.loadBalancer.registerAgent(agentForBalancer);
+          
+          return {
+            success: true,
+            agentId,
+            message: `Agent ${agentId} registered with load balancer`,
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {
+            agentId: { type: 'string', description: 'Agent ID to register' },
+          },
+          required: ['agentId'],
+        },
+      },
+
+      {
+        name: 'unregister_agent_from_balancer',
+        description: 'Unregister an agent from the load balancer',
+        execute: async (params: any) => {
+          const { agentId } = params;
+          
+          this.loadBalancer.unregisterAgent(agentId);
+          
+          return {
+            success: true,
+            agentId,
+            message: `Agent ${agentId} unregistered from load balancer`,
+          };
+        },
+        schema: {
+          type: 'object',
+          properties: {
+            agentId: { type: 'string', description: 'Agent ID to unregister' },
+          },
+          required: ['agentId'],
+        },
+      },
     ];
   }
 
@@ -852,9 +1837,32 @@ Monitor progress and handle task dependencies.
     // Check and refresh tools if needed
     await this.checkAndRefreshToolsIfNeeded();
 
+    // Track recent tasks
+    this.recentTasks.push(taskDescription);
+    if (this.recentTasks.length > 10) {
+      this.recentTasks.shift();
+    }
+
     const taskId = `task_${Date.now()}`;
     const agentType = this.determineAgentType(taskDescription);
-    const optimalTools = this.selectOptimalMcpTools(this.extractTaskType(taskDescription), [taskDescription]);
+    const taskType = this.extractTaskType(taskDescription);
+    
+    // Get ML-based tool selection
+    const optimalTools = this.selectOptimalMcpTools(taskType, [taskDescription]);
+    
+    // Get recommendation-based tools
+    const recommendationContext: RecommendationContext = {
+      currentTask: taskDescription,
+      recentTasks: this.recentTasks.slice(-5),
+      taskCategory: taskType,
+      timeOfDay: new Date().getHours() / 24,
+    };
+    
+    const recommendations = this.recommendationEngine.recommendTools(
+      recommendationContext,
+      Array.from(this.availableMcpTools.values()),
+      5
+    );
 
     const tool = this.tools.get('assign_task');
     await tool?.execute({
@@ -867,6 +1875,11 @@ Monitor progress and handle task dependencies.
         toolPriorities: optimalTools.map((t) => ({
           name: t.name,
           priority: this.toolPriorities.get(t.name) || 10,
+        })),
+        patternRecommendations: recommendations.map(r => ({
+          tool: r.tool.name,
+          confidence: r.confidence,
+          reason: r.reason,
         })),
       },
     });
@@ -1094,7 +2107,7 @@ Monitor progress and handle task dependencies.
   }
 
   /**
-   * Execute MCP tool with priority consideration
+   * Execute MCP tool with priority consideration and circuit breaker
    */
   private async executeMcpToolWithPriority(toolName: string, toolParams: any, priority?: string): Promise<any> {
     if (!this.mcpTool) {
@@ -1115,31 +2128,48 @@ Monitor progress and handle task dependencies.
     }
 
     const toolPriority = this.toolPriorities.get(toolName) || 10;
+    const circuitBreaker = this.circuitBreakerManager.getBreaker(toolName);
+
+    // Check circuit breaker state first
+    const breakerState = circuitBreaker.getState();
+    if (breakerState === CircuitState.OPEN) {
+      const timeUntilRetry = circuitBreaker.getTimeUntilRetry();
+      return {
+        success: false,
+        error: `Tool ${toolName} is temporarily unavailable due to repeated failures. Retry in ${Math.ceil((timeUntilRetry || 0) / 1000)}s`,
+        toolName,
+        circuitBreakerState: breakerState,
+        timeUntilRetry,
+      };
+    }
+
     const startTime = Date.now();
 
     try {
-      // Get Lark client from MCP tool (assuming it has a getter method)
-      const larkClient = (this.mcpTool as any).client;
+      // Execute through circuit breaker
+      const result = await circuitBreaker.call(async () => {
+        // Get Lark client from MCP tool
+        const larkClient = (this.mcpTool as any).client;
 
-      if (!larkClient) {
-        throw new Error('Lark client not available');
-      }
-
-      // Execute the tool's custom handler or default handler
-      let result;
-      if (tool.customHandler) {
-        result = await tool.customHandler(larkClient, toolParams, {
-          userAccessToken: (this.mcpTool as any).userAccessToken,
-          tool,
-        });
-      } else {
-        // Use the SDK name to call the appropriate method
-        if (tool.sdkName) {
-          result = await this.callLarkSdkMethod(larkClient, tool.sdkName, toolParams);
-        } else {
-          throw new Error('No handler available for tool');
+        if (!larkClient) {
+          throw new Error('Lark client not available');
         }
-      }
+
+        // Execute the tool's custom handler or default handler
+        if (tool.customHandler) {
+          return await tool.customHandler(larkClient, toolParams, {
+            userAccessToken: (this.mcpTool as any).userAccessToken,
+            tool,
+          });
+        } else {
+          // Use the SDK name to call the appropriate method
+          if (tool.sdkName) {
+            return await this.callLarkSdkMethod(larkClient, tool.sdkName, toolParams);
+          } else {
+            throw new Error('No handler available for tool');
+          }
+        }
+      });
 
       const executionTime = Date.now() - startTime;
 
@@ -1152,6 +2182,23 @@ Monitor progress and handle task dependencies.
         success: true,
         params: toolParams,
       };
+      
+      // Record performance metrics
+      this.performanceMonitor.recordMetric({
+        type: 'tool',
+        name: toolName,
+        value: executionTime,
+        unit: 'ms',
+        metadata: {
+          success: true,
+          priority: toolPriority,
+        },
+      });
+      
+      this.performanceMonitor.updateToolMetrics(toolName, {
+        success: true,
+        executionTime,
+      });
 
       if (!this.toolExecutionHistory.has(toolName)) {
         this.toolExecutionHistory.set(toolName, []);
@@ -1160,6 +2207,17 @@ Monitor progress and handle task dependencies.
 
       // Train ML model with successful execution
       this.trainMLModel(toolName, 'success', executionTime);
+      
+      // Train recommendation engine
+      const currentTask = Array.from(this.activeTasks.values()).find(t => t.status === 'in_progress');
+      if (currentTask) {
+        this.recommendationEngine.learnFromExecution(
+          currentTask.description,
+          [toolName],
+          true,
+          executionTime
+        );
+      }
 
       return {
         success: true,
@@ -1169,6 +2227,7 @@ Monitor progress and handle task dependencies.
         result: result?.data || result,
         toolDescription: tool.description,
         executedAt: new Date().toISOString(),
+        circuitBreakerState: circuitBreaker.getState(),
       };
     } catch (error) {
       const executionTime = Date.now() - startTime;
@@ -1183,6 +2242,25 @@ Monitor progress and handle task dependencies.
         error: String(error),
         params: toolParams,
       };
+      
+      // Record error metrics
+      this.performanceMonitor.recordMetric({
+        type: 'tool',
+        name: toolName,
+        value: executionTime,
+        unit: 'ms',
+        metadata: {
+          success: false,
+          error: String(error),
+          priority: toolPriority,
+        },
+      });
+      
+      this.performanceMonitor.updateToolMetrics(toolName, {
+        success: false,
+        executionTime,
+        error: String(error),
+      });
 
       if (!this.toolExecutionHistory.has(toolName)) {
         this.toolExecutionHistory.set(toolName, []);
@@ -1191,6 +2269,17 @@ Monitor progress and handle task dependencies.
 
       // Train ML model with failed execution
       this.trainMLModel(toolName, 'failure', executionTime);
+      
+      // Train recommendation engine
+      const currentTask = Array.from(this.activeTasks.values()).find(t => t.status === 'in_progress');
+      if (currentTask) {
+        this.recommendationEngine.learnFromExecution(
+          currentTask.description,
+          [toolName],
+          false,
+          executionTime
+        );
+      }
 
       return {
         success: false,
@@ -1198,6 +2287,7 @@ Monitor progress and handle task dependencies.
         toolName,
         priority: toolPriority,
         executionTime: `${executionTime}ms`,
+        circuitBreakerState: circuitBreaker.getState(),
       };
     }
   }
@@ -1539,10 +2629,174 @@ Monitor progress and handle task dependencies.
   }
 
   /**
+   * Setup task queue event handlers
+   */
+  private setupTaskQueueHandlers(): void {
+    this.taskQueue.on('task:enqueued', (task: QueuedTask) => {
+      if (process.env.NODE_ENV !== 'test') {
+        console.log(`Task ${task.id} enqueued with priority ${task.priority}`);
+      }
+    });
+
+    this.taskQueue.on('task:started', (task: QueuedTask) => {
+      this.activeTasks.set(task.id, task);
+    });
+
+    this.taskQueue.on('task:completed', (task: QueuedTask) => {
+      this.activeTasks.delete(task.id);
+      // Learn from successful execution
+      if (task.metadata?.toolsUsed) {
+        this.recommendationEngine.learnFromExecution(
+          task.description,
+          task.metadata.toolsUsed,
+          true,
+          task.metadata.executionTime || 0
+        );
+      }
+    });
+
+    this.taskQueue.on('task:failed', (task: QueuedTask, error: string) => {
+      this.activeTasks.delete(task.id);
+      if (process.env.NODE_ENV !== 'test') {
+        console.error(`Task ${task.id} failed: ${error}`);
+      }
+    });
+
+    this.taskQueue.on('task:retrying', (task: QueuedTask, delay: number) => {
+      if (process.env.NODE_ENV !== 'test') {
+        console.log(`Task ${task.id} will retry in ${delay}ms`);
+      }
+    });
+  }
+
+  /**
+   * Setup monitoring event handlers
+   */
+  private setupMonitoringHandlers(): void {
+    // Update system metrics periodically
+    setInterval(() => {
+      if (this.monitoringEnabled) {
+        this.updateSystemMetrics();
+      }
+    }, 5000); // Every 5 seconds
+  }
+
+  /**
+   * Setup load balancer event handlers
+   */
+  private setupLoadBalancerHandlers(): void {
+    // Handle task assignment events
+    this.loadBalancer.on('task:assigned', ({ taskId, agentId }) => {
+      if (process.env.NODE_ENV !== 'test') {
+        console.log(`Task ${taskId} assigned to agent ${agentId}`);
+      }
+    });
+
+    // Handle task queued events
+    this.loadBalancer.on('task:queued', ({ taskId }) => {
+      if (process.env.NODE_ENV !== 'test') {
+        console.log(`Task ${taskId} queued - no available agents`);
+      }
+    });
+
+    // Handle rebalancing events
+    this.loadBalancer.on('rebalance:completed', ({ tasksRebalanced }) => {
+      if (process.env.NODE_ENV !== 'test') {
+        console.log(`Load rebalancing completed: ${tasksRebalanced} tasks moved`);
+      }
+    });
+
+    // Handle agent registration
+    this.loadBalancer.on('agent:registered', ({ agentId }) => {
+      if (process.env.NODE_ENV !== 'test') {
+        console.log(`Agent ${agentId} registered with load balancer`);
+      }
+    });
+
+    // Handle agent unregistration
+    this.loadBalancer.on('agent:unregistered', ({ agentId }) => {
+      if (process.env.NODE_ENV !== 'test') {
+        console.log(`Agent ${agentId} unregistered from load balancer`);
+      }
+    });
+
+    // Handle metrics updates
+    this.loadBalancer.on('metrics:updated', (metrics) => {
+      // Update performance monitor with load balancer metrics
+      this.performanceMonitor.recordMetric({
+        type: 'system',
+        name: 'load_balancer.average_load',
+        value: metrics.averageLoadPerAgent,
+        unit: 'tasks',
+      });
+
+      this.performanceMonitor.recordMetric({
+        type: 'system',
+        name: 'load_balancer.load_variance',
+        value: metrics.loadVariance,
+        unit: 'tasks',
+      });
+    });
+  }
+
+  /**
+   * Update system metrics
+   */
+  private async updateSystemMetrics(): Promise<void> {
+    const queueStats = await this.taskQueue.getStats();
+    
+    // Calculate average response time from recent tool executions
+    const recentExecutions = Array.from(this.toolExecutionHistory.values())
+      .flat()
+      .filter(exec => exec.timestamp && Date.now() - exec.timestamp < 60000); // Last minute
+    
+    const avgResponseTime = recentExecutions.length > 0
+      ? recentExecutions.reduce((sum, exec) => sum + (exec.executionTime || 0), 0) / recentExecutions.length
+      : 0;
+
+    this.performanceMonitor.updateSystemMetrics({
+      totalTasks: this.activeTasks.size + queueStats.completed + queueStats.failed,
+      tasksPerMinute: queueStats.throughput,
+      averageResponseTime: avgResponseTime,
+      systemLoad: process.cpuUsage().system / 1000000, // Convert to percentage
+      queueMetrics: queueStats,
+    });
+  }
+
+  /**
+   * Start dashboard server
+   */
+  public async startDashboard(port: number = 3001): Promise<void> {
+    if (!this.dashboardServer) {
+      this.dashboardServer = new DashboardServer(this.performanceMonitor, {
+        port,
+        host: '0.0.0.0',
+      });
+      await this.dashboardServer.start();
+    }
+  }
+
+  /**
+   * Stop dashboard server
+   */
+  public async stopDashboard(): Promise<void> {
+    if (this.dashboardServer) {
+      await this.dashboardServer.stop();
+      this.dashboardServer = undefined;
+    }
+  }
+
+  /**
    * Cleanup resources
    */
   public cleanup(): void {
     this.configManager.stopWatching();
+    this.taskQueue.stop();
+    this.performanceMonitor.stop();
+    this.loadBalancer.stop();
+    if (this.dashboardServer) {
+      this.stopDashboard();
+    }
   }
 
   /**

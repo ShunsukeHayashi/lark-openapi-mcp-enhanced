@@ -8,7 +8,7 @@ English | [中文](./README_ZH.md)
 
 [Developer Documentation Retrieval MCP](./README_RECALL.md) | [Official Document](https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/mcp_integration/mcp_introduction)
 
-> **⚠️ Beta Version Notice**: This tool is currently in Beta stage. Features and APIs may change, so please stay updated with version releases.
+> **⚠️ Beta Version Notice**: This tool is currently in Beta stage (v0.4.0). Features and APIs may change, so please stay updated with version releases.
 
 This is the Feishu/Lark official OpenAPI MCP (Model Context Protocol) tool designed to help users quickly connect to the Feishu/Lark platform and enable efficient collaboration between AI Agents and Feishu/Lark. The tool encapsulates Feishu/Lark Open Platform API interfaces as MCP tools, allowing AI assistants to directly call these interfaces and implement various automation scenarios such as document processing, conversation management, calendar scheduling, and more.
 
@@ -27,6 +27,9 @@ This is the Feishu/Lark official OpenAPI MCP (Model Context Protocol) tool desig
   - Supports standard input/output stream (stdio) mode, suitable for integration with AI tools like Trae/Cursor/Claude
   - Supports Server-Sent Events (SSE) mode, providing HTTP-based interfaces
 - **Smart Prompts:** MCP prompts for common Genesis workflows
+- **Enhanced Code Quality:** Recent refactoring improved maintainability, type safety, and project structure
+- **Multi-Agent System:** AI-powered agent orchestration for complex workflows
+- **Rate Limiting:** Built-in rate limiting to prevent API quota exhaustion
 - Supports multiple configuration methods, adapting to different usage scenarios
 
 ## Tool List
@@ -428,6 +431,42 @@ The `lark-mcp mcp` tool provides various command line parameters for flexible MC
 - [Lark Open Platform API Documentation](https://open.larksuite.com/document/home/index)
 - [Node.js Website](https://nodejs.org/)
 - [npm Documentation](https://docs.npmjs.com/)
+
+## Contributing
+
+We welcome contributions to improve this tool! Please see our [Contributing Guide](./CONTRIBUTING.md) for details on:
+- Code style and standards
+- Development workflow
+- Testing requirements
+- Pull request process
+
+## Project Structure
+
+```
+lark-openapi-mcp-enhanced/
+├── src/                    # Source code
+│   ├── agents/            # AI-powered multi-agent system
+│   ├── genesis/           # Genesis AI system for Base creation
+│   ├── mcp-server/        # MCP server implementations
+│   ├── mcp-tool/          # Tool definitions and utilities
+│   └── utils/             # Utility functions
+├── tests/                 # Test files
+├── docs/                  # Documentation
+│   ├── examples/          # Example code and demos
+│   └── specialized-systems/ # Specialized system implementations
+├── scripts/               # Build and deployment scripts
+└── prompt-management/     # Prompt templates and management
+```
+
+## Recent Updates
+
+### v0.4.0 (Latest)
+- Added Genesis AI System for creating Lark Base applications
+- Introduced multi-agent orchestration system
+- Enhanced code quality with comprehensive refactoring
+- Improved TypeScript type safety and project structure
+- Added rate limiting for API protection
+- See [CHANGELOG.md](./CHANGELOG.md) for complete details
 
 ## Feedback
 

@@ -232,16 +232,9 @@ export const approvalV4ApprovalCreate = {
           can_update_revert: z.boolean().describe('是否允许用户更新撤回设置**默认值**：false'),
           help_url: z.string().describe('审批定义的帮助文档链接').optional(),
         })
-        .describe(
-          '审批定义配置项，用于配置对应审批定义是否可以由用户在进行修改',
-        )
+        .describe('审批定义配置项，用于配置对应审批定义是否可以由用户在进行修改')
         .optional(),
-      icon: z
-        .number()
-        .describe(
-          '审批图标枚举，默认为 0。下图从左至右，从上到下依次为 0~24 号图标。 ',
-        )
-        .optional(),
+      icon: z.number().describe('审批图标枚举，默认为 0。下图从左至右，从上到下依次为 0~24 号图标。 ').optional(),
       i18n_resources: z
         .array(
           z.object({
@@ -806,15 +799,11 @@ export const approvalV4ExternalInstanceCreate = {
             cc_id: z.string().describe('审批实例内抄送唯一标识'),
             user_id: z
               .string()
-              .describe(
-                '抄送人的 user_id。获取方式参见。 **注意**：抄送人的 open_id 和 user_id 需至少传入一个',
-              )
+              .describe('抄送人的 user_id。获取方式参见。 **注意**：抄送人的 open_id 和 user_id 需至少传入一个')
               .optional(),
             open_id: z
               .string()
-              .describe(
-                '抄送人的 open_id。获取方式参见。 **注意**：抄送人的 open_id 和 user_id 需至少传入一个',
-              )
+              .describe('抄送人的 open_id。获取方式参见。 **注意**：抄送人的 open_id 和 user_id 需至少传入一个')
               .optional(),
             links: z
               .object({
@@ -1120,11 +1109,7 @@ export const approvalV4InstanceCommentDelete = {
         .describe(
           '审批实例 Code。获取方式：-  后，从返回结果中获取审批实例 Code。- 调用，获取指定审批定义内的审批实例 Code。- 调用，设置过滤条件查询指定的审批实例 Code。说明：支持传入自定义审批实例 ID',
         ),
-      comment_id: z
-        .string()
-        .describe(
-          '评论 ID。获取方式：- 调用成功会返回评论 ID。- 调用接口，获取评论 ID',
-        ),
+      comment_id: z.string().describe('评论 ID。获取方式：- 调用成功会返回评论 ID。- 调用接口，获取评论 ID'),
     }),
   },
 };
@@ -1214,26 +1199,15 @@ export const approvalV4InstanceCreate = {
           '审批发起人所属部门 ID。如果用户只属于一个部门，可以不填。如果用户属于多个部门，不填值则默认选择部门列表第一个部门。获取方式参见。**说明**：- 不支持填写根部门。- 需填写 open_department_id 类型的部门 ID',
         )
         .optional(),
-      form: z
-        .string()
-        .describe(
-          '填写的审批表单控件值，JSON 数组，传值时需要压缩转义为字符串。各控件值的参数说明参考',
-        ),
+      form: z.string().describe('填写的审批表单控件值，JSON 数组，传值时需要压缩转义为字符串。各控件值的参数说明参考'),
       node_approver_user_id_list: z
         .array(
           z.object({
             key: z
               .string()
-              .describe(
-                '节点的 node_id 或 custom_node_id，可调用  接口，从接口返回的 node_list 参数中获取',
-              )
+              .describe('节点的 node_id 或 custom_node_id，可调用  接口，从接口返回的 node_list 参数中获取')
               .optional(),
-            value: z
-              .array(z.string())
-              .describe(
-                '审批人列表，需传入用户 user_id。获取方式参考',
-              )
-              .optional(),
+            value: z.array(z.string()).describe('审批人列表，需传入用户 user_id。获取方式参考').optional(),
           }),
         )
         .describe(
@@ -1245,16 +1219,9 @@ export const approvalV4InstanceCreate = {
           z.object({
             key: z
               .string()
-              .describe(
-                '节点的 node_id 或 custom_node_id，可调用  接口，从接口返回的 node_list 参数中获取',
-              )
+              .describe('节点的 node_id 或 custom_node_id，可调用  接口，从接口返回的 node_list 参数中获取')
               .optional(),
-            value: z
-              .array(z.string())
-              .describe(
-                '审批人列表，需传入用户 open_id。获取方式参考',
-              )
-              .optional(),
+            value: z.array(z.string()).describe('审批人列表，需传入用户 open_id。获取方式参考').optional(),
           }),
         )
         .describe(
@@ -1264,18 +1231,8 @@ export const approvalV4InstanceCreate = {
       node_cc_user_id_list: z
         .array(
           z.object({
-            key: z
-              .string()
-              .describe(
-                '节点的 node_id，可调用  接口，从接口返回的 node_list 参数中获取',
-              )
-              .optional(),
-            value: z
-              .array(z.string())
-              .describe(
-                '抄送人列表，需传入用户 user_id。获取方式参考',
-              )
-              .optional(),
+            key: z.string().describe('节点的 node_id，可调用  接口，从接口返回的 node_list 参数中获取').optional(),
+            value: z.array(z.string()).describe('抄送人列表，需传入用户 user_id。获取方式参考').optional(),
           }),
         )
         .describe(
@@ -1285,18 +1242,8 @@ export const approvalV4InstanceCreate = {
       node_cc_open_id_list: z
         .array(
           z.object({
-            key: z
-              .string()
-              .describe(
-                '节点的 node_id，可调用  接口，从接口返回的 node_list 参数中获取',
-              )
-              .optional(),
-            value: z
-              .array(z.string())
-              .describe(
-                '抄送人列表，需传入用户 open_id。获取方式参考',
-              )
-              .optional(),
+            key: z.string().describe('节点的 node_id，可调用  接口，从接口返回的 node_list 参数中获取').optional(),
+            value: z.array(z.string()).describe('抄送人列表，需传入用户 open_id。获取方式参考').optional(),
           }),
         )
         .describe(
@@ -1370,12 +1317,7 @@ export const approvalV4InstanceCreate = {
               .enum(['CUSTOM', 'NON_CUSTOM'])
               .describe('节点 ID 类型 Options:CUSTOM(自定义节点ID),NON_CUSTOM(NonCustom 非自定义节点ID)')
               .optional(),
-            node_id: z
-              .string()
-              .describe(
-                '节点 ID 值，可调用  接口，从接口返回的 node_list 参数中获取',
-              )
-              .optional(),
+            node_id: z.string().describe('节点 ID 值，可调用  接口，从接口返回的 node_list 参数中获取').optional(),
           }),
         )
         .describe('设置自动通过的节点')
@@ -1641,9 +1583,7 @@ export const approvalV4InstanceSpecifiedRollback = {
       extra: z.string().describe('扩展字段。**注意**：灰度参数，暂未开放使用').optional(),
       task_def_key_list: z
         .array(z.string())
-        .describe(
-          '需要退回到的任务 node_key。可调用，从返回结果的 timeline 参数中获取，且动态类型 type 必须为 PASS',
-        ),
+        .describe('需要退回到的任务 node_key。可调用，从返回结果的 timeline 参数中获取，且动态类型 type 必须为 PASS'),
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
   },
@@ -1671,11 +1611,7 @@ export const approvalV4TaskApprove = {
         ),
       user_id: z.string().describe('审批人的用户 ID，ID 类型与查询参数 user_id_type 取值一致'),
       comment: z.string().describe('审批意见').optional(),
-      task_id: z
-        .string()
-        .describe(
-          '审批任务 ID，调用，从返回结果的 task_list 中获取所需的 id',
-        ),
+      task_id: z.string().describe('审批任务 ID，调用，从返回结果的 task_list 中获取所需的 id'),
       form: z
         .string()
         .describe(
@@ -1736,11 +1672,7 @@ export const approvalV4TaskReject = {
         ),
       user_id: z.string().describe('审批人的用户 ID，ID 类型与查询参数 user_id_type 取值一致'),
       comment: z.string().describe('审批意见').optional(),
-      task_id: z
-        .string()
-        .describe(
-          '审批任务 ID，调用，从返回结果的 task_list 中获取所需的 id',
-        ),
+      task_id: z.string().describe('审批任务 ID，调用，从返回结果的 task_list 中获取所需的 id'),
       form: z
         .string()
         .describe(
@@ -1779,16 +1711,10 @@ export const approvalV4TaskResubmit = {
           '意见。JSON 格式，传入时需要压缩转义为字符串。以下示例值未转义，你可参考请求体示例中的示例 comment 进行编辑。**JSON 内参数说明**：- text：string 类型，评论文本内容。- files：Attachment[] 类型，附件信息。 - url：string 类型，附件链接。 - thumbnailURL：string 类型，缩略图链接。 - fileSize：int64 类型，文件大小。 - title：string 类型，标题。 - type：string 类型，附件类型，取值 image 表示图片类型。**注意**：对于附件，在 PC 端使用 HTTP 资源链接传图片资源可能会导致缩略图异常，建议使用 HTTPS 传资源附件',
         )
         .optional(),
-      task_id: z
-        .string()
-        .describe(
-          '任务 ID。你可调用，从返回结果的 task_list 中获取所需的 id',
-        ),
+      task_id: z.string().describe('任务 ID。你可调用，从返回结果的 task_list 中获取所需的 id'),
       form: z
         .string()
-        .describe(
-          '审批表单控件值，JSON 数组，传值时需要压缩转义为字符串。该参数与中的 form 参数用法一致',
-        ),
+        .describe('审批表单控件值，JSON 数组，传值时需要压缩转义为字符串。该参数与中的 form 参数用法一致'),
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
   },
@@ -1905,11 +1831,7 @@ export const approvalV4TaskTransfer = {
       user_id: z.string().describe('当前审批人的用户 ID，ID 类型与查询参数 user_id_type 取值一致'),
       comment: z.string().describe('审批意见').optional(),
       transfer_user_id: z.string().describe('被转交人的用户 ID，ID 类型与查询参数 user_id_type 取值一致'),
-      task_id: z
-        .string()
-        .describe(
-          '审批任务 ID，调用，从返回结果的 task_list 中获取所需的 id',
-        ),
+      task_id: z.string().describe('审批任务 ID，调用，从返回结果的 task_list 中获取所需的 id'),
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
   },

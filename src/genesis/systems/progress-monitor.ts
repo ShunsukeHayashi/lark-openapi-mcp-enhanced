@@ -96,7 +96,7 @@ export class ProgressMonitor extends EventEmitter {
     metadata?: Partial<ProgressSession['metadata']>;
   }): ProgressSession {
     const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+
     const session: ProgressSession = {
       id: sessionId,
       projectName: config.projectName,
@@ -104,23 +104,23 @@ export class ProgressMonitor extends EventEmitter {
       status: 'initializing',
       overallProgress: 0,
       startTime: new Date(),
-      steps: config.steps.map(step => ({
+      steps: config.steps.map((step) => ({
         ...step,
         status: 'pending',
-        progress: 0
+        progress: 0,
       })),
       metadata: {
         sessionType: 'custom',
         priority: 'medium',
-        ...config.metadata
+        ...config.metadata,
       },
       errors: [],
-      warnings: []
+      warnings: [],
     };
 
     this.sessions.set(sessionId, session);
     this.activeSessions.add(sessionId);
-    
+
     return session;
   }
 
@@ -138,7 +138,7 @@ export class ProgressMonitor extends EventEmitter {
       type: 'step_start',
       sessionId,
       data: { session },
-      timestamp: new Date()
+      timestamp: new Date(),
     });
   }
 
@@ -165,7 +165,7 @@ export class ProgressMonitor extends EventEmitter {
       sessionId,
       stepId,
       data: { step },
-      timestamp: new Date()
+      timestamp: new Date(),
     });
 
     this.updateOverallProgress(session);
@@ -195,7 +195,7 @@ export class ProgressMonitor extends EventEmitter {
       sessionId,
       stepId,
       data: { step, progress: step.progress },
-      timestamp: new Date()
+      timestamp: new Date(),
     });
 
     this.updateOverallProgress(session);
@@ -228,7 +228,7 @@ export class ProgressMonitor extends EventEmitter {
       sessionId,
       stepId,
       data: { step },
-      timestamp: new Date()
+      timestamp: new Date(),
     });
 
     this.updateOverallProgress(session);
@@ -263,7 +263,7 @@ export class ProgressMonitor extends EventEmitter {
       sessionId,
       stepId,
       data: { step, error },
-      timestamp: new Date()
+      timestamp: new Date(),
     });
 
     this.updateOverallProgress(session);
@@ -299,7 +299,7 @@ export class ProgressMonitor extends EventEmitter {
       sessionId,
       stepId,
       data: { step, skipped: true },
-      timestamp: new Date()
+      timestamp: new Date(),
     });
 
     this.updateOverallProgress(session);
@@ -327,7 +327,7 @@ export class ProgressMonitor extends EventEmitter {
       type: 'session_complete',
       sessionId,
       data: { session, result },
-      timestamp: new Date()
+      timestamp: new Date(),
     });
 
     this.emit('session_complete', session);
@@ -351,7 +351,7 @@ export class ProgressMonitor extends EventEmitter {
       type: 'session_error',
       sessionId,
       data: { session, error },
-      timestamp: new Date()
+      timestamp: new Date(),
     });
 
     this.emit('error', error, sessionId);
@@ -369,7 +369,7 @@ export class ProgressMonitor extends EventEmitter {
     session.status = 'cancelled';
     session.endTime = new Date();
     session.duration = session.endTime.getTime() - session.startTime.getTime();
-    
+
     if (reason) {
       session.warnings.push(`Session cancelled: ${reason}`);
     }
@@ -378,7 +378,7 @@ export class ProgressMonitor extends EventEmitter {
       type: 'session_error',
       sessionId,
       data: { session, cancelled: true, reason },
-      timestamp: new Date()
+      timestamp: new Date(),
     });
 
     this.activeSessions.delete(sessionId);
@@ -395,7 +395,7 @@ export class ProgressMonitor extends EventEmitter {
    * アクティブセッションの取得
    */
   getActiveSessions(): ProgressSession[] {
-    return Array.from(this.activeSessions).map(id => this.sessions.get(id)!);
+    return Array.from(this.activeSessions).map((id) => this.sessions.get(id)!);
   }
 
   /**
@@ -443,7 +443,7 @@ export class ProgressMonitor extends EventEmitter {
   private notifyListeners(event: ProgressEvent): void {
     const listeners = this.progressListeners.get(event.sessionId);
     if (listeners) {
-      listeners.forEach(listener => {
+      listeners.forEach((listener) => {
         if (listener.onProgressUpdate) {
           try {
             listener.onProgressUpdate(event);
@@ -461,7 +461,7 @@ export class ProgressMonitor extends EventEmitter {
   private notifySessionComplete(session: ProgressSession): void {
     const listeners = this.progressListeners.get(session.id);
     if (listeners) {
-      listeners.forEach(listener => {
+      listeners.forEach((listener) => {
         if (listener.onSessionComplete) {
           try {
             listener.onSessionComplete(session);
@@ -479,7 +479,7 @@ export class ProgressMonitor extends EventEmitter {
   private notifyError(error: string, sessionId: string): void {
     const listeners = this.progressListeners.get(sessionId);
     if (listeners) {
-      listeners.forEach(listener => {
+      listeners.forEach((listener) => {
         if (listener.onError) {
           try {
             listener.onError(error, sessionId);
@@ -515,7 +515,7 @@ export class ProgressMonitor extends EventEmitter {
   private updateOverallProgress(session: ProgressSession): void {
     const totalSteps = this.countTotalSteps(session.steps);
     const completedSteps = this.countCompletedSteps(session.steps);
-    
+
     session.overallProgress = totalSteps > 0 ? (completedSteps / totalSteps) * 100 : 0;
   }
 
@@ -560,9 +560,9 @@ export class ProgressMonitor extends EventEmitter {
     successRate: number;
   } {
     const sessions = Array.from(this.sessions.values());
-    const completed = sessions.filter(s => s.status === 'completed');
-    const failed = sessions.filter(s => s.status === 'failed');
-    
+    const completed = sessions.filter((s) => s.status === 'completed');
+    const failed = sessions.filter((s) => s.status === 'failed');
+
     const totalDuration = completed.reduce((sum, session) => {
       return sum + (session.duration || 0);
     }, 0);
@@ -573,14 +573,15 @@ export class ProgressMonitor extends EventEmitter {
       completedSessions: completed.length,
       failedSessions: failed.length,
       averageDuration: completed.length > 0 ? totalDuration / completed.length : 0,
-      successRate: sessions.length > 0 ? (completed.length / sessions.length) * 100 : 0
+      successRate: sessions.length > 0 ? (completed.length / sessions.length) * 100 : 0,
     };
   }
 
   /**
    * セッションのクリーンアップ（古いセッションの削除）
    */
-  cleanupOldSessions(maxAge: number = 24 * 60 * 60 * 1000): void { // デフォルト24時間
+  cleanupOldSessions(maxAge: number = 24 * 60 * 60 * 1000): void {
+    // デフォルト24時間
     const cutoff = Date.now() - maxAge;
     const sessionsToDelete: string[] = [];
 
@@ -590,8 +591,8 @@ export class ProgressMonitor extends EventEmitter {
       }
     }
 
-    sessionsToDelete.forEach(sessionId => {
+    sessionsToDelete.forEach((sessionId) => {
       this.deleteSession(sessionId);
     });
   }
-} 
+}

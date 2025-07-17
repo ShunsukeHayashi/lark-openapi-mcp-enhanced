@@ -222,9 +222,7 @@ export const contactV3DepartmentCreate = {
             leaderType: z.number().describe('负责人类型。 Options:1(main 主负责人),2(deputy 副负责人)'),
             leaderID: z
               .string()
-              .describe(
-                '负责人的用户 ID，ID 类型与查询参数 user_id_type 的取值保持一致。用户 ID 获取方式可参见',
-              ),
+              .describe('负责人的用户 ID，ID 类型与查询参数 user_id_type 的取值保持一致。用户 ID 获取方式可参见'),
           }),
         )
         .describe(
@@ -322,8 +320,7 @@ export const contactV3DepartmentList = {
   sdkName: 'contact.v3.department.list',
   path: '/open-apis/contact/v3/departments',
   httpMethod: 'GET',
-  description:
-    '[Feishu/Lark]-历史版本（不推荐）-通讯录-部门管理-获取部门信息列表-该接口用于获取当前部门子部门列表。',
+  description: '[Feishu/Lark]-历史版本（不推荐）-通讯录-部门管理-获取部门信息列表-该接口用于获取当前部门子部门列表。',
   accessTokens: ['tenant', 'user'],
   schema: {
     params: z.object({
@@ -440,9 +437,7 @@ export const contactV3DepartmentPatch = {
             leaderType: z.number().describe('负责人类型。 Options:1(main 主负责人),2(deputy 副负责人)'),
             leaderID: z
               .string()
-              .describe(
-                '负责人的用户 ID，ID 类型与查询参数 user_id_type 的取值保持一致。用户 ID 获取方式可参见',
-              ),
+              .describe('负责人的用户 ID，ID 类型与查询参数 user_id_type 的取值保持一致。用户 ID 获取方式可参见'),
           }),
         )
         .describe(
@@ -576,9 +571,7 @@ export const contactV3DepartmentUpdate = {
         .optional(),
       unit_ids: z
         .array(z.string().describe('部门单位自定义ID'))
-        .describe(
-          '部门绑定的单位自定义 ID 列表，当前只支持绑定一个单位。- 了解单位信息参见。- 调用接口，可获取单位 ID',
-        )
+        .describe('部门绑定的单位自定义 ID 列表，当前只支持绑定一个单位。- 了解单位信息参见。- 调用接口，可获取单位 ID')
         .optional(),
       create_group_chat: z
         .boolean()
@@ -592,9 +585,7 @@ export const contactV3DepartmentUpdate = {
             leaderType: z.number().describe('负责人类型。 Options:1(main 主负责人。),2(deputy 副负责人。)'),
             leaderID: z
               .string()
-              .describe(
-                '负责人的用户 ID，ID 类型与查询参数 user_id_type 的取值保持一致。用户 ID 获取方式可参见',
-              ),
+              .describe('负责人的用户 ID，ID 类型与查询参数 user_id_type 的取值保持一致。用户 ID 获取方式可参见'),
           }),
         )
         .describe(
@@ -712,9 +703,7 @@ export const contactV3EmployeeTypeEnumDelete = {
     path: z.object({
       enum_id: z
         .string()
-        .describe(
-          '自定义人员类型的选项 ID。你可以在新建人员类型时从返回值中获取，你也可以调用接口，获取选项的 ID',
-        )
+        .describe('自定义人员类型的选项 ID。你可以在新建人员类型时从返回值中获取，你也可以调用接口，获取选项的 ID')
         .optional(),
     }),
   },
@@ -777,9 +766,7 @@ export const contactV3EmployeeTypeEnumUpdate = {
     path: z.object({
       enum_id: z
         .string()
-        .describe(
-          '自定义人员类型的选项 ID。你可以在新建人员类型时从返回值中获取，你也可以调用接口，获取选项的 ID',
-        )
+        .describe('自定义人员类型的选项 ID。你可以在新建人员类型时从返回值中获取，你也可以调用接口，获取选项的 ID')
         .optional(),
     }),
   },
@@ -1041,9 +1028,7 @@ export const contactV3GroupDelete = {
     path: z.object({
       group_id: z
         .string()
-        .describe(
-          '需删除的用户组 ID。用户组 ID 可在创建用户组时从返回值中获取，你也可以调用接口，获取用户组的 ID',
-        ),
+        .describe('需删除的用户组 ID。用户组 ID 可在创建用户组时从返回值中获取，你也可以调用接口，获取用户组的 ID'),
     }),
   },
 };
@@ -1069,9 +1054,7 @@ export const contactV3GroupGet = {
     path: z.object({
       group_id: z
         .string()
-        .describe(
-          '用户组 ID。用户组 ID 可在创建用户组时从返回值中获取，你也可以调用接口，获取用户组的 ID',
-        ),
+        .describe('用户组 ID。用户组 ID 可在创建用户组时从返回值中获取，你也可以调用接口，获取用户组的 ID'),
     }),
   },
 };
@@ -1121,16 +1104,12 @@ export const contactV3GroupMemberAdd = {
         ),
       member_id: z
         .string()
-        .describe(
-          '添加的用户 ID，ID 类型与 member_id_type 的取值保持一致。不同类型的 ID 获取方式可参见：- - - ',
-        ),
+        .describe('添加的用户 ID，ID 类型与 member_id_type 的取值保持一致。不同类型的 ID 获取方式可参见：- - - '),
     }),
     path: z.object({
       group_id: z
         .string()
-        .describe(
-          '用户组 ID。用户组 ID 可在创建用户组时从返回值中获取，你也可以调用接口，获取用户组的 ID',
-        ),
+        .describe('用户组 ID。用户组 ID 可在创建用户组时从返回值中获取，你也可以调用接口，获取用户组的 ID'),
     }),
   },
 };
@@ -1149,9 +1128,7 @@ export const contactV3GroupMemberBatchAdd = {
           z.object({
             member_id: z
               .string()
-              .describe(
-                '添加的用户 ID，ID 类型与 member_id_type 的取值保持一致。不同类型的 ID 获取方式可参见：- - - ',
-              ),
+              .describe('添加的用户 ID，ID 类型与 member_id_type 的取值保持一致。不同类型的 ID 获取方式可参见：- - - '),
             member_type: z.string().describe('用户组成员的类型，目前仅支持选择 user，表示用户类型'),
             member_id_type: z
               .string()
@@ -1167,9 +1144,7 @@ export const contactV3GroupMemberBatchAdd = {
     path: z.object({
       group_id: z
         .string()
-        .describe(
-          '用户组 ID。用户组 ID 可在创建用户组时从返回值中获取，你也可以调用接口，获取用户组的 ID',
-        ),
+        .describe('用户组 ID。用户组 ID 可在创建用户组时从返回值中获取，你也可以调用接口，获取用户组的 ID'),
     }),
   },
 };
@@ -1205,9 +1180,7 @@ export const contactV3GroupMemberBatchRemove = {
     path: z.object({
       group_id: z
         .string()
-        .describe(
-          '用户组 ID。用户组 ID 可在创建用户组时从返回值中获取，你也可以调用接口，获取用户组的 ID',
-        ),
+        .describe('用户组 ID。用户组 ID 可在创建用户组时从返回值中获取，你也可以调用接口，获取用户组的 ID'),
     }),
   },
 };
@@ -1236,9 +1209,7 @@ export const contactV3GroupMemberRemove = {
     path: z.object({
       group_id: z
         .string()
-        .describe(
-          '用户组 ID。用户组 ID 可在创建用户组时从返回值中获取，你也可以调用接口，获取用户组的 ID',
-        ),
+        .describe('用户组 ID。用户组 ID 可在创建用户组时从返回值中获取，你也可以调用接口，获取用户组的 ID'),
     }),
   },
 };
@@ -1276,9 +1247,7 @@ export const contactV3GroupMemberSimplelist = {
     path: z.object({
       group_id: z
         .string()
-        .describe(
-          '用户组 ID。用户组 ID 可在创建用户组时从返回值中获取，你也可以调用接口，获取用户组的 ID',
-        ),
+        .describe('用户组 ID。用户组 ID 可在创建用户组时从返回值中获取，你也可以调用接口，获取用户组的 ID'),
     }),
   },
 };
@@ -1315,9 +1284,7 @@ export const contactV3GroupPatch = {
     path: z.object({
       group_id: z
         .string()
-        .describe(
-          '用户组 ID。用户组 ID 可在创建用户组时从返回值中获取，你也可以调用接口，获取用户组的 ID',
-        ),
+        .describe('用户组 ID。用户组 ID 可在创建用户组时从返回值中获取，你也可以调用接口，获取用户组的 ID'),
     }),
   },
 };
@@ -1396,9 +1363,7 @@ export const contactV3JobFamilyDelete = {
     path: z.object({
       job_family_id: z
         .string()
-        .describe(
-          '序列 ID。获取方式：- 时可以从返回结果中获取（job_family_id）。- 调用接口获取序列 ID',
-        ),
+        .describe('序列 ID。获取方式：- 时可以从返回结果中获取（job_family_id）。- 调用接口获取序列 ID'),
     }),
   },
 };
@@ -1415,9 +1380,7 @@ export const contactV3JobFamilyGet = {
     path: z.object({
       job_family_id: z
         .string()
-        .describe(
-          '序列 ID。获取方式：- 时可以从返回结果中获取（job_family_id）。- 调用接口获取序列 ID',
-        ),
+        .describe('序列 ID。获取方式：- 时可以从返回结果中获取（job_family_id）。- 调用接口获取序列 ID'),
     }),
   },
 };
@@ -1465,9 +1428,7 @@ export const contactV3JobFamilyUpdate = {
         .optional(),
       parent_job_family_id: z
         .string()
-        .describe(
-          '上级序列 ID。你可以调用接口，获取序列 ID。**默认值**：空，表示不更新',
-        )
+        .describe('上级序列 ID。你可以调用接口，获取序列 ID。**默认值**：空，表示不更新')
         .optional(),
       status: z
         .boolean()
@@ -1495,9 +1456,7 @@ export const contactV3JobFamilyUpdate = {
     path: z.object({
       job_family_id: z
         .string()
-        .describe(
-          '序列 ID。获取方式：- 时可以从返回结果中获取（job_family_id）。- 调用接口获取序列 ID',
-        ),
+        .describe('序列 ID。获取方式：- 时可以从返回结果中获取（job_family_id）。- 调用接口获取序列 ID'),
     }),
   },
 };
@@ -1561,9 +1520,7 @@ export const contactV3JobLevelDelete = {
     path: z.object({
       job_level_id: z
         .string()
-        .describe(
-          '职级 ID。获取方式：- 创建职级时，可以从返回结果中获取职级 ID。- 调用接口，查找指定职级的 ID 信息',
-        ),
+        .describe('职级 ID。获取方式：- 创建职级时，可以从返回结果中获取职级 ID。- 调用接口，查找指定职级的 ID 信息'),
     }),
   },
 };
@@ -1580,9 +1537,7 @@ export const contactV3JobLevelGet = {
     path: z.object({
       job_level_id: z
         .string()
-        .describe(
-          '职级 ID。获取方式：- 创建职级时，可以从返回结果中获取职级 ID。- 调用接口，查找指定职级的 ID 信息',
-        ),
+        .describe('职级 ID。获取方式：- 创建职级时，可以从返回结果中获取职级 ID。- 调用接口，查找指定职级的 ID 信息'),
     }),
   },
 };
@@ -1661,9 +1616,7 @@ export const contactV3JobLevelUpdate = {
     path: z.object({
       job_level_id: z
         .string()
-        .describe(
-          '职级 ID。获取方式：- 创建职级时，可以从返回结果中获取职级 ID。- 调用接口，查找指定职级的 ID 信息',
-        ),
+        .describe('职级 ID。获取方式：- 创建职级时，可以从返回结果中获取职级 ID。- 调用接口，查找指定职级的 ID 信息'),
     }),
   },
 };
@@ -1678,12 +1631,7 @@ export const contactV3JobTitleGet = {
   accessTokens: ['tenant', 'user'],
   schema: {
     path: z.object({
-      job_title_id: z
-        .string()
-        .describe(
-          '职务 ID。你可以调用接口获取职务 ID',
-        )
-        .optional(),
+      job_title_id: z.string().describe('职务 ID。你可以调用接口获取职务 ID').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1756,9 +1704,7 @@ export const contactV3UnitBindDepartment = {
     data: z.object({
       unit_id: z
         .string()
-        .describe(
-          '单位 ID。当你在创建单位时，可以在返回结果中获取单位 ID。你也可以调用接口，获取单位 ID',
-        ),
+        .describe('单位 ID。当你在创建单位时，可以在返回结果中获取单位 ID。你也可以调用接口，获取单位 ID'),
       department_id: z
         .string()
         .describe(
@@ -1814,9 +1760,7 @@ export const contactV3UnitDelete = {
     path: z.object({
       unit_id: z
         .string()
-        .describe(
-          '单位 ID。当你在创建单位时，可以在返回结果中获取单位 ID。你也可以调用接口，获取单位 ID',
-        ),
+        .describe('单位 ID。当你在创建单位时，可以在返回结果中获取单位 ID。你也可以调用接口，获取单位 ID'),
     }),
   },
 };
@@ -1832,9 +1776,7 @@ export const contactV3UnitGet = {
     path: z.object({
       unit_id: z
         .string()
-        .describe(
-          '单位 ID。当你在创建单位时，可以在返回结果中获取单位 ID。你也可以调用接口，获取单位 ID',
-        ),
+        .describe('单位 ID。当你在创建单位时，可以在返回结果中获取单位 ID。你也可以调用接口，获取单位 ID'),
     }),
   },
 };
@@ -1871,9 +1813,7 @@ export const contactV3UnitListDepartment = {
     params: z.object({
       unit_id: z
         .string()
-        .describe(
-          '单位 ID。当你在创建单位时，可以在返回结果中获取单位 ID。你也可以调用接口，获取单位 ID',
-        ),
+        .describe('单位 ID。当你在创建单位时，可以在返回结果中获取单位 ID。你也可以调用接口，获取单位 ID'),
       department_id_type: z
         .enum(['department_id', 'open_department_id'])
         .describe(
@@ -1910,9 +1850,7 @@ export const contactV3UnitPatch = {
     path: z.object({
       unit_id: z
         .string()
-        .describe(
-          '单位 ID。当你在创建单位时，可以在返回结果中获取单位 ID。你也可以调用接口，获取单位 ID',
-        ),
+        .describe('单位 ID。当你在创建单位时，可以在返回结果中获取单位 ID。你也可以调用接口，获取单位 ID'),
     }),
   },
 };
@@ -1928,9 +1866,7 @@ export const contactV3UnitUnbindDepartment = {
     data: z.object({
       unit_id: z
         .string()
-        .describe(
-          '单位 ID。当你在创建单位时，可以在返回结果中获取单位 ID。你也可以调用接口，获取单位 ID',
-        ),
+        .describe('单位 ID。当你在创建单位时，可以在返回结果中获取单位 ID。你也可以调用接口，获取单位 ID'),
       department_id: z
         .string()
         .describe(
@@ -2046,9 +1982,7 @@ export const contactV3UserCreate = {
         .optional(),
       avatar_key: z
         .string()
-        .describe(
-          '头像的文件 Key。你可以通过接口，上传并获取头像文件 Key。**默认值**：空',
-        )
+        .describe('头像的文件 Key。你可以通过接口，上传并获取头像文件 Key。**默认值**：空')
         .optional(),
       department_ids: z
         .array(z.string())
@@ -2067,12 +2001,7 @@ export const contactV3UserCreate = {
           '工作城市。字符长度上限为 100。**说明**：- 你可以调用接口获取当前租户内已有的工作城市名称。- 如果你传入的工作城市名称不存在，则系统会自动生成该工作城市。工作城市的枚举值数量上限为 10,000。**默认值**：空',
         )
         .optional(),
-      country: z
-        .string()
-        .describe(
-          '国家或地区 Code 缩写。具体写入格式参考 。**默认值**：空',
-        )
-        .optional(),
+      country: z.string().describe('国家或地区 Code 缩写。具体写入格式参考 。**默认值**：空').optional(),
       work_station: z.string().describe('工位。字符长度上限为 255。**默认值**：空').optional(),
       join_time: z
         .number()
@@ -2194,18 +2123,8 @@ export const contactV3UserCreate = {
         )
         .optional(),
       geo: z.string().describe('数据驻留地。**注意事项**：需联系服务台技术支持开通使用。**默认值**：空').optional(),
-      job_level_id: z
-        .string()
-        .describe(
-          '职级 ID。你可以调用接口查询相应的职级 ID。**默认值**：空',
-        )
-        .optional(),
-      job_family_id: z
-        .string()
-        .describe(
-          '序列 ID。你可以调用接口查询相应的序列 ID。**默认值**：空',
-        )
-        .optional(),
+      job_level_id: z.string().describe('职级 ID。你可以调用接口查询相应的职级 ID。**默认值**：空').optional(),
+      job_family_id: z.string().describe('序列 ID。你可以调用接口查询相应的序列 ID。**默认值**：空').optional(),
       subscription_ids: z
         .array(z.string())
         .describe(
@@ -2316,9 +2235,7 @@ export const contactV3UserDelete = {
     path: z.object({
       user_id: z
         .string()
-        .describe(
-          '用户 ID。ID 类型需要与查询参数中的 user_id_type 类型保持一致。用户 ID 获取方式可参见',
-        ),
+        .describe('用户 ID。ID 类型需要与查询参数中的 user_id_type 类型保持一致。用户 ID 获取方式可参见'),
     }),
   },
 };
@@ -2385,8 +2302,7 @@ export const contactV3UserList = {
   sdkName: 'contact.v3.user.list',
   path: '/open-apis/contact/v3/users',
   httpMethod: 'GET',
-  description:
-    '[Feishu/Lark]-历史版本（不推荐）-通讯录-用户管理-获取用户列表-基于部门ID获取部门下直属用户列表。',
+  description: '[Feishu/Lark]-历史版本（不推荐）-通讯录-用户管理-获取用户列表-基于部门ID获取部门下直属用户列表。',
   accessTokens: ['tenant', 'user'],
   schema: {
     params: z.object({
@@ -2435,12 +2351,7 @@ export const contactV3UserPatch = {
         )
         .optional(),
       gender: z.number().describe('性别。 Options:0(unkown 保密),1(male 男),2(female 女),3(others 其他)').optional(),
-      avatar_key: z
-        .string()
-        .describe(
-          '头像的文件 Key。你可以通过接口，上传并获取头像文件 Key',
-        )
-        .optional(),
+      avatar_key: z.string().describe('头像的文件 Key。你可以通过接口，上传并获取头像文件 Key').optional(),
       department_ids: z
         .array(z.string())
         .describe(
@@ -2449,9 +2360,7 @@ export const contactV3UserPatch = {
         .optional(),
       leader_user_id: z
         .string()
-        .describe(
-          '用户的直接主管的用户 ID，ID 类型与查询参数 `user_id_type` 的取值保持一致。用户 ID 获取方式可参见',
-        )
+        .describe('用户的直接主管的用户 ID，ID 类型与查询参数 `user_id_type` 的取值保持一致。用户 ID 获取方式可参见')
         .optional(),
       city: z
         .string()
@@ -2459,12 +2368,7 @@ export const contactV3UserPatch = {
           '工作城市。字符长度上限为 100。- 调用获取当前租户内已有的工作城市列表。- 如果你传入的工作城市名称不存在，则系统会自动生成该工作城市。工作城市的枚举值数量上限为 10,000',
         )
         .optional(),
-      country: z
-        .string()
-        .describe(
-          '国家或地区 Code 缩写。具体写入格式参考 ',
-        )
-        .optional(),
+      country: z.string().describe('国家或地区 Code 缩写。具体写入格式参考 ').optional(),
       work_station: z.string().describe('工位。字符长度上限为 255').optional(),
       join_time: z.number().describe('入职时间。秒级时间戳格式，表示从 1970 年 1 月 1 日开始所经过的秒数').optional(),
       employee_no: z.string().describe('工号。字符长度上限为 255').optional(),
@@ -2565,18 +2469,8 @@ export const contactV3UserPatch = {
         )
         .optional(),
       is_frozen: z.boolean().describe('是否是暂停状态的用户。**可选值有**：- true：是- false：否').optional(),
-      job_level_id: z
-        .string()
-        .describe(
-          '职级 ID。你可以调用接口查询相应的职级 ID',
-        )
-        .optional(),
-      job_family_id: z
-        .string()
-        .describe(
-          '序列 ID。你可以调用接口查询相应的序列 ID',
-        )
-        .optional(),
+      job_level_id: z.string().describe('职级 ID。你可以调用接口查询相应的职级 ID').optional(),
+      job_family_id: z.string().describe('序列 ID。你可以调用接口查询相应的序列 ID').optional(),
       subscription_ids: z
         .array(z.string())
         .describe(
@@ -2585,9 +2479,7 @@ export const contactV3UserPatch = {
         .optional(),
       dotted_line_leader_user_ids: z
         .array(z.string())
-        .describe(
-          '虚线上级的用户 ID 列表。- ID 类型与查询参数 `user_id_type` 的取值保持一致。- 如何获取用户 ID 可参见',
-        )
+        .describe('虚线上级的用户 ID 列表。- ID 类型与查询参数 `user_id_type` 的取值保持一致。- 如何获取用户 ID 可参见')
         .optional(),
     }),
     params: z.object({
@@ -2648,9 +2540,7 @@ export const contactV3UserResurrect = {
     path: z.object({
       user_id: z
         .string()
-        .describe(
-          '用户 ID。ID 类型需要与查询参数中的 user_id_type类型保持一致。用户 ID 获取方式可参见',
-        ),
+        .describe('用户 ID。ID 类型需要与查询参数中的 user_id_type类型保持一致。用户 ID 获取方式可参见'),
     }),
   },
 };
@@ -2693,17 +2583,10 @@ export const contactV3UserUpdate = {
         ),
       leader_user_id: z
         .string()
-        .describe(
-          '用户的直接主管的用户ID，ID值与查询参数中的user_id_type 对应。不同 ID 的说明参见 获取方式参见',
-        )
+        .describe('用户的直接主管的用户ID，ID值与查询参数中的user_id_type 对应。不同 ID 的说明参见 获取方式参见')
         .optional(),
       city: z.string().describe('工作城市').optional(),
-      country: z
-        .string()
-        .describe(
-          '国家或地区Code缩写，具体写入格式请参考 ',
-        )
-        .optional(),
+      country: z.string().describe('国家或地区Code缩写，具体写入格式请参考 ').optional(),
       work_station: z.string().describe('工位').optional(),
       join_time: z.number().describe('入职时间，时间戳格式，表示从1970年1月1日开始所经过的秒数').optional(),
       employee_no: z.string().describe('工号').optional(),
@@ -2758,11 +2641,7 @@ export const contactV3UserUpdate = {
                   .optional(),
                 generic_user: z
                   .object({
-                    id: z
-                      .string()
-                      .describe(
-                        '用户的user_id ，具体参见',
-                      ),
+                    id: z.string().describe('用户的user_id ，具体参见'),
                     type: z.number().describe('用户类型: 1：用户目前固定为1，表示用户类型'),
                   })
                   .describe('字段类型为 GENERIC_USER 时，该参数定义引用人员')
@@ -2778,9 +2657,7 @@ export const contactV3UserUpdate = {
         .optional(),
       enterprise_email: z
         .string()
-        .describe(
-          '企业邮箱，请先确保已在管理后台启用飞书邮箱服务创建用户时，企业邮箱的使用方式参见',
-        )
+        .describe('企业邮箱，请先确保已在管理后台启用飞书邮箱服务创建用户时，企业邮箱的使用方式参见')
         .optional(),
       job_title: z.string().describe('职务').optional(),
       is_frozen: z.boolean().describe('是否暂停用户').optional(),
@@ -2822,12 +2699,7 @@ export const contactV3WorkCityGet = {
   accessTokens: ['tenant', 'user'],
   schema: {
     path: z.object({
-      work_city_id: z
-        .string()
-        .describe(
-          '工作城市 ID。你可以调用接口，获取工作城市 ID',
-        )
-        .optional(),
+      work_city_id: z.string().describe('工作城市 ID。你可以调用接口，获取工作城市 ID').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },

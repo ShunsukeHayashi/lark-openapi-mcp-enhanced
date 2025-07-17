@@ -4,13 +4,7 @@
  * for common business scenarios like CRM, Project Management, and HR systems.
  */
 
-import { 
-  GenesisTemplate, 
-  TableDefinition, 
-  ViewConfiguration, 
-  AutomationRule,
-  DashboardWidget 
-} from '../types';
+import { GenesisTemplate, TableDefinition, ViewConfiguration, AutomationRule, DashboardWidget } from '../types';
 
 /**
  * CRM (Customer Relationship Management) Template
@@ -28,7 +22,11 @@ export const crmTemplate: GenesisTemplate = {
       description: 'Company/organization records',
       fields: [
         { name: 'Company Name', type: 'text', required: true },
-        { name: 'Industry', type: 'select', options: ['Technology', 'Finance', 'Healthcare', 'Retail', 'Manufacturing', 'Other'] },
+        {
+          name: 'Industry',
+          type: 'select',
+          options: ['Technology', 'Finance', 'Healthcare', 'Retail', 'Manufacturing', 'Other'],
+        },
         { name: 'Company Size', type: 'select', options: ['1-10', '11-50', '51-200', '201-500', '500+'] },
         { name: 'Website', type: 'url' },
         { name: 'Annual Revenue', type: 'currency' },
@@ -62,7 +60,12 @@ export const crmTemplate: GenesisTemplate = {
         { name: 'Opportunity Name', type: 'text', required: true },
         { name: 'Customer', type: 'link', linkedTable: 'Customers', required: true },
         { name: 'Primary Contact', type: 'link', linkedTable: 'Contacts' },
-        { name: 'Stage', type: 'select', options: ['Prospecting', 'Qualification', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'], defaultValue: 'Prospecting' },
+        {
+          name: 'Stage',
+          type: 'select',
+          options: ['Prospecting', 'Qualification', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'],
+          defaultValue: 'Prospecting',
+        },
         { name: 'Amount', type: 'currency' },
         { name: 'Probability', type: 'percent', defaultValue: 10 },
         { name: 'Expected Close Date', type: 'date' },
@@ -82,7 +85,12 @@ export const crmTemplate: GenesisTemplate = {
         { name: 'Contact', type: 'link', linkedTable: 'Contacts' },
         { name: 'Date', type: 'dateTime', defaultValue: 'now' },
         { name: 'Duration (minutes)', type: 'number' },
-        { name: 'Status', type: 'select', options: ['Planned', 'In Progress', 'Completed', 'Cancelled'], defaultValue: 'Planned' },
+        {
+          name: 'Status',
+          type: 'select',
+          options: ['Planned', 'In Progress', 'Completed', 'Cancelled'],
+          defaultValue: 'Planned',
+        },
         { name: 'Assigned To', type: 'user' },
         { name: 'Notes', type: 'longText' },
         { name: 'Follow Up Required', type: 'checkbox' },
@@ -217,7 +225,12 @@ export const projectManagementTemplate: GenesisTemplate = {
       fields: [
         { name: 'Project Name', type: 'text', required: true },
         { name: 'Description', type: 'longText' },
-        { name: 'Status', type: 'select', options: ['Planning', 'In Progress', 'On Hold', 'Completed', 'Cancelled'], defaultValue: 'Planning' },
+        {
+          name: 'Status',
+          type: 'select',
+          options: ['Planning', 'In Progress', 'On Hold', 'Completed', 'Cancelled'],
+          defaultValue: 'Planning',
+        },
         { name: 'Priority', type: 'select', options: ['Low', 'Medium', 'High', 'Critical'], defaultValue: 'Medium' },
         { name: 'Start Date', type: 'date' },
         { name: 'End Date', type: 'date' },
@@ -236,7 +249,12 @@ export const projectManagementTemplate: GenesisTemplate = {
         { name: 'Task Name', type: 'text', required: true },
         { name: 'Project', type: 'link', linkedTable: 'Projects', required: true },
         { name: 'Description', type: 'longText' },
-        { name: 'Status', type: 'select', options: ['To Do', 'In Progress', 'Review', 'Done', 'Blocked'], defaultValue: 'To Do' },
+        {
+          name: 'Status',
+          type: 'select',
+          options: ['To Do', 'In Progress', 'Review', 'Done', 'Blocked'],
+          defaultValue: 'To Do',
+        },
         { name: 'Priority', type: 'select', options: ['Low', 'Medium', 'High'], defaultValue: 'Medium' },
         { name: 'Assignee', type: 'user' },
         { name: 'Due Date', type: 'date' },
@@ -254,7 +272,12 @@ export const projectManagementTemplate: GenesisTemplate = {
         { name: 'Milestone Name', type: 'text', required: true },
         { name: 'Project', type: 'link', linkedTable: 'Projects', required: true },
         { name: 'Target Date', type: 'date', required: true },
-        { name: 'Status', type: 'select', options: ['Upcoming', 'At Risk', 'Achieved', 'Missed'], defaultValue: 'Upcoming' },
+        {
+          name: 'Status',
+          type: 'select',
+          options: ['Upcoming', 'At Risk', 'Achieved', 'Missed'],
+          defaultValue: 'Upcoming',
+        },
         { name: 'Owner', type: 'user' },
         { name: 'Description', type: 'longText' },
         { name: 'Success Criteria', type: 'longText' },
@@ -299,18 +322,14 @@ export const projectManagementTemplate: GenesisTemplate = {
       tableId: 'Tasks',
       type: 'kanban',
       groupBy: 'Status',
-      filters: [
-        { field: 'Due Date', operator: 'isWithin', value: 'next_14_days' },
-      ],
+      filters: [{ field: 'Due Date', operator: 'isWithin', value: 'next_14_days' }],
     },
     {
       name: 'Upcoming Milestones',
       tableId: 'Milestones',
       type: 'calendar',
       dateField: 'Target Date',
-      filters: [
-        { field: 'Status', operator: 'is', value: 'Upcoming' },
-      ],
+      filters: [{ field: 'Status', operator: 'is', value: 'Upcoming' }],
     },
   ],
   dashboards: [
@@ -420,13 +439,22 @@ export const hrManagementTemplate: GenesisTemplate = {
         { name: 'Department', type: 'link', linkedTable: 'Departments' },
         { name: 'Job Title', type: 'text' },
         { name: 'Manager', type: 'link', linkedTable: 'Employees' },
-        { name: 'Employment Type', type: 'select', options: ['Full-time', 'Part-time', 'Contract', 'Intern'], defaultValue: 'Full-time' },
+        {
+          name: 'Employment Type',
+          type: 'select',
+          options: ['Full-time', 'Part-time', 'Contract', 'Intern'],
+          defaultValue: 'Full-time',
+        },
         { name: 'Start Date', type: 'date' },
         { name: 'Status', type: 'select', options: ['Active', 'On Leave', 'Terminated'], defaultValue: 'Active' },
         { name: 'Office Location', type: 'select', options: ['Headquarters', 'Branch A', 'Branch B', 'Remote'] },
         { name: 'Salary Band', type: 'select', options: ['Band 1', 'Band 2', 'Band 3', 'Band 4', 'Band 5'] },
         { name: 'Emergency Contact', type: 'text' },
-        { name: 'Skills', type: 'multiSelect', options: ['Leadership', 'Technical', 'Communication', 'Project Management', 'Analytics'] },
+        {
+          name: 'Skills',
+          type: 'multiSelect',
+          options: ['Leadership', 'Technical', 'Communication', 'Project Management', 'Analytics'],
+        },
       ],
     },
     {
@@ -438,7 +466,13 @@ export const hrManagementTemplate: GenesisTemplate = {
         { name: 'Department Head', type: 'link', linkedTable: 'Employees' },
         { name: 'Parent Department', type: 'link', linkedTable: 'Departments' },
         { name: 'Budget', type: 'currency' },
-        { name: 'Headcount', type: 'rollup', linkedTable: 'Employees', linkedField: 'Department', aggregation: 'count' },
+        {
+          name: 'Headcount',
+          type: 'rollup',
+          linkedTable: 'Employees',
+          linkedField: 'Department',
+          aggregation: 'count',
+        },
         { name: 'Cost Center', type: 'text' },
         { name: 'Active', type: 'checkbox', defaultValue: true },
       ],
@@ -448,11 +482,21 @@ export const hrManagementTemplate: GenesisTemplate = {
       description: 'Employee leave/time-off requests',
       fields: [
         { name: 'Employee', type: 'link', linkedTable: 'Employees', required: true },
-        { name: 'Leave Type', type: 'select', options: ['Annual Leave', 'Sick Leave', 'Personal Leave', 'Maternity/Paternity', 'Unpaid Leave'], required: true },
+        {
+          name: 'Leave Type',
+          type: 'select',
+          options: ['Annual Leave', 'Sick Leave', 'Personal Leave', 'Maternity/Paternity', 'Unpaid Leave'],
+          required: true,
+        },
         { name: 'Start Date', type: 'date', required: true },
         { name: 'End Date', type: 'date', required: true },
         { name: 'Days', type: 'formula', formula: 'WORKDAY_DIFF(Start Date, End Date)' },
-        { name: 'Status', type: 'select', options: ['Pending', 'Approved', 'Rejected', 'Cancelled'], defaultValue: 'Pending' },
+        {
+          name: 'Status',
+          type: 'select',
+          options: ['Pending', 'Approved', 'Rejected', 'Cancelled'],
+          defaultValue: 'Pending',
+        },
         { name: 'Approver', type: 'link', linkedTable: 'Employees' },
         { name: 'Reason', type: 'longText' },
         { name: 'Approval Date', type: 'date' },
@@ -468,13 +512,22 @@ export const hrManagementTemplate: GenesisTemplate = {
         { name: 'Review Period', type: 'text', required: true },
         { name: 'Review Date', type: 'date', required: true },
         { name: 'Reviewer', type: 'link', linkedTable: 'Employees', required: true },
-        { name: 'Overall Rating', type: 'select', options: ['Exceeds Expectations', 'Meets Expectations', 'Needs Improvement', 'Unsatisfactory'] },
+        {
+          name: 'Overall Rating',
+          type: 'select',
+          options: ['Exceeds Expectations', 'Meets Expectations', 'Needs Improvement', 'Unsatisfactory'],
+        },
         { name: 'Goals Achievement', type: 'percent' },
         { name: 'Strengths', type: 'longText' },
         { name: 'Areas for Improvement', type: 'longText' },
         { name: 'Development Plan', type: 'longText' },
         { name: 'Next Review Date', type: 'date' },
-        { name: 'Status', type: 'select', options: ['Draft', 'Submitted', 'Reviewed', 'Finalized'], defaultValue: 'Draft' },
+        {
+          name: 'Status',
+          type: 'select',
+          options: ['Draft', 'Submitted', 'Reviewed', 'Finalized'],
+          defaultValue: 'Draft',
+        },
       ],
     },
     {
@@ -483,10 +536,19 @@ export const hrManagementTemplate: GenesisTemplate = {
       fields: [
         { name: 'Task Name', type: 'text', required: true },
         { name: 'Employee', type: 'link', linkedTable: 'Employees', required: true },
-        { name: 'Category', type: 'select', options: ['IT Setup', 'HR Documentation', 'Training', 'Access & Security', 'Team Introduction'] },
+        {
+          name: 'Category',
+          type: 'select',
+          options: ['IT Setup', 'HR Documentation', 'Training', 'Access & Security', 'Team Introduction'],
+        },
         { name: 'Due Date', type: 'date' },
         { name: 'Assigned To', type: 'link', linkedTable: 'Employees' },
-        { name: 'Status', type: 'select', options: ['Not Started', 'In Progress', 'Completed'], defaultValue: 'Not Started' },
+        {
+          name: 'Status',
+          type: 'select',
+          options: ['Not Started', 'In Progress', 'Completed'],
+          defaultValue: 'Not Started',
+        },
         { name: 'Completed Date', type: 'date' },
         { name: 'Notes', type: 'longText' },
         { name: 'Required Documents', type: 'attachment' },
@@ -499,9 +561,7 @@ export const hrManagementTemplate: GenesisTemplate = {
       tableId: 'Employees',
       type: 'hierarchy',
       parentField: 'Manager',
-      filters: [
-        { field: 'Status', operator: 'is', value: 'Active' },
-      ],
+      filters: [{ field: 'Status', operator: 'is', value: 'Active' }],
     },
     {
       name: 'Leave Calendar',
@@ -510,9 +570,7 @@ export const hrManagementTemplate: GenesisTemplate = {
       startDateField: 'Start Date',
       endDateField: 'End Date',
       colorBy: 'Leave Type',
-      filters: [
-        { field: 'Status', operator: 'is', value: 'Approved' },
-      ],
+      filters: [{ field: 'Status', operator: 'is', value: 'Approved' }],
     },
     {
       name: 'Pending Approvals',
@@ -529,9 +587,7 @@ export const hrManagementTemplate: GenesisTemplate = {
       tableId: 'Onboarding Tasks',
       type: 'kanban',
       groupBy: 'Status',
-      filters: [
-        { field: 'Status', operator: 'isNot', value: 'Completed' },
-      ],
+      filters: [{ field: 'Status', operator: 'isNot', value: 'Completed' }],
     },
   ],
   dashboards: [
@@ -696,7 +752,7 @@ export const templateRegistry: Map<string, GenesisTemplate> = new Map([
   ['crm', crmTemplate],
   ['project_management', projectManagementTemplate],
   ['hr_management', hrManagementTemplate],
-  ...additionalTemplates.map(t => [t.id, t] as [string, GenesisTemplate]),
+  ...additionalTemplates.map((t) => [t.id, t] as [string, GenesisTemplate]),
 ]);
 
 /**
@@ -717,5 +773,5 @@ export function getAllTemplates(): GenesisTemplate[] {
  * Get templates by category
  */
 export function getTemplatesByCategory(category: string): GenesisTemplate[] {
-  return getAllTemplates().filter(t => t.category === category);
+  return getAllTemplates().filter((t) => t.category === category);
 }

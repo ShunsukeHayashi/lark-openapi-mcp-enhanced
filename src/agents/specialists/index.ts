@@ -13,10 +13,10 @@ export * from './coordinator-agent';
 export const SPECIALIST_DOMAINS = {
   BASE: 'base_operations',
   MESSAGING: 'messaging',
-  DOCUMENT: 'document_management', 
+  DOCUMENT: 'document_management',
   CALENDAR: 'calendar_management',
   SYSTEM: 'system_management',
-  COORDINATOR: 'workflow_coordination'
+  COORDINATOR: 'workflow_coordination',
 } as const;
 
-export type SpecialistDomain = typeof SPECIALIST_DOMAINS[keyof typeof SPECIALIST_DOMAINS];
+export type SpecialistDomain = (typeof SPECIALIST_DOMAINS)[keyof typeof SPECIALIST_DOMAINS];

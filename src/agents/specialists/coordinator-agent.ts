@@ -24,7 +24,7 @@ Monitor progress and handle task dependencies.
       temperature: 0.3,
       maxTokens: 2000,
       language: 'en',
-      ...config
+      ...config,
     };
 
     super(coordinatorConfig);
@@ -38,7 +38,7 @@ Monitor progress and handle task dependencies.
         description: 'Assign task to appropriate specialist agent',
         execute: async (params: any) => {
           const { taskId, agentType, context } = params;
-          
+
           const task: Task = {
             id: taskId,
             name: context.name || 'Unnamed Task',
@@ -48,7 +48,7 @@ Monitor progress and handle task dependencies.
             requiredCapabilities: context.capabilities || [],
             context,
             status: 'assigned',
-            createdAt: new Date()
+            createdAt: new Date(),
           };
 
           this.activeTasks.set(taskId, task);
@@ -58,7 +58,7 @@ Monitor progress and handle task dependencies.
             taskId,
             assignedTo: agentType,
             status: 'assigned',
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           };
         },
         schema: {
@@ -66,10 +66,10 @@ Monitor progress and handle task dependencies.
           properties: {
             taskId: { type: 'string' },
             agentType: { type: 'string' },
-            context: { type: 'object' }
+            context: { type: 'object' },
           },
-          required: ['taskId', 'agentType']
-        }
+          required: ['taskId', 'agentType'],
+        },
       },
 
       {
@@ -83,7 +83,7 @@ Monitor progress and handle task dependencies.
             return {
               success: false,
               error: 'Task not found',
-              taskId
+              taskId,
             };
           }
 
@@ -95,42 +95,42 @@ Monitor progress and handle task dependencies.
               status: task.status,
               priority: task.priority,
               createdAt: task.createdAt,
-              assignedAgentId: task.assignedAgentId
-            }
+              assignedAgentId: task.assignedAgentId,
+            },
           };
         },
         schema: {
           type: 'object',
           properties: {
-            taskId: { type: 'string' }
+            taskId: { type: 'string' },
           },
-          required: ['taskId']
-        }
+          required: ['taskId'],
+        },
       },
 
       {
         name: 'list_active_tasks',
         description: 'List all currently active tasks',
         execute: async () => {
-          const tasks = Array.from(this.activeTasks.values()).map(task => ({
+          const tasks = Array.from(this.activeTasks.values()).map((task) => ({
             id: task.id,
             name: task.name,
             status: task.status,
             priority: task.priority,
-            createdAt: task.createdAt
+            createdAt: task.createdAt,
           }));
 
           return {
             success: true,
             activeTasks: tasks,
-            count: tasks.length
+            count: tasks.length,
           };
         },
         schema: {
           type: 'object',
-          properties: {}
-        }
-      }
+          properties: {},
+        },
+      },
     ];
   }
 
@@ -147,8 +147,8 @@ Monitor progress and handle task dependencies.
       agentType,
       context: {
         description: taskDescription,
-        priority
-      }
+        priority,
+      },
     });
 
     return taskId;
@@ -156,7 +156,7 @@ Monitor progress and handle task dependencies.
 
   private determineAgentType(description: string): string {
     const lower = description.toLowerCase();
-    
+
     if (lower.includes('base') || lower.includes('table') || lower.includes('record')) {
       return 'base_specialist';
     }
@@ -169,7 +169,7 @@ Monitor progress and handle task dependencies.
     if (lower.includes('calendar') || lower.includes('event') || lower.includes('meeting')) {
       return 'calendar_specialist';
     }
-    
+
     return 'general_specialist';
   }
 }
@@ -182,13 +182,13 @@ export async function createCoordinator(): Promise<string> {
     {
       name: 'task_coordination',
       description: 'Coordinate tasks across multiple agents',
-      category: 'system'
+      category: 'system',
     },
     {
       name: 'workflow_management',
       description: 'Manage complex workflows and dependencies',
-      category: 'system'
-    }
+      category: 'system',
+    },
   ];
 
   const metadata: AgentMetadata = {
@@ -200,7 +200,7 @@ export async function createCoordinator(): Promise<string> {
     maxConcurrentTasks: 10,
     currentTasks: 0,
     lastHeartbeat: new Date(),
-    version: '1.0.0'
+    version: '1.0.0',
   };
 
   const registered = await globalRegistry.registerAgent(metadata);

@@ -55,7 +55,7 @@ export class StructuredDataExtractor {
       if (!markdownText) {
         throw new Error('Input text is required');
       }
-      
+
       // 1. JSONコードブロックの抽出を試行
       const jsonResult = this.extractFromCodeBlocks(markdownText);
       if (jsonResult.success) {
@@ -116,10 +116,9 @@ export class StructuredDataExtractor {
         metadata: {
           sourceLength: markdownText.length,
           extractedFields: this.countFields(extractedData),
-          confidence
-        }
+          confidence,
+        },
       };
-
     } catch (error) {
       errors.push(`Extraction failed: ${error}`);
       return {
@@ -130,8 +129,8 @@ export class StructuredDataExtractor {
         metadata: {
           sourceLength: markdownText ? markdownText.length : 0,
           extractedFields: 0,
-          confidence: 0
-        }
+          confidence: 0,
+        },
       };
     }
   }
@@ -141,7 +140,7 @@ export class StructuredDataExtractor {
    */
   private static extractFromCodeBlocks(text: string): { success: boolean; data: any } {
     const matches = [...text.matchAll(this.CODE_BLOCK_PATTERN)];
-    
+
     for (const match of matches) {
       try {
         const jsonText = match[1].trim();
@@ -160,7 +159,7 @@ export class StructuredDataExtractor {
    */
   private static extractInlineJSON(text: string): { success: boolean; data: any } {
     const matches = [...text.matchAll(this.JSON_PATTERN)];
-    
+
     for (const match of matches) {
       try {
         const parsed = JSON.parse(match[0]);
@@ -187,7 +186,10 @@ export class StructuredDataExtractor {
 
     for (const line of lines) {
       if (line.includes('|')) {
-        const cells = line.split('|').map(cell => cell.trim()).filter(cell => cell);
+        const cells = line
+          .split('|')
+          .map((cell) => cell.trim())
+          .filter((cell) => cell);
         if (cells.length > 0) {
           currentTable.push(cells);
           inTable = true;
@@ -196,10 +198,10 @@ export class StructuredDataExtractor {
         // テーブル終了
         if (currentTable.length > 1) {
           const headers = currentTable[0];
-          const rows = currentTable.slice(1).filter(row => !row.every(cell => cell.match(/^[-:]+$/)));
-          
+          const rows = currentTable.slice(1).filter((row) => !row.every((cell) => cell.match(/^[-:]+$/)));
+
           if (rows.length > 0) {
-            const tableData = rows.map(row => {
+            const tableData = rows.map((row) => {
               const obj: any = {};
               headers.forEach((header, index) => {
                 obj[header] = row[index] || '';
@@ -217,10 +219,10 @@ export class StructuredDataExtractor {
     // 最後のテーブル処理
     if (currentTable.length > 1) {
       const headers = currentTable[0];
-      const rows = currentTable.slice(1).filter(row => !row.every(cell => cell.match(/^[-:]+$/)));
-      
+      const rows = currentTable.slice(1).filter((row) => !row.every((cell) => cell.match(/^[-:]+$/)));
+
       if (rows.length > 0) {
-        const tableData = rows.map(row => {
+        const tableData = rows.map((row) => {
           const obj: any = {};
           headers.forEach((header, index) => {
             obj[header] = row[index] || '';
@@ -243,25 +245,25 @@ export class StructuredDataExtractor {
    */
   private static extractFromLists(text: string): { success: boolean; data: any } {
     const matches = [...text.matchAll(this.LIST_PATTERN)];
-    
+
     if (matches.length === 0) {
       return { success: false, data: null };
     }
 
-    const items = matches.map(match => {
+    const items = matches.map((match) => {
       const item = match[1].trim();
-      
+
       // Key-Value形式の検出
       const kvMatch = item.match(/^(.+?):\s*(.+)$/);
       if (kvMatch) {
         return { key: kvMatch[1].trim(), value: kvMatch[2].trim() };
       }
-      
+
       return item;
     });
 
     // すべてKey-Value形式の場合はオブジェクトとして返す
-    if (items.every(item => typeof item === 'object' && 'key' in item)) {
+    if (items.every((item) => typeof item === 'object' && 'key' in item)) {
       const obj: any = {};
       items.forEach((item: any) => {
         obj[item.key] = item.value;
@@ -277,7 +279,7 @@ export class StructuredDataExtractor {
    */
   private static extractStructured(text: string): { success: boolean; data: any } {
     const headings = [...text.matchAll(this.HEADING_PATTERN)];
-    
+
     if (headings.length === 0) {
       return { success: false, data: null };
     }
@@ -289,13 +291,13 @@ export class StructuredDataExtractor {
 
     for (const line of lines) {
       const headingMatch = line.match(/^#{1,6}\s+(.+)$/);
-      
+
       if (headingMatch) {
         // 前のセクションを保存
         if (currentSection && currentContent.length > 0) {
           result[currentSection] = this.parseContent(currentContent.join('\n'));
         }
-        
+
         currentSection = headingMatch[1].trim();
         currentContent = [];
       } else if (currentSection) {
@@ -316,7 +318,7 @@ export class StructuredDataExtractor {
    */
   private static parseContent(content: string): any {
     const trimmed = content.trim();
-    
+
     // JSON試行
     try {
       return JSON.parse(trimmed);
@@ -354,7 +356,7 @@ export class StructuredDataExtractor {
       for (const [key, propSchema] of Object.entries(schema.properties)) {
         if (data && key in data) {
           const propResult = this.validateAgainstSchema(data[key], propSchema);
-          errors.push(...propResult.errors.map(err => `${key}.${err}`));
+          errors.push(...propResult.errors.map((err) => `${key}.${err}`));
         }
       }
     }
@@ -363,7 +365,7 @@ export class StructuredDataExtractor {
     if (schema.type === 'array' && schema.items && Array.isArray(data)) {
       data.forEach((item, index) => {
         const itemResult = this.validateAgainstSchema(item, schema.items!);
-        errors.push(...itemResult.errors.map(err => `[${index}].${err}`));
+        errors.push(...itemResult.errors.map((err) => `[${index}].${err}`));
       });
     }
 
@@ -403,8 +405,10 @@ export class StructuredDataExtractor {
     }
 
     if (typeof data === 'object') {
-      return Object.keys(data).length + 
-             Object.values(data).reduce((count: number, value: any) => count + this.countFields(value), 0);
+      return (
+        Object.keys(data).length +
+        Object.values(data).reduce((count: number, value: any) => count + this.countFields(value), 0)
+      );
     }
 
     return 1;
@@ -417,11 +421,11 @@ export class StructuredDataExtractor {
     let confidence = result.metadata.confidence;
 
     // エラーがある場合は信頼度を下げる
-    confidence *= Math.max(0.1, 1 - (result.errors.length * 0.2));
-    
+    confidence *= Math.max(0.1, 1 - result.errors.length * 0.2);
+
     // 警告がある場合は軽く信頼度を下げる
-    confidence *= Math.max(0.5, 1 - (result.warnings.length * 0.1));
-    
+    confidence *= Math.max(0.5, 1 - result.warnings.length * 0.1);
+
     // 抽出フィールド数が多いほど信頼度を上げる
     const fieldBonus = Math.min(0.2, result.metadata.extractedFields * 0.01);
     confidence += fieldBonus;
@@ -438,22 +442,21 @@ export class StructuredDataExtractor {
     }
 
     // 成功した候補のみを対象とする
-    const successful = candidates.filter(c => c.success);
-    
+    const successful = candidates.filter((c) => c.success);
+
     if (successful.length === 0) {
       return candidates[0]; // 失敗した中でも最初のものを返す
     }
 
     // 信頼度とフィールド数でスコアリング
-    const scored = successful.map(candidate => ({
+    const scored = successful.map((candidate) => ({
       candidate,
-      score: this.calculateConfidence(candidate) * 0.7 + 
-             (candidate.metadata.extractedFields / 100) * 0.3
+      score: this.calculateConfidence(candidate) * 0.7 + (candidate.metadata.extractedFields / 100) * 0.3,
     }));
 
     // 最高スコアの候補を選択
     scored.sort((a, b) => b.score - a.score);
-    
+
     return scored[0].candidate;
   }
 }

@@ -120,11 +120,7 @@ export const apaasV1ApplicationAuditLogGet = {
   accessTokens: ['user'],
   schema: {
     params: z.object({
-      log_id: z
-        .string()
-        .describe(
-          '审计日志ID信息（通过获取单条日志ID）',
-        ),
+      log_id: z.string().describe('审计日志ID信息（通过获取单条日志ID）'),
     }),
     path: z.object({ namespace: z.string().describe('应用命名空间') }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),

@@ -116,18 +116,8 @@ export const sheetsV3SpreadsheetSheetFilterViewConditionCreate = {
           '筛选类型。枚举值如下所示。了解更多，参考。- hiddenValue：隐藏值筛选- number：数字筛选- text：文本筛选- color：颜色筛选',
         )
         .optional(),
-      compare_type: z
-        .string()
-        .describe(
-          '比较类型。了解更多，参考',
-        )
-        .optional(),
-      expected: z
-        .array(z.string())
-        .describe(
-          '筛选参数。了解更多，参考',
-        )
-        .optional(),
+      compare_type: z.string().describe('比较类型。了解更多，参考').optional(),
+      expected: z.array(z.string()).describe('筛选参数。了解更多，参考').optional(),
     }),
     path: z.object({
       spreadsheet_token: z
@@ -136,18 +126,8 @@ export const sheetsV3SpreadsheetSheetFilterViewConditionCreate = {
           '电子表格的 token。可通过以下两种方式获取。了解更多，参考。- 电子表格的 URL：https://sample.feishu.cn/sheets/==Iow7sNNEphp3WbtnbCscPqabcef==- 调用',
         )
         .optional(),
-      sheet_id: z
-        .string()
-        .describe(
-          '工作表 ID，通过 获取',
-        )
-        .optional(),
-      filter_view_id: z
-        .string()
-        .describe(
-          '筛选视图 ID。通过获取',
-        )
-        .optional(),
+      sheet_id: z.string().describe('工作表 ID，通过 获取').optional(),
+      filter_view_id: z.string().describe('筛选视图 ID。通过获取').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -168,18 +148,8 @@ export const sheetsV3SpreadsheetSheetFilterViewConditionDelete = {
           '电子表格的 token。可通过以下两种方式获取。了解更多，参考。- 电子表格的 URL：https://sample.feishu.cn/sheets/==Iow7sNNEphp3WbtnbCscPqabcef==- 调用',
         )
         .optional(),
-      sheet_id: z
-        .string()
-        .describe(
-          '工作表 ID，通过 获取',
-        )
-        .optional(),
-      filter_view_id: z
-        .string()
-        .describe(
-          '筛选视图 ID。通过获取',
-        )
-        .optional(),
+      sheet_id: z.string().describe('工作表 ID，通过 获取').optional(),
+      filter_view_id: z.string().describe('筛选视图 ID。通过获取').optional(),
       condition_id: z.string().describe('要删除所有筛选条件的列，用字母表示').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
@@ -202,18 +172,8 @@ export const sheetsV3SpreadsheetSheetFilterViewConditionGet = {
           '电子表格的 token。可通过以下两种方式获取。了解更多，参考。- 电子表格的 URL：https://sample.feishu.cn/sheets/==Iow7sNNEphp3WbtnbCscPqabcef==- 调用',
         )
         .optional(),
-      sheet_id: z
-        .string()
-        .describe(
-          '工作表 ID，通过 获取',
-        )
-        .optional(),
-      filter_view_id: z
-        .string()
-        .describe(
-          '筛选视图 ID。通过获取',
-        )
-        .optional(),
+      sheet_id: z.string().describe('工作表 ID，通过 获取').optional(),
+      filter_view_id: z.string().describe('筛选视图 ID。通过获取').optional(),
       condition_id: z.string().describe('要查询的筛选视图的列').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
@@ -236,18 +196,8 @@ export const sheetsV3SpreadsheetSheetFilterViewConditionQuery = {
           '电子表格的 token。可通过以下两种方式获取。了解更多，参考。- 电子表格的 URL：https://sample.feishu.cn/sheets/==Iow7sNNEphp3WbtnbCscPqabcef==- 调用',
         )
         .optional(),
-      sheet_id: z
-        .string()
-        .describe(
-          '工作表 ID，通过 获取',
-        )
-        .optional(),
-      filter_view_id: z
-        .string()
-        .describe(
-          '筛选视图 ID。通过获取',
-        )
-        .optional(),
+      sheet_id: z.string().describe('工作表 ID，通过 获取').optional(),
+      filter_view_id: z.string().describe('筛选视图 ID。通过获取').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -269,18 +219,8 @@ export const sheetsV3SpreadsheetSheetFilterViewConditionUpdate = {
           '筛选类型。枚举值如下所示。了解更多，参考。- hiddenValue：隐藏值筛选- number：数字筛选- text：文本筛选- color：颜色筛选',
         )
         .optional(),
-      compare_type: z
-        .string()
-        .describe(
-          '比较类型。了解更多，参考',
-        )
-        .optional(),
-      expected: z
-        .array(z.string())
-        .describe(
-          '筛选参数。了解更多，参考',
-        )
-        .optional(),
+      compare_type: z.string().describe('比较类型。了解更多，参考').optional(),
+      expected: z.array(z.string()).describe('筛选参数。了解更多，参考').optional(),
     }),
     path: z.object({
       spreadsheet_token: z
@@ -289,18 +229,8 @@ export const sheetsV3SpreadsheetSheetFilterViewConditionUpdate = {
           '电子表格的 token。可通过以下两种方式获取。了解更多，参考。- 电子表格的 URL：https://sample.feishu.cn/sheets/==Iow7sNNEphp3WbtnbCscPqabcef==- 调用',
         )
         .optional(),
-      sheet_id: z
-        .string()
-        .describe(
-          '工作表 ID，通过 获取',
-        )
-        .optional(),
-      filter_view_id: z
-        .string()
-        .describe(
-          '筛选视图 ID。通过获取',
-        )
-        .optional(),
+      sheet_id: z.string().describe('工作表 ID，通过 获取').optional(),
+      filter_view_id: z.string().describe('筛选视图 ID。通过获取').optional(),
       condition_id: z.string().describe('要更新的筛选视图的列的索引，用字母表示').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
@@ -335,12 +265,7 @@ export const sheetsV3SpreadsheetSheetFilterViewCreate = {
           '电子表格的 token。可通过以下两种方式获取。了解更多，参考。- 电子表格的 URL：https://sample.feishu.cn/sheets/==Iow7sNNEphp3WbtnbCscPqabcef==- 调用',
         )
         .optional(),
-      sheet_id: z
-        .string()
-        .describe(
-          '工作表 ID，通过 获取',
-        )
-        .optional(),
+      sheet_id: z.string().describe('工作表 ID，通过 获取').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -361,18 +286,8 @@ export const sheetsV3SpreadsheetSheetFilterViewDelete = {
           '电子表格的 token。可通过以下两种方式获取。了解更多，参考。- 电子表格的 URL：https://sample.feishu.cn/sheets/==Iow7sNNEphp3WbtnbCscPqabcef==- 调用',
         )
         .optional(),
-      sheet_id: z
-        .string()
-        .describe(
-          '工作表 ID，通过 获取',
-        )
-        .optional(),
-      filter_view_id: z
-        .string()
-        .describe(
-          '筛选视图 ID。通过获取',
-        )
-        .optional(),
+      sheet_id: z.string().describe('工作表 ID，通过 获取').optional(),
+      filter_view_id: z.string().describe('筛选视图 ID。通过获取').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -393,18 +308,8 @@ export const sheetsV3SpreadsheetSheetFilterViewGet = {
           '电子表格的 token。可通过以下两种方式获取。了解更多，参考。- 电子表格的 URL：https://sample.feishu.cn/sheets/==Iow7sNNEphp3WbtnbCscPqabcef==- 调用',
         )
         .optional(),
-      sheet_id: z
-        .string()
-        .describe(
-          '工作表 ID，通过 获取',
-        )
-        .optional(),
-      filter_view_id: z
-        .string()
-        .describe(
-          '筛选视图 ID。通过获取',
-        )
-        .optional(),
+      sheet_id: z.string().describe('工作表 ID，通过 获取').optional(),
+      filter_view_id: z.string().describe('筛选视图 ID。通过获取').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -434,18 +339,8 @@ export const sheetsV3SpreadsheetSheetFilterViewPatch = {
           '电子表格的 token。可通过以下两种方式获取。了解更多，参考。- 电子表格的 URL：https://sample.feishu.cn/sheets/==Iow7sNNEphp3WbtnbCscPqabcef==- 调用',
         )
         .optional(),
-      sheet_id: z
-        .string()
-        .describe(
-          '工作表 ID，通过 获取',
-        )
-        .optional(),
-      filter_view_id: z
-        .string()
-        .describe(
-          '筛选视图 ID。通过获取',
-        )
-        .optional(),
+      sheet_id: z.string().describe('工作表 ID，通过 获取').optional(),
+      filter_view_id: z.string().describe('筛选视图 ID。通过获取').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -467,12 +362,7 @@ export const sheetsV3SpreadsheetSheetFilterViewQuery = {
           '电子表格的 token。可通过以下两种方式获取。了解更多，参考。- 电子表格的 URL：https://sample.feishu.cn/sheets/==Iow7sNNEphp3WbtnbCscPqabcef==- 调用',
         )
         .optional(),
-      sheet_id: z
-        .string()
-        .describe(
-          '工作表 ID，通过 获取',
-        )
-        .optional(),
+      sheet_id: z.string().describe('工作表 ID，通过 获取').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -512,12 +402,7 @@ export const sheetsV3SpreadsheetSheetFilterCreate = {
           '电子表格的 token。可通过以下两种方式获取。了解更多，参考。- 电子表格的 URL：https://sample.feishu.cn/sheets/==Iow7sNNEphp3WbtnbCscPqabcef==- 调用',
         )
         .optional(),
-      sheet_id: z
-        .string()
-        .describe(
-          '工作表 ID，通过 获取',
-        )
-        .optional(),
+      sheet_id: z.string().describe('工作表 ID，通过 获取').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -538,12 +423,7 @@ export const sheetsV3SpreadsheetSheetFilterDelete = {
           '电子表格的 token。可通过以下两种方式获取。了解更多，参考。- 电子表格的 URL：https://sample.feishu.cn/sheets/==Iow7sNNEphp3WbtnbCscPqabcef==- 调用',
         )
         .optional(),
-      sheet_id: z
-        .string()
-        .describe(
-          '工作表 ID，通过 获取',
-        )
-        .optional(),
+      sheet_id: z.string().describe('工作表 ID，通过 获取').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -565,12 +445,7 @@ export const sheetsV3SpreadsheetSheetFilterGet = {
           '电子表格的 token。可通过以下两种方式获取。了解更多，参考。- 电子表格的 URL：https://sample.feishu.cn/sheets/==Iow7sNNEphp3WbtnbCscPqabcef==- 调用',
         )
         .optional(),
-      sheet_id: z
-        .string()
-        .describe(
-          '工作表 ID，通过 获取',
-        )
-        .optional(),
+      sheet_id: z.string().describe('工作表 ID，通过 获取').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -593,17 +468,8 @@ export const sheetsV3SpreadsheetSheetFilterUpdate = {
             .describe(
               '筛选类型，枚举值如下所示。了解更多，参考。- multiValue ：多值筛选- number ：数字筛选- text ：文本筛选- color ：颜色筛选- clear ：清除某列的筛选条件',
             ),
-          compare_type: z
-            .string()
-            .describe(
-              '比较类型。不同筛选类型的比较类型的枚举值不同，详情参考',
-            )
-            .optional(),
-          expected: z
-            .array(z.string())
-            .describe(
-              '筛选参数。不同筛选类型的筛选参数限制不同，详情参考',
-            ),
+          compare_type: z.string().describe('比较类型。不同筛选类型的比较类型的枚举值不同，详情参考').optional(),
+          expected: z.array(z.string()).describe('筛选参数。不同筛选类型的筛选参数限制不同，详情参考'),
         })
         .describe('设置筛选条件'),
     }),
@@ -614,12 +480,7 @@ export const sheetsV3SpreadsheetSheetFilterUpdate = {
           '电子表格的 token。可通过以下两种方式获取。了解更多，参考。- 电子表格的 URL：https://sample.feishu.cn/sheets/==Iow7sNNEphp3WbtnbCscPqabcef==- 调用',
         )
         .optional(),
-      sheet_id: z
-        .string()
-        .describe(
-          '工作表 ID，通过 获取',
-        )
-        .optional(),
+      sheet_id: z.string().describe('工作表 ID，通过 获取').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -672,12 +533,7 @@ export const sheetsV3SpreadsheetSheetFind = {
           '电子表格的 token。可通过以下两种方式获取。了解更多，参考。- 电子表格的 URL：https://sample.feishu.cn/sheets/==Iow7sNNEphp3WbtnbCscPqabcef==- 调用',
         )
         .optional(),
-      sheet_id: z
-        .string()
-        .describe(
-          '工作表的 ID，获取方式见',
-        )
-        .optional(),
+      sheet_id: z.string().describe('工作表的 ID，获取方式见').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -742,12 +598,7 @@ export const sheetsV3SpreadsheetSheetFloatImageCreate = {
           '电子表格的 token。可通过以下两种方式获取。了解更多，参考。- 电子表格的 URL：https://sample.feishu.cn/sheets/==Iow7sNNEphp3WbtnbCscPqabcef==- 调用',
         )
         .optional(),
-      sheet_id: z
-        .string()
-        .describe(
-          '电子表格工作表的 ID。调用获取 ID',
-        )
-        .optional(),
+      sheet_id: z.string().describe('电子表格工作表的 ID。调用获取 ID').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -768,18 +619,8 @@ export const sheetsV3SpreadsheetSheetFloatImageDelete = {
           '电子表格的 token。可通过以下两种方式获取。了解更多，参考。- 电子表格的 URL：https://sample.feishu.cn/sheets/==Iow7sNNEphp3WbtnbCscPqabcef==- 调用',
         )
         .optional(),
-      sheet_id: z
-        .string()
-        .describe(
-          '电子表格工作表的 ID。调用获取 ID',
-        )
-        .optional(),
-      float_image_id: z
-        .string()
-        .describe(
-          '工作表内浮动图片的唯一标识。通过接口获取',
-        )
-        .optional(),
+      sheet_id: z.string().describe('电子表格工作表的 ID。调用获取 ID').optional(),
+      float_image_id: z.string().describe('工作表内浮动图片的唯一标识。通过接口获取').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -800,18 +641,8 @@ export const sheetsV3SpreadsheetSheetFloatImageGet = {
           '电子表格的 token。可通过以下两种方式获取。了解更多，参考。- 电子表格的 URL：https://sample.feishu.cn/sheets/==Iow7sNNEphp3WbtnbCscPqabcef==- 调用',
         )
         .optional(),
-      sheet_id: z
-        .string()
-        .describe(
-          '电子表格工作表的 ID。调用获取 ID',
-        )
-        .optional(),
-      float_image_id: z
-        .string()
-        .describe(
-          '工作表内浮动图片的唯一标识。通过接口获取',
-        )
-        .optional(),
+      sheet_id: z.string().describe('电子表格工作表的 ID。调用获取 ID').optional(),
+      float_image_id: z.string().describe('工作表内浮动图片的唯一标识。通过接口获取').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -829,9 +660,7 @@ export const sheetsV3SpreadsheetSheetFloatImagePatch = {
       float_image_token: z.string().describe('在本更新接口中，该参数无需传入').optional(),
       range: z
         .string()
-        .describe(
-          '浮动图片左上角所在单元格位置，只允许单个单元格的形式，如 "ahgsch!A1:A1"。了解更多，参考',
-        )
+        .describe('浮动图片左上角所在单元格位置，只允许单个单元格的形式，如 "ahgsch!A1:A1"。了解更多，参考')
         .optional(),
       width: z
         .number()
@@ -865,18 +694,8 @@ export const sheetsV3SpreadsheetSheetFloatImagePatch = {
           '电子表格的 token。可通过以下两种方式获取。了解更多，参考。- 电子表格的 URL：https://sample.feishu.cn/sheets/==Iow7sNNEphp3WbtnbCscPqabcef==- 调用',
         )
         .optional(),
-      sheet_id: z
-        .string()
-        .describe(
-          '电子表格工作表的 ID。调用获取 ID',
-        )
-        .optional(),
-      float_image_id: z
-        .string()
-        .describe(
-          '工作表内浮动图片的唯一标识。通过接口获取',
-        )
-        .optional(),
+      sheet_id: z.string().describe('电子表格工作表的 ID。调用获取 ID').optional(),
+      float_image_id: z.string().describe('工作表内浮动图片的唯一标识。通过接口获取').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -897,12 +716,7 @@ export const sheetsV3SpreadsheetSheetFloatImageQuery = {
           '电子表格的 token。可通过以下两种方式获取。了解更多，参考。- 电子表格的 URL：https://sample.feishu.cn/sheets/==Iow7sNNEphp3WbtnbCscPqabcef==- 调用',
         )
         .optional(),
-      sheet_id: z
-        .string()
-        .describe(
-          '电子表格工作表的 ID。调用获取 ID',
-        )
-        .optional(),
+      sheet_id: z.string().describe('电子表格工作表的 ID。调用获取 ID').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -923,11 +737,7 @@ export const sheetsV3SpreadsheetSheetGet = {
         .describe(
           '电子表格的 token。可通过以下两种方式获取。了解更多，参考。- 电子表格的 URL：https://sample.feishu.cn/sheets/==Iow7sNNEphp3WbtnbCscPqabcef==- 调用',
         ),
-      sheet_id: z
-        .string()
-        .describe(
-          '工作表的 ID。调用获取 ID',
-        ),
+      sheet_id: z.string().describe('工作表的 ID。调用获取 ID'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -970,12 +780,7 @@ export const sheetsV3SpreadsheetSheetMoveDimension = {
           '电子表格的 token。可通过以下两种方式获取。了解更多，参考。- 电子表格的 URL：https://sample.feishu.cn/sheets/==Iow7sNNEphp3WbtnbCscPqabcef==- 调用',
         )
         .optional(),
-      sheet_id: z
-        .string()
-        .describe(
-          '工作表的 ID。调用获取 ID',
-        )
-        .optional(),
+      sheet_id: z.string().describe('工作表的 ID。调用获取 ID').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1050,12 +855,7 @@ export const sheetsV3SpreadsheetSheetReplace = {
           '电子表格的 token。可通过以下两种方式获取。了解更多，参考。- 电子表格的 URL：https://sample.feishu.cn/sheets/==Iow7sNNEphp3WbtnbCscPqabcef==- 调用',
         )
         .optional(),
-      sheet_id: z
-        .string()
-        .describe(
-          '工作表的 ID，获取方式见',
-        )
-        .optional(),
+      sheet_id: z.string().describe('工作表的 ID，获取方式见').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },

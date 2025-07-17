@@ -33,9 +33,7 @@ export const cardkitV1CardBatchUpdate = {
         ),
     }),
     path: z.object({
-      card_id: z
-        .string()
-        .describe('卡片实体 ID。通过获取'),
+      card_id: z.string().describe('卡片实体 ID。通过获取'),
     }),
   },
 };
@@ -78,9 +76,7 @@ export const cardkitV1CardElementContent = {
         ),
     }),
     path: z.object({
-      card_id: z
-        .string()
-        .describe('卡片实体 ID。通过获取'),
+      card_id: z.string().describe('卡片实体 ID。通过获取'),
       element_id: z
         .string()
         .describe('普通文本组件或富文本组件的 ID。对应卡片 JSON 中的 `element_id` 属性，由开发者自定义'),
@@ -117,9 +113,7 @@ export const cardkitV1CardElementCreate = {
       elements: z.string().describe('添加的组件列表。以下示例值未转义，使用时请注意将其转为 JSON 序列化后的字符串'),
     }),
     path: z.object({
-      card_id: z
-        .string()
-        .describe('卡片实体 ID。通过获取'),
+      card_id: z.string().describe('卡片实体 ID。通过获取'),
     }),
   },
 };
@@ -141,9 +135,7 @@ export const cardkitV1CardElementDelete = {
         ),
     }),
     path: z.object({
-      card_id: z
-        .string()
-        .describe('卡片实体 ID。通过获取'),
+      card_id: z.string().describe('卡片实体 ID。通过获取'),
       element_id: z.string().describe('要删除的组件 ID。对应卡片 JSON 中的 `element_id` 属性，由开发者自定义'),
     }),
   },
@@ -171,9 +163,7 @@ export const cardkitV1CardElementPatch = {
         ),
     }),
     path: z.object({
-      card_id: z
-        .string()
-        .describe('卡片实体 ID。通过获取'),
+      card_id: z.string().describe('卡片实体 ID。通过获取'),
       element_id: z.string().describe('要更新的组件的 ID。对应 JSON 代码中的 `element_id` 属性，由开发者自定义'),
     }),
   },
@@ -199,9 +189,7 @@ export const cardkitV1CardElementUpdate = {
         ),
     }),
     path: z.object({
-      card_id: z
-        .string()
-        .describe('卡片实体 ID。通过获取'),
+      card_id: z.string().describe('卡片实体 ID。通过获取'),
       element_id: z.string().describe('要更新的组件 ID。对应卡片 JSON 中的 `element_id` 属性，由开发者自定义'),
     }),
   },
@@ -217,11 +205,7 @@ export const cardkitV1CardIdConvert = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      message_id: z
-        .string()
-        .describe(
-          '消息 ID。通过等接口获取。其消息类型（msg_type）需为卡片（interactive）',
-        ),
+      message_id: z.string().describe('消息 ID。通过等接口获取。其消息类型（msg_type）需为卡片（interactive）'),
     }),
   },
 };
@@ -248,9 +232,7 @@ export const cardkitV1CardSettings = {
         ),
     }),
     path: z.object({
-      card_id: z
-        .string()
-        .describe('卡片实体 ID。通过获取'),
+      card_id: z.string().describe('卡片实体 ID。通过获取'),
     }),
   },
 };
@@ -282,9 +264,7 @@ export const cardkitV1CardUpdate = {
         ),
     }),
     path: z.object({
-      card_id: z
-        .string()
-        .describe('卡片实体 ID。通过获取'),
+      card_id: z.string().describe('卡片实体 ID。通过获取'),
     }),
   },
 };

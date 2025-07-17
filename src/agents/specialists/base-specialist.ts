@@ -39,11 +39,11 @@ export class BaseSpecialistAgent extends Agent {
       temperature: 0.1, // 精密な操作のため低温度
       maxTokens: 4000,
       language: 'ja',
-      ...config
+      ...config,
     };
 
     super(specialistConfig);
-    
+
     // Set tools after super() call
     this.config.tools = this.createSpecialistTools();
   }
@@ -55,11 +55,11 @@ export class BaseSpecialistAgent extends Agent {
         description: 'Search records in Lark Base tables with advanced filtering',
         execute: async (params: any) => {
           const { tableId, appId, filters, pageSize = 100 } = params;
-          
+
           const prompt = PromptUtils.fillTemplate(TOOL_OPERATION_PROMPTS.BASE_OPERATIONS, {
             OPERATION_TYPE: 'search_records',
             TABLE_INFO: JSON.stringify({ tableId, appId }),
-            PARAMETERS: JSON.stringify({ filters, pageSize })
+            PARAMETERS: JSON.stringify({ filters, pageSize }),
           });
 
           // Execute search via MCP tools
@@ -67,7 +67,7 @@ export class BaseSpecialistAgent extends Agent {
             app_token: appId,
             table_id: tableId,
             filter: filters,
-            page_size: pageSize
+            page_size: pageSize,
           });
         },
         schema: {
@@ -76,10 +76,10 @@ export class BaseSpecialistAgent extends Agent {
             appId: { type: 'string', description: 'Base application ID' },
             tableId: { type: 'string', description: 'Table ID within the Base' },
             filters: { type: 'object', description: 'Search filters' },
-            pageSize: { type: 'number', default: 100 }
+            pageSize: { type: 'number', default: 100 },
           },
-          required: ['appId', 'tableId']
-        }
+          required: ['appId', 'tableId'],
+        },
       },
 
       {
@@ -87,11 +87,11 @@ export class BaseSpecialistAgent extends Agent {
         description: 'Create new record in Lark Base table',
         execute: async (params: any) => {
           const { tableId, appId, fields } = params;
-          
+
           return this.executeMcpTool('bitable.v1.app.table.record.create', {
             app_token: appId,
             table_id: tableId,
-            fields
+            fields,
           });
         },
         schema: {
@@ -99,10 +99,10 @@ export class BaseSpecialistAgent extends Agent {
           properties: {
             appId: { type: 'string', description: 'Base application ID' },
             tableId: { type: 'string', description: 'Table ID' },
-            fields: { type: 'object', description: 'Record field values' }
+            fields: { type: 'object', description: 'Record field values' },
           },
-          required: ['appId', 'tableId', 'fields']
-        }
+          required: ['appId', 'tableId', 'fields'],
+        },
       },
 
       {
@@ -110,12 +110,12 @@ export class BaseSpecialistAgent extends Agent {
         description: 'Update existing record in Lark Base table',
         execute: async (params: any) => {
           const { tableId, appId, recordId, fields } = params;
-          
+
           return this.executeMcpTool('bitable.v1.app.table.record.update', {
             app_token: appId,
             table_id: tableId,
             record_id: recordId,
-            fields
+            fields,
           });
         },
         schema: {
@@ -124,10 +124,10 @@ export class BaseSpecialistAgent extends Agent {
             appId: { type: 'string', description: 'Base application ID' },
             tableId: { type: 'string', description: 'Table ID' },
             recordId: { type: 'string', description: 'Record ID to update' },
-            fields: { type: 'object', description: 'Updated field values' }
+            fields: { type: 'object', description: 'Updated field values' },
           },
-          required: ['appId', 'tableId', 'recordId', 'fields']
-        }
+          required: ['appId', 'tableId', 'recordId', 'fields'],
+        },
       },
 
       {
@@ -135,28 +135,28 @@ export class BaseSpecialistAgent extends Agent {
         description: 'Create multiple records in batch',
         execute: async (params: any) => {
           const { tableId, appId, records } = params;
-          
+
           // Split large batches for stability
           const batchSize = 500;
           const results = [];
-          
+
           for (let i = 0; i < records.length; i += batchSize) {
             const batch = records.slice(i, i + batchSize);
-            
+
             const result = await this.executeMcpTool('bitable.v1.app.table.record.batch_create', {
               app_token: appId,
               table_id: tableId,
-              records: batch.map((fields: any) => ({ fields }))
+              records: batch.map((fields: any) => ({ fields })),
             });
-            
+
             results.push(result);
           }
-          
+
           return {
             success: true,
             totalCreated: records.length,
             batches: results.length,
-            results
+            results,
           };
         },
         schema: {
@@ -164,14 +164,14 @@ export class BaseSpecialistAgent extends Agent {
           properties: {
             appId: { type: 'string', description: 'Base application ID' },
             tableId: { type: 'string', description: 'Table ID' },
-            records: { 
-              type: 'array', 
+            records: {
+              type: 'array',
               description: 'Array of record field objects',
-              items: { type: 'object' }
-            }
+              items: { type: 'object' },
+            },
           },
-          required: ['appId', 'tableId', 'records']
-        }
+          required: ['appId', 'tableId', 'records'],
+        },
       },
 
       {
@@ -179,20 +179,20 @@ export class BaseSpecialistAgent extends Agent {
         description: 'Get table structure and field definitions',
         execute: async (params: any) => {
           const { tableId, appId } = params;
-          
+
           return this.executeMcpTool('bitable.v1.app.table.get', {
             app_token: appId,
-            table_id: tableId
+            table_id: tableId,
           });
         },
         schema: {
           type: 'object',
           properties: {
             appId: { type: 'string', description: 'Base application ID' },
-            tableId: { type: 'string', description: 'Table ID' }
+            tableId: { type: 'string', description: 'Table ID' },
           },
-          required: ['appId', 'tableId']
-        }
+          required: ['appId', 'tableId'],
+        },
       },
 
       {
@@ -200,13 +200,13 @@ export class BaseSpecialistAgent extends Agent {
         description: 'Create filtered view of table data',
         execute: async (params: any) => {
           const { tableId, appId, viewName, filter, sort } = params;
-          
+
           return this.executeMcpTool('bitable.v1.app.table.view.create', {
             app_token: appId,
             table_id: tableId,
             view_name: viewName,
             filter,
-            sort
+            sort,
           });
         },
         schema: {
@@ -216,11 +216,11 @@ export class BaseSpecialistAgent extends Agent {
             tableId: { type: 'string', description: 'Table ID' },
             viewName: { type: 'string', description: 'Name for the new view' },
             filter: { type: 'object', description: 'View filter conditions' },
-            sort: { type: 'array', description: 'Sort configuration' }
+            sort: { type: 'array', description: 'Sort configuration' },
           },
-          required: ['appId', 'tableId', 'viewName']
-        }
-      }
+          required: ['appId', 'tableId', 'viewName'],
+        },
+      },
     ];
   }
 
@@ -231,7 +231,7 @@ export class BaseSpecialistAgent extends Agent {
     try {
       // This would integrate with the actual MCP tool system
       // For now, return a structured response format
-      
+
       const response = {
         success: true,
         tool: toolName,
@@ -240,19 +240,18 @@ export class BaseSpecialistAgent extends Agent {
         data: {
           // Tool execution results would go here
           message: `Executed ${toolName} successfully`,
-          ...params
-        }
+          ...params,
+        },
       };
 
       return response;
-
     } catch (error) {
       return {
         success: false,
         tool: toolName,
         parameters: params,
         error: String(error),
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
     }
   }
@@ -260,24 +259,24 @@ export class BaseSpecialistAgent extends Agent {
   /**
    * Analyze Base operation complexity and recommend approach
    */
-  async analyzeOperation(operation: string, context: any): Promise<{
+  async analyzeOperation(
+    operation: string,
+    context: any,
+  ): Promise<{
     complexity: 'simple' | 'moderate' | 'complex';
     estimatedTime: number;
     recommendations: string[];
     requiredTools: string[];
   }> {
     const lowerOp = operation.toLowerCase();
-    
+
     // Simple operations
     if (lowerOp.includes('get') || lowerOp.includes('read') || lowerOp.includes('search')) {
       return {
         complexity: 'simple',
         estimatedTime: 30, // seconds
-        recommendations: [
-          'Use appropriate filters to limit data size',
-          'Consider pagination for large datasets'
-        ],
-        requiredTools: ['search_base_records', 'get_table_schema']
+        recommendations: ['Use appropriate filters to limit data size', 'Consider pagination for large datasets'],
+        requiredTools: ['search_base_records', 'get_table_schema'],
       };
     }
 
@@ -289,9 +288,9 @@ export class BaseSpecialistAgent extends Agent {
         recommendations: [
           'Validate data before modification',
           'Use transactions for consistency',
-          'Create backup before bulk operations'
+          'Create backup before bulk operations',
         ],
-        requiredTools: ['create_base_record', 'update_base_record']
+        requiredTools: ['create_base_record', 'update_base_record'],
       };
     }
 
@@ -303,9 +302,9 @@ export class BaseSpecialistAgent extends Agent {
         'Break down into smaller batches',
         'Monitor progress and implement retry logic',
         'Consider impact on other users',
-        'Schedule during low-usage periods'
+        'Schedule during low-usage periods',
       ],
-      requiredTools: ['batch_create_records', 'create_table_view']
+      requiredTools: ['batch_create_records', 'create_table_view'],
     };
   }
 }
@@ -324,9 +323,9 @@ export async function createBaseSpecialist(): Promise<string> {
         properties: {
           operation: { type: 'string' },
           appId: { type: 'string' },
-          tableId: { type: 'string' }
-        }
-      }
+          tableId: { type: 'string' },
+        },
+      },
     },
     {
       name: 'batch_processing',
@@ -336,20 +335,20 @@ export async function createBaseSpecialist(): Promise<string> {
         type: 'object',
         properties: {
           batchSize: { type: 'number' },
-          records: { type: 'array' }
-        }
-      }
+          records: { type: 'array' },
+        },
+      },
     },
     {
       name: 'data_validation',
       description: 'Validate and clean Base data',
-      category: 'base'
+      category: 'base',
     },
     {
       name: 'schema_management',
       description: 'Manage table structures and field definitions',
-      category: 'base'
-    }
+      category: 'base',
+    },
   ];
 
   const metadata: AgentMetadata = {
@@ -361,7 +360,7 @@ export async function createBaseSpecialist(): Promise<string> {
     maxConcurrentTasks: 3,
     currentTasks: 0,
     lastHeartbeat: new Date(),
-    version: '1.0.0'
+    version: '1.0.0',
   };
 
   const registered = await globalRegistry.registerAgent(metadata);

@@ -44,12 +44,7 @@ export const performanceV1ReviewDataQuery = {
         )
         .describe('环节状态，填写时按照指定状态获取绩效结果，不填查询所有状态的绩效结果')
         .optional(),
-      semester_id_list: z
-        .array(z.string())
-        .describe(
-          '评估周期 ID 列表，可通过接口获取',
-        )
-        .optional(),
+      semester_id_list: z.array(z.string()).describe('评估周期 ID 列表，可通过接口获取').optional(),
       reviewee_user_id_list: z.array(z.string()).describe('被评估人 ID 列表，与入参 `user_id_type` 类型一致'),
       updated_later_than: z
         .string()
@@ -130,9 +125,7 @@ export const performanceV1StageTaskFindByPage = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      semester_id: z
-        .string()
-        .describe('周期 ID，可通过接口获取'),
+      semester_id: z.string().describe('周期 ID，可通过接口获取'),
       task_option_lists: z
         .array(z.number())
         .describe(
@@ -165,9 +158,7 @@ export const performanceV1StageTaskFindByUserList = {
   accessTokens: ['tenant', 'user'],
   schema: {
     data: z.object({
-      semester_id: z
-        .string()
-        .describe('周期 ID，可通过接口获取'),
+      semester_id: z.string().describe('周期 ID，可通过接口获取'),
       user_id_lists: z
         .array(z.string())
         .describe(

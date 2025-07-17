@@ -53,9 +53,7 @@ export const ailyV1AilySessionAilyMessageCreate = {
         .optional(),
     }),
     path: z.object({
-      aily_session_id: z
-        .string()
-        .describe('会话 ID；参考  接口'),
+      aily_session_id: z.string().describe('会话 ID；参考  接口'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -71,9 +69,7 @@ export const ailyV1AilySessionAilyMessageGet = {
   accessTokens: ['tenant', 'user'],
   schema: {
     path: z.object({
-      aily_session_id: z
-        .string()
-        .describe('会话 ID；参考  接口'),
+      aily_session_id: z.string().describe('会话 ID；参考  接口'),
       aily_message_id: z.string().describe('消息 ID'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
@@ -106,9 +102,7 @@ export const ailyV1AilySessionAilyMessageList = {
         .optional(),
     }),
     path: z.object({
-      aily_session_id: z
-        .string()
-        .describe('会话 ID；参考  接口'),
+      aily_session_id: z.string().describe('会话 ID；参考  接口'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -124,12 +118,7 @@ export const ailyV1AilySessionCreate = {
   accessTokens: ['tenant', 'user'],
   schema: {
     data: z.object({
-      channel_context: z
-        .string()
-        .describe(
-          '可自行构造的 Context ；在 Workflow 技能中可消费这部分全局变量',
-        )
-        .optional(),
+      channel_context: z.string().describe('可自行构造的 Context ；在 Workflow 技能中可消费这部分全局变量').optional(),
       metadata: z
         .string()
         .describe(
@@ -178,9 +167,7 @@ export const ailyV1AilySessionRunCancel = {
   accessTokens: ['tenant', 'user'],
   schema: {
     path: z.object({
-      aily_session_id: z
-        .string()
-        .describe('会话 ID；参考  接口'),
+      aily_session_id: z.string().describe('会话 ID；参考  接口'),
       run_id: z.string().describe('运行的唯一 ID'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
@@ -216,9 +203,7 @@ export const ailyV1AilySessionRunCreate = {
         .optional(),
     }),
     path: z.object({
-      aily_session_id: z
-        .string()
-        .describe('会话 ID；参考  接口'),
+      aily_session_id: z.string().describe('会话 ID；参考  接口'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -234,9 +219,7 @@ export const ailyV1AilySessionRunGet = {
   accessTokens: ['tenant', 'user'],
   schema: {
     path: z.object({
-      aily_session_id: z
-        .string()
-        .describe('会话 ID；参考  接口'),
+      aily_session_id: z.string().describe('会话 ID；参考  接口'),
       run_id: z.string().describe('运行的唯一 ID'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
@@ -262,9 +245,7 @@ export const ailyV1AilySessionRunList = {
         .optional(),
     }),
     path: z.object({
-      aily_session_id: z
-        .string()
-        .describe('会话 ID；参考  接口'),
+      aily_session_id: z.string().describe('会话 ID；参考  接口'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -280,12 +261,7 @@ export const ailyV1AilySessionUpdate = {
   accessTokens: ['tenant', 'user'],
   schema: {
     data: z.object({
-      channel_context: z
-        .string()
-        .describe(
-          '可自行构造的 Context ；在 Workflow 技能中可消费这部分全局变量',
-        )
-        .optional(),
+      channel_context: z.string().describe('可自行构造的 Context ；在 Workflow 技能中可消费这部分全局变量').optional(),
       metadata: z
         .string()
         .describe(

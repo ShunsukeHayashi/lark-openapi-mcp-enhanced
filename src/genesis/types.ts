@@ -5,34 +5,34 @@
 /**
  * Field types supported by Lark Base
  */
-export type FieldType = 
-  | 'text'           // Single line text
-  | 'longText'       // Multi-line text
-  | 'number'         // Number
-  | 'currency'       // Currency with formatting
-  | 'percent'        // Percentage
-  | 'date'           // Date only
-  | 'dateTime'       // Date and time
-  | 'checkbox'       // Boolean
-  | 'select'         // Single select
-  | 'multiSelect'    // Multiple select
-  | 'user'           // Single user
-  | 'multipleUsers'  // Multiple users
-  | 'link'           // Link to another table
-  | 'lookup'         // Lookup from linked record
-  | 'formula'        // Calculated field
-  | 'rollup'         // Aggregation from linked records
-  | 'attachment'     // File attachments
-  | 'email'          // Email with validation
-  | 'phone'          // Phone number
-  | 'url'            // URL with validation
-  | 'rating'         // Star rating
-  | 'progress'       // Progress bar
-  | 'createdTime'    // Auto-created time
-  | 'createdBy'      // Auto-created by user
+export type FieldType =
+  | 'text' // Single line text
+  | 'longText' // Multi-line text
+  | 'number' // Number
+  | 'currency' // Currency with formatting
+  | 'percent' // Percentage
+  | 'date' // Date only
+  | 'dateTime' // Date and time
+  | 'checkbox' // Boolean
+  | 'select' // Single select
+  | 'multiSelect' // Multiple select
+  | 'user' // Single user
+  | 'multipleUsers' // Multiple users
+  | 'link' // Link to another table
+  | 'lookup' // Lookup from linked record
+  | 'formula' // Calculated field
+  | 'rollup' // Aggregation from linked records
+  | 'attachment' // File attachments
+  | 'email' // Email with validation
+  | 'phone' // Phone number
+  | 'url' // URL with validation
+  | 'rating' // Star rating
+  | 'progress' // Progress bar
+  | 'createdTime' // Auto-created time
+  | 'createdBy' // Auto-created by user
   | 'lastModifiedTime' // Auto-modified time
-  | 'lastModifiedBy'   // Auto-modified by user
-  | 'autoNumber';      // Auto-incrementing number
+  | 'lastModifiedBy' // Auto-modified by user
+  | 'autoNumber'; // Auto-incrementing number
 
 /**
  * Field definition for a table
@@ -44,15 +44,15 @@ export interface FieldDefinition {
   required?: boolean;
   unique?: boolean;
   defaultValue?: any;
-  options?: string[];              // For select/multiSelect
-  linkedTable?: string;            // For link fields
-  linkedField?: string;            // For lookup fields
-  multiple?: boolean;              // For link fields
-  formula?: string;                // For formula fields
+  options?: string[]; // For select/multiSelect
+  linkedTable?: string; // For link fields
+  linkedField?: string; // For lookup fields
+  multiple?: boolean; // For link fields
+  formula?: string; // For formula fields
   aggregation?: 'count' | 'sum' | 'average' | 'max' | 'min'; // For rollup
-  precision?: number;              // For number/currency fields
-  dateFormat?: string;             // For date fields
-  includeTime?: boolean;           // For date fields
+  precision?: number; // For number/currency fields
+  dateFormat?: string; // For date fields
+  includeTime?: boolean; // For date fields
 }
 
 /**
@@ -62,7 +62,7 @@ export interface TableDefinition {
   name: string;
   description?: string;
   fields: FieldDefinition[];
-  primaryField?: string;           // Field to use as primary display
+  primaryField?: string; // Field to use as primary display
 }
 
 /**
@@ -73,10 +73,10 @@ export type ViewType = 'grid' | 'kanban' | 'gallery' | 'calendar' | 'gantt' | 'f
 /**
  * Filter operators
  */
-export type FilterOperator = 
-  | 'is' 
-  | 'isNot' 
-  | 'contains' 
+export type FilterOperator =
+  | 'is'
+  | 'isNot'
+  | 'contains'
   | 'doesNotContain'
   | 'isEmpty'
   | 'isNotEmpty'
@@ -115,15 +115,15 @@ export interface ViewConfiguration {
   description?: string;
   filters?: ViewFilter[];
   sortBy?: SortConfig[];
-  groupBy?: string;                // For kanban views
-  colorBy?: string;                // For color coding
-  coverField?: string;             // For gallery views
-  dateField?: string;              // For calendar views
-  startDateField?: string;         // For gantt views
-  endDateField?: string;           // For gantt views
-  parentField?: string;            // For hierarchy views
-  visibleFields?: string[];        // Fields to show
-  hiddenFields?: string[];         // Fields to hide
+  groupBy?: string; // For kanban views
+  colorBy?: string; // For color coding
+  coverField?: string; // For gallery views
+  dateField?: string; // For calendar views
+  startDateField?: string; // For gantt views
+  endDateField?: string; // For gantt views
+  parentField?: string; // For hierarchy views
+  visibleFields?: string[]; // Fields to show
+  hiddenFields?: string[]; // Fields to hide
   fieldWidths?: Record<string, number>; // Custom field widths
   rowHeight?: 'short' | 'medium' | 'tall' | 'extra_tall';
 }
@@ -131,7 +131,7 @@ export interface ViewConfiguration {
 /**
  * Automation trigger types
  */
-export type TriggerType = 
+export type TriggerType =
   | 'record_created'
   | 'record_updated'
   | 'field_updated'
@@ -143,7 +143,7 @@ export type TriggerType =
 /**
  * Automation action types
  */
-export type ActionType = 
+export type ActionType =
   | 'update_record'
   | 'create_record'
   | 'create_records'
@@ -181,7 +181,7 @@ export interface AutomationRule {
   description?: string;
   enabled?: boolean;
   trigger: AutomationTrigger;
-  conditions?: ViewFilter[];       // Additional conditions
+  conditions?: ViewFilter[]; // Additional conditions
   actions: AutomationAction[];
 }
 
@@ -228,7 +228,7 @@ export interface DashboardConfiguration {
   description?: string;
   widgets: DashboardWidget[];
   layout?: 'auto' | 'fixed';
-  refreshInterval?: number;        // In seconds
+  refreshInterval?: number; // In seconds
 }
 
 /**
@@ -246,7 +246,7 @@ export interface GenesisTemplate {
   automations: AutomationRule[];
   tags?: string[];
   difficulty?: 'beginner' | 'intermediate' | 'advanced';
-  estimatedSetupTime?: number;    // In minutes
+  estimatedSetupTime?: number; // In minutes
   requiredIntegrations?: string[];
 }
 
@@ -254,21 +254,21 @@ export interface GenesisTemplate {
  * Genesis creation options
  */
 export interface GenesisOptions {
-  useRealAPI?: boolean;            // Use real Lark API or simulation
-  template?: string;               // Template ID to use
-  enableAI?: boolean;              // Enable AI features
-  autoCreateViews?: boolean;       // Auto-create recommended views
-  autoCreateDashboards?: boolean;  // Auto-create dashboards
+  useRealAPI?: boolean; // Use real Lark API or simulation
+  template?: string; // Template ID to use
+  enableAI?: boolean; // Enable AI features
+  autoCreateViews?: boolean; // Auto-create recommended views
+  autoCreateDashboards?: boolean; // Auto-create dashboards
   autoCreateAutomations?: boolean; // Auto-create automations
-  folderToken?: string;            // Folder to create base in
-  language?: 'en' | 'zh' | 'ja';   // Language for field names
+  folderToken?: string; // Folder to create base in
+  language?: 'en' | 'zh' | 'ja'; // Language for field names
 }
 
 /**
  * Genesis analysis result
  */
 export interface GenesisAnalysisResult {
-  confidence: number;              // 0-100
+  confidence: number; // 0-100
   suggestedTables: TableDefinition[];
   suggestedViews: ViewConfiguration[];
   relationships: Array<{
@@ -314,5 +314,5 @@ export interface GenesisCreationResult {
     enabled: boolean;
   }>;
   error?: string;
-  executionTime?: number;          // In milliseconds
+  executionTime?: number; // In milliseconds
 }

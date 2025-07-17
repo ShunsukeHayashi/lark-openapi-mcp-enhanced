@@ -30,41 +30,50 @@ export interface WorkflowCondition {
 }
 
 export interface WorkflowAction {
-  type: 'create_record' | 'update_record' | 'delete_record' | 'send_notification' | 'send_email' | 'webhook' | 'script' | 'approval_request' | 'assign_task';
+  type:
+    | 'create_record'
+    | 'update_record'
+    | 'delete_record'
+    | 'send_notification'
+    | 'send_email'
+    | 'webhook'
+    | 'script'
+    | 'approval_request'
+    | 'assign_task';
   config: {
     // 共通設定
     delay?: number; // 遅延実行（秒）
-    
+
     // レコード操作
     targetTableId?: string;
     fieldMappings?: Record<string, any>;
     recordId?: string;
-    
+
     // 通知設定
     recipients?: string[];
     message?: string;
     title?: string;
-    
+
     // メール設定
     emailTemplate?: string;
     subject?: string;
     body?: string;
     attachments?: string[];
-    
+
     // Webhook設定
     url?: string;
     method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
     headers?: Record<string, string>;
     payload?: any;
-    
+
     // スクリプト設定
     scriptCode?: string;
     scriptLanguage?: 'javascript' | 'python';
-    
+
     // 承認設定
     approvers?: string[];
     approvalType?: 'any' | 'all' | 'sequential';
-    
+
     // タスク設定
     assignee?: string;
     dueDate?: string;
@@ -132,176 +141,190 @@ export interface WorkflowExecutionResult {
  */
 export class WorkflowBuilder {
   private static readonly WORKFLOW_TEMPLATES = new Map<string, WorkflowTemplate>([
-    ['approval_workflow', {
-      id: 'approval_workflow',
-      name: '承認ワークフロー',
-      category: 'approval',
-      description: '新規レコード作成時の承認プロセス',
-      template: {
-        name: '{{entity_name}}承認ワークフロー',
-        description: '{{entity_name}}の新規作成時に承認を要求',
-        enabled: true,
-        trigger: {
-          type: 'record_created',
-          tableId: '{{table_id}}'
-        },
-        actions: [
-          {
-            type: 'approval_request',
-            config: {
-              approvers: ['{{approver_user_id}}'],
-              approvalType: 'any',
-              title: '{{entity_name}}の承認依頼',
-              message: '新しい{{entity_name}}が作成されました。承認をお願いします。'
-            }
+    [
+      'approval_workflow',
+      {
+        id: 'approval_workflow',
+        name: '承認ワークフロー',
+        category: 'approval',
+        description: '新規レコード作成時の承認プロセス',
+        template: {
+          name: '{{entity_name}}承認ワークフロー',
+          description: '{{entity_name}}の新規作成時に承認を要求',
+          enabled: true,
+          trigger: {
+            type: 'record_created',
+            tableId: '{{table_id}}',
           },
-          {
-            type: 'update_record',
-            config: {
-              fieldMappings: {
-                '{{status_field}}': '承認待ち'
-              }
-            }
-          }
-        ]
-      },
-      parameters: [
-        { name: 'entity_name', type: 'string', required: true, description: 'エンティティ名' },
-        { name: 'table_id', type: 'table', required: true, description: '対象テーブル' },
-        { name: 'approver_user_id', type: 'user', required: true, description: '承認者' },
-        { name: 'status_field', type: 'field', required: true, description: 'ステータスフィールド' }
-      ]
-    }],
-    
-    ['notification_workflow', {
-      id: 'notification_workflow',
-      name: '通知ワークフロー',
-      category: 'notification',
-      description: '重要なフィールド更新時の通知',
-      template: {
-        name: '{{field_name}}更新通知',
-        description: '{{field_name}}が更新された時の通知',
-        enabled: true,
-        trigger: {
-          type: 'field_changed',
-          tableId: '{{table_id}}',
-          fieldId: '{{field_id}}'
+          actions: [
+            {
+              type: 'approval_request',
+              config: {
+                approvers: ['{{approver_user_id}}'],
+                approvalType: 'any',
+                title: '{{entity_name}}の承認依頼',
+                message: '新しい{{entity_name}}が作成されました。承認をお願いします。',
+              },
+            },
+            {
+              type: 'update_record',
+              config: {
+                fieldMappings: {
+                  '{{status_field}}': '承認待ち',
+                },
+              },
+            },
+          ],
         },
-        actions: [
-          {
-            type: 'send_notification',
-            config: {
-              recipients: ['{{recipient_user_id}}'],
-              title: '{{field_name}}が更新されました',
-              message: '{{field_name}}の値が変更されました。確認をお願いします。'
-            }
-          }
-        ]
+        parameters: [
+          { name: 'entity_name', type: 'string', required: true, description: 'エンティティ名' },
+          { name: 'table_id', type: 'table', required: true, description: '対象テーブル' },
+          { name: 'approver_user_id', type: 'user', required: true, description: '承認者' },
+          { name: 'status_field', type: 'field', required: true, description: 'ステータスフィールド' },
+        ],
       },
-      parameters: [
-        { name: 'field_name', type: 'string', required: true, description: 'フィールド名' },
-        { name: 'table_id', type: 'table', required: true, description: '対象テーブル' },
-        { name: 'field_id', type: 'field', required: true, description: '対象フィールド' },
-        { name: 'recipient_user_id', type: 'user', required: true, description: '通知受信者' }
-      ]
-    }],
-    
-    ['data_sync_workflow', {
-      id: 'data_sync_workflow',
-      name: 'データ同期ワークフロー',
-      category: 'data_sync',
-      description: 'マスターデータ更新時の関連データ同期',
-      template: {
-        name: '{{source_table}}→{{target_table}}同期',
-        description: 'マスターデータ更新時の自動同期',
-        enabled: true,
-        trigger: {
-          type: 'record_updated',
-          tableId: '{{source_table_id}}'
+    ],
+
+    [
+      'notification_workflow',
+      {
+        id: 'notification_workflow',
+        name: '通知ワークフロー',
+        category: 'notification',
+        description: '重要なフィールド更新時の通知',
+        template: {
+          name: '{{field_name}}更新通知',
+          description: '{{field_name}}が更新された時の通知',
+          enabled: true,
+          trigger: {
+            type: 'field_changed',
+            tableId: '{{table_id}}',
+            fieldId: '{{field_id}}',
+          },
+          actions: [
+            {
+              type: 'send_notification',
+              config: {
+                recipients: ['{{recipient_user_id}}'],
+                title: '{{field_name}}が更新されました',
+                message: '{{field_name}}の値が変更されました。確認をお願いします。',
+              },
+            },
+          ],
         },
-        actions: [
-          {
-            type: 'update_record',
-            config: {
-              targetTableId: '{{target_table_id}}',
-              fieldMappings: {
-                '{{target_field}}': '{{source_field}}'
-              }
-            }
-          }
-        ]
+        parameters: [
+          { name: 'field_name', type: 'string', required: true, description: 'フィールド名' },
+          { name: 'table_id', type: 'table', required: true, description: '対象テーブル' },
+          { name: 'field_id', type: 'field', required: true, description: '対象フィールド' },
+          { name: 'recipient_user_id', type: 'user', required: true, description: '通知受信者' },
+        ],
       },
-      parameters: [
-        { name: 'source_table', type: 'string', required: true, description: 'ソーステーブル名' },
-        { name: 'target_table', type: 'string', required: true, description: 'ターゲットテーブル名' },
-        { name: 'source_table_id', type: 'table', required: true, description: 'ソーステーブルID' },
-        { name: 'target_table_id', type: 'table', required: true, description: 'ターゲットテーブルID' },
-        { name: 'source_field', type: 'field', required: true, description: 'ソースフィールド' },
-        { name: 'target_field', type: 'field', required: true, description: 'ターゲットフィールド' }
-      ]
-    }],
-    
-    ['scheduled_report_workflow', {
-      id: 'scheduled_report_workflow',
-      name: '定期レポートワークフロー',
-      category: 'automation',
-      description: '定期的なレポート生成と送信',
-      template: {
-        name: '{{report_name}}定期レポート',
-        description: '{{frequency}}でのレポート自動生成',
-        enabled: true,
-        trigger: {
-          type: 'scheduled',
-          schedule: {
-            type: 'daily',
-            time: '{{schedule_time}}'
-          }
+    ],
+
+    [
+      'data_sync_workflow',
+      {
+        id: 'data_sync_workflow',
+        name: 'データ同期ワークフロー',
+        category: 'data_sync',
+        description: 'マスターデータ更新時の関連データ同期',
+        template: {
+          name: '{{source_table}}→{{target_table}}同期',
+          description: 'マスターデータ更新時の自動同期',
+          enabled: true,
+          trigger: {
+            type: 'record_updated',
+            tableId: '{{source_table_id}}',
+          },
+          actions: [
+            {
+              type: 'update_record',
+              config: {
+                targetTableId: '{{target_table_id}}',
+                fieldMappings: {
+                  '{{target_field}}': '{{source_field}}',
+                },
+              },
+            },
+          ],
         },
-        actions: [
-          {
-            type: 'script',
-            config: {
-              scriptCode: `
+        parameters: [
+          { name: 'source_table', type: 'string', required: true, description: 'ソーステーブル名' },
+          { name: 'target_table', type: 'string', required: true, description: 'ターゲットテーブル名' },
+          { name: 'source_table_id', type: 'table', required: true, description: 'ソーステーブルID' },
+          { name: 'target_table_id', type: 'table', required: true, description: 'ターゲットテーブルID' },
+          { name: 'source_field', type: 'field', required: true, description: 'ソースフィールド' },
+          { name: 'target_field', type: 'field', required: true, description: 'ターゲットフィールド' },
+        ],
+      },
+    ],
+
+    [
+      'scheduled_report_workflow',
+      {
+        id: 'scheduled_report_workflow',
+        name: '定期レポートワークフロー',
+        category: 'automation',
+        description: '定期的なレポート生成と送信',
+        template: {
+          name: '{{report_name}}定期レポート',
+          description: '{{frequency}}でのレポート自動生成',
+          enabled: true,
+          trigger: {
+            type: 'scheduled',
+            schedule: {
+              type: 'daily',
+              time: '{{schedule_time}}',
+            },
+          },
+          actions: [
+            {
+              type: 'script',
+              config: {
+                scriptCode: `
 // レポートデータの取得と整形
 const reportData = await generateReport('{{table_id}}');
 return { success: true, data: reportData };
               `,
-              scriptLanguage: 'javascript'
-            }
-          },
-          {
-            type: 'send_email',
-            config: {
-              recipients: ['{{recipient_email}}'],
-              subject: '{{report_name}} - {{current_date}}',
-              body: 'レポートを添付いたします。',
-              emailTemplate: 'report_template'
-            }
-          }
-        ]
+                scriptLanguage: 'javascript',
+              },
+            },
+            {
+              type: 'send_email',
+              config: {
+                recipients: ['{{recipient_email}}'],
+                subject: '{{report_name}} - {{current_date}}',
+                body: 'レポートを添付いたします。',
+                emailTemplate: 'report_template',
+              },
+            },
+          ],
+        },
+        parameters: [
+          { name: 'report_name', type: 'string', required: true, description: 'レポート名' },
+          { name: 'frequency', type: 'string', required: true, description: '頻度' },
+          { name: 'schedule_type', type: 'string', required: true, description: 'スケジュールタイプ' },
+          { name: 'schedule_time', type: 'string', required: true, description: '実行時刻' },
+          { name: 'table_id', type: 'table', required: true, description: 'データソーステーブル' },
+          { name: 'recipient_email', type: 'string', required: true, description: '送信先メールアドレス' },
+        ],
       },
-      parameters: [
-        { name: 'report_name', type: 'string', required: true, description: 'レポート名' },
-        { name: 'frequency', type: 'string', required: true, description: '頻度' },
-        { name: 'schedule_type', type: 'string', required: true, description: 'スケジュールタイプ' },
-        { name: 'schedule_time', type: 'string', required: true, description: '実行時刻' },
-        { name: 'table_id', type: 'table', required: true, description: 'データソーステーブル' },
-        { name: 'recipient_email', type: 'string', required: true, description: '送信先メールアドレス' }
-      ]
-    }]
+    ],
   ]);
 
   /**
    * ビジネスルールからワークフローを自動生成
    */
-  static generateWorkflow(businessRules: Array<{
-    id: string;
-    name: string;
-    description: string;
-    condition: string;
-    action: string;
-    table: string;
-  }>): {
+  static generateWorkflow(
+    businessRules: Array<{
+      id: string;
+      name: string;
+      description: string;
+      condition: string;
+      action: string;
+      table: string;
+    }>,
+  ): {
     success: boolean;
     workflows: WorkflowDefinition[];
     errors: string[];
@@ -324,14 +347,13 @@ return { success: true, data: reportData };
       return {
         success: errors.length === 0,
         workflows,
-        errors
+        errors,
       };
-
     } catch (error) {
       return {
         success: false,
         workflows: [],
-        errors: [`Workflow generation failed: ${error}`]
+        errors: [`Workflow generation failed: ${error}`],
       };
     }
   }
@@ -339,12 +361,9 @@ return { success: true, data: reportData };
   /**
    * ビジネスルールをワークフローに変換
    */
-  private static convertRuleToWorkflow(
-    rule: any,
-    index: number
-  ): WorkflowDefinition | null {
+  private static convertRuleToWorkflow(rule: any, index: number): WorkflowDefinition | null {
     const workflowId = `workflow_${rule.id || index}`;
-    
+
     // 条件の解析
     const trigger = this.parseConditionToTrigger(rule.condition, rule.table);
     if (!trigger) {
@@ -367,31 +386,28 @@ return { success: true, data: reportData };
       errorHandling: {
         retryCount: 3,
         retryDelay: 5000,
-        onError: 'notify'
+        onError: 'notify',
       },
       metadata: {
         createdAt: Date.now(),
         updatedAt: Date.now(),
         version: '1.0.0',
-        author: 'Genesis Architect'
-      }
+        author: 'Genesis Architect',
+      },
     };
   }
 
   /**
    * 条件をトリガーに変換
    */
-  private static parseConditionToTrigger(
-    condition: string,
-    tableName: string
-  ): WorkflowTrigger | null {
+  private static parseConditionToTrigger(condition: string, tableName: string): WorkflowTrigger | null {
     const lowerCondition = condition.toLowerCase();
 
     // レコード作成時
     if (lowerCondition.includes('作成') || lowerCondition.includes('新規') || lowerCondition.includes('追加')) {
       return {
         type: 'record_created',
-        tableId: tableName
+        tableId: tableName,
       };
     }
 
@@ -399,14 +415,14 @@ return { success: true, data: reportData };
     if (lowerCondition.includes('更新') || lowerCondition.includes('変更') || lowerCondition.includes('修正')) {
       return {
         type: 'record_updated',
-        tableId: tableName
+        tableId: tableName,
       };
     }
 
     // スケジュール実行
     if (lowerCondition.includes('定期') || lowerCondition.includes('毎日') || lowerCondition.includes('毎週')) {
       let scheduleType: 'daily' | 'weekly' | 'monthly' = 'daily';
-      
+
       if (lowerCondition.includes('毎週')) scheduleType = 'weekly';
       if (lowerCondition.includes('毎月')) scheduleType = 'monthly';
 
@@ -414,32 +430,29 @@ return { success: true, data: reportData };
         type: 'scheduled',
         schedule: {
           type: scheduleType,
-          time: '09:00'
-        }
+          time: '09:00',
+        },
       };
     }
 
     // 手動実行
     if (lowerCondition.includes('手動') || lowerCondition.includes('マニュアル')) {
       return {
-        type: 'manual'
+        type: 'manual',
       };
     }
 
     // デフォルト：レコード更新
     return {
       type: 'record_updated',
-      tableId: tableName
+      tableId: tableName,
     };
   }
 
   /**
    * アクションをワークフローアクションに変換
    */
-  private static parseActionToWorkflowActions(
-    action: string,
-    tableName: string
-  ): WorkflowAction[] {
+  private static parseActionToWorkflowActions(action: string, tableName: string): WorkflowAction[] {
     const actions: WorkflowAction[] = [];
     const lowerAction = action.toLowerCase();
 
@@ -450,8 +463,8 @@ return { success: true, data: reportData };
         config: {
           recipients: ['all_users'],
           title: '自動通知',
-          message: action
-        }
+          message: action,
+        },
       });
     }
 
@@ -462,8 +475,8 @@ return { success: true, data: reportData };
         config: {
           recipients: ['admin@example.com'],
           subject: '自動メール',
-          body: action
-        }
+          body: action,
+        },
       });
     }
 
@@ -474,9 +487,9 @@ return { success: true, data: reportData };
         config: {
           targetTableId: tableName,
           fieldMappings: {
-            'status': '処理済み'
-          }
-        }
+            status: '処理済み',
+          },
+        },
       });
     }
 
@@ -487,10 +500,10 @@ return { success: true, data: reportData };
         config: {
           targetTableId: tableName,
           fieldMappings: {
-            'name': '自動作成レコード',
-            'description': action
-          }
-        }
+            name: '自動作成レコード',
+            description: action,
+          },
+        },
       });
     }
 
@@ -502,8 +515,8 @@ return { success: true, data: reportData };
           approvers: ['manager@example.com'],
           approvalType: 'any',
           title: '承認依頼',
-          message: action
-        }
+          message: action,
+        },
       });
     }
 
@@ -516,9 +529,9 @@ return { success: true, data: reportData };
           method: 'POST',
           payload: {
             action: action,
-            table: tableName
-          }
-        }
+            table: tableName,
+          },
+        },
       });
     }
 
@@ -529,8 +542,8 @@ return { success: true, data: reportData };
         config: {
           recipients: ['admin'],
           title: 'ワークフロー実行',
-          message: `アクション: ${action}`
-        }
+          message: `アクション: ${action}`,
+        },
       });
     }
 
@@ -542,7 +555,7 @@ return { success: true, data: reportData };
    */
   static generateFromTemplate(
     templateId: string,
-    parameters: Record<string, any>
+    parameters: Record<string, any>,
   ): {
     success: boolean;
     workflow?: WorkflowDefinition;
@@ -555,19 +568,19 @@ return { success: true, data: reportData };
       if (!template) {
         return {
           success: false,
-          errors: [`Template not found: ${templateId}`]
+          errors: [`Template not found: ${templateId}`],
         };
       }
 
       // パラメータ検証
       const missingParams = template.parameters
-        .filter(param => param.required && !parameters[param.name])
-        .map(param => param.name);
+        .filter((param) => param.required && !parameters[param.name])
+        .map((param) => param.name);
 
       if (missingParams.length > 0) {
         return {
           success: false,
-          errors: [`Missing required parameters: ${missingParams.join(', ')}`]
+          errors: [`Missing required parameters: ${missingParams.join(', ')}`],
         };
       }
 
@@ -594,20 +607,19 @@ return { success: true, data: reportData };
           updatedAt: Date.now(),
           version: '1.0.0',
           author: 'Genesis Architect',
-          templateId
-        }
+          templateId,
+        },
       };
 
       return {
         success: true,
         workflow,
-        errors: []
+        errors: [],
       };
-
     } catch (error) {
       return {
         success: false,
-        errors: [`Template generation failed: ${error}`]
+        errors: [`Template generation failed: ${error}`],
       };
     }
   }
@@ -648,8 +660,8 @@ return { success: true, data: reportData };
     // アクション検証
     workflow.actions?.forEach((action, index) => {
       const actionValidation = this.validateAction(action);
-      errors.push(...actionValidation.errors.map(error => `Action ${index + 1}: ${error}`));
-      warnings.push(...actionValidation.warnings.map(warning => `Action ${index + 1}: ${warning}`));
+      errors.push(...actionValidation.errors.map((error) => `Action ${index + 1}: ${error}`));
+      warnings.push(...actionValidation.warnings.map((warning) => `Action ${index + 1}: ${warning}`));
     });
 
     // 推奨事項
@@ -665,7 +677,7 @@ return { success: true, data: reportData };
       isValid: errors.length === 0,
       errors,
       warnings,
-      suggestions
+      suggestions,
     };
   }
 
@@ -758,11 +770,11 @@ return { success: true, data: reportData };
    */
   static getTemplates(category?: string): WorkflowTemplate[] {
     const templates = Array.from(this.WORKFLOW_TEMPLATES.values());
-    
+
     if (category) {
-      return templates.filter(template => template.category === category);
+      return templates.filter((template) => template.category === category);
     }
-    
+
     return templates;
   }
 
@@ -776,10 +788,7 @@ return { success: true, data: reportData };
   /**
    * ワークフローの実行シミュレーション
    */
-  static simulateExecution(
-    workflow: WorkflowDefinition,
-    sampleData: any
-  ): WorkflowExecutionResult {
+  static simulateExecution(workflow: WorkflowDefinition, sampleData: any): WorkflowExecutionResult {
     const executionId = `exec_${Date.now()}`;
     const startTime = Date.now();
 
@@ -791,7 +800,7 @@ return { success: true, data: reportData };
       status: 'running',
       results: [],
       logs: [],
-      errors: []
+      errors: [],
     };
 
     try {
@@ -801,17 +810,17 @@ return { success: true, data: reportData };
       // アクションの実行シミュレーション
       workflow.actions.forEach((action, index) => {
         const actionResult = this.simulateAction(action, sampleData);
-        
+
         result.results.push({
           actionType: action.type,
           success: actionResult.success,
           result: actionResult.result,
           error: actionResult.error,
-          executedAt: Date.now()
+          executedAt: Date.now(),
         });
 
         result.logs.push(`Action ${index + 1} (${action.type}): ${actionResult.success ? 'Success' : 'Failed'}`);
-        
+
         if (!actionResult.success) {
           result.errors.push(`Action ${index + 1} failed: ${actionResult.error}`);
         }
@@ -822,13 +831,12 @@ return { success: true, data: reportData };
       result.completedAt = Date.now();
 
       return result;
-
     } catch (error) {
       result.success = false;
       result.status = 'failed';
       result.errors.push(`Execution failed: ${error}`);
       result.completedAt = Date.now();
-      
+
       return result;
     }
   }
@@ -836,7 +844,10 @@ return { success: true, data: reportData };
   /**
    * アクション実行のシミュレーション
    */
-  private static simulateAction(action: WorkflowAction, sampleData: any): {
+  private static simulateAction(
+    action: WorkflowAction,
+    sampleData: any,
+  ): {
     success: boolean;
     result?: any;
     error?: string;
@@ -844,37 +855,36 @@ return { success: true, data: reportData };
     try {
       // 実際の実装では、各アクションタイプに応じた処理を行う
       // ここではシミュレーションのみ
-      
+
       switch (action.type) {
         case 'send_notification':
           return {
             success: true,
-            result: `Notification sent to ${action.config.recipients?.length || 0} recipients`
+            result: `Notification sent to ${action.config.recipients?.length || 0} recipients`,
           };
 
         case 'update_record':
           return {
             success: true,
-            result: `Record updated with ${Object.keys(action.config.fieldMappings || {}).length} fields`
+            result: `Record updated with ${Object.keys(action.config.fieldMappings || {}).length} fields`,
           };
 
         case 'create_record':
           return {
             success: true,
-            result: 'New record created successfully'
+            result: 'New record created successfully',
           };
 
         default:
           return {
             success: true,
-            result: `${action.type} executed successfully`
+            result: `${action.type} executed successfully`,
           };
       }
-
     } catch (error) {
       return {
         success: false,
-        error: `Action simulation failed: ${error}`
+        error: `Action simulation failed: ${error}`,
       };
     }
   }
@@ -903,13 +913,13 @@ return { success: true, data: reportData };
       optimizedWorkflow.errorHandling = {
         retryCount: 3,
         retryDelay: 5000,
-        onError: 'notify'
+        onError: 'notify',
       };
-      
+
       optimizations.push({
         type: 'reliability',
         description: 'Added error handling configuration',
-        impact: 'high'
+        impact: 'high',
       });
     }
 
@@ -919,13 +929,13 @@ return { success: true, data: reportData };
       optimizations.push({
         type: 'performance',
         description: 'Consider adding delays between actions to prevent rate limiting',
-        impact: 'medium'
+        impact: 'medium',
       });
     }
 
     return {
       optimizedWorkflow,
-      optimizations
+      optimizations,
     };
   }
 }

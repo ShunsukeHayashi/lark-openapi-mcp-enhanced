@@ -64,9 +64,7 @@ export const taskV2AttachmentDelete = {
     path: z.object({
       attachment_guid: z
         .string()
-        .describe(
-          'GUID of attachment to delete, which can be created by API, or fetched byAPI',
-        )
+        .describe('GUID of attachment to delete, which can be created by API, or fetched byAPI')
         .optional(),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
@@ -84,11 +82,7 @@ export const taskV2AttachmentGet = {
   schema: {
     params: z.object({ user_id_type: z.string().describe('User ID type').optional() }),
     path: z.object({
-      attachment_guid: z
-        .string()
-        .describe(
-          'Attachment GUID, which can be created by API, or fetched byAPI',
-        ),
+      attachment_guid: z.string().describe('Attachment GUID, which can be created by API, or fetched byAPI'),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -276,11 +270,7 @@ export const taskV2CustomFieldAdd = {
       resource_id: z.string().describe('The resource id to add a custom field to, currently only tasklist_guid'),
     }),
     path: z.object({
-      custom_field_guid: z
-        .string()
-        .describe(
-          'custom field GUID, which can be created by, or queried by',
-        ),
+      custom_field_guid: z.string().describe('custom field GUID, which can be created by, or queried by'),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -429,11 +419,7 @@ export const taskV2CustomFieldGet = {
   schema: {
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional() }),
     path: z.object({
-      custom_field_guid: z
-        .string()
-        .describe(
-          'custom field GUID, which can be created by, or queried by',
-        ),
+      custom_field_guid: z.string().describe('custom field GUID, which can be created by, or queried by'),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -648,11 +634,7 @@ export const taskV2CustomFieldPatch = {
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional() }),
     path: z.object({
-      custom_field_guid: z
-        .string()
-        .describe(
-          'custom field GUID, which can be created by, or queried by',
-        ),
+      custom_field_guid: z.string().describe('custom field GUID, which can be created by, or queried by'),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -678,11 +660,7 @@ export const taskV2CustomFieldRemove = {
         ),
     }),
     path: z.object({
-      custom_field_guid: z
-        .string()
-        .describe(
-          'custom field GUID, which can be created by, or queried by',
-        ),
+      custom_field_guid: z.string().describe('custom field GUID, which can be created by, or queried by'),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -1140,9 +1118,7 @@ export const taskV2TaskCreate = {
             .describe('Custom completion configuration of android')
             .optional(),
         })
-        .describe(
-          'Task custom complete configuration. Please refer to the "How to use custom completion?" section in ',
-        )
+        .describe('Task custom complete configuration. Please refer to the "How to use custom completion?" section in ')
         .optional(),
       tasklists: z
         .array(
@@ -1184,9 +1160,7 @@ export const taskV2TaskCreate = {
             )
             .optional(),
         })
-        .describe(
-          'Task start time (ms). Please refer to the "How to use start and due time?" section in ',
-        )
+        .describe('Task start time (ms). Please refer to the "How to use start and due time?" section in ')
         .optional(),
       reminders: z
         .array(
@@ -1352,9 +1326,7 @@ export const taskV2TaskPatch = {
                 )
                 .optional(),
             })
-            .describe(
-              'Task due time. Please refer to the "How to use start and due time?" section in ',
-            )
+            .describe('Task due time. Please refer to the "How to use start and due time?" section in ')
             .optional(),
           extra: z
             .string()
@@ -1460,9 +1432,7 @@ export const taskV2TaskPatch = {
                 )
                 .optional(),
             })
-            .describe(
-              'Task start time. Please refer to the "How to use start and due time?" section in ',
-            )
+            .describe('Task start time. Please refer to the "How to use start and due time?" section in ')
             .optional(),
           mode: z.number().describe('The completion mode of the task. 1: countersign task; 2: or-sign task').optional(),
           is_milestone: z.boolean().describe('Whether is a milestone task or not').optional(),
@@ -1667,9 +1637,7 @@ export const taskV2TaskSubtaskCreate = {
             .describe('Source of task association platform details page link')
             .optional(),
         })
-        .describe(
-          'Task-associated third-party platform source information. See ',
-        )
+        .describe('Task-associated third-party platform source information. See ')
         .optional(),
       extra: z
         .string()
@@ -1690,9 +1658,7 @@ export const taskV2TaskSubtaskCreate = {
         .optional(),
       repeat_rule: z
         .string()
-        .describe(
-          'Task repeat_rule. Please refer to the "How to use recurring task?" section in ',
-        )
+        .describe('Task repeat_rule. Please refer to the "How to use recurring task?" section in ')
         .optional(),
       custom_complete: z
         .object({
@@ -1766,9 +1732,7 @@ export const taskV2TaskSubtaskCreate = {
             .describe('Custom completion configuration of android client')
             .optional(),
         })
-        .describe(
-          'Task custom complete configuration. Please refer to the "How to use custom completion?" section in ',
-        )
+        .describe('Task custom complete configuration. Please refer to the "How to use custom completion?" section in ')
         .optional(),
       tasklists: z
         .array(
@@ -1908,16 +1872,8 @@ export const taskV2TasklistActivitySubscriptionDelete = {
   accessTokens: ['tenant', 'user'],
   schema: {
     path: z.object({
-      tasklist_guid: z
-        .string()
-        .describe(
-          'tasklist GUID, which can be created by, or queried by ',
-        ),
-      activity_subscription_guid: z
-        .string()
-        .describe(
-          'subscription GUID, which can be created by , or queried by',
-        ),
+      tasklist_guid: z.string().describe('tasklist GUID, which can be created by, or queried by '),
+      activity_subscription_guid: z.string().describe('subscription GUID, which can be created by , or queried by'),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -1934,16 +1890,8 @@ export const taskV2TasklistActivitySubscriptionGet = {
   schema: {
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional() }),
     path: z.object({
-      tasklist_guid: z
-        .string()
-        .describe(
-          'tasklist GUID, which can be created by, or queried by ',
-        ),
-      activity_subscription_guid: z
-        .string()
-        .describe(
-          'subscription GUID, which can be created by , or queried by',
-        ),
+      tasklist_guid: z.string().describe('tasklist GUID, which can be created by, or queried by '),
+      activity_subscription_guid: z.string().describe('subscription GUID, which can be created by , or queried by'),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -1963,11 +1911,7 @@ export const taskV2TasklistActivitySubscriptionList = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional(),
     }),
     path: z.object({
-      tasklist_guid: z
-        .string()
-        .describe(
-          'Tasklist GUID, which can be created by, or queried by ',
-        ),
+      tasklist_guid: z.string().describe('Tasklist GUID, which can be created by, or queried by '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -2016,16 +1960,8 @@ export const taskV2TasklistActivitySubscriptionPatch = {
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional() }),
     path: z.object({
-      tasklist_guid: z
-        .string()
-        .describe(
-          'tasklist GUID, which can be created by, or queried by ',
-        ),
-      activity_subscription_guid: z
-        .string()
-        .describe(
-          'subscription GUID, which can be created by , or queried by',
-        ),
+      tasklist_guid: z.string().describe('tasklist GUID, which can be created by, or queried by '),
+      activity_subscription_guid: z.string().describe('subscription GUID, which can be created by , or queried by'),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },

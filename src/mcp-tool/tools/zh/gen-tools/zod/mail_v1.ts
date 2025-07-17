@@ -973,11 +973,7 @@ export const mailV1UserMailboxFolderCreate = {
   schema: {
     data: z.object({
       name: z.string().describe('文件夹名称'),
-      parent_folder_id: z
-        .string()
-        .describe(
-          '父文件夹 id，该值为 0 表示根文件夹，id 获取方式见 ',
-        ),
+      parent_folder_id: z.string().describe('父文件夹 id，该值为 0 表示根文件夹，id 获取方式见 '),
     }),
     path: z.object({ user_mailbox_id: z.string().describe('用户邮箱地址 或 输入me代表当前调用接口用户') }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
@@ -994,11 +990,7 @@ export const mailV1UserMailboxFolderDelete = {
   schema: {
     path: z.object({
       user_mailbox_id: z.string().describe('用户邮箱地址 或 输入me代表当前调用接口用户'),
-      folder_id: z
-        .string()
-        .describe(
-          '文件夹 id，id 获取方式见 ',
-        ),
+      folder_id: z.string().describe('文件夹 id，id 获取方式见 '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1030,20 +1022,11 @@ export const mailV1UserMailboxFolderPatch = {
   schema: {
     data: z.object({
       name: z.string().describe('文件夹名称').optional(),
-      parent_folder_id: z
-        .string()
-        .describe(
-          '父文件夹 id，该值为 0 表示根文件夹，id 获取方式见 ',
-        )
-        .optional(),
+      parent_folder_id: z.string().describe('父文件夹 id，该值为 0 表示根文件夹，id 获取方式见 ').optional(),
     }),
     path: z.object({
       user_mailbox_id: z.string().describe('用户邮箱地址 或 输入me代表当前调用接口用户'),
-      folder_id: z
-        .string()
-        .describe(
-          '文件夹 id，id 获取方式见 ',
-        ),
+      folder_id: z.string().describe('文件夹 id，id 获取方式见 '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1081,11 +1064,7 @@ export const mailV1UserMailboxMailContactDelete = {
   schema: {
     path: z.object({
       user_mailbox_id: z.string().describe('用户邮箱地址 或 输入me代表当前调用接口用户'),
-      mail_contact_id: z
-        .string()
-        .describe(
-          '邮箱联系人 id，获取方式见 ',
-        ),
+      mail_contact_id: z.string().describe('邮箱联系人 id，获取方式见 '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1132,11 +1111,7 @@ export const mailV1UserMailboxMailContactPatch = {
     }),
     path: z.object({
       user_mailbox_id: z.string().describe('用户邮箱地址 或 输入me代表当前调用接口用户'),
-      mail_contact_id: z
-        .string()
-        .describe(
-          '邮箱联系人 id，获取方式见 ',
-        ),
+      mail_contact_id: z.string().describe('邮箱联系人 id，获取方式见 '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1153,11 +1128,7 @@ export const mailV1UserMailboxMessageAttachmentDownloadUrl = {
     params: z.object({ attachment_ids: z.array(z.string()).describe('附件 id 列表') }),
     path: z.object({
       user_mailbox_id: z.string().describe('用户邮箱地址 或 输入me代表当前调用接口用户'),
-      message_id: z
-        .string()
-        .describe(
-          '用户邮件 id，获取方式见 ',
-        ),
+      message_id: z.string().describe('用户邮件 id，获取方式见 '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1173,11 +1144,7 @@ export const mailV1UserMailboxMessageGet = {
   schema: {
     path: z.object({
       user_mailbox_id: z.string().describe('用户邮箱地址 或 输入me代表当前调用接口用户'),
-      message_id: z
-        .string()
-        .describe(
-          '用户邮件 id，获取方式见 ',
-        ),
+      message_id: z.string().describe('用户邮件 id，获取方式见 '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1192,11 +1159,7 @@ export const mailV1UserMailboxMessageGetByCard = {
   accessTokens: ['tenant', 'user'],
   schema: {
     params: z.object({
-      card_id: z
-        .string()
-        .describe(
-          '邮件卡片ID，可通过事件的推送获取',
-        ),
+      card_id: z.string().describe('邮件卡片ID，可通过事件的推送获取'),
       owner_id: z
         .string()
         .describe(
@@ -1225,11 +1188,7 @@ export const mailV1UserMailboxMessageList = {
           '分页标记，第一次请求不填，表示从头开始遍历；分页查询结果还有更多项时会同时返回新的 page_token，下次遍历可采用该 page_token 获取查询结果',
         )
         .optional(),
-      folder_id: z
-        .string()
-        .describe(
-          '文件夹 id， 获取方式见 ',
-        ),
+      folder_id: z.string().describe('文件夹 id， 获取方式见 '),
       only_unread: z.boolean().describe('是否只查询未读邮件').optional(),
     }),
     path: z.object({ user_mailbox_id: z.string().describe('用户邮箱地址 或 输入me代表当前调用接口用户') }),
@@ -1354,11 +1313,7 @@ export const mailV1UserMailboxRuleDelete = {
   schema: {
     path: z.object({
       user_mailbox_id: z.string().describe('用户邮箱地址 或 输入me代表当前调用接口用户'),
-      rule_id: z
-        .string()
-        .describe(
-          '规则 id，获取方式见 ',
-        ),
+      rule_id: z.string().describe('规则 id，获取方式见 '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1386,11 +1341,7 @@ export const mailV1UserMailboxRuleReorder = {
   accessTokens: ['tenant', 'user'],
   schema: {
     data: z.object({
-      rule_ids: z
-        .array(z.string())
-        .describe(
-          '规则 id 列表，获取方式见 ',
-        ),
+      rule_ids: z.array(z.string()).describe('规则 id 列表，获取方式见 '),
     }),
     path: z.object({ user_mailbox_id: z.string().describe('用户邮箱地址，使用 user_access_token 时可使用 me') }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
@@ -1451,11 +1402,7 @@ export const mailV1UserMailboxRuleUpdate = {
     }),
     path: z.object({
       user_mailbox_id: z.string().describe('用户邮箱地址 或 输入me代表当前调用接口用户'),
-      rule_id: z
-        .string()
-        .describe(
-          '规则 id，获取方式见 ',
-        ),
+      rule_id: z.string().describe('规则 id，获取方式见 '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },

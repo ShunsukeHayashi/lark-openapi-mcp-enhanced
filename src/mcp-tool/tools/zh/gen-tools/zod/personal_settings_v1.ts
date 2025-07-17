@@ -18,18 +18,11 @@ export const personalSettingsV1SystemStatusBatchClose = {
     data: z.object({
       user_list: z
         .array(z.string())
-        .describe(
-          '用户ID列表，传入的ID类型由user_id_type决定，推荐使用 OpenID，获取方式可参考文档',
-        ),
+        .describe('用户ID列表，传入的ID类型由user_id_type决定，推荐使用 OpenID，获取方式可参考文档'),
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
     path: z.object({
-      system_status_id: z
-        .string()
-        .describe(
-          '系统状态ID',
-        )
-        .optional(),
+      system_status_id: z.string().describe('系统状态ID').optional(),
     }),
   },
 };
@@ -46,11 +39,7 @@ export const personalSettingsV1SystemStatusBatchOpen = {
       user_list: z
         .array(
           z.object({
-            user_id: z
-              .string()
-              .describe(
-                '用户ID，传入的ID类型由user_id_type决定，推荐使用 OpenID，获取方式可参考文档',
-              ),
+            user_id: z.string().describe('用户ID，传入的ID类型由user_id_type决定，推荐使用 OpenID，获取方式可参考文档'),
             end_time: z.string().describe('结束时间，传入的应为秒单位的时间戳，距当前的时间跨度不能超过365天'),
           }),
         )
@@ -58,12 +47,7 @@ export const personalSettingsV1SystemStatusBatchOpen = {
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
     path: z.object({
-      system_status_id: z
-        .string()
-        .describe(
-          '系统状态ID',
-        )
-        .optional(),
+      system_status_id: z.string().describe('系统状态ID').optional(),
     }),
   },
 };
@@ -183,12 +167,7 @@ export const personalSettingsV1SystemStatusDelete = {
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      system_status_id: z
-        .string()
-        .describe(
-          '系统状态ID',
-        )
-        .optional(),
+      system_status_id: z.string().describe('系统状态ID').optional(),
     }),
   },
 };
@@ -332,12 +311,7 @@ export const personalSettingsV1SystemStatusPatch = {
         .describe('需要更新的字段'),
     }),
     path: z.object({
-      system_status_id: z
-        .string()
-        .describe(
-          '系统状态ID',
-        )
-        .optional(),
+      system_status_id: z.string().describe('系统状态ID').optional(),
     }),
   },
 };

@@ -35,12 +35,12 @@ export interface AgentMetadata {
   version: string;
 }
 
-export type AgentType = 
-  | 'coordinator'     // Task distribution and workflow management
-  | 'specialist'      // Domain-specific operations
-  | 'bridge'          // Cross-domain communication
-  | 'monitor'         // System monitoring and logging
-  | 'recovery';       // Error handling and retry logic
+export type AgentType =
+  | 'coordinator' // Task distribution and workflow management
+  | 'specialist' // Domain-specific operations
+  | 'bridge' // Cross-domain communication
+  | 'monitor' // System monitoring and logging
+  | 'recovery'; // Error handling and retry logic
 
 export interface Task {
   id: string;
@@ -84,7 +84,7 @@ export const RESPONSE_DELIMITERS = {
   TASK_ASSIGNMENT_START: '{{TASK_ASSIGNMENT_START}}',
   TASK_ASSIGNMENT_END: '{{TASK_ASSIGNMENT_END}}',
   AGENT_COORDINATION_START: '{{AGENT_COORDINATION_START}}',
-  AGENT_COORDINATION_END: '{{AGENT_COORDINATION_END}}'
+  AGENT_COORDINATION_END: '{{AGENT_COORDINATION_END}}',
 } as const;
 
 export interface TaskAssignment {
@@ -111,7 +111,15 @@ export interface WorkflowState {
 }
 
 export interface AgentCommunicationEvent {
-  type: 'message_sent' | 'message_received' | 'task_assigned' | 'task_completed' | 'agent_registered' | 'agent_offline' | 'workflow_started' | 'workflow_completed';
+  type:
+    | 'message_sent'
+    | 'message_received'
+    | 'task_assigned'
+    | 'task_completed'
+    | 'agent_registered'
+    | 'agent_offline'
+    | 'workflow_started'
+    | 'workflow_completed';
   agentId: string;
   data: any;
   timestamp: Date;

@@ -48,11 +48,7 @@ export const attendanceV1ApprovalInfoProcess = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      approval_id: z
-        .string()
-        .describe(
-          'Approval sample ID. How to access: 1)  2)  3) ',
-        ),
+      approval_id: z.string().describe('Approval sample ID. How to access: 1)  2)  3) '),
       approval_type: z
         .string()
         .describe(
@@ -79,11 +75,7 @@ export const attendanceV1ArchiveRuleDelReport = {
     data: z.object({
       month: z.string().describe('Month, format yyyyMM'),
       operator_id: z.string().describe('Operator ID, corresponding employee_type'),
-      archive_rule_id: z
-        .string()
-        .describe(
-          'Archive rule id, which can be obtained according to ',
-        ),
+      archive_rule_id: z.string().describe('Archive rule id, which can be obtained according to '),
       user_ids: z.array(z.string()).describe('User ID, corresponding to employee_type').optional(),
     }),
     params: z.object({
@@ -140,11 +132,7 @@ export const attendanceV1ArchiveRuleUploadReport = {
             field_datas: z
               .array(
                 z.object({
-                  code: z
-                    .string()
-                    .describe(
-                      'Field code, which can be obtained according to ',
-                    ),
+                  code: z.string().describe('Field code, which can be obtained according to '),
                   value: z.string().describe('field result value').optional(),
                 }),
               )
@@ -154,11 +142,7 @@ export const attendanceV1ArchiveRuleUploadReport = {
         )
         .describe('Archive report content (no more than 50)')
         .optional(),
-      archive_rule_id: z
-        .string()
-        .describe(
-          'Archive rule id, which can be obtained according to ',
-        ),
+      archive_rule_id: z.string().describe('Archive rule id, which can be obtained according to '),
     }),
     params: z.object({
       employee_type: z
@@ -425,11 +409,7 @@ export const attendanceV1GroupCreate = {
             .array(
               z.object({
                 punch_day: z.number().describe('Clock in the format yyyMMdd'),
-                shift_id: z
-                  .string()
-                  .describe(
-                    'Shift ID, you can check all shifts according to And  get',
-                  ),
+                shift_id: z.string().describe('Shift ID, you can check all shifts according to And  get'),
               }),
             )
             .describe('Special dates must be clocked in')
@@ -438,11 +418,7 @@ export const attendanceV1GroupCreate = {
             .array(
               z.object({
                 punch_day: z.number().describe('Clock in the format yyyMMdd'),
-                shift_id: z
-                  .string()
-                  .describe(
-                    'Shift ID, you can check all shifts according to And  get',
-                  ),
+                shift_id: z.string().describe('Shift ID, you can check all shifts according to And  get'),
               }),
             )
             .describe('No special dates in the clock')
@@ -704,9 +680,7 @@ export const attendanceV1GroupCreate = {
         .describe('Attendance Team Information'),
       operator_id: z
         .string()
-        .describe(
-          'Operator uid, corresponding to employee_type, if you do not operate , this field is required field',
-        )
+        .describe('Operator uid, corresponding to employee_type, if you do not operate , this field is required field')
         .optional(),
     }),
     params: z.object({
@@ -734,11 +708,7 @@ export const attendanceV1GroupDelete = {
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      group_id: z
-        .string()
-        .describe(
-          'Attendance group ID is obtained as follows: 1)  2)  3) ',
-        ),
+      group_id: z.string().describe('Attendance group ID is obtained as follows: 1)  2)  3) '),
     }),
   },
 };
@@ -765,11 +735,7 @@ export const attendanceV1GroupGet = {
         ),
     }),
     path: z.object({
-      group_id: z
-        .string()
-        .describe(
-          'Attendance group ID is obtained as follows: 1)  2)  3) ',
-        ),
+      group_id: z.string().describe('Attendance group ID is obtained as follows: 1)  2)  3) '),
     }),
   },
 };
@@ -829,11 +795,7 @@ export const attendanceV1GroupListUser = {
         ),
     }),
     path: z.object({
-      group_id: z
-        .string()
-        .describe(
-          'Attendance group ID is obtained as follows: 1)  2)  3) ',
-        ),
+      group_id: z.string().describe('Attendance group ID is obtained as follows: 1)  2)  3) '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -862,17 +824,9 @@ export const attendanceV1LeaveAccrualRecordPatch = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      leave_granting_record_id: z
-        .string()
-        .describe(
-          'The unique ID of the issuance record, which can be created by ',
-        ),
+      leave_granting_record_id: z.string().describe('The unique ID of the issuance record, which can be created by '),
       employment_id: z.string().describe('Employee ID, type corresponding user_id_type'),
-      leave_type_id: z
-        .string()
-        .describe(
-          'The holiday type ID can be obtained by ',
-        ),
+      leave_type_id: z.string().describe('The holiday type ID can be obtained by '),
       reason: z
         .array(
           z.object({
@@ -889,12 +843,7 @@ export const attendanceV1LeaveAccrualRecordPatch = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id', 'people_corehr_id']).describe('User ID type').optional(),
     }),
     path: z.object({
-      leave_id: z
-        .string()
-        .describe(
-          'The holiday type ID can be obtained by ',
-        )
-        .optional(),
+      leave_id: z.string().describe('The holiday type ID can be obtained by ').optional(),
     }),
   },
 };
@@ -910,11 +859,7 @@ export const attendanceV1LeaveEmployExpireRecordGet = {
   schema: {
     data: z.object({
       employment_id: z.string().describe('Employee ID, consistent with user_id_type'),
-      leave_type_id: z
-        .string()
-        .describe(
-          'The holiday type ID can be obtained by ',
-        ),
+      leave_type_id: z.string().describe('The holiday type ID can be obtained by '),
       start_expiration_date: z.string().describe('The earliest expiration date in the format yyyy-MM-dd'),
       end_expiration_date: z.string().describe('The latest expiration date in the format yyyy-MM-dd'),
       time_offset: z
@@ -928,12 +873,7 @@ export const attendanceV1LeaveEmployExpireRecordGet = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id', 'people_corehr_id']).describe('User ID type').optional(),
     }),
     path: z.object({
-      leave_id: z
-        .string()
-        .describe(
-          'The holiday type ID can be obtained by ',
-        )
-        .optional(),
+      leave_id: z.string().describe('The holiday type ID can be obtained by ').optional(),
     }),
   },
 };
@@ -1112,12 +1052,7 @@ export const attendanceV1ShiftCreate = {
         })
         .describe('Late departure, late arrival the next day, configuration rules')
         .optional(),
-      id: z
-        .string()
-        .describe(
-          'Shift id (need to pass when updating shift), get method: 1)  2) ',
-        )
-        .optional(),
+      id: z.string().describe('Shift id (need to pass when updating shift), get method: 1)  2) ').optional(),
     }),
     params: z.object({
       employee_type: z
@@ -1140,11 +1075,7 @@ export const attendanceV1ShiftDelete = {
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      shift_id: z
-        .string()
-        .describe(
-          'Shift ID, which can be obtained as follows: 1)  2) ',
-        ),
+      shift_id: z.string().describe('Shift ID, which can be obtained as follows: 1)  2) '),
     }),
   },
 };
@@ -1159,11 +1090,7 @@ export const attendanceV1ShiftGet = {
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
-      shift_id: z
-        .string()
-        .describe(
-          'Shift ID, which can be obtained as follows: 1)  2) ',
-        ),
+      shift_id: z.string().describe('Shift ID, which can be obtained as follows: 1)  2) '),
     }),
   },
 };
@@ -1540,16 +1467,10 @@ export const attendanceV1UserDailyShiftBatchCreate = {
       user_daily_shifts: z
         .array(
           z.object({
-            group_id: z
-              .string()
-              .describe(
-                'Attendance group ID is obtained as follows: 1)  2)  3) ',
-              ),
+            group_id: z.string().describe('Attendance group ID is obtained as follows: 1)  2)  3) '),
             shift_id: z
               .string()
-              .describe(
-                'Shift ID, which can be obtained as follows: 1)  2) .Passing in 0 represents rest',
-              ),
+              .describe('Shift ID, which can be obtained as follows: 1)  2) .Passing in 0 represents rest'),
             month: z.number().describe('Month, format yyyyMM'),
             user_id: z.string().describe('User ID, corresponding to employee_type'),
             day_no: z.number().describe('Date'),
@@ -1592,11 +1513,7 @@ export const attendanceV1UserDailyShiftBatchCreateTemp = {
       user_tmp_daily_shifts: z
         .array(
           z.object({
-            group_id: z
-              .string()
-              .describe(
-                'Attendance group ID is obtained as follows: 1)  2)  3) ',
-              ),
+            group_id: z.string().describe('Attendance group ID is obtained as follows: 1)  2)  3) '),
             user_id: z.string().describe('User ID, corresponding to employee_type'),
             date: z.number().describe('date'),
             shift_name: z.string().describe('shift name'),
@@ -1755,11 +1672,7 @@ export const attendanceV1UserFlowBatchDel = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      record_ids: z
-        .array(z.string())
-        .describe(
-          'Attendance flow record ID, which is obtained as follows: 1)  2)  3) ',
-        ),
+      record_ids: z.array(z.string()).describe('Attendance flow record ID, which is obtained as follows: 1)  2)  3) '),
     }),
   },
 };
@@ -1781,11 +1694,7 @@ export const attendanceV1UserFlowGet = {
         ),
     }),
     path: z.object({
-      user_flow_id: z
-        .string()
-        .describe(
-          'Attendance flow record ID, which is obtained as follows: 1)  2)  3) ',
-        ),
+      user_flow_id: z.string().describe('Attendance flow record ID, which is obtained as follows: 1)  2)  3) '),
     }),
   },
 };
@@ -1833,11 +1742,7 @@ export const attendanceV1UserSettingModify = {
       user_setting: z
         .object({
           user_id: z.string().describe('User ID'),
-          face_key: z
-            .string()
-            .describe(
-              'Face photo file ID, get method: ',
-            ),
+          face_key: z.string().describe('Face photo file ID, get method: '),
           face_key_update_time: z
             .string()
             .describe('Time of face photo updates, with the timestamp accurate to seconds')
@@ -2032,11 +1937,7 @@ export const attendanceV1UserStatsViewUpdate = {
         ),
     }),
     path: z.object({
-      user_stats_view_id: z
-        .string()
-        .describe(
-          'User view ID is obtained as follows: 1) ',
-        ),
+      user_stats_view_id: z.string().describe('User view ID is obtained as follows: 1) '),
     }),
   },
 };

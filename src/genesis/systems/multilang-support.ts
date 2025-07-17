@@ -54,7 +54,7 @@ export class MultilangSupport {
     this.languageConfigs = new Map();
     this.translations = new Map();
     this.promptTemplates = new Map();
-    
+
     this.initializeLanguageConfigs();
     this.initializeTranslations();
     this.initializePromptTemplates();
@@ -74,8 +74,8 @@ export class MultilangSupport {
         numberFormat: {
           decimal: '.',
           thousands: ',',
-          currency: '$'
-        }
+          currency: '$',
+        },
       },
       {
         code: 'zh',
@@ -86,8 +86,8 @@ export class MultilangSupport {
         numberFormat: {
           decimal: '.',
           thousands: ',',
-          currency: '¥'
-        }
+          currency: '¥',
+        },
       },
       {
         code: 'ja',
@@ -98,12 +98,12 @@ export class MultilangSupport {
         numberFormat: {
           decimal: '.',
           thousands: ',',
-          currency: '¥'
-        }
-      }
+          currency: '¥',
+        },
+      },
     ];
 
-    configs.forEach(config => {
+    configs.forEach((config) => {
       this.languageConfigs.set(config.code, config);
     });
   }
@@ -119,27 +119,27 @@ export class MultilangSupport {
         translations: {
           en: 'Initializing system...',
           zh: '正在初始化系统...',
-          ja: 'システムを初期化中...'
+          ja: 'システムを初期化中...',
         },
-        category: 'system'
+        category: 'system',
       },
       {
         key: 'system.completed',
         translations: {
           en: 'Operation completed successfully',
           zh: '操作成功完成',
-          ja: '操作が正常に完了しました'
+          ja: '操作が正常に完了しました',
         },
-        category: 'system'
+        category: 'system',
       },
       {
         key: 'system.error',
         translations: {
           en: 'An error occurred',
           zh: '发生错误',
-          ja: 'エラーが発生しました'
+          ja: 'エラーが発生しました',
         },
-        category: 'system'
+        category: 'system',
       },
 
       // プロンプトエンジン
@@ -148,63 +148,63 @@ export class MultilangSupport {
         translations: {
           en: 'Requirements Analysis',
           zh: '需求分析',
-          ja: '要求分析'
+          ja: '要求分析',
         },
-        category: 'prompt'
+        category: 'prompt',
       },
       {
         key: 'prompt.er_design',
         translations: {
           en: 'ER Diagram Design',
           zh: 'ER图设计',
-          ja: 'ER図設計'
+          ja: 'ER図設計',
         },
-        category: 'prompt'
+        category: 'prompt',
       },
       {
         key: 'prompt.base_structure',
         translations: {
           en: 'Base Structure Design',
           zh: '基础结构设计',
-          ja: 'ベース構造設計'
+          ja: 'ベース構造設計',
         },
-        category: 'prompt'
+        category: 'prompt',
       },
       {
         key: 'prompt.business_logic',
         translations: {
           en: 'Business Logic Design',
           zh: '业务逻辑设计',
-          ja: 'ビジネスロジック設計'
+          ja: 'ビジネスロジック設計',
         },
-        category: 'prompt'
+        category: 'prompt',
       },
       {
         key: 'prompt.automation',
         translations: {
           en: 'Automation Design',
           zh: '自动化设计',
-          ja: '自動化設計'
+          ja: '自動化設計',
         },
-        category: 'prompt'
+        category: 'prompt',
       },
       {
         key: 'prompt.ui_design',
         translations: {
           en: 'UI Design',
           zh: '界面设计',
-          ja: 'UI設計'
+          ja: 'UI設計',
         },
-        category: 'prompt'
+        category: 'prompt',
       },
       {
         key: 'prompt.implementation',
         translations: {
           en: 'Implementation Planning',
           zh: '实施计划',
-          ja: '実装計画'
+          ja: '実装計画',
         },
-        category: 'prompt'
+        category: 'prompt',
       },
 
       // フィールドタイプ
@@ -213,54 +213,54 @@ export class MultilangSupport {
         translations: {
           en: 'Text',
           zh: '文本',
-          ja: 'テキスト'
+          ja: 'テキスト',
         },
-        category: 'field'
+        category: 'field',
       },
       {
         key: 'field.number',
         translations: {
           en: 'Number',
           zh: '数字',
-          ja: '数値'
+          ja: '数値',
         },
-        category: 'field'
+        category: 'field',
       },
       {
         key: 'field.date',
         translations: {
           en: 'Date',
           zh: '日期',
-          ja: '日付'
+          ja: '日付',
         },
-        category: 'field'
+        category: 'field',
       },
       {
         key: 'field.checkbox',
         translations: {
           en: 'Checkbox',
           zh: '复选框',
-          ja: 'チェックボックス'
+          ja: 'チェックボックス',
         },
-        category: 'field'
+        category: 'field',
       },
       {
         key: 'field.select',
         translations: {
           en: 'Single Select',
           zh: '单选',
-          ja: '単一選択'
+          ja: '単一選択',
         },
-        category: 'field'
+        category: 'field',
       },
       {
         key: 'field.multi_select',
         translations: {
           en: 'Multi Select',
           zh: '多选',
-          ja: '複数選択'
+          ja: '複数選択',
         },
-        category: 'field'
+        category: 'field',
       },
 
       // ステータス
@@ -269,36 +269,36 @@ export class MultilangSupport {
         translations: {
           en: 'Active',
           zh: '活跃',
-          ja: 'アクティブ'
+          ja: 'アクティブ',
         },
-        category: 'status'
+        category: 'status',
       },
       {
         key: 'status.inactive',
         translations: {
           en: 'Inactive',
           zh: '非活跃',
-          ja: '非アクティブ'
+          ja: '非アクティブ',
         },
-        category: 'status'
+        category: 'status',
       },
       {
         key: 'status.pending',
         translations: {
           en: 'Pending',
           zh: '待处理',
-          ja: '保留中'
+          ja: '保留中',
         },
-        category: 'status'
+        category: 'status',
       },
       {
         key: 'status.completed',
         translations: {
           en: 'Completed',
           zh: '已完成',
-          ja: '完了'
+          ja: '完了',
         },
-        category: 'status'
+        category: 'status',
       },
 
       // エラーメッセージ
@@ -307,31 +307,31 @@ export class MultilangSupport {
         translations: {
           en: 'Invalid requirements specification',
           zh: '无效的需求规格',
-          ja: '無効な要求仕様'
+          ja: '無効な要求仕様',
         },
-        category: 'error'
+        category: 'error',
       },
       {
         key: 'error.api_failure',
         translations: {
           en: 'API call failed',
           zh: 'API调用失败',
-          ja: 'API呼び出しに失敗しました'
+          ja: 'API呼び出しに失敗しました',
         },
-        category: 'error'
+        category: 'error',
       },
       {
         key: 'error.validation_failed',
         translations: {
           en: 'Validation failed',
           zh: '验证失败',
-          ja: '検証に失敗しました'
+          ja: '検証に失敗しました',
         },
-        category: 'error'
-      }
+        category: 'error',
+      },
     ];
 
-    translationKeys.forEach(key => {
+    translationKeys.forEach((key) => {
       this.translations.set(key.key, key);
     });
   }
@@ -361,8 +361,8 @@ Format your response in structured JSON.`,
         examples: [
           'Customer management system for a small business',
           'Project tracking application for a development team',
-          'Inventory management system for a retail store'
-        ]
+          'Inventory management system for a retail store',
+        ],
       },
       {
         language: 'zh',
@@ -380,11 +380,7 @@ Format your response in structured JSON.`,
 
 请以结构化JSON格式回复。`,
         variables: ['requirements'],
-        examples: [
-          '小型企业的客户管理系统',
-          '开发团队的项目跟踪应用',
-          '零售店的库存管理系统'
-        ]
+        examples: ['小型企业的客户管理系统', '开发团队的项目跟踪应用', '零售店的库存管理系统'],
       },
       {
         language: 'ja',
@@ -405,9 +401,9 @@ Format your response in structured JSON.`,
         examples: [
           '小企業向け顧客管理システム',
           '開発チーム向けプロジェクト追跡アプリケーション',
-          '小売店向け在庫管理システム'
-        ]
-      }
+          '小売店向け在庫管理システム',
+        ],
+      },
     ]);
 
     // ER図設計プロンプト
@@ -430,8 +426,8 @@ Format as Mermaid ER diagram syntax.`,
         examples: [
           'Customer -> Order (1:N), Order -> Product (M:N)',
           'Employee -> Department (N:1), Project -> Task (1:N)',
-          'Product -> Category (N:1), Supplier -> Product (1:N)'
-        ]
+          'Product -> Category (N:1), Supplier -> Product (1:N)',
+        ],
       },
       {
         language: 'zh',
@@ -451,8 +447,8 @@ Format as Mermaid ER diagram syntax.`,
         examples: [
           '客户 -> 订单 (1:N), 订单 -> 产品 (M:N)',
           '员工 -> 部门 (N:1), 项目 -> 任务 (1:N)',
-          '产品 -> 类别 (N:1), 供应商 -> 产品 (1:N)'
-        ]
+          '产品 -> 类别 (N:1), 供应商 -> 产品 (1:N)',
+        ],
       },
       {
         language: 'ja',
@@ -472,9 +468,9 @@ Mermaid ER図構文でフォーマットしてください。`,
         examples: [
           '顧客 -> 注文 (1:N), 注文 -> 商品 (M:N)',
           '従業員 -> 部署 (N:1), プロジェクト -> タスク (1:N)',
-          '商品 -> カテゴリ (N:1), 仕入先 -> 商品 (1:N)'
-        ]
-      }
+          '商品 -> カテゴリ (N:1), 仕入先 -> 商品 (1:N)',
+        ],
+      },
     ]);
   }
 
@@ -501,20 +497,23 @@ Mermaid ER図構文でフォーマットしてください。`,
       return key; // キーが見つからない場合はキーをそのまま返す
     }
 
-    return translationKey.translations[language] || 
-           translationKey.translations[fallbackLanguage] || 
-           key;
+    return translationKey.translations[language] || translationKey.translations[fallbackLanguage] || key;
   }
 
   /**
    * 翻訳キーの追加
    */
-  addTranslation(key: string, translations: Record<SupportedLanguage, string>, context?: string, category?: string): void {
+  addTranslation(
+    key: string,
+    translations: Record<SupportedLanguage, string>,
+    context?: string,
+    category?: string,
+  ): void {
     this.translations.set(key, {
       key,
       translations,
       context,
-      category
+      category,
     });
   }
 
@@ -534,16 +533,15 @@ Mermaid ER図構文でフォーマットしてください。`,
       throw new Error(`Prompt template not found: ${templateId}`);
     }
 
-    const template = templates.find(t => t.language === language) || 
-                    templates.find(t => t.language === 'en') || 
-                    templates[0];
+    const template =
+      templates.find((t) => t.language === language) || templates.find((t) => t.language === 'en') || templates[0];
 
     if (!template) {
       throw new Error(`No template found for template ID: ${templateId}`);
     }
 
     let prompt = template.prompt;
-    
+
     // 変数の置換
     for (const [key, value] of Object.entries(variables)) {
       const placeholder = `{${key}}`;
@@ -560,13 +558,13 @@ Mermaid ER図構文でフォーマットしてください。`,
     const languagePatterns = {
       en: /[a-zA-Z]/g,
       zh: /[\u4e00-\u9fff]/g,
-      ja: /[\u3040-\u309f\u30a0-\u30ff]/g
+      ja: /[\u3040-\u309f\u30a0-\u30ff]/g,
     };
 
     const scores: Record<SupportedLanguage, number> = {
       en: 0,
       zh: 0,
-      ja: 0
+      ja: 0,
     };
 
     // 文字種の分析
@@ -581,7 +579,7 @@ Mermaid ER図構文でフォーマットしてください。`,
     const keywords = {
       en: ['the', 'and', 'or', 'for', 'with', 'system', 'management', 'data'],
       zh: ['的', '和', '或', '系统', '管理', '数据', '功能', '用户'],
-      ja: ['の', 'と', 'または', 'システム', '管理', 'データ', '機能', 'ユーザー']
+      ja: ['の', 'と', 'または', 'システム', '管理', 'データ', '機能', 'ユーザー'],
     };
 
     for (const [lang, langKeywords] of Object.entries(keywords)) {
@@ -612,14 +610,14 @@ Mermaid ER図構文でフォーマットしてください。`,
       .filter(([lang, score]) => lang !== detectedLanguage && score > 0)
       .map(([lang, score]) => ({
         language: lang as SupportedLanguage,
-        confidence: totalScore > 0 ? score / totalScore : 0
+        confidence: totalScore > 0 ? score / totalScore : 0,
       }))
       .sort((a, b) => b.confidence - a.confidence);
 
     return {
       detectedLanguage,
       confidence,
-      alternatives
+      alternatives,
     };
   }
 
@@ -629,7 +627,7 @@ Mermaid ER図構文でフォーマットしてください。`,
   normalizeText(text: string, language: SupportedLanguage): string {
     // 基本的な正規化
     let normalized = text.trim();
-    
+
     // 言語固有の正規化
     switch (language) {
       case 'zh':
@@ -655,13 +653,13 @@ Mermaid ER図構文でフォーマットしてください。`,
   private normalizeChineseText(text: string): string {
     // 簡体字・繁体字の統一（簡易版）
     const simplifiedMap: Record<string, string> = {
-      '繁體': '繁体',
-      '簡體': '简体',
-      '系統': '系统',
-      '數據': '数据',
-      '用戶': '用户',
-      '功能': '功能',
-      '管理': '管理'
+      繁體: '繁体',
+      簡體: '简体',
+      系統: '系统',
+      數據: '数据',
+      用戶: '用户',
+      功能: '功能',
+      管理: '管理',
     };
 
     let normalized = text;
@@ -678,15 +676,15 @@ Mermaid ER図構文でフォーマットしてください。`,
   private normalizeJapaneseText(text: string): string {
     // 全角・半角の統一
     let normalized = text;
-    
+
     // 全角英数字を半角に変換
     normalized = normalized.replace(/[Ａ-Ｚａ-ｚ０-９]/g, (char) => {
-      return String.fromCharCode(char.charCodeAt(0) - 0xFEE0);
+      return String.fromCharCode(char.charCodeAt(0) - 0xfee0);
     });
 
     // 全角記号を半角に変換
     normalized = normalized.replace(/[！-～]/g, (char) => {
-      return String.fromCharCode(char.charCodeAt(0) - 0xFEE0);
+      return String.fromCharCode(char.charCodeAt(0) - 0xfee0);
     });
 
     return normalized;
@@ -728,19 +726,23 @@ Mermaid ER図構文でフォーマットしてください。`,
   /**
    * 数値のローカライゼーション
    */
-  formatNumber(number: number, language: SupportedLanguage, options?: {
-    decimals?: number;
-    currency?: boolean;
-  }): string {
+  formatNumber(
+    number: number,
+    language: SupportedLanguage,
+    options?: {
+      decimals?: number;
+      currency?: boolean;
+    },
+  ): string {
     const config = this.getLanguageConfig(language);
     if (!config) {
       return number.toString();
     }
 
     const { decimals = 2, currency = false } = options || {};
-    
+
     let formatted = number.toFixed(decimals);
-    
+
     if (currency) {
       formatted = `${config.numberFormat.currency}${formatted}`;
     }
@@ -760,9 +762,9 @@ Mermaid ER図構文でフォーマットしてください。`,
     const languages: Record<SupportedLanguage, number> = { en: 0, zh: 0, ja: 0 };
     const categories: Record<string, number> = {};
 
-    keys.forEach(key => {
+    keys.forEach((key) => {
       // 言語別カウント
-      Object.keys(key.translations).forEach(lang => {
+      Object.keys(key.translations).forEach((lang) => {
         languages[lang as SupportedLanguage]++;
       });
 
@@ -775,7 +777,7 @@ Mermaid ER図構文でフォーマットしてください。`,
     return {
       totalKeys: keys.length,
       languages,
-      categories
+      categories,
     };
   }
-} 
+}

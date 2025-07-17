@@ -65,11 +65,7 @@ export const driveV1ExportTaskCreate = {
         .describe(
           '将云文档导出为本地文件后，本地文件的扩展名。了解各类云文档支持导出的文件格式，参考。 Options:docx(Microsoft Word 格式),pdf(PDF 格式),xlsx(Microsoft Excel 格式),csv(CSV 格式)',
         ),
-      token: z
-        .string()
-        .describe(
-          '要导出的云文档的 token。获取方式参考 ',
-        ),
+      token: z.string().describe('要导出的云文档的 token。获取方式参考 '),
       type: z
         .enum(['doc', 'sheet', 'bitable', 'docx'])
         .describe(
@@ -96,18 +92,10 @@ export const driveV1ExportTaskGet = {
   accessTokens: ['tenant', 'user'],
   schema: {
     params: z.object({
-      token: z
-        .string()
-        .describe(
-          '要导出的云文档的 token。获取方式参考。你可参考以下请求示例了解如何使用查询参数',
-        ),
+      token: z.string().describe('要导出的云文档的 token。获取方式参考。你可参考以下请求示例了解如何使用查询参数'),
     }),
     path: z.object({
-      ticket: z
-        .string()
-        .describe(
-          '导出任务 ID。调用 获取',
-        ),
+      ticket: z.string().describe('导出任务 ID。调用 获取'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -243,11 +231,7 @@ export const driveV1FileCommentList = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional(),
     }),
     path: z.object({
-      file_token: z
-        .string()
-        .describe(
-          '云文档的 token。获取方式参考 ',
-        ),
+      file_token: z.string().describe('云文档的 token。获取方式参考 '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -410,12 +394,7 @@ export const driveV1FileCopy = {
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
     path: z.object({
-      file_token: z
-        .string()
-        .describe(
-          '被复制的源文件的 token。了解如何获取文件 token，参考',
-        )
-        .optional(),
+      file_token: z.string().describe('被复制的源文件的 token。了解如何获取文件 token，参考').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -450,18 +429,10 @@ export const driveV1FileCreateShortcut = {
   accessTokens: ['tenant', 'user'],
   schema: {
     data: z.object({
-      parent_token: z
-        .string()
-        .describe(
-          '目标父文件夹的 token，获取方式见',
-        ),
+      parent_token: z.string().describe('目标父文件夹的 token，获取方式见'),
       refer_entity: z
         .object({
-          refer_token: z
-            .string()
-            .describe(
-              '源文件的 token。获取方式见',
-            ),
+          refer_token: z.string().describe('源文件的 token。获取方式见'),
           refer_type: z
             .enum(['file', 'docx', 'bitable', 'doc', 'sheet', 'mindnote', 'slides'])
             .describe(
@@ -494,9 +465,7 @@ export const driveV1FileDelete = {
     path: z.object({
       file_token: z
         .string()
-        .describe(
-          '需要删除的文件或文件夹 token。了解如何获取文件 token，参考。了解如何获取文件夹 token，参考',
-        )
+        .describe('需要删除的文件或文件夹 token。了解如何获取文件 token，参考。了解如何获取文件夹 token，参考')
         .optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
@@ -524,11 +493,7 @@ export const driveV1FileDeleteSubscribe = {
         .optional(),
     }),
     path: z.object({
-      file_token: z
-        .string()
-        .describe(
-          '云文档的 token。了解如何获取各类云文档的token，参考',
-        ),
+      file_token: z.string().describe('云文档的 token。了解如何获取各类云文档的token，参考'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -555,11 +520,7 @@ export const driveV1FileGetSubscribe = {
         .optional(),
     }),
     path: z.object({
-      file_token: z
-        .string()
-        .describe(
-          '云文档的 token。了解如何获取各类云文档的 token，参考',
-        ),
+      file_token: z.string().describe('云文档的 token。了解如何获取各类云文档的 token，参考'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -617,19 +578,12 @@ export const driveV1FileMove = {
           '文件类型。该参数为必填，请忽略左侧必填列的“否”。如果该值为空或者与文件实际类型不匹配，接口会返回失败。 Options:file(普通文件类型),docx(新版文档类型),bitable(多维表格类型),doc(文档类型),sheet(电子表格类型),mindnote(思维笔记类型),folder(文件夹类型),slides(幻灯片类型)',
         )
         .optional(),
-      folder_token: z
-        .string()
-        .describe(
-          '目标文件夹的 token。了解如何获取文件夹 token，参考',
-        )
-        .optional(),
+      folder_token: z.string().describe('目标文件夹的 token。了解如何获取文件夹 token，参考').optional(),
     }),
     path: z.object({
       file_token: z
         .string()
-        .describe(
-          '需要移动的文件或文件夹 token。了解如何获取文件 token，参考。了解如何获取文件夹 token，参考',
-        ),
+        .describe('需要移动的文件或文件夹 token。了解如何获取文件 token，参考。了解如何获取文件夹 token，参考'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -652,12 +606,7 @@ export const driveV1FileStatisticsGet = {
         ),
     }),
     path: z.object({
-      file_token: z
-        .string()
-        .describe(
-          '文件 token。了解如何获取文件 token，参考',
-        )
-        .optional(),
+      file_token: z.string().describe('文件 token。了解如何获取文件 token，参考').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -684,11 +633,7 @@ export const driveV1FileSubscribe = {
         .optional(),
     }),
     path: z.object({
-      file_token: z
-        .string()
-        .describe(
-          '云文档的 token。了解如何获取各类云文档的 token，参考',
-        ),
+      file_token: z.string().describe('云文档的 token。了解如何获取各类云文档的 token，参考'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -767,9 +712,7 @@ export const driveV1FileTaskCheck = {
     params: z.object({
       task_id: z
         .string()
-        .describe(
-          '异步任务的 ID。目前支持查询删除文件夹和移动文件夹的异步任务。可通过调用或获取任务 ID',
-        ),
+        .describe('异步任务的 ID。目前支持查询删除文件夹和移动文件夹的异步任务。可通过调用或获取任务 ID'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -785,16 +728,8 @@ export const driveV1FileUploadFinish = {
   accessTokens: ['tenant', 'user'],
   schema: {
     data: z.object({
-      upload_id: z
-        .string()
-        .describe(
-          '分片上传事务 ID。通过调用接口获取',
-        ),
-      block_num: z
-        .number()
-        .describe(
-          '分片的数量。通过调用接口获取',
-        ),
+      upload_id: z.string().describe('分片上传事务 ID。通过调用接口获取'),
+      block_num: z.number().describe('分片的数量。通过调用接口获取'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -814,11 +749,7 @@ export const driveV1FileUploadPrepare = {
       parent_type: z
         .literal('explorer')
         .describe('上传点的类型。取固定值 explorer，表示将文件上传至云空间中。 Options:explorer(云空间)'),
-      parent_node: z
-        .string()
-        .describe(
-          '云空间中文件夹的 token。了解如何获取文件夹 token，参考',
-        ),
+      parent_node: z.string().describe('云空间中文件夹的 token。了解如何获取文件夹 token，参考'),
       size: z.number().describe('文件的大小，单位为字节'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
@@ -850,11 +781,7 @@ export const driveV1FileVersionCreate = {
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
     path: z.object({
-      file_token: z
-        .string()
-        .describe(
-          '源文档的 token，获取方式参考 ',
-        ),
+      file_token: z.string().describe('源文档的 token，获取方式参考 '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -873,11 +800,7 @@ export const driveV1FileVersionDelete = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional(),
     }),
     path: z.object({
-      file_token: z
-        .string()
-        .describe(
-          '当前版本对应的源文档的 token。获取方式参考',
-        ),
+      file_token: z.string().describe('当前版本对应的源文档的 token。获取方式参考'),
       version_id: z.string().describe('版本文档版本标识'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
@@ -898,11 +821,7 @@ export const driveV1FileVersionGet = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional(),
     }),
     path: z.object({
-      file_token: z
-        .string()
-        .describe(
-          '源文档的 token。获取方式参考 ',
-        ),
+      file_token: z.string().describe('源文档的 token。获取方式参考 '),
       version_id: z.string().describe('版本文档的版本标识'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
@@ -929,11 +848,7 @@ export const driveV1FileVersionList = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional(),
     }),
     path: z.object({
-      file_token: z
-        .string()
-        .describe(
-          '源文档的 token。获取方式参考 ',
-        ),
+      file_token: z.string().describe('源文档的 token。获取方式参考 '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -969,11 +884,7 @@ export const driveV1FileViewRecordList = {
         .optional(),
     }),
     path: z.object({
-      file_token: z
-        .string()
-        .describe(
-          '文件 token。获取方式参考',
-        ),
+      file_token: z.string().describe('文件 token。获取方式参考'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -996,9 +907,7 @@ export const driveV1ImportTaskCreate = {
         ),
       file_token: z
         .string()
-        .describe(
-          '要导入文件的 token。创建任务前，你需先调用或接口获取源文件的 token。了解更多，参考',
-        ),
+        .describe('要导入文件的 token。创建任务前，你需先调用或接口获取源文件的 token。了解更多，参考'),
       type: z
         .string()
         .describe(
@@ -1032,11 +941,7 @@ export const driveV1ImportTaskGet = {
   accessTokens: ['tenant', 'user'],
   schema: {
     path: z.object({
-      ticket: z
-        .string()
-        .describe(
-          '导入任务 ID。调用 获取',
-        ),
+      ticket: z.string().describe('导入任务 ID。调用 获取'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1078,16 +983,8 @@ export const driveV1MediaUploadFinish = {
   accessTokens: ['tenant', 'user'],
   schema: {
     data: z.object({
-      upload_id: z
-        .string()
-        .describe(
-          '分片上传事务 ID。通过调用接口获取',
-        ),
-      block_num: z
-        .number()
-        .describe(
-          '分片数量。通过调用接口获取',
-        ),
+      upload_id: z.string().describe('分片上传事务 ID。通过调用接口获取'),
+      block_num: z.number().describe('分片数量。通过调用接口获取'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1151,11 +1048,7 @@ export const driveV1MetaBatchQuery = {
       request_docs: z
         .array(
           z.object({
-            doc_token: z
-              .string()
-              .describe(
-                '文件的 token，获取方式见',
-              ),
+            doc_token: z.string().describe('文件的 token，获取方式见'),
             doc_type: z
               .enum(['doc', 'sheet', 'bitable', 'mindnote', 'file', 'wiki', 'docx', 'folder', 'synced_block'])
               .describe(
@@ -1257,11 +1150,7 @@ export const driveV1PermissionMemberBatchCreate = {
         .optional(),
     }),
     path: z.object({
-      token: z
-        .string()
-        .describe(
-          '云文档的 token，需要与 type 参数指定的云文档类型相匹配。可参考 ',
-        ),
+      token: z.string().describe('云文档的 token，需要与 type 参数指定的云文档类型相匹配。可参考 '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1314,11 +1203,7 @@ export const driveV1PermissionMemberCreate = {
         .optional(),
     }),
     path: z.object({
-      token: z
-        .string()
-        .describe(
-          '云文档的 token，需要与 type 参数指定的云文档类型相匹配。可参考',
-        ),
+      token: z.string().describe('云文档的 token，需要与 type 参数指定的云文档类型相匹配。可参考'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1359,11 +1244,7 @@ export const driveV1PermissionMemberDelete = {
         ),
     }),
     path: z.object({
-      token: z
-        .string()
-        .describe(
-          '文件的 token，获取方式见 ',
-        ),
+      token: z.string().describe('文件的 token，获取方式见 '),
       member_id: z.string().describe('协作者 ID，与协作者 ID 类型需要对应'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
@@ -1398,11 +1279,7 @@ export const driveV1PermissionMemberList = {
         .optional(),
     }),
     path: z.object({
-      token: z
-        .string()
-        .describe(
-          '文件的 token，获取方式见 ',
-        ),
+      token: z.string().describe('文件的 token，获取方式见 '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1492,11 +1369,7 @@ export const driveV1PermissionMemberUpdate = {
         ),
     }),
     path: z.object({
-      token: z
-        .string()
-        .describe(
-          '文件的 token，获取方式见 ',
-        ),
+      token: z.string().describe('文件的 token，获取方式见 '),
       member_id: z.string().describe('协作者 ID，与协作者 ID 类型需要对应'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
@@ -1519,11 +1392,7 @@ export const driveV1PermissionPublicGet = {
         ),
     }),
     path: z.object({
-      token: z
-        .string()
-        .describe(
-          '文件的 token，获取方式见 ',
-        ),
+      token: z.string().describe('文件的 token，获取方式见 '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1545,12 +1414,7 @@ export const driveV1PermissionPublicPasswordCreate = {
         ),
     }),
     path: z.object({
-      token: z
-        .string()
-        .describe(
-          '文件的 token，获取方式见 ',
-        )
-        .optional(),
+      token: z.string().describe('文件的 token，获取方式见 ').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1572,12 +1436,7 @@ export const driveV1PermissionPublicPasswordDelete = {
         ),
     }),
     path: z.object({
-      token: z
-        .string()
-        .describe(
-          '文件的 token，获取方式见 ',
-        )
-        .optional(),
+      token: z.string().describe('文件的 token，获取方式见 ').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1599,12 +1458,7 @@ export const driveV1PermissionPublicPasswordUpdate = {
         ),
     }),
     path: z.object({
-      token: z
-        .string()
-        .describe(
-          '文件的 token，获取方式见 ',
-        )
-        .optional(),
+      token: z.string().describe('文件的 token，获取方式见 ').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -1654,11 +1508,7 @@ export const driveV1PermissionPublicPatch = {
         ),
     }),
     path: z.object({
-      token: z
-        .string()
-        .describe(
-          '文件的 token，获取方式见 ',
-        ),
+      token: z.string().describe('文件的 token，获取方式见 '),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },

@@ -42,7 +42,7 @@ export function initMcpServer(options: McpServerOptions) {
   if (options.rateLimitRequests || options.rateLimitWrites) {
     const requestsPerMinute = parseInt(options.rateLimitRequests || '50');
     const writesPerMinute = parseInt(options.rateLimitWrites || '10');
-    
+
     rateLimitingConfig.rateLimits = {
       default: {
         capacity: requestsPerMinute * 2,
@@ -92,10 +92,10 @@ export function initMcpServer(options: McpServerOptions) {
 
   // Register Genesis prompts
   registerGenesisPrompts(mcpServer);
-  
+
   // Register complete prompts for all functions
   registerCompletePrompts(mcpServer);
-  
+
   // Register resources
   registerResources(mcpServer);
 

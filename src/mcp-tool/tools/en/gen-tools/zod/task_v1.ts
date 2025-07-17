@@ -88,11 +88,7 @@ export const taskV1TaskCollaboratorCreate = {
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional() }),
     path: z.object({
-      task_id: z
-        .string()
-        .describe(
-          'The task ID, which can be obtained from the id field in the response body ',
-        ),
+      task_id: z.string().describe('The task ID, which can be obtained from the id field in the response body '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -168,12 +164,7 @@ export const taskV1TaskCommentCreate = {
           'Timestamp when the comment was created, in milliseconds, for display, do not need to be filled in when it is created',
         )
         .optional(),
-      rich_content: z
-        .string()
-        .describe(
-          'Rich text comment content. See ',
-        )
-        .optional(),
+      rich_content: z.string().describe('Rich text comment content. See ').optional(),
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional() }),
     path: z.object({ task_id: z.string().describe('Task ID') }),
@@ -269,11 +260,7 @@ export const taskV1TaskComplete = {
   accessTokens: ['tenant', 'user'],
   schema: {
     path: z.object({
-      task_id: z
-        .string()
-        .describe(
-          'The task ID, which can be obtained from the id field in the response body ',
-        ),
+      task_id: z.string().describe('The task ID, which can be obtained from the id field in the response body '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -336,9 +323,7 @@ export const taskV1TaskCreate = {
             .object({
               url: z
                 .string()
-                .describe(
-                  'Specific link address. URL only supports parsing http, https. For details, see: ',
-                )
+                .describe('Specific link address. URL only supports parsing http, https. For details, see: ')
                 .optional(),
               title: z.string().describe('Title that corresponds to the URL').optional(),
             })
@@ -372,9 +357,7 @@ export const taskV1TaskCreate = {
         .optional(),
       repeat_rule: z
         .string()
-        .describe(
-          'Regular expression for repeating tasks. For the syntax format, see  section 4.3.10',
-        )
+        .describe('Regular expression for repeating tasks. For the syntax format, see  section 4.3.10')
         .optional(),
       rich_summary: z
         .string()
@@ -382,12 +365,7 @@ export const taskV1TaskCreate = {
           'Rich-text task summary. For syntax format see: When creating a task, the task summary (summary field) and task rich text summary (rich_summary field) cannot be empty at the same time, and at least one of them needs to be filled in',
         )
         .optional(),
-      rich_description: z
-        .string()
-        .describe(
-          'Rich-text task description. For syntax format see: ',
-        )
-        .optional(),
+      rich_description: z.string().describe('Rich-text task description. For syntax format see: ').optional(),
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional() }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
@@ -578,9 +556,7 @@ export const taskV1TaskPatch = {
                 .object({
                   url: z
                     .string()
-                    .describe(
-                      'Specific link address. URL only supports parsing http, https. For details, see: ',
-                    )
+                    .describe('Specific link address. URL only supports parsing http, https. For details, see: ')
                     .optional(),
                   title: z.string().describe('Title that corresponds to the URL').optional(),
                 })
@@ -643,9 +619,7 @@ export const taskV1TaskPatch = {
             .optional(),
           repeat_rule: z
             .string()
-            .describe(
-              'Regular expression for repeating tasks. For the syntax format, see  section 4.3.10',
-            )
+            .describe('Regular expression for repeating tasks. For the syntax format, see  section 4.3.10')
             .optional(),
           rich_summary: z
             .string()
@@ -653,12 +627,7 @@ export const taskV1TaskPatch = {
               'Rich-text task summary. For syntax format see: When creating a task, the task summary (summary field) and task rich text summary (rich_summary field) cannot be empty at the same time, and at least one of them needs to be filled in',
             )
             .optional(),
-          rich_description: z
-            .string()
-            .describe(
-              'Rich-text task description. For syntax format see: ',
-            )
-            .optional(),
+          rich_description: z.string().describe('Rich-text task description. For syntax format see: ').optional(),
         })
         .describe('Basic information of the updated task entity'),
       update_fields: z

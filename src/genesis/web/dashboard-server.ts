@@ -66,8 +66,8 @@ export class DashboardServer {
     this.io = new SocketIOServer(this.server, {
       cors: {
         origin: config.corsOrigins,
-        methods: ['GET', 'POST']
-      }
+        methods: ['GET', 'POST'],
+      },
     });
 
     this.setupMiddleware();
@@ -80,10 +80,12 @@ export class DashboardServer {
    */
   private setupMiddleware(): void {
     // CORS設定
-    this.app.use(cors({
-      origin: this.config.corsOrigins,
-      credentials: true
-    }));
+    this.app.use(
+      cors({
+        origin: this.config.corsOrigins,
+        credentials: true,
+      }),
+    );
 
     // JSON パーサー
     this.app.use(express.json({ limit: '10mb' }));
@@ -214,7 +216,7 @@ export class DashboardServer {
   private async handleGetSession(req: Request, res: Response): Promise<void> {
     try {
       const session = this.sessions.get(req.params.id);
-      
+
       if (!session) {
         res.status(404).json({ error: 'Session not found' });
         return;
@@ -229,7 +231,7 @@ export class DashboardServer {
   private async handleCreateSession(req: Request, res: Response): Promise<void> {
     try {
       const { name, requirements, userId } = req.body;
-      
+
       const session: SessionStatus = {
         id: `session_${Date.now()}`,
         name: name || 'Unnamed Session',
@@ -239,14 +241,14 @@ export class DashboardServer {
         startTime: Date.now(),
         lastActivity: Date.now(),
         userId: userId || 'anonymous',
-        errors: []
+        errors: [],
       };
 
       this.sessions.set(session.id, session);
-      
+
       // WebSocket通知
       this.io.emit('session_created', session);
-      
+
       res.status(201).json(session);
     } catch (error) {
       res.status(500).json({ error: 'Failed to create session' });
@@ -256,7 +258,7 @@ export class DashboardServer {
   private async handleUpdateSession(req: Request, res: Response): Promise<void> {
     try {
       const session = this.sessions.get(req.params.id);
-      
+
       if (!session) {
         res.status(404).json({ error: 'Session not found' });
         return;
@@ -264,10 +266,10 @@ export class DashboardServer {
 
       // セッション更新
       Object.assign(session, req.body, { lastActivity: Date.now() });
-      
+
       // WebSocket通知
       this.io.to(`session_${session.id}`).emit('session_updated', session);
-      
+
       res.json(session);
     } catch (error) {
       res.status(500).json({ error: 'Failed to update session' });
@@ -277,17 +279,17 @@ export class DashboardServer {
   private async handleDeleteSession(req: Request, res: Response): Promise<void> {
     try {
       const session = this.sessions.get(req.params.id);
-      
+
       if (!session) {
         res.status(404).json({ error: 'Session not found' });
         return;
       }
 
       this.sessions.delete(req.params.id);
-      
+
       // WebSocket通知
       this.io.emit('session_deleted', { id: req.params.id });
-      
+
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ error: 'Failed to delete session' });
@@ -297,7 +299,7 @@ export class DashboardServer {
   private async handleStartSession(req: Request, res: Response): Promise<void> {
     try {
       const session = this.sessions.get(req.params.id);
-      
+
       if (!session) {
         res.status(404).json({ error: 'Session not found' });
         return;
@@ -305,10 +307,10 @@ export class DashboardServer {
 
       session.status = 'active';
       session.lastActivity = Date.now();
-      
+
       // WebSocket通知
       this.io.to(`session_${session.id}`).emit('session_started', session);
-      
+
       res.json(session);
     } catch (error) {
       res.status(500).json({ error: 'Failed to start session' });
@@ -318,7 +320,7 @@ export class DashboardServer {
   private async handlePauseSession(req: Request, res: Response): Promise<void> {
     try {
       const session = this.sessions.get(req.params.id);
-      
+
       if (!session) {
         res.status(404).json({ error: 'Session not found' });
         return;
@@ -326,10 +328,10 @@ export class DashboardServer {
 
       session.status = 'paused';
       session.lastActivity = Date.now();
-      
+
       // WebSocket通知
       this.io.to(`session_${session.id}`).emit('session_paused', session);
-      
+
       res.json(session);
     } catch (error) {
       res.status(500).json({ error: 'Failed to pause session' });
@@ -339,7 +341,7 @@ export class DashboardServer {
   private async handleResumeSession(req: Request, res: Response): Promise<void> {
     try {
       const session = this.sessions.get(req.params.id);
-      
+
       if (!session) {
         res.status(404).json({ error: 'Session not found' });
         return;
@@ -347,10 +349,10 @@ export class DashboardServer {
 
       session.status = 'active';
       session.lastActivity = Date.now();
-      
+
       // WebSocket通知
       this.io.to(`session_${session.id}`).emit('session_resumed', session);
-      
+
       res.json(session);
     } catch (error) {
       res.status(500).json({ error: 'Failed to resume session' });
@@ -360,7 +362,7 @@ export class DashboardServer {
   private async handleCancelSession(req: Request, res: Response): Promise<void> {
     try {
       const session = this.sessions.get(req.params.id);
-      
+
       if (!session) {
         res.status(404).json({ error: 'Session not found' });
         return;
@@ -368,10 +370,10 @@ export class DashboardServer {
 
       session.status = 'failed';
       session.lastActivity = Date.now();
-      
+
       // WebSocket通知
       this.io.to(`session_${session.id}`).emit('session_cancelled', session);
-      
+
       res.json(session);
     } catch (error) {
       res.status(500).json({ error: 'Failed to cancel session' });
@@ -382,7 +384,7 @@ export class DashboardServer {
     try {
       const { id, stepId } = req.params;
       const session = this.sessions.get(id);
-      
+
       if (!session) {
         res.status(404).json({ error: 'Session not found' });
         return;
@@ -397,14 +399,14 @@ export class DashboardServer {
       this.io.to(`session_${id}`).emit('step_executed', {
         sessionId: id,
         stepId,
-        progress: session.progress
+        progress: session.progress,
       });
 
       res.json({
         success: true,
         sessionId: id,
         stepId,
-        progress: session.progress
+        progress: session.progress,
       });
     } catch (error) {
       res.status(500).json({ error: 'Failed to execute step' });
@@ -415,19 +417,19 @@ export class DashboardServer {
     try {
       const { id, stepId } = req.params;
       const feedback = req.body;
-      
+
       // フィードバック処理のシミュレーション
-      
+
       // WebSocket通知
       this.io.to(`session_${id}`).emit('feedback_received', {
         sessionId: id,
         stepId,
-        feedback
+        feedback,
       });
 
       res.json({
         success: true,
-        message: 'Feedback received'
+        message: 'Feedback received',
       });
     } catch (error) {
       res.status(500).json({ error: 'Failed to submit feedback' });
@@ -437,7 +439,7 @@ export class DashboardServer {
   private async handleGetErrors(req: Request, res: Response): Promise<void> {
     try {
       const session = this.sessions.get(req.params.id);
-      
+
       if (!session) {
         res.status(404).json({ error: 'Session not found' });
         return;
@@ -445,7 +447,7 @@ export class DashboardServer {
 
       res.json({
         sessionId: req.params.id,
-        errors: session.errors
+        errors: session.errors,
       });
     } catch (error) {
       res.status(500).json({ error: 'Failed to get errors' });
@@ -455,13 +457,13 @@ export class DashboardServer {
   private async handleRollback(req: Request, res: Response): Promise<void> {
     try {
       const { checkpointId } = req.body;
-      
+
       // ロールバック処理のシミュレーション
-      
+
       res.json({
         success: true,
         message: 'Rollback initiated',
-        checkpointId
+        checkpointId,
       });
     } catch (error) {
       res.status(500).json({ error: 'Failed to initiate rollback' });
@@ -471,13 +473,13 @@ export class DashboardServer {
   private async handleRecovery(req: Request, res: Response): Promise<void> {
     try {
       const { strategy } = req.body;
-      
+
       // 復旧処理のシミュレーション
-      
+
       res.json({
         success: true,
         message: 'Recovery initiated',
-        strategy
+        strategy,
       });
     } catch (error) {
       res.status(500).json({ error: 'Failed to initiate recovery' });
@@ -492,14 +494,14 @@ export class DashboardServer {
           id: 'crm_template',
           name: 'CRM System',
           description: 'Customer Relationship Management system template',
-          category: 'business'
+          category: 'business',
         },
         {
           id: 'project_template',
           name: 'Project Management',
           description: 'Project management system template',
-          category: 'productivity'
-        }
+          category: 'productivity',
+        },
       ];
 
       res.json(templates);
@@ -511,13 +513,13 @@ export class DashboardServer {
   private async handleCreateTemplate(req: Request, res: Response): Promise<void> {
     try {
       const template = req.body;
-      
+
       // テンプレート作成処理
-      
+
       res.status(201).json({
         success: true,
         templateId: `template_${Date.now()}`,
-        message: 'Template created'
+        message: 'Template created',
       });
     } catch (error) {
       res.status(500).json({ error: 'Failed to create template' });
@@ -530,7 +532,7 @@ export class DashboardServer {
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
       memory: process.memoryUsage(),
-      connections: this.clients.size
+      connections: this.clients.size,
     });
   }
 
@@ -539,7 +541,7 @@ export class DashboardServer {
       version: '1.0.0',
       buildDate: '2024-01-15',
       nodeVersion: process.version,
-      platform: process.platform
+      platform: process.platform,
     });
   }
 
@@ -548,23 +550,22 @@ export class DashboardServer {
    */
   private async calculateStats(): Promise<DashboardStats> {
     const sessions = Array.from(this.sessions.values());
-    const activeSessions = sessions.filter(s => s.status === 'active').length;
-    const completedSessions = sessions.filter(s => s.status === 'completed').length;
-    const failedSessions = sessions.filter(s => s.status === 'failed').length;
+    const activeSessions = sessions.filter((s) => s.status === 'active').length;
+    const completedSessions = sessions.filter((s) => s.status === 'completed').length;
+    const failedSessions = sessions.filter((s) => s.status === 'failed').length;
 
     // 平均完了時間の計算
-    const completedSessionsWithTime = sessions.filter(s => 
-      s.status === 'completed' && s.lastActivity && s.startTime
-    );
-    const averageCompletionTime = completedSessionsWithTime.length > 0
-      ? completedSessionsWithTime.reduce((sum, s) => 
-          sum + (s.lastActivity - s.startTime), 0) / completedSessionsWithTime.length
-      : 0;
+    const completedSessionsWithTime = sessions.filter((s) => s.status === 'completed' && s.lastActivity && s.startTime);
+    const averageCompletionTime =
+      completedSessionsWithTime.length > 0
+        ? completedSessionsWithTime.reduce((sum, s) => sum + (s.lastActivity - s.startTime), 0) /
+          completedSessionsWithTime.length
+        : 0;
 
     // エラー統計
     const errorCounts = new Map<string, number>();
-    sessions.forEach(session => {
-      session.errors.forEach(error => {
+    sessions.forEach((session) => {
+      session.errors.forEach((error) => {
         errorCounts.set(error, (errorCounts.get(error) || 0) + 1);
       });
     });
@@ -583,9 +584,9 @@ export class DashboardServer {
       topErrors,
       resourceUtilization: {
         cpu: Math.round(Math.random() * 100), // モック値
-        memory: Math.round(process.memoryUsage().heapUsed / process.memoryUsage().heapTotal * 100),
-        storage: Math.round(Math.random() * 100) // モック値
-      }
+        memory: Math.round((process.memoryUsage().heapUsed / process.memoryUsage().heapTotal) * 100),
+        storage: Math.round(Math.random() * 100), // モック値
+      },
     };
   }
 
@@ -612,17 +613,17 @@ export class DashboardServer {
    */
   updateSessionProgress(sessionId: string, progress: number, currentStep: string): void {
     const session = this.sessions.get(sessionId);
-    
+
     if (session) {
       session.progress = progress;
       session.currentStep = currentStep;
       session.lastActivity = Date.now();
-      
+
       // WebSocket通知
       this.io.to(`session_${sessionId}`).emit('progress_update', {
         sessionId,
         progress,
-        currentStep
+        currentStep,
       });
     }
   }
@@ -632,16 +633,16 @@ export class DashboardServer {
    */
   addSessionError(sessionId: string, error: string): void {
     const session = this.sessions.get(sessionId);
-    
+
     if (session) {
       session.errors.push(error);
       session.lastActivity = Date.now();
-      
+
       // WebSocket通知
       this.io.to(`session_${sessionId}`).emit('error_occurred', {
         sessionId,
         error,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     }
   }

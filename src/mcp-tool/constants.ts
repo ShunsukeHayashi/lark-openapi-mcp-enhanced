@@ -47,27 +47,39 @@ export enum PresetName {
   COMPLETE_ALL = 'preset.complete.all',
 }
 
+// Common tool names used across multiple presets
+const COMMON_TOOLS = {
+  MESSAGE_LIST: 'im.v1.message.list' as const,
+  MESSAGE_CREATE: 'im.v1.message.create' as const,
+  CHAT_SEARCH: 'im.v1.chat.search' as const,
+  USER_BATCH_GET_ID: 'contact.v3.user.batchGetId' as const,
+  DOCUMENT_RAW_CONTENT: 'docx.v1.document.rawContent' as const,
+  DOCUMENT_IMPORT: 'docx.builtin.import' as const,
+  DOCUMENT_SEARCH: 'docx.builtin.search' as const,
+  RECORD_SEARCH: 'bitable.v1.appTableRecord.search' as const,
+  RECORD_BATCH_CREATE: 'bitable.v1.appTableRecord.batchCreate' as const,
+} as const;
+
 export const presetLightToolNames: ToolName[] = [
-  'im.v1.message.list',
-  'im.v1.message.create',
-  'im.v1.chat.search',
-  'contact.v3.user.batchGetId',
-  'docx.v1.document.rawContent',
-  'docx.builtin.import',
-  'docx.builtin.search',
-  'wiki.v2.space.getNode',
-  'bitable.v1.appTableRecord.search',
-  'bitable.v1.appTableRecord.batchCreate',
+  COMMON_TOOLS.MESSAGE_LIST,
+  COMMON_TOOLS.MESSAGE_CREATE,
+  COMMON_TOOLS.CHAT_SEARCH,
+  COMMON_TOOLS.USER_BATCH_GET_ID,
+  COMMON_TOOLS.DOCUMENT_RAW_CONTENT,
+  COMMON_TOOLS.DOCUMENT_IMPORT,
+  COMMON_TOOLS.DOCUMENT_SEARCH,
+  COMMON_TOOLS.RECORD_SEARCH,
+  COMMON_TOOLS.RECORD_BATCH_CREATE,
 ];
 
-export const presetContactToolNames: ToolName[] = ['contact.v3.user.batchGetId'];
+export const presetContactToolNames: ToolName[] = [COMMON_TOOLS.USER_BATCH_GET_ID];
 
 export const presetImToolNames: ToolName[] = [
   'im.v1.chat.create',
   'im.v1.chat.list',
   'im.v1.chatMembers.get',
-  'im.v1.message.create',
-  'im.v1.message.list',
+  COMMON_TOOLS.MESSAGE_CREATE,
+  COMMON_TOOLS.MESSAGE_LIST,
 ];
 
 export const presetBaseCommonToolNames: ToolName[] = [
@@ -75,7 +87,7 @@ export const presetBaseCommonToolNames: ToolName[] = [
   'bitable.v1.appTable.create',
   'bitable.v1.appTable.list',
   'bitable.v1.appTableField.list',
-  'bitable.v1.appTableRecord.search',
+  COMMON_TOOLS.RECORD_SEARCH,
 ];
 
 export const presetBaseToolNames: ToolName[] = [
@@ -86,17 +98,15 @@ export const presetBaseToolNames: ToolName[] = [
 
 export const presetBaseRecordBatchToolNames: ToolName[] = [
   ...presetBaseCommonToolNames,
-  'bitable.v1.appTableRecord.batchCreate',
+  COMMON_TOOLS.RECORD_BATCH_CREATE,
   'bitable.v1.appTableRecord.batchUpdate',
 ];
 
 export const presetDocToolNames: ToolName[] = [
-  'docx.v1.document.rawContent',
-  'docx.builtin.import',
-  'docx.builtin.search',
+  COMMON_TOOLS.DOCUMENT_RAW_CONTENT,
+  COMMON_TOOLS.DOCUMENT_IMPORT,
+  COMMON_TOOLS.DOCUMENT_SEARCH,
   'drive.v1.permissionMember.create',
-  'wiki.v2.space.getNode',
-  'wiki.v1.node.search',
 ];
 
 export const presetTaskToolNames: ToolName[] = [
@@ -145,7 +155,6 @@ export const presetCompleteToolNames: ToolName[] = [
   'complete.department.create',
   'complete.group.create',
   'complete.approval.create_instance',
-  'complete.wiki.create_space',
   'complete.meeting_room.book',
   'complete.okr.create',
   'complete.hr.create_employee',

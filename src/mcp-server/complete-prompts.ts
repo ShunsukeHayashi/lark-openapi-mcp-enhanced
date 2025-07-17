@@ -12,13 +12,13 @@ export const completePrompts = [
       {
         name: 'action',
         description: 'What user management action to perform',
-        required: true
+        required: true,
       },
       {
         name: 'details',
         description: 'Specific details about the users',
-        required: true
-      }
+        required: true,
+      },
     ],
     template: `# User Management
 
@@ -56,7 +56,7 @@ export const completePrompts = [
 - Use consistent employee numbering
 - Set appropriate department assignments
 - Configure proper access levels
-`
+`,
   },
 
   // ========== Department & Organization Prompts ==========
@@ -67,13 +67,13 @@ export const completePrompts = [
       {
         name: 'structure_type',
         description: 'Type of organizational structure needed',
-        required: true
+        required: true,
       },
       {
         name: 'hierarchy',
         description: 'Organizational hierarchy details',
-        required: true
-      }
+        required: true,
+      },
     ],
     template: `# Organization Structure Management
 
@@ -126,7 +126,7 @@ export const completePrompts = [
    - Minimal hierarchy
    - Self-managing teams
    - Direct communication
-`
+`,
   },
 
   // ========== Approval Workflow Prompts ==========
@@ -137,13 +137,13 @@ export const completePrompts = [
       {
         name: 'workflow_type',
         description: 'Type of approval workflow',
-        required: true
+        required: true,
       },
       {
         name: 'approval_rules',
         description: 'Rules and conditions for approval',
-        required: true
-      }
+        required: true,
+      },
     ],
     template: `# Approval Workflow Design
 
@@ -223,7 +223,7 @@ export const completePrompts = [
 5. Set up notifications
 6. Test workflow
 7. Deploy and monitor
-`
+`,
   },
 
   // ========== Knowledge Management Prompts ==========
@@ -234,13 +234,13 @@ export const completePrompts = [
       {
         name: 'kb_purpose',
         description: 'Purpose and scope of knowledge base',
-        required: true
+        required: true,
       },
       {
         name: 'content_structure',
         description: 'How content should be organized',
-        required: true
-      }
+        required: true,
+      },
     ],
     template: `# Knowledge Base Setup
 
@@ -305,7 +305,7 @@ export const completePrompts = [
 - Regular content reviews
 - Encourage contributions
 - Monitor usage analytics
-`
+`,
   },
 
   // ========== Meeting Management Prompts ==========
@@ -316,13 +316,13 @@ export const completePrompts = [
       {
         name: 'meeting_type',
         description: 'Type of meeting to organize',
-        required: true
+        required: true,
       },
       {
         name: 'requirements',
         description: 'Meeting requirements and constraints',
-        required: true
-      }
+        required: true,
+      },
     ],
     template: `# Meeting Management
 
@@ -394,7 +394,7 @@ export const completePrompts = [
 - Encourage participation
 - Document decisions
 - Track action items
-`
+`,
   },
 
   // ========== OKR Management Prompts ==========
@@ -405,13 +405,13 @@ export const completePrompts = [
       {
         name: 'okr_level',
         description: 'Company, team, or individual OKRs',
-        required: true
+        required: true,
       },
       {
         name: 'time_period',
         description: 'Quarterly, annual, or custom period',
-        required: true
-      }
+        required: true,
+      },
     ],
     template: `# OKR Management
 
@@ -481,7 +481,7 @@ export const completePrompts = [
 - Sandbagging targets
 - Set and forget
 - No regular reviews
-`
+`,
   },
 
   // ========== HR Operations Prompts ==========
@@ -492,13 +492,13 @@ export const completePrompts = [
       {
         name: 'hr_process',
         description: 'Which HR process to implement',
-        required: true
+        required: true,
       },
       {
         name: 'employee_stage',
         description: 'Stage in employee lifecycle',
-        required: true
-      }
+        required: true,
+      },
     ],
     template: `# HR Operations
 
@@ -602,7 +602,7 @@ export const completePrompts = [
 - Equal opportunity
 - Workplace safety
 - Documentation requirements
-`
+`,
   },
 
   // ========== Integration Prompts ==========
@@ -613,13 +613,13 @@ export const completePrompts = [
       {
         name: 'integration_type',
         description: 'Type of integration needed',
-        required: true
+        required: true,
       },
       {
         name: 'systems',
         description: 'Systems to integrate with',
-        required: true
-      }
+        required: true,
+      },
     ],
     template: `# System Integration
 
@@ -713,7 +713,7 @@ export const completePrompts = [
 - Monitor integration health
 - Plan for failures
 - Document integration flows
-`
+`,
   },
   {
     name: 'complete_genesis_create',
@@ -722,13 +722,13 @@ export const completePrompts = [
       {
         name: 'business_scenario',
         description: 'What kind of business application you need',
-        required: true
+        required: true,
       },
       {
         name: 'specific_requirements',
         description: 'Any specific features or customizations needed',
-        required: false
-      }
+        required: false,
+      },
     ],
     template: `# Complete Business Application Creation with Genesis
 
@@ -799,8 +799,8 @@ genesis.builtin.optimize_base
 - Mobile app access
 - API integration
 - Advanced analytics
-- Machine learning capabilities`
-  }
+- Machine learning capabilities`,
+  },
 ];
 
 /**
@@ -808,29 +808,24 @@ genesis.builtin.optimize_base
  */
 export function registerCompletePrompts(server: any): void {
   for (const prompt of completePrompts) {
-    server.prompt(
-      prompt.name,
-      prompt.description,
-      prompt.arguments,
-      ({ arguments: args }: any) => {
-        // Replace template variables with actual values
-        let content = prompt.template;
-        for (const [key, value] of Object.entries(args)) {
-          content = content.replace(new RegExp(`{{${key}}}`, 'g'), value as string);
-        }
-        
-        return {
-          messages: [
-            {
-              role: 'user',
-              content: {
-                type: 'text',
-                text: content
-              }
-            }
-          ]
-        };
+    server.prompt(prompt.name, prompt.description, prompt.arguments, ({ arguments: args }: any) => {
+      // Replace template variables with actual values
+      let content = prompt.template;
+      for (const [key, value] of Object.entries(args)) {
+        content = content.replace(new RegExp(`{{${key}}}`, 'g'), value as string);
       }
-    );
+
+      return {
+        messages: [
+          {
+            role: 'user',
+            content: {
+              type: 'text',
+              text: content,
+            },
+          },
+        ],
+      };
+    });
   }
 }

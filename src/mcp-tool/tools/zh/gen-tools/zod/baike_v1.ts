@@ -142,9 +142,7 @@ export const baikeV1DraftCreate = {
         .optional(),
       rich_text: z
         .string()
-        .describe(
-          '富文本格式（当填写富文本内容时，description字段将会失效可不填写），支持的格式参考中的释义部分',
-        )
+        .describe('富文本格式（当填写富文本内容时，description字段将会失效可不填写），支持的格式参考中的释义部分')
         .optional(),
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
@@ -253,9 +251,7 @@ export const baikeV1DraftUpdate = {
         .optional(),
       rich_text: z
         .string()
-        .describe(
-          '富文本格式（当填写富文本内容时，description字段将会失效可不填写），支持的格式参考中的释义部分',
-        )
+        .describe('富文本格式（当填写富文本内容时，description字段将会失效可不填写），支持的格式参考中的释义部分')
         .optional(),
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
@@ -610,9 +606,7 @@ export const baikeV1EntityUpdate = {
         .optional(),
       rich_text: z
         .string()
-        .describe(
-          '富文本格式（当填写富文本内容时，description字段将会失效可不填写），支持的格式参考中的释义部分',
-        )
+        .describe('富文本格式（当填写富文本内容时，description字段将会失效可不填写），支持的格式参考中的释义部分')
         .optional(),
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),

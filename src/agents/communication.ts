@@ -4,13 +4,13 @@
  */
 
 import { EventEmitter } from 'events';
-import { 
-  AgentMessage, 
-  AgentMetadata, 
-  StructuredResponse, 
-  RESPONSE_DELIMITERS, 
-  TaskAssignment, 
-  AgentCommunicationEvent 
+import {
+  AgentMessage,
+  AgentMetadata,
+  StructuredResponse,
+  RESPONSE_DELIMITERS,
+  TaskAssignment,
+  AgentCommunicationEvent,
 } from './types';
 
 export class AgentCommunicationBus extends EventEmitter {
@@ -32,16 +32,16 @@ export class AgentCommunicationBus extends EventEmitter {
       ...metadata,
       status: 'idle',
       currentTasks: 0,
-      lastHeartbeat: new Date()
+      lastHeartbeat: new Date(),
     });
-    
+
     this.messageQueue.set(metadata.id, []);
-    
+
     this.emit('agent_registered', {
       type: 'agent_registered',
       agentId: metadata.id,
       data: metadata,
-      timestamp: new Date()
+      timestamp: new Date(),
     } as AgentCommunicationEvent);
   }
 
@@ -51,12 +51,12 @@ export class AgentCommunicationBus extends EventEmitter {
   unregisterAgent(agentId: string): void {
     this.agents.delete(agentId);
     this.messageQueue.delete(agentId);
-    
+
     this.emit('agent_offline', {
       type: 'agent_offline',
       agentId,
       data: null,
-      timestamp: new Date()
+      timestamp: new Date(),
     } as AgentCommunicationEvent);
   }
 
@@ -79,7 +79,7 @@ export class AgentCommunicationBus extends EventEmitter {
       type: 'message_sent',
       agentId: message.from,
       data: message,
-      timestamp: new Date()
+      timestamp: new Date(),
     } as AgentCommunicationEvent);
 
     return true;
@@ -88,33 +88,23 @@ export class AgentCommunicationBus extends EventEmitter {
   /**
    * Broadcast message to all agents with specific capability
    */
-  async broadcastByCapability(
-    fromAgentId: string,
-    capability: string,
-    payload: any
-  ): Promise<string[]> {
-    const targetAgents = Array.from(this.agents.values())
-      .filter(agent => 
-        agent.id !== fromAgentId && 
-        agent.capabilities.some(cap => cap.name === capability)
-      );
+  async broadcastByCapability(fromAgentId: string, capability: string, payload: any): Promise<string[]> {
+    const targetAgents = Array.from(this.agents.values()).filter(
+      (agent) => agent.id !== fromAgentId && agent.capabilities.some((cap) => cap.name === capability),
+    );
 
-    const messages = targetAgents.map(agent => ({
+    const messages = targetAgents.map((agent) => ({
       id: this.generateMessageId(),
       from: fromAgentId,
       to: agent.id,
       type: 'broadcast' as const,
       payload,
-      timestamp: new Date()
+      timestamp: new Date(),
     }));
 
-    const results = await Promise.all(
-      messages.map(message => this.sendMessage(message))
-    );
+    const results = await Promise.all(messages.map((message) => this.sendMessage(message)));
 
-    return targetAgents
-      .filter((_, index) => results[index])
-      .map(agent => agent.id);
+    return targetAgents.filter((_, index) => results[index]).map((agent) => agent.id);
   }
 
   /**
@@ -123,13 +113,13 @@ export class AgentCommunicationBus extends EventEmitter {
   getMessages(agentId: string): AgentMessage[] {
     const messages = this.messageQueue.get(agentId) || [];
     this.messageQueue.set(agentId, []); // Clear after retrieval
-    
-    messages.forEach(message => {
+
+    messages.forEach((message) => {
       this.emit('message_received', {
         type: 'message_received',
         agentId,
         data: message,
-        timestamp: new Date()
+        timestamp: new Date(),
       } as AgentCommunicationEvent);
     });
 
@@ -140,19 +130,21 @@ export class AgentCommunicationBus extends EventEmitter {
    * Find agents by capability
    */
   findAgentsByCapability(capability: string): AgentMetadata[] {
-    return Array.from(this.agents.values())
-      .filter(agent => 
-        agent.status !== 'offline' &&
-        agent.capabilities.some(cap => cap.name === capability)
-      );
+    return Array.from(this.agents.values()).filter(
+      (agent) => agent.status !== 'offline' && agent.capabilities.some((cap) => cap.name === capability),
+    );
   }
 
   /**
    * Find best agent for task (load balancing)
    */
-  findBestAgentForTask(capability: string, priority: 'low' | 'medium' | 'high' | 'urgent' = 'medium'): AgentMetadata | null {
-    const candidates = this.findAgentsByCapability(capability)
-      .filter(agent => agent.currentTasks < agent.maxConcurrentTasks);
+  findBestAgentForTask(
+    capability: string,
+    priority: 'low' | 'medium' | 'high' | 'urgent' = 'medium',
+  ): AgentMetadata | null {
+    const candidates = this.findAgentsByCapability(capability).filter(
+      (agent) => agent.currentTasks < agent.maxConcurrentTasks,
+    );
 
     if (candidates.length === 0) return null;
 
@@ -214,12 +206,12 @@ export class AgentCommunicationBus extends EventEmitter {
       if (now.getTime() - agent.lastHeartbeat.getTime() > timeout) {
         agent.status = 'offline';
         this.agents.set(agentId, agent);
-        
+
         this.emit('agent_offline', {
           type: 'agent_offline',
           agentId,
           data: { reason: 'heartbeat_timeout' },
-          timestamp: new Date()
+          timestamp: new Date(),
         } as AgentCommunicationEvent);
       }
     }
@@ -246,10 +238,7 @@ export class AgentCommunicationBus extends EventEmitter {
  * Parse structured response with delimiter-based extraction
  * Based on AIstudio's parseStructuredDataSafely pattern
  */
-export function parseStructuredResponse(
-  responseText: string,
-  maxRetries: number = 3
-): StructuredResponse | null {
+export function parseStructuredResponse(responseText: string, maxRetries: number = 3): StructuredResponse | null {
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
       // Look for structured response delimiters
@@ -267,23 +256,19 @@ export function parseStructuredResponse(
         continue;
       }
 
-      const structuredPart = responseText.substring(
-        startIdx + RESPONSE_DELIMITERS.STRUCTURED_START.length,
-        endIdx
-      ).trim();
+      const structuredPart = responseText
+        .substring(startIdx + RESPONSE_DELIMITERS.STRUCTURED_START.length, endIdx)
+        .trim();
 
       return JSON.parse(structuredPart);
-
     } catch (error) {
       if (attempt === maxRetries - 1) {
         console.error('[Agent Communication] Failed to parse structured response:', error);
         return null;
       }
-      
+
       // Clean up response for retry
-      responseText = responseText
-        .replace(/```json\s*|\s*```/g, '')
-        .replace(/^[^{]*({.*})[^}]*$/s, '$1');
+      responseText = responseText.replace(/```json\s*|\s*```/g, '').replace(/^[^{]*({.*})[^}]*$/s, '$1');
     }
   }
 
@@ -300,10 +285,9 @@ export function parseTaskAssignment(responseText: string): TaskAssignment | null
   if (startIdx === -1 || endIdx === -1) return null;
 
   try {
-    const assignmentPart = responseText.substring(
-      startIdx + RESPONSE_DELIMITERS.TASK_ASSIGNMENT_START.length,
-      endIdx
-    ).trim();
+    const assignmentPart = responseText
+      .substring(startIdx + RESPONSE_DELIMITERS.TASK_ASSIGNMENT_START.length, endIdx)
+      .trim();
 
     return JSON.parse(assignmentPart);
   } catch (error) {

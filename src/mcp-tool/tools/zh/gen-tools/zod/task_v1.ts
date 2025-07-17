@@ -86,11 +86,7 @@ export const taskV1TaskCollaboratorCreate = {
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
     path: z.object({
-      task_id: z
-        .string()
-        .describe(
-          '任务 ID，可通过时响应体中的id字段获取',
-        ),
+      task_id: z.string().describe('任务 ID，可通过时响应体中的id字段获取'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -153,12 +149,7 @@ export const taskV1TaskCommentCreate = {
         .optional(),
       parent_id: z.string().describe('评论的父ID，创建评论时若不为空则为某条评论的回复，若为空则不是回复').optional(),
       create_milli_time: z.string().describe('评论创建的时间戳，单位为毫秒，用于展示，创建时不用填写').optional(),
-      rich_content: z
-        .string()
-        .describe(
-          '富文本评论内容。语法格式参见',
-        )
-        .optional(),
+      rich_content: z.string().describe('富文本评论内容。语法格式参见').optional(),
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
     path: z.object({ task_id: z.string().describe('任务 ID') }),
@@ -251,11 +242,7 @@ export const taskV1TaskComplete = {
   accessTokens: ['tenant', 'user'],
   schema: {
     path: z.object({
-      task_id: z
-        .string()
-        .describe(
-          '任务 ID，可通过时响应体中的id字段获取',
-        ),
+      task_id: z.string().describe('任务 ID，可通过时响应体中的id字段获取'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -294,9 +281,7 @@ export const taskV1TaskCreate = {
           time: z.string().describe('表示截止时间的Unix时间戳（单位为秒）').optional(),
           timezone: z
             .string()
-            .describe(
-              '截止时间对应的时区。传入值需要符合IANA Time Zone Database标准，规范见',
-            )
+            .describe('截止时间对应的时区。传入值需要符合IANA Time Zone Database标准，规范见')
             .optional(),
           is_all_day: z
             .boolean()
@@ -316,12 +301,7 @@ export const taskV1TaskCreate = {
             ),
           href: z
             .object({
-              url: z
-                .string()
-                .describe(
-                  '具体链接地址。URL仅支持解析http、https。详细参见：',
-                )
-                .optional(),
+              url: z.string().describe('具体链接地址。URL仅支持解析http、https。详细参见：').optional(),
               title: z.string().describe('链接对应的标题').optional(),
             })
             .describe('任务关联的来源平台详情页链接')
@@ -336,9 +316,7 @@ export const taskV1TaskCreate = {
         .optional(),
       custom: z
         .string()
-        .describe(
-          '自定义完成配置。此字段用于设置完成任务时的页面跳转，或展示提示语。详细参见：',
-        )
+        .describe('自定义完成配置。此字段用于设置完成任务时的页面跳转，或展示提示语。详细参见：')
         .optional(),
       collaborator_ids: z
         .array(z.string())
@@ -352,22 +330,14 @@ export const taskV1TaskCreate = {
           '创建任务时添加的关注者用户id列表。传入的值为 user_id 或 open_id ，由user_id_type 决定。user_id和open_id的获取可见文档：',
         )
         .optional(),
-      repeat_rule: z
-        .string()
-        .describe('重复任务的规则表达式。语法格式参见 4.3.10小节')
-        .optional(),
+      repeat_rule: z.string().describe('重复任务的规则表达式。语法格式参见 4.3.10小节').optional(),
       rich_summary: z
         .string()
         .describe(
           '富文本任务标题。语法格式参见。创建任务时，任务标题(summary字段)和任务富文本标题(rich_summary字段)不能同时为空，需要至少填充其中一个字段',
         )
         .optional(),
-      rich_description: z
-        .string()
-        .describe(
-          '富文本任务备注。语法格式参见',
-        )
-        .optional(),
+      rich_description: z.string().describe('富文本任务备注。语法格式参见').optional(),
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
@@ -533,9 +503,7 @@ export const taskV1TaskPatch = {
               time: z.string().describe('表示截止时间的Unix时间戳（单位为秒）').optional(),
               timezone: z
                 .string()
-                .describe(
-                  '截止时间对应的时区。传入值需要符合IANA Time Zone Database标准，规范见',
-                )
+                .describe('截止时间对应的时区。传入值需要符合IANA Time Zone Database标准，规范见')
                 .optional(),
               is_all_day: z
                 .boolean()
@@ -555,12 +523,7 @@ export const taskV1TaskPatch = {
                 ),
               href: z
                 .object({
-                  url: z
-                    .string()
-                    .describe(
-                      '具体链接地址。URL仅支持解析http、https。详细参见：',
-                    )
-                    .optional(),
+                  url: z.string().describe('具体链接地址。URL仅支持解析http、https。详细参见：').optional(),
                   title: z.string().describe('链接对应的标题').optional(),
                 })
                 .describe('任务关联的来源平台详情页链接')
@@ -576,9 +539,7 @@ export const taskV1TaskPatch = {
             .optional(),
           custom: z
             .string()
-            .describe(
-              '自定义完成配置。此字段用于设置完成任务时的页面跳转，或展示提示语。详细参见：',
-            )
+            .describe('自定义完成配置。此字段用于设置完成任务时的页面跳转，或展示提示语。详细参见：')
             .optional(),
           followers: z
             .array(
@@ -620,24 +581,14 @@ export const taskV1TaskPatch = {
               '创建任务时添加的关注者用户id列表。传入的值为 user_id 或 open_id ，由user_id_type 决定。user_id和open_id的获取可见文档：',
             )
             .optional(),
-          repeat_rule: z
-            .string()
-            .describe(
-              '重复任务的规则表达式。语法格式参见 4.3.10小节',
-            )
-            .optional(),
+          repeat_rule: z.string().describe('重复任务的规则表达式。语法格式参见 4.3.10小节').optional(),
           rich_summary: z
             .string()
             .describe(
               '富文本任务标题。语法格式参见。创建任务时，任务标题(summary字段)和任务富文本标题(rich_summary字段)不能同时为空，需要至少填充其中一个字段',
             )
             .optional(),
-          rich_description: z
-            .string()
-            .describe(
-              '富文本任务备注。语法格式参见',
-            )
-            .optional(),
+          rich_description: z.string().describe('富文本任务备注。语法格式参见').optional(),
         })
         .describe('被更新的任务实体基础信息'),
       update_fields: z

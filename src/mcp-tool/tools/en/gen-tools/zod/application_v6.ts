@@ -232,11 +232,7 @@ export const applicationV6ApplicationAppVersionContactsRangeSuggest = {
         .describe(
           'App\'s app_id, get it from > Credentials & Basic Info.To query the version information of other apps, you must request the<md-perm name="application:application.app_version:readonly" desc="Obtain app version information" support_app_types="custom" tags="">Obtain app version information</md-perm> scope. To only query the version information of this app, enter "me" or the app_id',
         ),
-      version_id: z
-        .string()
-        .describe(
-          'ID that uniquely identifies the app version, get it from',
-        ),
+      version_id: z.string().describe('ID that uniquely identifies the app version, get it from'),
     }),
   },
 };
@@ -345,11 +341,7 @@ export const applicationV6ApplicationCollaboratorsGet = {
   schema: {
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional() }),
     path: z.object({
-      app_id: z
-        .string()
-        .describe(
-          'App ID, for more information on obtaining it, please refer to ',
-        ),
+      app_id: z.string().describe('App ID, for more information on obtaining it, please refer to '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -380,11 +372,7 @@ export const applicationV6ApplicationCollaboratorsUpdate = {
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional() }),
     path: z.object({
-      app_id: z
-        .string()
-        .describe(
-          'App ID, for more information on obtaining it, please refer to ',
-        ),
+      app_id: z.string().describe('App ID, for more information on obtaining it, please refer to '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -416,11 +404,7 @@ export const applicationV6ApplicationContactsRangeConfiguration = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional(),
     }),
     path: z.object({
-      app_id: z
-        .string()
-        .describe(
-          "App's app_id, get it from  > Credentials & Basic Info",
-        ),
+      app_id: z.string().describe("App's app_id, get it from  > Credentials & Basic Info"),
     }),
   },
 };
@@ -483,11 +467,7 @@ export const applicationV6ApplicationContactsRangePatch = {
         .optional(),
     }),
     path: z.object({
-      app_id: z
-        .string()
-        .describe(
-          "App's app_id, get it from  > Credentials & Basic Info",
-        ),
+      app_id: z.string().describe("App's app_id, get it from  > Credentials & Basic Info"),
     }),
   },
 };
@@ -656,11 +636,7 @@ export const applicationV6ApplicationOwnerUpdate = {
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional() }),
     path: z.object({
-      app_id: z
-        .string()
-        .describe(
-          'App ID, for more information on obtaining it, please refer to ',
-        ),
+      app_id: z.string().describe('App ID, for more information on obtaining it, please refer to '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -730,15 +706,11 @@ export const applicationV6ApplicationVisibilityCheckWhiteBlackList = {
         .optional(),
       department_ids: z
         .array(z.string())
-        .describe(
-          'The id list of the department you want to query, up to 100.You can call the  interface to obtain',
-        )
+        .describe('The id list of the department you want to query, up to 100.You can call the  interface to obtain')
         .optional(),
       group_ids: z
         .array(z.string())
-        .describe(
-          'the id list of the user group you want to query, up to 100.You can call the  interface to obtain it',
-        )
+        .describe('the id list of the user group you want to query, up to 100.You can call the  interface to obtain it')
         .optional(),
     }),
     params: z.object({
@@ -851,11 +823,7 @@ export const applicationV6ApplicationVisibilityPatch = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional(),
     }),
     path: z.object({
-      app_id: z
-        .string()
-        .describe(
-          "App's app_id, get it from  > Credentials & Basic Info",
-        ),
+      app_id: z.string().describe("App's app_id, get it from  > Credentials & Basic Info"),
     }),
   },
 };

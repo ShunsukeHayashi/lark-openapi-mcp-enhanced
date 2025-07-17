@@ -21,7 +21,7 @@ export async function createLarkBase(
         property?: any;
       }>;
     }>;
-  }
+  },
 ): Promise<{ baseToken: string; tableIds: string[] }> {
   try {
     // Step 1: Create the base app
@@ -72,7 +72,7 @@ export async function createTableView(
     tableId: string;
     viewName: string;
     viewType?: 'grid' | 'kanban' | 'gallery' | 'gantt' | 'form';
-  }
+  },
 ): Promise<{ viewId: string }> {
   try {
     const response = await client.bitable.appTableView.create({
@@ -105,7 +105,7 @@ export async function copyDashboard(
     appToken: string;
     dashboardId: string;
     name: string;
-  }
+  },
 ): Promise<{ dashboardId: string }> {
   try {
     const response = await client.bitable.appDashboard.copy({
@@ -136,7 +136,7 @@ export async function listWorkflows(
   params: {
     appToken: string;
     pageSize?: number;
-  }
+  },
 ): Promise<{ workflows: any[] }> {
   try {
     const response = await client.bitable.appWorkflow.list({
@@ -165,7 +165,7 @@ export async function createSpreadsheetFilterView(
     filterViewName: string;
     range: string;
     filterConditions: any[];
-  }
+  },
 ): Promise<{ filterViewId: string }> {
   try {
     const response = await client.sheets.spreadsheetSheetFilterView.create({
@@ -194,25 +194,25 @@ export async function createSpreadsheetFilterView(
  */
 export function mapFieldType(genesisType: string): number {
   const typeMap: Record<string, number> = {
-    'text': 1,        // Text Multiline
-    'number': 2,      // Number
-    'select': 3,      // SingleSelect
-    'multiselect': 4, // MultiSelect
-    'date': 5,        // DateTime
-    'checkbox': 7,    // Checkbox
-    'user': 11,       // User
-    'phone': 13,      // PhoneNumber
-    'url': 15,        // Url
-    'attachment': 17, // Attachment
-    'link': 18,       // Link (one-way)
-    'formula': 20,    // Formula
-    'duplex': 21,     // DuplexLink (two-way)
-    'location': 22,   // Location
-    'created': 1001,  // CreatedTime
-    'modified': 1002, // ModifiedTime
-    'creator': 1003,  // CreatedUser
-    'modifier': 1004, // ModifiedUser
-    'autonumber': 1005, // AutoSerial
+    text: 1, // Text Multiline
+    number: 2, // Number
+    select: 3, // SingleSelect
+    multiselect: 4, // MultiSelect
+    date: 5, // DateTime
+    checkbox: 7, // Checkbox
+    user: 11, // User
+    phone: 13, // PhoneNumber
+    url: 15, // Url
+    attachment: 17, // Attachment
+    link: 18, // Link (one-way)
+    formula: 20, // Formula
+    duplex: 21, // DuplexLink (two-way)
+    location: 22, // Location
+    created: 1001, // CreatedTime
+    modified: 1002, // ModifiedTime
+    creator: 1003, // CreatedUser
+    modifier: 1004, // ModifiedUser
+    autonumber: 1005, // AutoSerial
   };
 
   return typeMap[genesisType.toLowerCase()] || 1; // Default to text
@@ -259,12 +259,7 @@ export function createStandardFields(tableName: string): any[] {
           field_name: 'Status',
           type: 3, // SingleSelect
           property: {
-            options: [
-              { name: 'To Do' },
-              { name: 'In Progress' },
-              { name: 'Review' },
-              { name: 'Done' },
-            ],
+            options: [{ name: 'To Do' }, { name: 'In Progress' }, { name: 'Review' }, { name: 'Done' }],
           },
         },
         {
@@ -298,12 +293,7 @@ export function createStandardFields(tableName: string): any[] {
           field_name: 'Status',
           type: 3, // SingleSelect
           property: {
-            options: [
-              { name: 'Planning' },
-              { name: 'Active' },
-              { name: 'On Hold' },
-              { name: 'Completed' },
-            ],
+            options: [{ name: 'Planning' }, { name: 'Active' }, { name: 'On Hold' }, { name: 'Completed' }],
           },
         },
         {

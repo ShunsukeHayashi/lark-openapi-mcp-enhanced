@@ -12,11 +12,7 @@ export const hireV2InterviewRecordGet = {
   schema: {
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
     path: z.object({
-      interview_record_id: z
-        .string()
-        .describe(
-          '面试评价 ID，可通过接口获取',
-        ),
+      interview_record_id: z.string().describe('面试评价 ID，可通过接口获取'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -32,12 +28,7 @@ export const hireV2InterviewRecordList = {
   accessTokens: ['tenant', 'user'],
   schema: {
     params: z.object({
-      ids: z
-        .array(z.string())
-        .describe(
-          '面试评价 ID 列表，可通过接口获取，使用该筛选项时不会分页',
-        )
-        .optional(),
+      ids: z.array(z.string()).describe('面试评价 ID 列表，可通过接口获取，使用该筛选项时不会分页').optional(),
       page_size: z.number().describe('分页大小**注意**：若不传该参数，则默认根据 `ids` 参数获取数据').optional(),
       page_token: z
         .string()
@@ -64,11 +55,7 @@ export const hireV2TalentGet = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id', 'people_admin_id']).describe('用户ID类型').optional(),
     }),
     path: z.object({
-      talent_id: z
-        .string()
-        .describe(
-          '人才 ID，可通过接口获取',
-        ),
+      talent_id: z.string().describe('人才 ID，可通过接口获取'),
     }),
   },
 };

@@ -60,16 +60,13 @@ export const imV1BatchMessageDelete = {
   sdkName: 'im.v1.batchMessage.delete',
   path: '/open-apis/im/v1/batch_messages/:batch_message_id',
   httpMethod: 'DELETE',
-  description:
-    '[Feishu/Lark]-消息-批量消息-批量撤回消息-该接口用于撤回通过接口发送的消息',
+  description: '[Feishu/Lark]-消息-批量消息-批量撤回消息-该接口用于撤回通过接口发送的消息',
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
       batch_message_id: z
         .string()
-        .describe(
-          '待撤回的批量消息任务 ID，该 ID 为接口返回值中的`message_id`字段，用于标识一次批量发送消息请求',
-        ),
+        .describe('待撤回的批量消息任务 ID，该 ID 为接口返回值中的`message_id`字段，用于标识一次批量发送消息请求'),
     }),
   },
 };
@@ -79,8 +76,7 @@ export const imV1BatchMessageGetProgress = {
   sdkName: 'im.v1.batchMessage.getProgress',
   path: '/open-apis/im/v1/batch_messages/:batch_message_id/get_progress',
   httpMethod: 'GET',
-  description:
-    '[Feishu/Lark]-消息-批量消息-查询批量消息整体进度-或者后，可通过该接口查询消息的发送进度和撤回进度',
+  description: '[Feishu/Lark]-消息-批量消息-查询批量消息整体进度-或者后，可通过该接口查询消息的发送进度和撤回进度',
   accessTokens: ['tenant'],
   schema: {
     path: z.object({
@@ -117,8 +113,7 @@ export const imV1ChatAnnouncementGet = {
   sdkName: 'im.v1.chatAnnouncement.get',
   path: '/open-apis/im/v1/chats/:chat_id/announcement',
   httpMethod: 'GET',
-  description:
-    '[Feishu/Lark]-群组-群公告-获取群公告信息-获取指定群组中的群公告信息，公告信息格式与格式相同',
+  description: '[Feishu/Lark]-群组-群公告-获取群公告信息-获取指定群组中的群公告信息，公告信息格式与格式相同',
   accessTokens: ['tenant', 'user'],
   schema: {
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional() }),
@@ -150,9 +145,7 @@ export const imV1ChatAnnouncementPatch = {
         ),
       requests: z
         .array(z.string())
-        .describe(
-          '公告内容，调用接口时该参数必须传入值。公告内容的格式与更新旧版文档内容的格式相同，具体数据结构参考',
-        )
+        .describe('公告内容，调用接口时该参数必须传入值。公告内容的格式与更新旧版文档内容的格式相同，具体数据结构参考')
         .optional(),
     }),
     path: z.object({
@@ -264,9 +257,7 @@ export const imV1ChatCreate = {
             )
             .optional(),
         })
-        .describe(
-          '保密模式设置**注意**：保密模式适用于企业旗舰版。适用版本与功能介绍参见',
-        )
+        .describe('保密模式设置**注意**：保密模式适用于企业旗舰版。适用版本与功能介绍参见')
         .optional(),
       urgent_setting: z
         .enum(['only_owner', 'all_members'])
@@ -378,8 +369,7 @@ export const imV1ChatList = {
   sdkName: 'im.v1.chat.list',
   path: '/open-apis/im/v1/chats',
   httpMethod: 'GET',
-  description:
-    '[Feishu/Lark]-群组-群组管理-获取用户或机器人所在的群列表-获取  所代表的用户或者机器人所在的群列表',
+  description: '[Feishu/Lark]-群组-群组管理-获取用户或机器人所在的群列表-获取  所代表的用户或者机器人所在的群列表',
   accessTokens: ['tenant', 'user'],
   schema: {
     params: z.object({
@@ -703,12 +693,7 @@ export const imV1ChatMenuItemPatch = {
           '群 ID。获取方式：- ，从返回结果中获取该群的 chat_id。- 调用接口，可以查询用户或机器人所在群的 chat_id。- 调用，可搜索用户或机器人所在的群、对用户或机器人公开的群的 chat_id。**注意**：仅支持群模式为 **群组（group）** 的群组 ID。你可以调用接口，在返回结果中查看 `chat_mode` 参数取值是否为 `group`',
         )
         .optional(),
-      menu_item_id: z
-        .string()
-        .describe(
-          '一级菜单或者二级菜单的 ID，ID 可通过  接口获取',
-        )
-        .optional(),
+      menu_item_id: z.string().describe('一级菜单或者二级菜单的 ID，ID 可通过  接口获取').optional(),
     }),
   },
 };
@@ -877,9 +862,7 @@ export const imV1ChatMenuTreeDelete = {
     data: z.object({
       chat_menu_top_level_ids: z
         .array(z.string().describe('要删除的一级菜单ID'))
-        .describe(
-          '一级菜单 ID。ID 可通过  接口获取',
-        ),
+        .describe('一级菜单 ID。ID 可通过  接口获取'),
     }),
     path: z.object({
       chat_id: z
@@ -1126,11 +1109,7 @@ export const imV1ChatTabDeleteTabs = {
   accessTokens: ['tenant', 'user'],
   schema: {
     data: z.object({
-      tab_ids: z
-        .array(z.string().describe('群标签id'))
-        .describe(
-          '会话标签页 ID 列表，ID 可以在或者接口返回值中获取',
-        ),
+      tab_ids: z.array(z.string().describe('群标签id')).describe('会话标签页 ID 列表，ID 可以在或者接口返回值中获取'),
     }),
     path: z.object({
       chat_id: z
@@ -1203,12 +1182,7 @@ export const imV1ChatTabUpdateTabs = {
       chat_tabs: z
         .array(
           z.object({
-            tab_id: z
-              .string()
-              .describe(
-                '会话标签页 ID，ID 可以在或者接口返回值中获取',
-              )
-              .optional(),
+            tab_id: z.string().describe('会话标签页 ID，ID 可以在或者接口返回值中获取').optional(),
             tab_name: z
               .string()
               .describe('会话标签页名称**注意**：会话标签页的名称不能超过 30 个字符（最多 10 个汉字）')
@@ -1346,9 +1320,7 @@ export const imV1ChatUpdate = {
     data: z.object({
       avatar: z
         .string()
-        .describe(
-          '群头像对应的 Image Key，可通过获取（注意：上传图片的 ==image_type== 需要指定为 ==avatar==）',
-        )
+        .describe('群头像对应的 Image Key，可通过获取（注意：上传图片的 ==image_type== 需要指定为 ==avatar==）')
         .optional(),
       name: z
         .string()
@@ -1432,9 +1404,7 @@ export const imV1ChatUpdate = {
             )
             .optional(),
         })
-        .describe(
-          '保密模式设置**注意**：保密模式适用于企业旗舰版。适用版本与功能介绍参见',
-        )
+        .describe('保密模式设置**注意**：保密模式适用于企业旗舰版。适用版本与功能介绍参见')
         .optional(),
       chat_type: z.string().describe('群类型**可选值有**：- `private`：私有群- `public`：公开群').optional(),
       group_message_type: z
@@ -1752,11 +1722,7 @@ export const imV1MessageReactionCreate = {
     data: z.object({
       reaction_type: z
         .object({
-          emoji_type: z
-            .string()
-            .describe(
-              'emoji 类型。支持的表情与对应的 emoji_type 值参见',
-            ),
+          emoji_type: z.string().describe('emoji 类型。支持的表情与对应的 emoji_type 值参见'),
         })
         .describe('表情类型'),
     }),
@@ -2016,8 +1982,7 @@ export const imV1PinCreate = {
   sdkName: 'im.v1.pin.create',
   path: '/open-apis/im/v1/pins',
   httpMethod: 'POST',
-  description:
-    '[Feishu/Lark]-消息-Pin-Pin 消息-Pin 一条指定的消息。Pin 消息的效果可参见',
+  description: '[Feishu/Lark]-消息-Pin-Pin 消息-Pin 一条指定的消息。Pin 消息的效果可参见',
   accessTokens: ['tenant', 'user'],
   schema: {
     data: z.object({
@@ -2059,11 +2024,7 @@ export const imV1PinList = {
   accessTokens: ['tenant', 'user'],
   schema: {
     params: z.object({
-      chat_id: z
-        .string()
-        .describe(
-          '待获取 Pin 消息的群组 ID。获取方式参见',
-        ),
+      chat_id: z.string().describe('待获取 Pin 消息的群组 ID。获取方式参见'),
       start_time: z
         .string()
         .describe(
@@ -2111,11 +2072,7 @@ export const imV1ThreadForward = {
         .optional(),
     }),
     path: z.object({
-      thread_id: z
-        .string()
-        .describe(
-          '要转发的话题ID，获取方式参见的 **如何获取 thread_id** 章节',
-        ),
+      thread_id: z.string().describe('要转发的话题ID，获取方式参见的 **如何获取 thread_id** 章节'),
     }),
   },
 };

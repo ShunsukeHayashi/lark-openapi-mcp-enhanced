@@ -70,178 +70,205 @@ export interface FormulaGenerationRequest {
 export class FormulaEngine {
   private static readonly FUNCTION_LIBRARY = new Map<string, FormulaTemplate>([
     // 数学関数
-    ['SUM', {
-      id: 'SUM',
-      name: 'SUM',
-      category: 'aggregation',
-      description: '数値の合計を計算',
-      formula: 'SUM({field})',
-      parameters: [
-        { name: 'field', type: 'field', required: true, description: '数値フィールド' }
-      ],
-      example: 'SUM({売上金額})',
-      returnType: 'number'
-    }],
-    ['AVERAGE', {
-      id: 'AVERAGE',
-      name: 'AVERAGE',
-      category: 'aggregation',
-      description: '数値の平均を計算',
-      formula: 'AVERAGE({field})',
-      parameters: [
-        { name: 'field', type: 'field', required: true, description: '数値フィールド' }
-      ],
-      example: 'AVERAGE({評価点数})',
-      returnType: 'number'
-    }],
-    ['COUNT', {
-      id: 'COUNT',
-      name: 'COUNT',
-      category: 'aggregation',
-      description: '非空白セルの数をカウント',
-      formula: 'COUNT({field})',
-      parameters: [
-        { name: 'field', type: 'field', required: true, description: 'カウント対象フィールド' }
-      ],
-      example: 'COUNT({商品名})',
-      returnType: 'number'
-    }],
-    ['MAX', {
-      id: 'MAX',
-      name: 'MAX',
-      category: 'aggregation',
-      description: '最大値を取得',
-      formula: 'MAX({field})',
-      parameters: [
-        { name: 'field', type: 'field', required: true, description: '数値フィールド' }
-      ],
-      example: 'MAX({売上金額})',
-      returnType: 'number'
-    }],
-    ['MIN', {
-      id: 'MIN',
-      name: 'MIN',
-      category: 'aggregation',
-      description: '最小値を取得',
-      formula: 'MIN({field})',
-      parameters: [
-        { name: 'field', type: 'field', required: true, description: '数値フィールド' }
-      ],
-      example: 'MIN({価格})',
-      returnType: 'number'
-    }],
+    [
+      'SUM',
+      {
+        id: 'SUM',
+        name: 'SUM',
+        category: 'aggregation',
+        description: '数値の合計を計算',
+        formula: 'SUM({field})',
+        parameters: [{ name: 'field', type: 'field', required: true, description: '数値フィールド' }],
+        example: 'SUM({売上金額})',
+        returnType: 'number',
+      },
+    ],
+    [
+      'AVERAGE',
+      {
+        id: 'AVERAGE',
+        name: 'AVERAGE',
+        category: 'aggregation',
+        description: '数値の平均を計算',
+        formula: 'AVERAGE({field})',
+        parameters: [{ name: 'field', type: 'field', required: true, description: '数値フィールド' }],
+        example: 'AVERAGE({評価点数})',
+        returnType: 'number',
+      },
+    ],
+    [
+      'COUNT',
+      {
+        id: 'COUNT',
+        name: 'COUNT',
+        category: 'aggregation',
+        description: '非空白セルの数をカウント',
+        formula: 'COUNT({field})',
+        parameters: [{ name: 'field', type: 'field', required: true, description: 'カウント対象フィールド' }],
+        example: 'COUNT({商品名})',
+        returnType: 'number',
+      },
+    ],
+    [
+      'MAX',
+      {
+        id: 'MAX',
+        name: 'MAX',
+        category: 'aggregation',
+        description: '最大値を取得',
+        formula: 'MAX({field})',
+        parameters: [{ name: 'field', type: 'field', required: true, description: '数値フィールド' }],
+        example: 'MAX({売上金額})',
+        returnType: 'number',
+      },
+    ],
+    [
+      'MIN',
+      {
+        id: 'MIN',
+        name: 'MIN',
+        category: 'aggregation',
+        description: '最小値を取得',
+        formula: 'MIN({field})',
+        parameters: [{ name: 'field', type: 'field', required: true, description: '数値フィールド' }],
+        example: 'MIN({価格})',
+        returnType: 'number',
+      },
+    ],
 
     // 論理関数
-    ['IF', {
-      id: 'IF',
-      name: 'IF',
-      category: 'logical',
-      description: '条件に基づく値の選択',
-      formula: 'IF({condition}, {true_value}, {false_value})',
-      parameters: [
-        { name: 'condition', type: 'value', required: true, description: '条件式' },
-        { name: 'true_value', type: 'value', required: true, description: '真の場合の値' },
-        { name: 'false_value', type: 'value', required: true, description: '偽の場合の値' }
-      ],
-      example: 'IF({売上金額} > 10000, "高額", "通常")',
-      returnType: 'text'
-    }],
-    ['AND', {
-      id: 'AND',
-      name: 'AND',
-      category: 'logical',
-      description: 'すべての条件が真かチェック',
-      formula: 'AND({condition1}, {condition2})',
-      parameters: [
-        { name: 'condition1', type: 'value', required: true, description: '条件1' },
-        { name: 'condition2', type: 'value', required: true, description: '条件2' }
-      ],
-      example: 'AND({在庫数} > 0, {状態} = "販売中")',
-      returnType: 'boolean'
-    }],
-    ['OR', {
-      id: 'OR',
-      name: 'OR',
-      category: 'logical',
-      description: 'いずれかの条件が真かチェック',
-      formula: 'OR({condition1}, {condition2})',
-      parameters: [
-        { name: 'condition1', type: 'value', required: true, description: '条件1' },
-        { name: 'condition2', type: 'value', required: true, description: '条件2' }
-      ],
-      example: 'OR({優先度} = "高", {緊急フラグ} = true)',
-      returnType: 'boolean'
-    }],
+    [
+      'IF',
+      {
+        id: 'IF',
+        name: 'IF',
+        category: 'logical',
+        description: '条件に基づく値の選択',
+        formula: 'IF({condition}, {true_value}, {false_value})',
+        parameters: [
+          { name: 'condition', type: 'value', required: true, description: '条件式' },
+          { name: 'true_value', type: 'value', required: true, description: '真の場合の値' },
+          { name: 'false_value', type: 'value', required: true, description: '偽の場合の値' },
+        ],
+        example: 'IF({売上金額} > 10000, "高額", "通常")',
+        returnType: 'text',
+      },
+    ],
+    [
+      'AND',
+      {
+        id: 'AND',
+        name: 'AND',
+        category: 'logical',
+        description: 'すべての条件が真かチェック',
+        formula: 'AND({condition1}, {condition2})',
+        parameters: [
+          { name: 'condition1', type: 'value', required: true, description: '条件1' },
+          { name: 'condition2', type: 'value', required: true, description: '条件2' },
+        ],
+        example: 'AND({在庫数} > 0, {状態} = "販売中")',
+        returnType: 'boolean',
+      },
+    ],
+    [
+      'OR',
+      {
+        id: 'OR',
+        name: 'OR',
+        category: 'logical',
+        description: 'いずれかの条件が真かチェック',
+        formula: 'OR({condition1}, {condition2})',
+        parameters: [
+          { name: 'condition1', type: 'value', required: true, description: '条件1' },
+          { name: 'condition2', type: 'value', required: true, description: '条件2' },
+        ],
+        example: 'OR({優先度} = "高", {緊急フラグ} = true)',
+        returnType: 'boolean',
+      },
+    ],
 
     // 日付関数
-    ['TODAY', {
-      id: 'TODAY',
-      name: 'TODAY',
-      category: 'date',
-      description: '現在の日付を取得',
-      formula: 'TODAY()',
-      parameters: [],
-      example: 'TODAY()',
-      returnType: 'date'
-    }],
-    ['DATEDIF', {
-      id: 'DATEDIF',
-      name: 'DATEDIF',
-      category: 'date',
-      description: '日付間の差分を計算',
-      formula: 'DATEDIF({start_date}, {end_date}, {unit})',
-      parameters: [
-        { name: 'start_date', type: 'field', required: true, description: '開始日' },
-        { name: 'end_date', type: 'field', required: true, description: '終了日' },
-        { name: 'unit', type: 'value', required: true, description: '単位（D/M/Y）' }
-      ],
-      example: 'DATEDIF({開始日}, {終了日}, "D")',
-      returnType: 'number'
-    }],
+    [
+      'TODAY',
+      {
+        id: 'TODAY',
+        name: 'TODAY',
+        category: 'date',
+        description: '現在の日付を取得',
+        formula: 'TODAY()',
+        parameters: [],
+        example: 'TODAY()',
+        returnType: 'date',
+      },
+    ],
+    [
+      'DATEDIF',
+      {
+        id: 'DATEDIF',
+        name: 'DATEDIF',
+        category: 'date',
+        description: '日付間の差分を計算',
+        formula: 'DATEDIF({start_date}, {end_date}, {unit})',
+        parameters: [
+          { name: 'start_date', type: 'field', required: true, description: '開始日' },
+          { name: 'end_date', type: 'field', required: true, description: '終了日' },
+          { name: 'unit', type: 'value', required: true, description: '単位（D/M/Y）' },
+        ],
+        example: 'DATEDIF({開始日}, {終了日}, "D")',
+        returnType: 'number',
+      },
+    ],
 
     // テキスト関数
-    ['CONCATENATE', {
-      id: 'CONCATENATE',
-      name: 'CONCATENATE',
-      category: 'text',
-      description: 'テキストを結合',
-      formula: 'CONCATENATE({text1}, {text2})',
-      parameters: [
-        { name: 'text1', type: 'field', required: true, description: 'テキスト1' },
-        { name: 'text2', type: 'field', required: true, description: 'テキスト2' }
-      ],
-      example: 'CONCATENATE({姓}, {名})',
-      returnType: 'text'
-    }],
-    ['UPPER', {
-      id: 'UPPER',
-      name: 'UPPER',
-      category: 'text',
-      description: 'テキストを大文字に変換',
-      formula: 'UPPER({text})',
-      parameters: [
-        { name: 'text', type: 'field', required: true, description: 'テキストフィールド' }
-      ],
-      example: 'UPPER({商品コード})',
-      returnType: 'text'
-    }],
+    [
+      'CONCATENATE',
+      {
+        id: 'CONCATENATE',
+        name: 'CONCATENATE',
+        category: 'text',
+        description: 'テキストを結合',
+        formula: 'CONCATENATE({text1}, {text2})',
+        parameters: [
+          { name: 'text1', type: 'field', required: true, description: 'テキスト1' },
+          { name: 'text2', type: 'field', required: true, description: 'テキスト2' },
+        ],
+        example: 'CONCATENATE({姓}, {名})',
+        returnType: 'text',
+      },
+    ],
+    [
+      'UPPER',
+      {
+        id: 'UPPER',
+        name: 'UPPER',
+        category: 'text',
+        description: 'テキストを大文字に変換',
+        formula: 'UPPER({text})',
+        parameters: [{ name: 'text', type: 'field', required: true, description: 'テキストフィールド' }],
+        example: 'UPPER({商品コード})',
+        returnType: 'text',
+      },
+    ],
 
     // ルックアップ関数
-    ['LOOKUP', {
-      id: 'LOOKUP',
-      name: 'LOOKUP',
-      category: 'lookup',
-      description: '他のテーブルから値を検索',
-      formula: 'LOOKUP({table}, {search_field}, {return_field}, {search_value})',
-      parameters: [
-        { name: 'table', type: 'table', required: true, description: '検索対象テーブル' },
-        { name: 'search_field', type: 'field', required: true, description: '検索フィールド' },
-        { name: 'return_field', type: 'field', required: true, description: '取得フィールド' },
-        { name: 'search_value', type: 'value', required: true, description: '検索値' }
-      ],
-      example: 'LOOKUP({商品マスター}, {商品ID}, {商品名}, {商品ID})',
-      returnType: 'text'
-    }]
+    [
+      'LOOKUP',
+      {
+        id: 'LOOKUP',
+        name: 'LOOKUP',
+        category: 'lookup',
+        description: '他のテーブルから値を検索',
+        formula: 'LOOKUP({table}, {search_field}, {return_field}, {search_value})',
+        parameters: [
+          { name: 'table', type: 'table', required: true, description: '検索対象テーブル' },
+          { name: 'search_field', type: 'field', required: true, description: '検索フィールド' },
+          { name: 'return_field', type: 'field', required: true, description: '取得フィールド' },
+          { name: 'search_value', type: 'value', required: true, description: '検索値' },
+        ],
+        example: 'LOOKUP({商品マスター}, {商品ID}, {商品名}, {商品ID})',
+        returnType: 'text',
+      },
+    ],
   ]);
 
   /**
@@ -268,16 +295,16 @@ export class FormulaEngine {
     try {
       // 1. 意図の解析
       const intent = this.parseIntent(request.intent);
-      
+
       // 2. パターンマッチング
       const patterns = this.matchPatterns(intent, request.sourceFields, request.targetType);
-      
+
       // 3. 数式候補の生成
       const candidates = this.generateCandidates(patterns, request);
-      
+
       // 4. 最適な数式の選択
       const bestCandidate = candidates.sort((a, b) => b.confidence - a.confidence)[0];
-      
+
       if (!bestCandidate) {
         return {
           success: false,
@@ -285,7 +312,7 @@ export class FormulaEngine {
           description: '',
           dependencies: [],
           confidence: 0,
-          alternatives: []
+          alternatives: [],
         };
       }
 
@@ -298,9 +325,8 @@ export class FormulaEngine {
         description: bestCandidate.description,
         dependencies: bestCandidate.dependencies,
         confidence: bestCandidate.confidence,
-        alternatives
+        alternatives,
       };
-
     } catch (error) {
       return {
         success: false,
@@ -308,7 +334,7 @@ export class FormulaEngine {
         description: `Generation failed: ${error}`,
         dependencies: [],
         confidence: 0,
-        alternatives: []
+        alternatives: [],
       };
     }
   }
@@ -323,22 +349,22 @@ export class FormulaEngine {
     output: string;
   } {
     const operations = {
-      'sum': ['合計', '総計', 'sum', 'total'],
-      'average': ['平均', 'average', 'avg', '平均値'],
-      'count': ['個数', 'count', '数', 'カウント'],
-      'max': ['最大', 'max', '最大値'],
-      'min': ['最小', 'min', '最小値'],
-      'if': ['条件', 'if', '場合', '分岐'],
-      'concatenate': ['結合', '連結', 'concatenate', '組み合わせ'],
-      'lookup': ['検索', 'lookup', '参照', '取得'],
-      'calculate': ['計算', '演算', 'calculate'],
-      'date_diff': ['日数', '期間', '差分', 'datediff']
+      sum: ['合計', '総計', 'sum', 'total'],
+      average: ['平均', 'average', 'avg', '平均値'],
+      count: ['個数', 'count', '数', 'カウント'],
+      max: ['最大', 'max', '最大値'],
+      min: ['最小', 'min', '最小値'],
+      if: ['条件', 'if', '場合', '分岐'],
+      concatenate: ['結合', '連結', 'concatenate', '組み合わせ'],
+      lookup: ['検索', 'lookup', '参照', '取得'],
+      calculate: ['計算', '演算', 'calculate'],
+      date_diff: ['日数', '期間', '差分', 'datediff'],
     };
 
     let detectedOperation = 'calculate';
-    
+
     for (const [op, keywords] of Object.entries(operations)) {
-      if (keywords.some(keyword => intent.toLowerCase().includes(keyword))) {
+      if (keywords.some((keyword) => intent.toLowerCase().includes(keyword))) {
         detectedOperation = op;
         break;
       }
@@ -346,17 +372,17 @@ export class FormulaEngine {
 
     // フィールド名の抽出（{}で囲まれたもの）
     const fieldMatches = intent.match(/\{([^}]+)\}/g) || [];
-    const fields = fieldMatches.map(match => match.slice(1, -1));
+    const fields = fieldMatches.map((match) => match.slice(1, -1));
 
     // 条件の抽出
     const conditionKeywords = ['>', '<', '=', '>=', '<=', '!=', 'より', '以上', '以下', '等しい'];
-    const conditions = conditionKeywords.filter(keyword => intent.includes(keyword));
+    const conditions = conditionKeywords.filter((keyword) => intent.includes(keyword));
 
     return {
       operation: detectedOperation,
       fields,
       conditions,
-      output: intent
+      output: intent,
     };
   }
 
@@ -366,7 +392,7 @@ export class FormulaEngine {
   private static matchPatterns(
     intent: any,
     sourceFields: any[],
-    targetType: string
+    targetType: string,
   ): Array<{
     template: FormulaTemplate;
     score: number;
@@ -393,13 +419,12 @@ export class FormulaEngine {
       }
 
       // フィールドマッピングの試行
-      template.parameters.forEach(param => {
+      template.parameters.forEach((param) => {
         if (param.type === 'field') {
-          const matchingField = sourceFields.find(field => 
-            intent.fields.includes(field.name) || 
-            this.isCompatibleType(field.type, param.name)
+          const matchingField = sourceFields.find(
+            (field) => intent.fields.includes(field.name) || this.isCompatibleType(field.type, param.name),
           );
-          
+
           if (matchingField) {
             mappings[param.name] = matchingField.name;
             score += 20;
@@ -420,7 +445,7 @@ export class FormulaEngine {
    */
   private static generateCandidates(
     patterns: any[],
-    request: FormulaGenerationRequest
+    request: FormulaGenerationRequest,
   ): Array<{
     formula: string;
     description: string;
@@ -434,11 +459,11 @@ export class FormulaEngine {
       confidence: number;
     }> = [];
 
-    patterns.forEach(pattern => {
+    patterns.forEach((pattern) => {
       try {
         let formula = pattern.template.formula;
         const dependencies: string[] = [];
-        
+
         // パラメータの置換
         pattern.template.parameters.forEach((param: any) => {
           const placeholder = `{${param.name}}`;
@@ -461,9 +486,8 @@ export class FormulaEngine {
           formula,
           description: pattern.template.description,
           dependencies,
-          confidence
+          confidence,
         });
-
       } catch (error) {
         // スキップ
       }
@@ -477,7 +501,7 @@ export class FormulaEngine {
    */
   static validateFormula(
     formula: string,
-    availableFields: Array<{ name: string; type: string; tableName: string }>
+    availableFields: Array<{ name: string; type: string; tableName: string }>,
   ): FormulaValidationResult {
     const result: FormulaValidationResult = {
       isValid: true,
@@ -487,7 +511,7 @@ export class FormulaEngine {
       optimizations: [],
       dependencies: [],
       returnType: 'text',
-      complexity: 'low'
+      complexity: 'low',
     };
 
     try {
@@ -526,7 +550,6 @@ export class FormulaEngine {
       }
 
       return result;
-
     } catch (error) {
       result.isValid = false;
       result.errors.push(`Validation failed: ${error}`);
@@ -577,7 +600,7 @@ export class FormulaEngine {
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
   }
 
@@ -586,7 +609,7 @@ export class FormulaEngine {
    */
   private static checkFieldReferences(
     formula: string,
-    availableFields: Array<{ name: string; type: string; tableName: string }>
+    availableFields: Array<{ name: string; type: string; tableName: string }>,
   ): {
     errors: string[];
     warnings: string[];
@@ -597,11 +620,11 @@ export class FormulaEngine {
     const dependencies: string[] = [];
 
     const fieldMatches = formula.match(/\{([^}]+)\}/g) || [];
-    const fieldNames = new Set(availableFields.map(f => f.name));
+    const fieldNames = new Set(availableFields.map((f) => f.name));
 
-    fieldMatches.forEach(match => {
+    fieldMatches.forEach((match) => {
       const fieldName = match.slice(1, -1);
-      
+
       if (!fieldNames.has(fieldName)) {
         errors.push(`Field not found: ${fieldName}`);
       } else {
@@ -623,10 +646,10 @@ export class FormulaEngine {
     const warnings: string[] = [];
 
     const functionMatches = formula.match(/([A-Z_]+)\s*\(/g) || [];
-    
-    functionMatches.forEach(match => {
+
+    functionMatches.forEach((match) => {
       const funcName = match.replace(/\s*\($/, '');
-      
+
       if (!this.FUNCTION_LIBRARY.has(funcName)) {
         errors.push(`Unknown function: ${funcName}`);
       }
@@ -640,7 +663,7 @@ export class FormulaEngine {
    */
   private static inferReturnType(
     formula: string,
-    availableFields: Array<{ name: string; type: string; tableName: string }>
+    availableFields: Array<{ name: string; type: string; tableName: string }>,
   ): string {
     // 数値関数
     if (/^(SUM|AVERAGE|COUNT|MAX|MIN|DATEDIF)\s*\(/.test(formula)) {
@@ -666,7 +689,7 @@ export class FormulaEngine {
     const fieldMatch = formula.match(/\{([^}]+)\}/);
     if (fieldMatch) {
       const fieldName = fieldMatch[1];
-      const field = availableFields.find(f => f.name === fieldName);
+      const field = availableFields.find((f) => f.name === fieldName);
       if (field) {
         return field.type;
       }
@@ -718,9 +741,7 @@ export class FormulaEngine {
 
     // 重複する部分式の検出
     const subExpressions = this.extractSubExpressions(formula);
-    const duplicates = subExpressions.filter((expr, index) => 
-      subExpressions.indexOf(expr) !== index
-    );
+    const duplicates = subExpressions.filter((expr, index) => subExpressions.indexOf(expr) !== index);
 
     if (duplicates.length > 0) {
       optimizations.push('Consider extracting common sub-expressions to separate fields');
@@ -739,7 +760,7 @@ export class FormulaEngine {
    */
   private static generateSuggestions(
     formula: string,
-    availableFields: Array<{ name: string; type: string; tableName: string }>
+    availableFields: Array<{ name: string; type: string; tableName: string }>,
   ): string[] {
     const suggestions: string[] = [];
 
@@ -761,7 +782,7 @@ export class FormulaEngine {
    */
   private static extractSubExpressions(formula: string): string[] {
     const subExpressions: string[] = [];
-    
+
     // 簡単な実装：関数呼び出しを抽出
     const functionMatches = formula.match(/[A-Z_]+\s*\([^)]*\)/g) || [];
     subExpressions.push(...functionMatches);
@@ -780,11 +801,11 @@ export class FormulaEngine {
     if (parameterName.includes('number') || parameterName.includes('amount')) {
       return numericTypes.includes(fieldType);
     }
-    
+
     if (parameterName.includes('text') || parameterName.includes('name')) {
       return textTypes.includes(fieldType);
     }
-    
+
     if (parameterName.includes('date') || parameterName.includes('time')) {
       return dateTypes.includes(fieldType);
     }
@@ -797,11 +818,11 @@ export class FormulaEngine {
    */
   static getFormulaTemplates(category?: string): FormulaTemplate[] {
     const templates = Array.from(this.FUNCTION_LIBRARY.values());
-    
+
     if (category) {
-      return templates.filter(template => template.category === category);
+      return templates.filter((template) => template.category === category);
     }
-    
+
     return templates;
   }
 
@@ -817,7 +838,7 @@ export class FormulaEngine {
    */
   static simulateFormula(
     formula: string,
-    sampleData: Record<string, any>
+    sampleData: Record<string, any>,
   ): {
     success: boolean;
     result: any;
@@ -826,16 +847,16 @@ export class FormulaEngine {
     try {
       // 簡単な数式シミュレーション（実装省略）
       // 実際にはLark Baseの数式エンジンと同等の処理が必要
-      
+
       return {
         success: true,
-        result: 'Simulation result'
+        result: 'Simulation result',
       };
     } catch (error) {
       return {
         success: false,
         result: null,
-        error: `Simulation failed: ${error}`
+        error: `Simulation failed: ${error}`,
       };
     }
   }

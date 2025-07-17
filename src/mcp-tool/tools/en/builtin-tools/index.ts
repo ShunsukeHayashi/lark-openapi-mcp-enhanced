@@ -4,6 +4,17 @@ import { systemBuiltinToolName, systemBuiltinTools } from './system/builtin';
 import { GenesisToolName, genesisTools } from './genesis';
 import { CompleteToolName, completeTools } from './complete/all-functions';
 
-export const BuiltinTools = [...docxBuiltinTools, ...imBuiltinTools, ...systemBuiltinTools, ...genesisTools, ...completeTools];
+export const BuiltinTools = [
+  ...docxBuiltinTools,
+  ...imBuiltinTools,
+  ...systemBuiltinTools,
+  ...genesisTools,
+  ...completeTools,
+];
 
-export type BuiltinToolName = docxBuiltinToolName | imBuiltinToolName | systemBuiltinToolName | GenesisToolName | CompleteToolName;
+export type BuiltinToolName =
+  | docxBuiltinToolName
+  | imBuiltinToolName
+  | systemBuiltinToolName
+  | GenesisToolName
+  | CompleteToolName;

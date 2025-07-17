@@ -17,32 +17,32 @@ export class MessagingSpecialistAgent extends Agent {
         description: 'Send message to chat or user',
         execute: async (params: any) => {
           const { chatId, messageType = 'text', content, receiveIdType = 'chat_id' } = params;
-          
+
           return this.executeMcpTool('im.v1.message.create', {
             receive_id_type: receiveIdType,
             receive_id: chatId,
             msg_type: messageType,
-            content: typeof content === 'string' ? content : JSON.stringify(content)
+            content: typeof content === 'string' ? content : JSON.stringify(content),
           });
         },
         schema: {
           type: 'object',
           properties: {
             chatId: { type: 'string', description: 'Chat or user ID' },
-            messageType: { 
-              type: 'string', 
+            messageType: {
+              type: 'string',
               enum: ['text', 'image', 'file', 'audio', 'media', 'sticker', 'interactive'],
-              default: 'text'
+              default: 'text',
             },
             content: { description: 'Message content (text or structured object)' },
-            receiveIdType: { 
-              type: 'string', 
+            receiveIdType: {
+              type: 'string',
               enum: ['chat_id', 'user_id', 'union_id', 'open_id'],
-              default: 'chat_id'
-            }
+              default: 'chat_id',
+            },
           },
-          required: ['chatId', 'content']
-        }
+          required: ['chatId', 'content'],
+        },
       },
 
       {
@@ -50,15 +50,15 @@ export class MessagingSpecialistAgent extends Agent {
         description: 'Send rich message with cards, buttons, or interactive elements',
         execute: async (params: any) => {
           const { chatId, cardContent, updateMulti = false } = params;
-          
+
           return this.executeMcpTool('im.v1.message.create', {
             receive_id_type: 'chat_id',
             receive_id: chatId,
             msg_type: 'interactive',
             content: JSON.stringify({
               config: { update_multi: updateMulti },
-              elements: cardContent
-            })
+              elements: cardContent,
+            }),
           });
         },
         schema: {
@@ -66,10 +66,10 @@ export class MessagingSpecialistAgent extends Agent {
           properties: {
             chatId: { type: 'string', description: 'Chat ID' },
             cardContent: { type: 'array', description: 'Interactive card elements' },
-            updateMulti: { type: 'boolean', default: false }
+            updateMulti: { type: 'boolean', default: false },
           },
-          required: ['chatId', 'cardContent']
-        }
+          required: ['chatId', 'cardContent'],
+        },
       },
 
       {
@@ -77,11 +77,11 @@ export class MessagingSpecialistAgent extends Agent {
         description: 'Create new group chat',
         execute: async (params: any) => {
           const { name, description, userIds = [] } = params;
-          
+
           return this.executeMcpTool('im.v1.chat.create', {
             name,
             description,
-            user_ids: userIds
+            user_ids: userIds,
           });
         },
         schema: {
@@ -89,14 +89,14 @@ export class MessagingSpecialistAgent extends Agent {
           properties: {
             name: { type: 'string', description: 'Group chat name' },
             description: { type: 'string', description: 'Group description' },
-            userIds: { 
-              type: 'array', 
+            userIds: {
+              type: 'array',
               items: { type: 'string' },
-              description: 'Initial member user IDs'
-            }
+              description: 'Initial member user IDs',
+            },
           },
-          required: ['name']
-        }
+          required: ['name'],
+        },
       },
 
       {
@@ -104,33 +104,31 @@ export class MessagingSpecialistAgent extends Agent {
         description: 'Add or remove members from group chat',
         execute: async (params: any) => {
           const { chatId, action, userIds } = params;
-          
-          const toolName = action === 'add' 
-            ? 'im.v1.chat.members.create' 
-            : 'im.v1.chat.members.delete';
-          
+
+          const toolName = action === 'add' ? 'im.v1.chat.members.create' : 'im.v1.chat.members.delete';
+
           return this.executeMcpTool(toolName, {
             chat_id: chatId,
-            id_list: userIds
+            id_list: userIds,
           });
         },
         schema: {
           type: 'object',
           properties: {
             chatId: { type: 'string', description: 'Chat ID' },
-            action: { 
-              type: 'string', 
+            action: {
+              type: 'string',
               enum: ['add', 'remove'],
-              description: 'Action to perform'
+              description: 'Action to perform',
             },
-            userIds: { 
-              type: 'array', 
+            userIds: {
+              type: 'array',
               items: { type: 'string' },
-              description: 'User IDs to add or remove'
-            }
+              description: 'User IDs to add or remove',
+            },
           },
-          required: ['chatId', 'action', 'userIds']
-        }
+          required: ['chatId', 'action', 'userIds'],
+        },
       },
 
       {
@@ -138,21 +136,21 @@ export class MessagingSpecialistAgent extends Agent {
         description: 'Get list of chat members',
         execute: async (params: any) => {
           const { chatId, pageSize = 100 } = params;
-          
+
           return this.executeMcpTool('im.v1.chat.members.get', {
             chat_id: chatId,
             member_id_type: 'user_id',
-            page_size: pageSize
+            page_size: pageSize,
           });
         },
         schema: {
           type: 'object',
           properties: {
             chatId: { type: 'string', description: 'Chat ID' },
-            pageSize: { type: 'number', default: 100 }
+            pageSize: { type: 'number', default: 100 },
           },
-          required: ['chatId']
-        }
+          required: ['chatId'],
+        },
       },
 
       {
@@ -160,16 +158,14 @@ export class MessagingSpecialistAgent extends Agent {
         description: 'Send file or image message',
         execute: async (params: any) => {
           const { chatId, fileKey, fileName, fileType = 'file' } = params;
-          
-          const content = fileType === 'image' 
-            ? { image_key: fileKey }
-            : { file_key: fileKey, file_name: fileName };
-          
+
+          const content = fileType === 'image' ? { image_key: fileKey } : { file_key: fileKey, file_name: fileName };
+
           return this.executeMcpTool('im.v1.message.create', {
             receive_id_type: 'chat_id',
             receive_id: chatId,
             msg_type: fileType,
-            content: JSON.stringify(content)
+            content: JSON.stringify(content),
           });
         },
         schema: {
@@ -178,14 +174,14 @@ export class MessagingSpecialistAgent extends Agent {
             chatId: { type: 'string', description: 'Chat ID' },
             fileKey: { type: 'string', description: 'File key from upload' },
             fileName: { type: 'string', description: 'File name' },
-            fileType: { 
-              type: 'string', 
+            fileType: {
+              type: 'string',
               enum: ['file', 'image'],
-              default: 'file'
-            }
+              default: 'file',
+            },
           },
-          required: ['chatId', 'fileKey']
-        }
+          required: ['chatId', 'fileKey'],
+        },
       },
 
       {
@@ -193,13 +189,13 @@ export class MessagingSpecialistAgent extends Agent {
         description: 'Retrieve chat message history',
         execute: async (params: any) => {
           const { chatId, startTime, endTime, pageSize = 50 } = params;
-          
+
           return this.executeMcpTool('im.v1.message.list', {
             container_id: chatId,
             container_id_type: 'chat_id',
             start_time: startTime,
             end_time: endTime,
-            page_size: pageSize
+            page_size: pageSize,
           });
         },
         schema: {
@@ -208,10 +204,10 @@ export class MessagingSpecialistAgent extends Agent {
             chatId: { type: 'string', description: 'Chat ID' },
             startTime: { type: 'string', description: 'Start timestamp' },
             endTime: { type: 'string', description: 'End timestamp' },
-            pageSize: { type: 'number', default: 50 }
+            pageSize: { type: 'number', default: 50 },
           },
-          required: ['chatId']
-        }
+          required: ['chatId'],
+        },
       },
 
       {
@@ -219,24 +215,24 @@ export class MessagingSpecialistAgent extends Agent {
         description: 'Add reaction to message',
         execute: async (params: any) => {
           const { messageId, reactionType } = params;
-          
+
           return this.executeMcpTool('im.v1.message.reaction.create', {
             message_id: messageId,
-            reaction_type: reactionType
+            reaction_type: reactionType,
           });
         },
         schema: {
           type: 'object',
           properties: {
             messageId: { type: 'string', description: 'Message ID to react to' },
-            reactionType: { 
+            reactionType: {
               type: 'string',
-              description: 'Reaction emoji or type'
-            }
+              description: 'Reaction emoji or type',
+            },
           },
-          required: ['messageId', 'reactionType']
-        }
-      }
+          required: ['messageId', 'reactionType'],
+        },
+      },
     ];
 
     const specialistConfig: AgentConfig = {
@@ -268,7 +264,7 @@ export class MessagingSpecialistAgent extends Agent {
       temperature: 0.3, // コミュニケーションなので適度な創造性
       maxTokens: 3000,
       language: 'ja',
-      ...config
+      ...config,
     };
 
     super(specialistConfig);
@@ -286,19 +282,18 @@ export class MessagingSpecialistAgent extends Agent {
         timestamp: new Date().toISOString(),
         data: {
           message: `Executed ${toolName} successfully`,
-          ...params
-        }
+          ...params,
+        },
       };
 
       return response;
-
     } catch (error) {
       return {
         success: false,
         tool: toolName,
         parameters: params,
         error: String(error),
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
     }
   }
@@ -306,56 +301,54 @@ export class MessagingSpecialistAgent extends Agent {
   /**
    * Analyze message for appropriate delivery method
    */
-  async analyzeMessageContent(content: string, context: any): Promise<{
+  async analyzeMessageContent(
+    content: string,
+    context: any,
+  ): Promise<{
     urgency: 'low' | 'medium' | 'high' | 'urgent';
     messageType: 'text' | 'rich' | 'notification';
     recommendations: string[];
     estimatedDelivery: number;
   }> {
     const lowerContent = content.toLowerCase();
-    
+
     // Urgent keywords
-    if (lowerContent.includes('緊急') || lowerContent.includes('urgent') || 
-        lowerContent.includes('エラー') || lowerContent.includes('error')) {
+    if (
+      lowerContent.includes('緊急') ||
+      lowerContent.includes('urgent') ||
+      lowerContent.includes('エラー') ||
+      lowerContent.includes('error')
+    ) {
       return {
         urgency: 'urgent',
         messageType: 'notification',
-        recommendations: [
-          '即座に配信',
-          'プッシュ通知を有効化',
-          'エスカレーション準備'
-        ],
-        estimatedDelivery: 5 // seconds
+        recommendations: ['即座に配信', 'プッシュ通知を有効化', 'エスカレーション準備'],
+        estimatedDelivery: 5, // seconds
       };
     }
 
     // High priority
-    if (lowerContent.includes('重要') || lowerContent.includes('important') ||
-        lowerContent.includes('deadline') || lowerContent.includes('締切')) {
+    if (
+      lowerContent.includes('重要') ||
+      lowerContent.includes('important') ||
+      lowerContent.includes('deadline') ||
+      lowerContent.includes('締切')
+    ) {
       return {
         urgency: 'high',
         messageType: 'rich',
-        recommendations: [
-          'リッチメッセージで強調',
-          'アクションボタン追加',
-          '読了確認を要求'
-        ],
-        estimatedDelivery: 10
+        recommendations: ['リッチメッセージで強調', 'アクションボタン追加', '読了確認を要求'],
+        estimatedDelivery: 10,
       };
     }
 
-    // Medium priority  
-    if (content.length > 500 || lowerContent.includes('詳細') || 
-        lowerContent.includes('資料')) {
+    // Medium priority
+    if (content.length > 500 || lowerContent.includes('詳細') || lowerContent.includes('資料')) {
       return {
         urgency: 'medium',
         messageType: 'rich',
-        recommendations: [
-          'カード形式で整理',
-          'ファイル添付を検討',
-          '構造化して表示'
-        ],
-        estimatedDelivery: 30
+        recommendations: ['カード形式で整理', 'ファイル添付を検討', '構造化して表示'],
+        estimatedDelivery: 30,
       };
     }
 
@@ -363,11 +356,8 @@ export class MessagingSpecialistAgent extends Agent {
     return {
       urgency: 'low',
       messageType: 'text',
-      recommendations: [
-        '通常のテキストメッセージ',
-        '適切なタイミングで配信'
-      ],
-      estimatedDelivery: 60
+      recommendations: ['通常のテキストメッセージ', '適切なタイミングで配信'],
+      estimatedDelivery: 60,
     };
   }
 
@@ -379,7 +369,7 @@ export class MessagingSpecialistAgent extends Agent {
       case 'notification':
         return {
           text: `🚨 ${content}`,
-          notification: true
+          notification: true,
         };
 
       case 'rich':
@@ -390,10 +380,10 @@ export class MessagingSpecialistAgent extends Agent {
               tag: 'div',
               text: {
                 content: content,
-                tag: 'lark_md'
-              }
-            }
-          ]
+                tag: 'lark_md',
+              },
+            },
+          ],
         };
 
       case 'text':
@@ -417,30 +407,30 @@ export async function createMessagingSpecialist(): Promise<string> {
         properties: {
           chatId: { type: 'string' },
           content: { type: 'string' },
-          messageType: { type: 'string' }
-        }
-      }
+          messageType: { type: 'string' },
+        },
+      },
     },
     {
       name: 'chat_management',
       description: 'Group chat creation and member management',
-      category: 'im'
+      category: 'im',
     },
     {
       name: 'rich_messaging',
       description: 'Interactive cards and rich content',
-      category: 'im'
+      category: 'im',
     },
     {
       name: 'file_sharing',
       description: 'File and media sharing via messages',
-      category: 'im'
+      category: 'im',
     },
     {
       name: 'notification_management',
       description: 'Urgent notifications and alerts',
-      category: 'im'
-    }
+      category: 'im',
+    },
   ];
 
   const metadata: AgentMetadata = {
@@ -452,7 +442,7 @@ export async function createMessagingSpecialist(): Promise<string> {
     maxConcurrentTasks: 5, // Can handle more messaging tasks
     currentTasks: 0,
     lastHeartbeat: new Date(),
-    version: '1.0.0'
+    version: '1.0.0',
   };
 
   const registered = await globalRegistry.registerAgent(metadata);

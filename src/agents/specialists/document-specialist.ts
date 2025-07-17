@@ -17,12 +17,12 @@ export class DocumentSpecialistAgent extends Agent {
         description: 'Create new document in Lark Docs',
         execute: async (params: any) => {
           const { title, content, folderToken, docType = 'doc' } = params;
-          
+
           return this.executeMcpTool('docs.v1.document.create', {
             title,
             content,
             folder_token: folderToken,
-            doc_type: docType
+            doc_type: docType,
           });
         },
         schema: {
@@ -31,14 +31,14 @@ export class DocumentSpecialistAgent extends Agent {
             title: { type: 'string', description: 'Document title' },
             content: { type: 'string', description: 'Document content (markdown or HTML)' },
             folderToken: { type: 'string', description: 'Parent folder token' },
-            docType: { 
-              type: 'string', 
+            docType: {
+              type: 'string',
               enum: ['doc', 'sheet', 'mindnote', 'bitable'],
-              default: 'doc'
-            }
+              default: 'doc',
+            },
           },
-          required: ['title']
-        }
+          required: ['title'],
+        },
       },
 
       {
@@ -46,24 +46,24 @@ export class DocumentSpecialistAgent extends Agent {
         description: 'Retrieve document content and metadata',
         execute: async (params: any) => {
           const { documentId, format = 'markdown' } = params;
-          
+
           return this.executeMcpTool('docs.v1.document.get', {
             document_id: documentId,
-            format
+            format,
           });
         },
         schema: {
           type: 'object',
           properties: {
             documentId: { type: 'string', description: 'Document ID' },
-            format: { 
-              type: 'string', 
+            format: {
+              type: 'string',
               enum: ['markdown', 'html', 'text'],
-              default: 'markdown'
-            }
+              default: 'markdown',
+            },
           },
-          required: ['documentId']
-        }
+          required: ['documentId'],
+        },
       },
 
       {
@@ -71,11 +71,11 @@ export class DocumentSpecialistAgent extends Agent {
         description: 'Update document content',
         execute: async (params: any) => {
           const { documentId, content, revision } = params;
-          
+
           return this.executeMcpTool('docs.v1.document.patch', {
             document_id: documentId,
             content,
-            revision
+            revision,
           });
         },
         schema: {
@@ -83,10 +83,10 @@ export class DocumentSpecialistAgent extends Agent {
           properties: {
             documentId: { type: 'string', description: 'Document ID' },
             content: { type: 'string', description: 'Updated content' },
-            revision: { type: 'string', description: 'Current revision ID' }
+            revision: { type: 'string', description: 'Current revision ID' },
           },
-          required: ['documentId', 'content']
-        }
+          required: ['documentId', 'content'],
+        },
       },
 
       {
@@ -94,13 +94,13 @@ export class DocumentSpecialistAgent extends Agent {
         description: 'Upload file to Lark Drive',
         execute: async (params: any) => {
           const { fileName, fileContent, folderToken, mimeType } = params;
-          
+
           return this.executeMcpTool('drive.v1.file.upload_all', {
             file_name: fileName,
             file_content: fileContent,
             parent_type: 'explorer',
             parent_node: folderToken,
-            mime_type: mimeType
+            mime_type: mimeType,
           });
         },
         schema: {
@@ -109,10 +109,10 @@ export class DocumentSpecialistAgent extends Agent {
             fileName: { type: 'string', description: 'File name' },
             fileContent: { type: 'string', description: 'File content (base64 encoded)' },
             folderToken: { type: 'string', description: 'Parent folder token' },
-            mimeType: { type: 'string', description: 'File MIME type' }
+            mimeType: { type: 'string', description: 'File MIME type' },
           },
-          required: ['fileName', 'fileContent']
-        }
+          required: ['fileName', 'fileContent'],
+        },
       },
 
       {
@@ -120,32 +120,32 @@ export class DocumentSpecialistAgent extends Agent {
         description: 'Search files and documents',
         execute: async (params: any) => {
           const { query, searchScope = 'user', fileTypes, pageSize = 50 } = params;
-          
+
           return this.executeMcpTool('drive.v1.file.search', {
             search_key: query,
             search_scope: searchScope,
             file_types: fileTypes,
-            page_size: pageSize
+            page_size: pageSize,
           });
         },
         schema: {
           type: 'object',
           properties: {
             query: { type: 'string', description: 'Search query' },
-            searchScope: { 
-              type: 'string', 
+            searchScope: {
+              type: 'string',
               enum: ['user', 'team', 'shared'],
-              default: 'user'
+              default: 'user',
             },
-            fileTypes: { 
+            fileTypes: {
               type: 'array',
               items: { type: 'string' },
-              description: 'File types to search'
+              description: 'File types to search',
             },
-            pageSize: { type: 'number', default: 50 }
+            pageSize: { type: 'number', default: 50 },
           },
-          required: ['query']
-        }
+          required: ['query'],
+        },
       },
 
       {
@@ -153,32 +153,32 @@ export class DocumentSpecialistAgent extends Agent {
         description: 'Manage document/file permissions',
         execute: async (params: any) => {
           const { fileToken, memberType, memberId, permissionLevel } = params;
-          
+
           return this.executeMcpTool('drive.v1.permission.member.create', {
             token: fileToken,
             member_type: memberType,
             member_id: memberId,
-            perm: permissionLevel
+            perm: permissionLevel,
           });
         },
         schema: {
           type: 'object',
           properties: {
             fileToken: { type: 'string', description: 'File or document token' },
-            memberType: { 
-              type: 'string', 
+            memberType: {
+              type: 'string',
               enum: ['user', 'chat', 'department'],
-              description: 'Type of member'
+              description: 'Type of member',
             },
             memberId: { type: 'string', description: 'Member ID' },
-            permissionLevel: { 
-              type: 'string', 
+            permissionLevel: {
+              type: 'string',
               enum: ['view', 'edit', 'full_access'],
-              description: 'Permission level'
-            }
+              description: 'Permission level',
+            },
           },
-          required: ['fileToken', 'memberType', 'memberId', 'permissionLevel']
-        }
+          required: ['fileToken', 'memberType', 'memberId', 'permissionLevel'],
+        },
       },
 
       {
@@ -186,21 +186,21 @@ export class DocumentSpecialistAgent extends Agent {
         description: 'Get file version history',
         execute: async (params: any) => {
           const { fileToken, pageSize = 20 } = params;
-          
+
           return this.executeMcpTool('drive.v1.file.version.list', {
             file_token: fileToken,
-            page_size: pageSize
+            page_size: pageSize,
           });
         },
         schema: {
           type: 'object',
           properties: {
             fileToken: { type: 'string', description: 'File token' },
-            pageSize: { type: 'number', default: 20 }
+            pageSize: { type: 'number', default: 20 },
           },
-          required: ['fileToken']
-        }
-      }
+          required: ['fileToken'],
+        },
+      },
     ];
 
     const specialistConfig: AgentConfig = {
@@ -232,7 +232,7 @@ export class DocumentSpecialistAgent extends Agent {
       temperature: 0.2, // 正確性重視
       maxTokens: 4000,
       language: 'ja',
-      ...config
+      ...config,
     };
 
     super(specialistConfig);
@@ -250,19 +250,18 @@ export class DocumentSpecialistAgent extends Agent {
         timestamp: new Date().toISOString(),
         data: {
           message: `Executed ${toolName} successfully`,
-          ...params
-        }
+          ...params,
+        },
       };
 
       return response;
-
     } catch (error) {
       return {
         success: false,
         tool: toolName,
         parameters: params,
         error: String(error),
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
     }
   }
@@ -270,7 +269,10 @@ export class DocumentSpecialistAgent extends Agent {
   /**
    * Analyze document operation and recommend optimization
    */
-  async analyzeDocumentOperation(operation: string, context: any): Promise<{
+  async analyzeDocumentOperation(
+    operation: string,
+    context: any,
+  ): Promise<{
     complexity: 'simple' | 'moderate' | 'complex';
     estimatedTime: number;
     securityLevel: 'public' | 'internal' | 'confidential';
@@ -278,14 +280,15 @@ export class DocumentSpecialistAgent extends Agent {
     requiredPermissions: string[];
   }> {
     const lowerOp = operation.toLowerCase();
-    
+
     // Security analysis
     let securityLevel: 'public' | 'internal' | 'confidential' = 'internal';
-    if (context.content && (
-      context.content.includes('confidential') ||
-      context.content.includes('機密') ||
-      context.content.includes('secret')
-    )) {
+    if (
+      context.content &&
+      (context.content.includes('confidential') ||
+        context.content.includes('機密') ||
+        context.content.includes('secret'))
+    ) {
       securityLevel = 'confidential';
     }
 
@@ -298,9 +301,9 @@ export class DocumentSpecialistAgent extends Agent {
         recommendations: [
           'Use appropriate format for content',
           'Cache frequently accessed documents',
-          'Verify read permissions'
+          'Verify read permissions',
         ],
-        requiredPermissions: ['view']
+        requiredPermissions: ['view'],
       };
     }
 
@@ -314,9 +317,9 @@ export class DocumentSpecialistAgent extends Agent {
           'Validate content before saving',
           'Create version backup',
           'Set appropriate permissions',
-          'Add relevant metadata'
+          'Add relevant metadata',
         ],
-        requiredPermissions: ['edit', 'write']
+        requiredPermissions: ['edit', 'write'],
       };
     }
 
@@ -330,9 +333,9 @@ export class DocumentSpecialistAgent extends Agent {
         'Implement progress tracking',
         'Use batch processing for multiple files',
         'Consider impact on collaborators',
-        'Schedule during low-usage periods'
+        'Schedule during low-usage periods',
       ],
-      requiredPermissions: ['full_access', 'admin']
+      requiredPermissions: ['full_access', 'admin'],
     };
   }
 
@@ -354,7 +357,7 @@ export class DocumentSpecialistAgent extends Agent {
       /password\s*[:=]\s*\S+/i, // Password disclosure
     ];
 
-    sensitivePatterns.forEach(pattern => {
+    sensitivePatterns.forEach((pattern) => {
       if (pattern.test(content)) {
         issues.push('Potential sensitive information detected');
         suggestions.push('Review content for personal or confidential data');
@@ -375,7 +378,7 @@ export class DocumentSpecialistAgent extends Agent {
     return {
       isValid: issues.length === 0,
       issues,
-      suggestions
+      suggestions,
     };
   }
 }
@@ -394,35 +397,35 @@ export async function createDocumentSpecialist(): Promise<string> {
         properties: {
           operation: { type: 'string' },
           documentId: { type: 'string' },
-          content: { type: 'string' }
-        }
-      }
+          content: { type: 'string' },
+        },
+      },
     },
     {
       name: 'file_operations',
       description: 'File upload, download, and organization',
-      category: 'docs'
+      category: 'docs',
     },
     {
       name: 'permission_management',
       description: 'Document and file access control',
-      category: 'docs'
+      category: 'docs',
     },
     {
       name: 'version_control',
       description: 'Document version management and history',
-      category: 'docs'
+      category: 'docs',
     },
     {
       name: 'content_validation',
       description: 'Security and compliance checking',
-      category: 'docs'
+      category: 'docs',
     },
     {
       name: 'search_indexing',
       description: 'Document search and discovery',
-      category: 'docs'
-    }
+      category: 'docs',
+    },
   ];
 
   const metadata: AgentMetadata = {
@@ -434,7 +437,7 @@ export async function createDocumentSpecialist(): Promise<string> {
     maxConcurrentTasks: 4,
     currentTasks: 0,
     lastHeartbeat: new Date(),
-    version: '1.0.0'
+    version: '1.0.0',
   };
 
   const registered = await globalRegistry.registerAgent(metadata);

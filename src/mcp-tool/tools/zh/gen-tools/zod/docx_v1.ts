@@ -6698,12 +6698,7 @@ export const docxV1DocumentBlockBatchUpdate = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional(),
     }),
     path: z.object({
-      document_id: z
-        .string()
-        .describe(
-          '文档唯一标识。对应新版文档 Token，',
-        )
-        .optional(),
+      document_id: z.string().describe('文档唯一标识。对应新版文档 Token，').optional(),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -6737,11 +6732,7 @@ export const docxV1DocumentBlockChildrenBatchDelete = {
         .optional(),
     }),
     path: z.object({
-      document_id: z
-        .string()
-        .describe(
-          '文档唯一标识。对应新版文档 Token，',
-        ),
+      document_id: z.string().describe('文档唯一标识。对应新版文档 Token，'),
       block_id: z.string().describe('父 Block 的唯一标识'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
@@ -11795,12 +11786,7 @@ export const docxV1DocumentBlockChildrenCreate = {
             quote_container: z.object({}).describe('引用容器 Block').optional(),
             okr: z
               .object({
-                okr_id: z
-                  .string()
-                  .describe(
-                    'OKR ID，获取需要插入的 OKR ID 可见',
-                  )
-                  .optional(),
+                okr_id: z.string().describe('OKR ID，获取需要插入的 OKR ID 可见').optional(),
                 objectives: z
                   .array(
                     z.object({
@@ -11844,11 +11830,7 @@ export const docxV1DocumentBlockChildrenCreate = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional(),
     }),
     path: z.object({
-      document_id: z
-        .string()
-        .describe(
-          '文档唯一标识。对应新版文档 Token，',
-        ),
+      document_id: z.string().describe('文档唯一标识。对应新版文档 Token，'),
       block_id: z.string().describe('Block 的唯一标识'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
@@ -11881,11 +11863,7 @@ export const docxV1DocumentBlockChildrenGet = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional(),
     }),
     path: z.object({
-      document_id: z
-        .string()
-        .describe(
-          '文档唯一标识。对应新版文档 Token，',
-        ),
+      document_id: z.string().describe('文档唯一标识。对应新版文档 Token，'),
       block_id: z.string().describe('Block 的唯一标识'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
@@ -16481,11 +16459,7 @@ export const docxV1DocumentBlockGet = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional(),
     }),
     path: z.object({
-      document_id: z
-        .string()
-        .describe(
-          '文档唯一标识。对应新版文档 Token，',
-        ),
+      document_id: z.string().describe('文档唯一标识。对应新版文档 Token，'),
       block_id: z.string().describe('Block 的唯一标识'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
@@ -16517,11 +16491,7 @@ export const docxV1DocumentBlockList = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional(),
     }),
     path: z.object({
-      document_id: z
-        .string()
-        .describe(
-          '文档的唯一标识。对应新版文档 Token，',
-        ),
+      document_id: z.string().describe('文档的唯一标识。对应新版文档 Token，'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },
@@ -17260,11 +17230,7 @@ export const docxV1DocumentBlockPatch = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('用户ID类型').optional(),
     }),
     path: z.object({
-      document_id: z
-        .string()
-        .describe(
-          '文档唯一标识。对应新版文档 Token，',
-        ),
+      document_id: z.string().describe('文档唯一标识。对应新版文档 Token，'),
       block_id: z.string().describe('Block 的唯一标识'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
@@ -17328,11 +17294,7 @@ export const docxV1DocumentRawContent = {
         .optional(),
     }),
     path: z.object({
-      document_id: z
-        .string()
-        .describe(
-          '文档的唯一标识。点击了解如何获取文档的 `document_id`',
-        ),
+      document_id: z.string().describe('文档的唯一标识。点击了解如何获取文档的 `document_id`'),
     }),
     useUAT: z.boolean().describe('使用用户身份请求, 否则使用应用身份').optional(),
   },

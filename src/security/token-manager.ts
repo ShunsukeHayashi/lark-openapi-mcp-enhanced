@@ -1,6 +1,6 @@
 /**
  * Enhanced Token Manager with Security Features
- * 
+ *
  * This module provides secure token management with encryption, rotation,
  * and automatic refresh capabilities for the Lark OpenAPI MCP integration.
  */
@@ -50,18 +50,22 @@ export class SecureTokenManager extends EventEmitter {
       rotationInterval: 90, // 90 minutes
       maxTokenAge: 24, // 24 hours
       backupCount: 5,
-      ...rotationConfig
+      ...rotationConfig,
     };
-    
-    this.credentialsPath = path.join(process.env.HOME || process.env.USERPROFILE || '.', '.lark-mcp', 'secure-credentials.json');
+
+    this.credentialsPath = path.join(
+      process.env.HOME || process.env.USERPROFILE || '.',
+      '.lark-mcp',
+      'secure-credentials.json',
+    );
     this.currentTokens = new Map();
-    
+
     // Initialize encryption key
     this.encryptionKey = this.deriveEncryptionKey();
-    
+
     // Load existing tokens
     this.loadTokens();
-    
+
     // Start automatic token rotation
     if (this.rotationConfig.enabled) {
       this.startTokenRotation();
@@ -74,7 +78,7 @@ export class SecureTokenManager extends EventEmitter {
   private deriveEncryptionKey(): Buffer {
     const salt = crypto.randomBytes(32);
     const baseKey = this.config.encryptionKey || this.config.appSecret;
-    
+
     // Use PBKDF2 for key derivation
     return crypto.pbkdf2Sync(baseKey, salt, 100000, 32, 'sha256');
   }
@@ -86,16 +90,16 @@ export class SecureTokenManager extends EventEmitter {
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipher('aes-256-gcm', this.encryptionKey);
     cipher.setAAD(Buffer.from(this.config.appId)); // Additional authenticated data
-    
+
     let encrypted = cipher.update(data, 'utf8', 'hex');
     encrypted += cipher.final('hex');
-    
+
     const tag = cipher.getAuthTag();
-    
+
     return {
       encrypted,
       iv: iv.toString('hex'),
-      tag: tag.toString('hex')
+      tag: tag.toString('hex'),
     };
   }
 
@@ -106,10 +110,10 @@ export class SecureTokenManager extends EventEmitter {
     const decipher = crypto.createDecipher('aes-256-gcm', this.encryptionKey);
     decipher.setAAD(Buffer.from(this.config.appId));
     decipher.setAuthTag(Buffer.from(encryptedData.tag, 'hex'));
-    
+
     let decrypted = decipher.update(encryptedData.encrypted, 'hex', 'utf8');
     decrypted += decipher.final('utf8');
-    
+
     return decrypted;
   }
 
@@ -117,7 +121,10 @@ export class SecureTokenManager extends EventEmitter {
    * Generate secure hash for token validation
    */
   private generateTokenHash(token: string): string {
-    return crypto.createHash('sha256').update(token + this.config.appId).digest('hex');
+    return crypto
+      .createHash('sha256')
+      .update(token + this.config.appId)
+      .digest('hex');
   }
 
   /**
@@ -133,13 +140,13 @@ export class SecureTokenManager extends EventEmitter {
   async storeTokens(tokens: { [key: string]: string }): Promise<void> {
     const tokensData = JSON.stringify(tokens);
     const encryptedData = this.encrypt(tokensData);
-    
+
     const secureStorage: SecureTokenStorage = {
       encryptedTokens: JSON.stringify(encryptedData),
       tokenHash: this.generateTokenHash(tokensData),
       lastRotation: new Date().toISOString(),
-      expiresAt: new Date(Date.now() + (this.rotationConfig.maxTokenAge * 60 * 60 * 1000)).toISOString(),
-      version: '1.0'
+      expiresAt: new Date(Date.now() + this.rotationConfig.maxTokenAge * 60 * 60 * 1000).toISOString(),
+      version: '1.0',
     };
 
     // Ensure directory exists
@@ -150,12 +157,12 @@ export class SecureTokenManager extends EventEmitter {
 
     // Write with secure permissions
     fs.writeFileSync(this.credentialsPath, JSON.stringify(secureStorage, null, 2), { mode: 0o600 });
-    
+
     // Update in-memory cache
     for (const [key, value] of Object.entries(tokens)) {
       this.currentTokens.set(key, {
         value,
-        expiresAt: new Date(Date.now() + (this.config.tokenExpiry || 7200) * 1000)
+        expiresAt: new Date(Date.now() + (this.config.tokenExpiry || 7200) * 1000),
       });
     }
 
@@ -173,7 +180,7 @@ export class SecureTokenManager extends EventEmitter {
 
       const fileContent = fs.readFileSync(this.credentialsPath, 'utf8');
       const secureStorage: SecureTokenStorage = JSON.parse(fileContent);
-      
+
       // Check if tokens are expired
       if (new Date() > new Date(secureStorage.expiresAt)) {
         this.emit('tokensExpired', { expiredAt: secureStorage.expiresAt });
@@ -183,19 +190,19 @@ export class SecureTokenManager extends EventEmitter {
       // Decrypt tokens
       const encryptedData = JSON.parse(secureStorage.encryptedTokens);
       const decryptedData = this.decrypt(encryptedData);
-      
+
       // Validate integrity
       if (!this.validateTokenHash(decryptedData, secureStorage.tokenHash)) {
         throw new Error('Token integrity validation failed');
       }
 
       const tokens = JSON.parse(decryptedData);
-      
+
       // Load into memory
       for (const [key, value] of Object.entries(tokens)) {
         this.currentTokens.set(key, {
           value: value as string,
-          expiresAt: new Date(secureStorage.expiresAt)
+          expiresAt: new Date(secureStorage.expiresAt),
         });
       }
 
@@ -210,14 +217,14 @@ export class SecureTokenManager extends EventEmitter {
    */
   async getToken(tokenType: 'userAccessToken' | 'tenantAccessToken' = 'userAccessToken'): Promise<string | null> {
     const cachedToken = this.currentTokens.get(tokenType);
-    
+
     if (cachedToken && new Date() < cachedToken.expiresAt) {
       return cachedToken.value;
     }
 
     // Token expired or not found, attempt refresh
     await this.refreshToken(tokenType);
-    
+
     const refreshedToken = this.currentTokens.get(tokenType);
     return refreshedToken?.value || null;
   }
@@ -236,17 +243,17 @@ export class SecureTokenManager extends EventEmitter {
           },
           body: JSON.stringify({
             app_id: this.config.appId,
-            app_secret: this.config.appSecret
-          })
+            app_secret: this.config.appSecret,
+          }),
         });
 
         const data = await response.json();
-        
+
         if (data.code === 0) {
           await this.storeTokens({
-            [tokenType]: data.tenant_access_token
+            [tokenType]: data.tenant_access_token,
           });
-          
+
           this.emit('tokenRefreshed', { tokenType, timestamp: new Date() });
         } else {
           throw new Error(`Token refresh failed: ${data.msg}`);
@@ -266,10 +273,10 @@ export class SecureTokenManager extends EventEmitter {
   private async rotateTokens(): Promise<void> {
     try {
       await this.refreshToken('tenantAccessToken');
-      
+
       // Create backup of current tokens
       await this.createTokenBackup();
-      
+
       this.emit('tokensRotated', { timestamp: new Date() });
     } catch (error) {
       this.emit('tokenRotationError', { error: (error as Error).message, timestamp: new Date() });
@@ -281,10 +288,10 @@ export class SecureTokenManager extends EventEmitter {
    */
   private async createTokenBackup(): Promise<void> {
     const backupPath = `${this.credentialsPath}.backup.${Date.now()}`;
-    
+
     if (fs.existsSync(this.credentialsPath)) {
       fs.copyFileSync(this.credentialsPath, backupPath);
-      
+
       // Clean up old backups
       await this.cleanupOldBackups();
     }
@@ -296,19 +303,19 @@ export class SecureTokenManager extends EventEmitter {
   private async cleanupOldBackups(): Promise<void> {
     const dir = path.dirname(this.credentialsPath);
     const files = fs.readdirSync(dir);
-    
+
     const backupFiles = files
-      .filter(file => file.startsWith(path.basename(this.credentialsPath) + '.backup.'))
-      .map(file => ({
+      .filter((file) => file.startsWith(path.basename(this.credentialsPath) + '.backup.'))
+      .map((file) => ({
         name: file,
         path: path.join(dir, file),
-        timestamp: parseInt(file.split('.').pop() || '0')
+        timestamp: parseInt(file.split('.').pop() || '0'),
       }))
       .sort((a, b) => b.timestamp - a.timestamp);
 
     // Keep only the specified number of backups
     const filesToDelete = backupFiles.slice(this.rotationConfig.backupCount);
-    
+
     for (const file of filesToDelete) {
       fs.unlinkSync(file.path);
     }
@@ -319,14 +326,14 @@ export class SecureTokenManager extends EventEmitter {
    */
   private startTokenRotation(): void {
     const intervalMs = this.rotationConfig.rotationInterval * 60 * 1000;
-    
+
     this.rotationTimer = setInterval(() => {
       this.rotateTokens();
     }, intervalMs);
 
-    this.emit('tokenRotationStarted', { 
+    this.emit('tokenRotationStarted', {
       interval: this.rotationConfig.rotationInterval,
-      timestamp: new Date() 
+      timestamp: new Date(),
     });
   }
 
@@ -348,15 +355,15 @@ export class SecureTokenManager extends EventEmitter {
     try {
       // Clear in-memory tokens
       this.currentTokens.clear();
-      
+
       // Remove secure storage file
       if (fs.existsSync(this.credentialsPath)) {
         fs.unlinkSync(this.credentialsPath);
       }
-      
+
       // Stop rotation
       this.stopTokenRotation();
-      
+
       this.emit('tokensRevoked', { timestamp: new Date() });
     } catch (error) {
       this.emit('tokenRevocationError', { error: (error as Error).message, timestamp: new Date() });
@@ -388,9 +395,7 @@ export class SecureTokenManager extends EventEmitter {
       totalTokens: this.currentTokens.size,
       expiredTokens,
       validTokens,
-      lastRotation: fs.existsSync(this.credentialsPath) 
-        ? fs.statSync(this.credentialsPath).mtime 
-        : null
+      lastRotation: fs.existsSync(this.credentialsPath) ? fs.statSync(this.credentialsPath).mtime : null,
     };
   }
 
@@ -409,7 +414,7 @@ export class SecureTokenManager extends EventEmitter {
     if (fs.existsSync(this.credentialsPath)) {
       const stats = fs.statSync(this.credentialsPath);
       const mode = stats.mode & parseInt('777', 8);
-      
+
       if (mode !== parseInt('600', 8)) {
         issues.push('Credentials file has overly permissive permissions');
         recommendations.push('Set file permissions to 600 (owner read/write only)');
@@ -431,7 +436,7 @@ export class SecureTokenManager extends EventEmitter {
     return {
       isSecure: issues.length === 0,
       issues,
-      recommendations
+      recommendations,
     };
   }
 }

@@ -64,12 +64,7 @@ export const calendarV4CalendarAclCreate = {
             .describe(
               "The type of the scope where the permission takes effect.**Note**: Currently, only user is supported. When `type=user`, the user_id needs to be consistent with the type of user_id_type. For example, when `user_id_type=open_id`, the user_id needs to be the user's open_id. Options:user(User)",
             ),
-          user_id: z
-            .string()
-            .describe(
-              'User ID, for more information, you can refer to the ',
-            )
-            .optional(),
+          user_id: z.string().describe('User ID, for more information, you can refer to the ').optional(),
         })
         .describe("The scope of the permission's effectiveness"),
     }),
@@ -271,9 +266,7 @@ export const calendarV4CalendarEventAttendeeBatchDelete = {
               .optional(),
             chat_id: z
               .string()
-              .describe(
-                'The group chat_id of a chat-type event invitee. For details, see ',
-              )
+              .describe('The group chat_id of a chat-type event invitee. For details, see ')
               .optional(),
             room_id: z.string().describe('The room_id of a resource-type event invitee').optional(),
             third_party_email: z.string().describe('Email of a third_party type event invitee').optional(),
@@ -304,11 +297,7 @@ export const calendarV4CalendarEventAttendeeBatchDelete = {
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional() }),
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          'Calendar ID. For details, see ',
-        ),
+      calendar_id: z.string().describe('Calendar ID. For details, see '),
       event_id: z
         .string()
         .describe(
@@ -339,11 +328,7 @@ export const calendarV4CalendarEventAttendeeChatMemberList = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional(),
     }),
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          'Calendar ID. For details, see ',
-        ),
+      calendar_id: z.string().describe('Calendar ID. For details, see '),
       event_id: z
         .string()
         .describe(
@@ -479,11 +464,7 @@ export const calendarV4CalendarEventAttendeeCreate = {
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional() }),
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          'The calendar ID corresponding to the event. To learn more, see ',
-        ),
+      calendar_id: z.string().describe('The calendar ID corresponding to the event. To learn more, see '),
       event_id: z
         .string()
         .describe(
@@ -525,11 +506,7 @@ export const calendarV4CalendarEventAttendeeList = {
         .optional(),
     }),
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          'Calendar ID. For details, see ',
-        ),
+      calendar_id: z.string().describe('Calendar ID. For details, see '),
       event_id: z
         .string()
         .describe(
@@ -859,16 +836,8 @@ export const calendarV4CalendarEventDelete = {
         .optional(),
     }),
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          'The calendar ID where the event is located. See ',
-        ),
-      event_id: z
-        .string()
-        .describe(
-          'Event ID. How to get it:-  will return the event ID- - ',
-        ),
+      calendar_id: z.string().describe('The calendar ID where the event is located. See '),
+      event_id: z.string().describe('Event ID. How to get it:-  will return the event ID- - '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -896,18 +865,14 @@ export const calendarV4CalendarEventGet = {
         .optional(),
       max_attendee_num: z
         .number()
-        .describe(
-          'The maximum number of invitees returned. Call  to get complete invitee information of the event',
-        )
+        .describe('The maximum number of invitees returned. Call  to get complete invitee information of the event')
         .optional(),
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional(),
     }),
     path: z.object({
       calendar_id: z
         .string()
-        .describe(
-          'The calendar ID where the event is located. For information about calendar ID, please refer to ',
-        ),
+        .describe('The calendar ID where the event is located. For information about calendar ID, please refer to '),
       event_id: z
         .string()
         .describe(
@@ -941,11 +906,7 @@ export const calendarV4CalendarEventInstanceView = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional(),
     }),
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          'Calendar ID. For information about calendar ID, please refer to ',
-        ),
+      calendar_id: z.string().describe('Calendar ID. For information about calendar ID, please refer to '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -980,11 +941,7 @@ export const calendarV4CalendarEventInstances = {
         .optional(),
     }),
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          'Calendar ID. For information about calendar ID, please refer to ',
-        ),
+      calendar_id: z.string().describe('Calendar ID. For information about calendar ID, please refer to '),
       event_id: z
         .string()
         .describe(
@@ -1044,11 +1001,7 @@ export const calendarV4CalendarEventList = {
       user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional(),
     }),
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          'Calendar ID. For details, see ',
-        ),
+      calendar_id: z.string().describe('Calendar ID. For details, see '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -1064,11 +1017,7 @@ export const calendarV4CalendarEventMeetingChatCreate = {
   accessTokens: ['tenant', 'user'],
   schema: {
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          'The calendar ID where the event is located. To learn more, see ',
-        ),
+      calendar_id: z.string().describe('The calendar ID where the event is located. To learn more, see '),
       event_id: z
         .string()
         .describe(
@@ -1111,9 +1060,7 @@ export const calendarV4CalendarEventMeetingMinuteCreate = {
     path: z.object({
       calendar_id: z
         .string()
-        .describe(
-          'Calendar ID. Call the  interface to obtain the primary calendar ID of the current identity',
-        ),
+        .describe('Calendar ID. Call the  interface to obtain the primary calendar ID of the current identity'),
       event_id: z
         .string()
         .describe(
@@ -1421,11 +1368,7 @@ export const calendarV4CalendarEventPatch = {
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional() }),
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          'Calendar ID. For details, see ',
-        ),
+      calendar_id: z.string().describe('Calendar ID. For details, see '),
       event_id: z
         .string()
         .describe(
@@ -1453,11 +1396,7 @@ export const calendarV4CalendarEventReply = {
         ),
     }),
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          'The calendar ID where the event is located. To learn more, see ',
-        ),
+      calendar_id: z.string().describe('The calendar ID where the event is located. To learn more, see '),
       event_id: z
         .string()
         .describe(
@@ -1573,11 +1512,7 @@ export const calendarV4CalendarEventSearch = {
         .optional(),
     }),
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          'Calendar ID. For details, see ',
-        ),
+      calendar_id: z.string().describe('Calendar ID. For details, see '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -1593,11 +1528,7 @@ export const calendarV4CalendarEventSubscription = {
   accessTokens: ['user'],
   schema: {
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          'Calendar ID. For details, see ',
-        ),
+      calendar_id: z.string().describe('Calendar ID. For details, see '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -1613,11 +1544,7 @@ export const calendarV4CalendarEventUnsubscription = {
   accessTokens: ['user'],
   schema: {
     path: z.object({
-      calendar_id: z
-        .string()
-        .describe(
-          'Calendar ID. For details, see ',
-        ),
+      calendar_id: z.string().describe('Calendar ID. For details, see '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -1809,9 +1736,7 @@ export const calendarV4CalendarUnsubscribe = {
     path: z.object({
       calendar_id: z
         .string()
-        .describe(
-          'Calendar ID.You can call the following interfaces to get the ID of a calendar.- - - ',
-        ),
+        .describe('Calendar ID.You can call the following interfaces to get the ID of a calendar.- - - '),
     }),
     useUAT: z.boolean().describe('Use user access token, otherwise use tenant access token').optional(),
   },
@@ -1844,9 +1769,7 @@ export const calendarV4ExchangeBindingCreate = {
       exchange_account: z.string().describe('The Exchange account that needs to be bound').optional(),
       user_id: z
         .string()
-        .describe(
-          'User ID, that is, the Feishu account ID bound to the Exchange account. For more information, see ',
-        )
+        .describe('User ID, that is, the Feishu account ID bound to the Exchange account. For more information, see ')
         .optional(),
     }),
     params: z.object({ user_id_type: z.enum(['open_id', 'union_id', 'user_id']).describe('User ID type').optional() }),

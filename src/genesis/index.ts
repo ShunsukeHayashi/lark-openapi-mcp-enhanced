@@ -5,29 +5,21 @@
 
 // Core components
 export { GenesisPromptEngine, COMMAND_STACK } from './core/prompt-engine';
-export type { 
-  CommandStackLevel, 
-  ExecutionContext, 
-  PromptEngineConfig 
-} from './core/prompt-engine';
+export type { CommandStackLevel, ExecutionContext, PromptEngineConfig } from './core/prompt-engine';
 
 export { StructuredDataExtractor } from './core/data-extractor';
-export type { 
-  ExtractionRule, 
-  ExtractionSchema, 
-  ExtractionResult 
-} from './core/data-extractor';
+export type { ExtractionRule, ExtractionSchema, ExtractionResult } from './core/data-extractor';
 
 // Integration components
 export { LarkBaseBuilder } from './integrations/lark-base-builder';
-export type { 
-  BaseSpec, 
-  TableSpec, 
-  FieldSpec, 
-  ViewSpec, 
-  AutomationSpec, 
+export type {
+  BaseSpec,
+  TableSpec,
+  FieldSpec,
+  ViewSpec,
+  AutomationSpec,
   PermissionSpec,
-  BuildResult 
+  BuildResult,
 } from './integrations/lark-base-builder';
 
 // System components
@@ -37,16 +29,11 @@ export type {
   TemplateMetadata,
   TemplateCategory,
   TemplateVariable,
-  TemplateExample
+  TemplateExample,
 } from './systems/template-manager';
 
 export { ProgressMonitor } from './systems/progress-monitor';
-export type {
-  ProgressSession,
-  ProgressStep,
-  ProgressEvent,
-  ProgressListener
-} from './systems/progress-monitor';
+export type { ProgressSession, ProgressStep, ProgressEvent, ProgressListener } from './systems/progress-monitor';
 
 export { MultilangSupport } from './systems/multilang-support';
 export type {
@@ -54,7 +41,7 @@ export type {
   LanguageConfig,
   TranslationKey,
   LocalizedPrompt,
-  LanguageDetectionResult
+  LanguageDetectionResult,
 } from './systems/multilang-support';
 
 export { PerformanceOptimizer } from './systems/performance-optimizer';
@@ -63,16 +50,12 @@ export type {
   OptimizationConfig,
   BatchOperation,
   CacheEntry,
-  ResourceUsage
+  ResourceUsage,
 } from './systems/performance-optimizer';
 
 // Utilities
 export { GeminiClient } from './utils/gemini-client';
-export type { 
-  GeminiConfig, 
-  GeminiRequest, 
-  GeminiResponse 
-} from './utils/gemini-client';
+export type { GeminiConfig, GeminiRequest, GeminiResponse } from './utils/gemini-client';
 
 // Import types for internal use
 import { GenesisPromptEngine, ExecutionContext } from './core/prompt-engine';
@@ -81,7 +64,12 @@ import { LarkBaseBuilder, BaseSpec, BuildResult } from './integrations/lark-base
 import { TemplateManager } from './systems/template-manager';
 import { ProgressMonitor } from './systems/progress-monitor';
 import { MultilangSupport, SupportedLanguage } from './systems/multilang-support';
-import { PerformanceOptimizer, OptimizationConfig, PerformanceMetrics, ResourceUsage } from './systems/performance-optimizer';
+import {
+  PerformanceOptimizer,
+  OptimizationConfig,
+  PerformanceMetrics,
+  ResourceUsage,
+} from './systems/performance-optimizer';
 
 /**
  * Genesis Architect
@@ -109,14 +97,14 @@ export class GenesisArchitect {
       geminiApiKey: config.geminiApiKey,
       maxRetries: config.maxRetries || 3,
       timeoutMs: config.timeoutMs || 30000,
-      enableLogging: config.enableLogging !== false
+      enableLogging: config.enableLogging !== false,
     });
 
     this.dataExtractor = StructuredDataExtractor;
-    
+
     this.baseBuilder = new LarkBaseBuilder(config.larkClient, {
       retryAttempts: config.maxRetries || 3,
-      retryDelay: 1000
+      retryDelay: 1000,
     });
 
     // 新システムの初期化
@@ -129,12 +117,15 @@ export class GenesisArchitect {
   /**
    * 要求仕様からLark Baseまでの完全自動生成
    */
-  async createFromRequirements(requirements: string, options?: {
-    language?: SupportedLanguage;
-    templateId?: string;
-    templateVariables?: Record<string, any>;
-    enableProgressTracking?: boolean;
-  }): Promise<{
+  async createFromRequirements(
+    requirements: string,
+    options?: {
+      language?: SupportedLanguage;
+      templateId?: string;
+      templateVariables?: Record<string, any>;
+      enableProgressTracking?: boolean;
+    },
+  ): Promise<{
     success: boolean;
     baseId?: string;
     executionContext: ExecutionContext;
@@ -160,12 +151,12 @@ export class GenesisArchitect {
             { id: 'analyze_requirements', name: 'Requirements Analysis', description: 'Analyzing requirements' },
             { id: 'design_er', name: 'ER Design', description: 'Creating ER diagram' },
             { id: 'design_base', name: 'Base Design', description: 'Designing base structure' },
-            { id: 'build_base', name: 'Base Construction', description: 'Building Lark Base' }
+            { id: 'build_base', name: 'Base Construction', description: 'Building Lark Base' },
           ],
           metadata: {
             sessionType: 'custom',
-            priority: 'high'
-          }
+            priority: 'high',
+          },
         });
         progressSessionId = session.id;
         this.progressMonitor.startSession(session.id);
@@ -175,10 +166,7 @@ export class GenesisArchitect {
       let baseSpec: BaseSpec | undefined;
       if (options?.templateId) {
         try {
-          baseSpec = this.templateManager.applyTemplate(
-            options.templateId, 
-            options.templateVariables || {}
-          );
+          baseSpec = this.templateManager.applyTemplate(options.templateId, options.templateVariables || {});
         } catch (error) {
           errors.push(`Template application failed: ${error}`);
         }
@@ -189,9 +177,9 @@ export class GenesisArchitect {
         // 1. 7段階プロンプト実行（最適化付き）
         const context = await this.performanceOptimizer.executeOptimized(
           () => this.promptEngine.executeCommandStack(requirements),
-          'high'
+          'high',
         );
-        
+
         // 2. 最終結果からBase仕様を抽出
         const implementationPlan = context.results['C7'];
         if (!implementationPlan) {
@@ -210,7 +198,7 @@ export class GenesisArchitect {
       // 4. Lark Base構築（最適化付き）
       const buildResult = await this.performanceOptimizer.executeOptimized(
         () => this.baseBuilder.buildBase(baseSpec!),
-        'critical'
+        'critical',
       );
 
       // プログレスセッションの完了
@@ -224,23 +212,22 @@ export class GenesisArchitect {
         executionContext: {} as ExecutionContext, // テンプレート使用時は空
         buildResult,
         errors: [...errors, ...buildResult.errors],
-        progressSessionId
+        progressSessionId,
       };
-
     } catch (error) {
       errors.push(`Genesis execution failed: ${error}`);
-      
+
       // プログレスセッションの失敗
       if (progressSessionId) {
         this.progressMonitor.failSession(progressSessionId, String(error));
       }
-      
+
       return {
         success: false,
         executionContext: {} as ExecutionContext,
         buildResult: {} as BuildResult,
         errors,
-        progressSessionId
+        progressSessionId,
       };
     }
   }
@@ -248,10 +235,14 @@ export class GenesisArchitect {
   /**
    * 段階的実行（プレビュー機能）
    */
-  async executeStep(requirements: string, stepId: string, options?: {
-    language?: SupportedLanguage;
-    enableProgressTracking?: boolean;
-  }): Promise<{
+  async executeStep(
+    requirements: string,
+    stepId: string,
+    options?: {
+      language?: SupportedLanguage;
+      enableProgressTracking?: boolean;
+    },
+  ): Promise<{
     success: boolean;
     result: any;
     errors: string[];
@@ -265,8 +256,8 @@ export class GenesisArchitect {
         metadata: {
           projectId: `preview_${Date.now()}`,
           timestamp: Date.now(),
-          version: '1.0.0'
-        }
+          version: '1.0.0',
+        },
       };
 
       let progressSessionId: string | undefined;
@@ -276,13 +267,11 @@ export class GenesisArchitect {
         const session = this.progressMonitor.createSession({
           projectName: 'Step Execution',
           description: `Executing step: ${stepId}`,
-          steps: [
-            { id: 'execute_step', name: 'Step Execution', description: `Executing ${stepId}` }
-          ],
+          steps: [{ id: 'execute_step', name: 'Step Execution', description: `Executing ${stepId}` }],
           metadata: {
             sessionType: 'custom',
-            priority: 'medium'
-          }
+            priority: 'medium',
+          },
         });
         progressSessionId = session.id;
         this.progressMonitor.startSession(session.id);
@@ -291,7 +280,7 @@ export class GenesisArchitect {
 
       const result = await this.performanceOptimizer.executeOptimized(
         () => this.promptEngine.executeSpecificCommand(stepId, context),
-        'medium'
+        'medium',
       );
 
       // プログレスセッションの完了
@@ -304,14 +293,13 @@ export class GenesisArchitect {
         success: true,
         result,
         errors: [],
-        progressSessionId
+        progressSessionId,
       };
-
     } catch (error) {
       return {
         success: false,
         result: null,
-        errors: [`Step execution failed: ${error}`]
+        errors: [`Step execution failed: ${error}`],
       };
     }
   }
@@ -331,15 +319,15 @@ export class GenesisArchitect {
           type: this.mapFieldType(field.type),
           description: field.description,
           required: field.required,
-          options: field.options
+          options: field.options,
         })),
         views: (table.views || []).map((view: any) => ({
           name: view.name,
           type: view.type,
-          config: view.config
-        }))
+          config: view.config,
+        })),
       })),
-      automations: designResult.automations || []
+      automations: designResult.automations || [],
     };
   }
 
@@ -348,15 +336,15 @@ export class GenesisArchitect {
    */
   private mapFieldType(type: string): any {
     const typeMap: Record<string, string> = {
-      'text': 'text',
-      'number': 'number',
-      'date': 'date',
-      'checkbox': 'checkbox',
-      'singleSelect': 'singleSelect',
-      'multiSelect': 'multiSelect',
-      'attachment': 'attachment',
-      'user': 'user',
-      'formula': 'formula'
+      text: 'text',
+      number: 'number',
+      date: 'date',
+      checkbox: 'checkbox',
+      singleSelect: 'singleSelect',
+      multiSelect: 'multiSelect',
+      attachment: 'attachment',
+      user: 'user',
+      formula: 'formula',
     };
 
     return typeMap[type] || 'text';
@@ -415,10 +403,10 @@ export class GenesisArchitect {
         'Template Management',
         'Progress Monitoring',
         'Multi-language Support',
-        'Performance Optimization'
+        'Performance Optimization',
       ],
       performance: this.performanceOptimizer.getMetrics(),
-      resourceUsage: this.performanceOptimizer.getResourceUsage()
+      resourceUsage: this.performanceOptimizer.getResourceUsage(),
     };
   }
 

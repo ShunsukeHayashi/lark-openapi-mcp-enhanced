@@ -74,6 +74,10 @@ const mockDatabase = {
 
 describe('ConversationStorage Base Class', () => {
   class TestStorage extends ConversationStorage {
+    constructor(config: StorageConfig) {
+      super(config);
+    }
+    
     async initialize(): Promise<void> {}
     async saveConversation(conversation: ConversationData): Promise<void> {}
     async getConversation(conversationId: string): Promise<ConversationData | null> { return null; }

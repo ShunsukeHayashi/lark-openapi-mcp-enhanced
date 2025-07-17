@@ -10,19 +10,12 @@ export const securityAndComplianceV1OpenapiLogListData = {
   accessTokens: ['tenant'],
   schema: {
     data: z.object({
-      api_keys: z
-        .array(z.string())
-        .describe(
-          '飞书开放平台定义的API，参考：',
-        )
-        .optional(),
+      api_keys: z.array(z.string()).describe('飞书开放平台定义的API，参考：').optional(),
       start_time: z.number().describe('以秒为单位的起始时间戳').optional(),
       end_time: z.number().describe('以秒为单位的终止时间戳').optional(),
       app_id: z
         .string()
-        .describe(
-          '调用OpenAPI的应用唯一标识，可以前往  > 应用详情页 > 凭证与基础信息中获取 app_id',
-        )
+        .describe('调用OpenAPI的应用唯一标识，可以前往  > 应用详情页 > 凭证与基础信息中获取 app_id')
         .optional(),
       page_size: z.number().describe('分页大小').optional(),
       page_token: z

@@ -28,7 +28,7 @@ export class RateLimitedHttpInstance {
   constructor(options: RateLimitedHttpOptions = {}) {
     this.enableRateLimit = options.enableRateLimit !== false;
     this.logger = options.logger || { warn: noop, info: noop, debug: noop };
-    
+
     // Initialize rate limiter with provided or default configurations
     const rateLimits = { ...DEFAULT_RATE_LIMITS, ...options.rateLimits };
     this.rateLimiter = new TieredRateLimiter(rateLimits);
@@ -40,14 +40,11 @@ export class RateLimitedHttpInstance {
     this.axiosInstance.interceptors.request.use(
       this.requestInterceptor.bind(this),
       undefined,
-      { synchronous: false } // Rate limiting is async
+      { synchronous: false }, // Rate limiting is async
     );
 
     // Add response interceptor for logging and metrics
-    this.axiosInstance.interceptors.response.use(
-      this.responseInterceptor.bind(this),
-      this.errorInterceptor.bind(this)
-    );
+    this.axiosInstance.interceptors.response.use(this.responseInterceptor.bind(this), this.errorInterceptor.bind(this));
   }
 
   /**
@@ -63,7 +60,7 @@ export class RateLimitedHttpInstance {
     if (this.enableRateLimit) {
       const tier = this.categorizeRequest(config);
       const allowed = await this.rateLimiter.consume(tier);
-      
+
       if (!allowed) {
         const error = new Error(`Rate limit exceeded for ${tier} requests`);
         (error as any).code = 'RATE_LIMIT_EXCEEDED';
@@ -83,7 +80,7 @@ export class RateLimitedHttpInstance {
   private responseInterceptor(response: AxiosResponse): any {
     // Log successful requests
     this.logger?.debug(`Request successful: ${response.config.method?.toUpperCase()} ${response.config.url}`);
-    
+
     // Return response data (maintaining compatibility with existing code)
     return response.data;
   }

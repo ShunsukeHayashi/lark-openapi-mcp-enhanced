@@ -1,4 +1,28 @@
-# 0.4.0
+# Changelog
+
+## [Unreleased]
+
+### Changed
+- **Major Refactoring**: Comprehensive code improvements and project structure optimization
+  - Fixed TypeScript path aliases in `tsconfig.json`
+  - Added common tool constants (`COMMON_TOOLS`) in `constants.ts`
+  - Removed unused wiki tool references throughout the codebase
+  - Fixed test constructor issues in `conversation-storage.test.ts`
+  - Applied Prettier formatting to all source files
+  - Removed 200+ temporary development files and scripts
+  - Moved specialized systems to `docs/specialized-systems/`
+  - Moved examples to `docs/examples/`
+  - Improved type safety and code consistency
+  - Reduced build warnings and errors
+
+### Improved
+- Build system now passes TypeScript compilation without errors
+- Test execution improved with proper path aliases
+- Code formatting applied consistently across the project
+- Project structure organized for better maintainability
+- Documentation updated to reflect current project state
+
+## [0.4.0] - 2024-01-XX
 
 ## Added
 - **Genesis AI System** for creating complete Lark Base applications from natural language

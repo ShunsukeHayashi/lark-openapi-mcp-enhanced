@@ -18,8 +18,8 @@ export type apaasV1ToolName =
   | 'apaas.v1.applicationObjectRecord.patch'
   | 'apaas.v1.applicationObjectRecord.query'
   | 'apaas.v1.applicationObject.search'
-  | 'apaas.v1.applicationRecordPermissionMember.batchCreateAuthorization'
-  | 'apaas.v1.applicationRecordPermissionMember.batchRemoveAuthorization'
+  | 'apaas.v1.appRecordPermMember.batchCreateAuth'
+  | 'apaas.v1.appRecordPermMember.batchRemoveAuth'
   | 'apaas.v1.applicationRoleMember.batchCreateAuthorization'
   | 'apaas.v1.applicationRoleMember.batchRemoveAuthorization'
   | 'apaas.v1.applicationRoleMember.get'
@@ -530,7 +530,7 @@ export const apaasV1ApplicationObjectSearch = {
 };
 export const apaasV1ApplicationRecordPermissionMemberBatchCreateAuthorization = {
   project: 'apaas',
-  name: 'apaas.v1.applicationRecordPermissionMember.batchCreateAuthorization',
+  name: 'apaas.v1.appRecordPermMember.batchCreateAuth',
   sdkName: 'apaas.v1.applicationRecordPermissionMember.batchCreateAuthorization',
   path: '/open-apis/apaas/v1/applications/:namespace/record_permissions/:record_permission_api_name/member/batch_create_authorization',
   httpMethod: 'POST',
@@ -548,7 +548,7 @@ export const apaasV1ApplicationRecordPermissionMemberBatchCreateAuthorization = 
 };
 export const apaasV1ApplicationRecordPermissionMemberBatchRemoveAuthorization = {
   project: 'apaas',
-  name: 'apaas.v1.applicationRecordPermissionMember.batchRemoveAuthorization',
+  name: 'apaas.v1.appRecordPermMember.batchRemoveAuth',
   sdkName: 'apaas.v1.applicationRecordPermissionMember.batchRemoveAuthorization',
   path: '/open-apis/apaas/v1/applications/:namespace/record_permissions/:record_permission_api_name/member/batch_remove_authorization',
   httpMethod: 'POST',

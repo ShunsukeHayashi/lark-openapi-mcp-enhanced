@@ -1,0 +1,13 @@
+# Ignore everything except GAS files
+**/**
+!*.gs
+!*.html
+!appsscript.json
+
+# But still ignore these
+node_modules/**
+.git/**
+README.md
+package.json
+package-lock.json
+.claspignore

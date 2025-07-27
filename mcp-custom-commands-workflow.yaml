@@ -1,0 +1,489 @@
+# MCP Custom Commands Workflow Definition
+# EC運営カスタムコマンドワークフロー定義
+
+version: "1.0"
+metadata:
+  description: "EC Operation MCP Tool Workflow Definitions"
+  author: "EC Operations Team"
+  created: "2025-01-18"
+  base_app_token: "W66tbCpb7avIjSsGvBhjRxtZpHc"
+
+# 共通設定
+defaults:
+  error_handling: "continue_with_notification"
+  timeout: 300 # seconds
+  retry_count: 3
+
+# カスタムコマンド定義
+commands:
+  # ========================================
+  # 1. 日次在庫チェックコマンド
+  # ========================================
+  daily_inventory_check:
+    description: "日次在庫確認と発注提案"
+    trigger: "manual | schedule:daily:09:00"
+    inputs:
+      - name: "threshold_days"
+        type: "integer"
+        default: 30
+        description: "在庫日数閾値"
+    
+    workflow:
+      - step: "fetch_all_products"
+        tool: "bitable_v1_appTableRecord_search"
+        params:
+          path:
+            app_token: "{{base_app_token}}"
+            table_id: "tblPSgtK8IBbw9pP"
+          data:
+            automatic_fields: false
+          params:
+            page_size: 200
+        output: "products_data"
+      
+      - step: "analyze_inventory"
+        tool: "custom_processor"
+        processor: "inventory_analyzer"
+        inputs:
+          products: "{{products_data}}"
+          threshold: "{{inputs.threshold_days}}"
+        outputs:
+          critical: "critical_items"
+          warning: "warning_items"
+          excess: "excess_items"
+      
+      - step: "generate_report"
+        tool: "custom_formatter"
+        template: "inventory_daily_report"
+        inputs:
+          critical: "{{critical_items}}"
+          warning: "{{warning_items}}"
+          excess: "{{excess_items}}"
+          date: "{{current_date}}"
+        output: "report_content"
+      
+      - step: "send_notification"
+        tool: "im_v1_message_create"
+        condition: "{{critical_items.length > 0}}"
+        params:
+          data:
+            receive_id_type: "chat_id"
+            receive_id: "{{env.ALERT_CHAT_ID}}"
+            msg_type: "interactive"
+            content: "{{report_content}}"
+
+  # ========================================
+  # 2. 自動発注作成コマンド
+  # ========================================
+  auto_create_purchase_order:
+    description: "在庫レベルに基づく自動発注作成"
+    trigger: "manual | api | schedule:daily:10:00"
+    inputs:
+      - name: "product_id"
+        type: "string"
+        required: false
+        description: "特定商品ID（省略時は全商品チェック）"
+      - name: "auto_approve"
+        type: "boolean"
+        default: false
+        description: "自動承認フラグ"
+    
+    workflow:
+      - step: "check_inventory_level"
+        tool: "bitable_v1_appTableRecord_search"
+        params:
+          path:
+            app_token: "{{base_app_token}}"
+            table_id: "tblPSgtK8IBbw9pP"
+          data:
+            filter:
+              conjunction: "and"
+              conditions:
+                - field_name: "📊現在庫"
+                  operator: "isLess"
+                  value: ["30"]
+            sort:
+              - field_name: "📊現在庫"
+                desc: false
+        output: "low_stock_items"
+      
+      - step: "calculate_order_quantities"
+        tool: "custom_processor"
+        processor: "order_calculator"
+        inputs:
+          items: "{{low_stock_items}}"
+          rules:
+            category_a_months: 3
+            category_b_months: 2
+            category_c_months: 1
+        output: "order_proposals"
+      
+      - step: "check_existing_orders"
+        tool: "bitable_v1_appTableRecord_search"
+        params:
+          path:
+            app_token: "{{base_app_token}}"
+            table_id: "tblTrydqClnBV8Db"
+          data:
+            filter:
+              conjunction: "and"
+              conditions:
+                - field_name: "📈発注ステータス"
+                  operator: "isNot"
+                  value: ["入庫完了", "キャンセル"]
+        output: "pending_orders"
+      
+      - step: "filter_new_orders"
+        tool: "custom_processor"
+        processor: "order_filter"
+        inputs:
+          proposals: "{{order_proposals}}"
+          existing: "{{pending_orders}}"
+        output: "new_orders"
+      
+      - step: "create_purchase_orders"
+        tool: "bitable_v1_appTableRecord_create"
+        foreach: "{{new_orders}}"
+        params:
+          path:
+            app_token: "{{base_app_token}}"
+            table_id: "tblTrydqClnBV8Db"
+          data:
+            fields:
+              📋発注番号: "PO-{{generate_po_number()}}"
+              📈発注ステータス: "発注準備"
+              📅発注日: "{{current_timestamp}}"
+              📦商品・部品:
+                link_record_ids: ["{{item.record_id}}"]
+              📊発注数量: "{{item.order_quantity}}"
+              💰発注単価: "{{item.unit_cost}}"
+              💳通貨種別: "JPY (日本円)"
+              📅納期予定: "{{add_days(current_date, 9)}}"
+              💳支払条件: "月末締め"
+              👤発注者: "Auto PO System"
+              📝備考: "自動発注: {{item.reason}}"
+        output: "created_orders"
+      
+      - step: "approval_workflow"
+        condition: "{{!inputs.auto_approve}}"
+        tool: "custom_workflow"
+        workflow: "purchase_approval"
+        inputs:
+          orders: "{{created_orders}}"
+          approval_rules:
+            - amount: 500000
+              approver: "auto"
+            - amount: 2000000
+              approver: "department_manager"
+            - amount: null
+              approver: "executive"
+
+  # ========================================
+  # 3. 在庫移動・調整コマンド
+  # ========================================
+  inventory_adjustment:
+    description: "在庫数量の調整と移動記録"
+    trigger: "manual | api"
+    inputs:
+      - name: "product_id"
+        type: "string"
+        required: true
+      - name: "adjustment_type"
+        type: "enum"
+        values: ["increase", "decrease", "transfer"]
+        required: true
+      - name: "quantity"
+        type: "integer"
+        required: true
+      - name: "reason"
+        type: "string"
+        required: true
+    
+    workflow:
+      - step: "get_current_stock"
+        tool: "bitable_v1_appTableRecord_search"
+        params:
+          path:
+            app_token: "{{base_app_token}}"
+            table_id: "tblPSgtK8IBbw9pP"
+          data:
+            filter:
+              conjunction: "and"
+              conditions:
+                - field_name: "record_id"
+                  operator: "is"
+                  value: ["{{inputs.product_id}}"]
+        output: "current_product"
+        error_handler:
+          type: "fail"
+          message: "Product not found"
+      
+      - step: "validate_adjustment"
+        tool: "custom_validator"
+        validator: "inventory_adjustment"
+        inputs:
+          current_stock: "{{current_product.fields.📊現在庫}}"
+          adjustment_type: "{{inputs.adjustment_type}}"
+          quantity: "{{inputs.quantity}}"
+        output: "validation_result"
+      
+      - step: "calculate_new_stock"
+        tool: "custom_calculator"
+        formula: |
+          switch(inputs.adjustment_type) {
+            case "increase":
+              return current_stock + quantity;
+            case "decrease":
+              return current_stock - quantity;
+            case "transfer":
+              return current_stock - quantity;
+          }
+        inputs:
+          current_stock: "{{current_product.fields.📊現在庫}}"
+          quantity: "{{inputs.quantity}}"
+          adjustment_type: "{{inputs.adjustment_type}}"
+        output: "new_stock_level"
+      
+      - step: "update_stock"
+        tool: "bitable_v1_appTableRecord_update"
+        params:
+          path:
+            app_token: "{{base_app_token}}"
+            table_id: "tblPSgtK8IBbw9pP"
+            record_id: "{{inputs.product_id}}"
+          data:
+            fields:
+              📊現在庫: "{{new_stock_level}}"
+      
+      - step: "create_adjustment_log"
+        tool: "bitable_v1_appTableRecord_create"
+        params:
+          path:
+            app_token: "{{base_app_token}}"
+            table_id: "tblGcwmvAk2HGTRw"  # 在庫管理テーブル
+          data:
+            fields:
+              調整日時: "{{current_timestamp}}"
+              商品: 
+                link_record_ids: ["{{inputs.product_id}}"]
+              調整タイプ: "{{inputs.adjustment_type}}"
+              調整数量: "{{inputs.quantity}}"
+              調整前在庫: "{{current_product.fields.📊現在庫}}"
+              調整後在庫: "{{new_stock_level}}"
+              理由: "{{inputs.reason}}"
+              実行者: "{{current_user}}"
+
+  # ========================================
+  # 4. 売上分析レポート生成
+  # ========================================
+  sales_analysis_report:
+    description: "指定期間の売上分析レポート生成"
+    trigger: "manual | schedule:weekly:monday:09:00"
+    inputs:
+      - name: "period"
+        type: "enum"
+        values: ["daily", "weekly", "monthly"]
+        default: "weekly"
+      - name: "target_date"
+        type: "date"
+        default: "{{current_date}}"
+    
+    workflow:
+      - step: "calculate_date_range"
+        tool: "custom_processor"
+        processor: "date_calculator"
+        inputs:
+          period: "{{inputs.period}}"
+          target_date: "{{inputs.target_date}}"
+        outputs:
+          start_date: "period_start"
+          end_date: "period_end"
+      
+      - step: "fetch_sales_data"
+        tool: "bitable_v1_appTableRecord_search"
+        params:
+          path:
+            app_token: "{{base_app_token}}"
+            table_id: "tblPSgtK8IBbw9pP"
+          data:
+            field_names:
+              - "📝商品名"
+              - "📊現在庫"
+              - "📈30日販売数"
+              - "💰単価"
+              - "💸原価"
+            automatic_fields: true
+        output: "all_products"
+      
+      - step: "analyze_performance"
+        tool: "custom_analyzer"
+        analyzer: "sales_performance"
+        inputs:
+          products: "{{all_products}}"
+          period: "{{inputs.period}}"
+        outputs:
+          top_sellers: "best_products"
+          slow_movers: "slow_products"
+          revenue_summary: "revenue_data"
+          profit_summary: "profit_data"
+      
+      - step: "generate_charts"
+        tool: "custom_visualizer"
+        charts:
+          - type: "bar"
+            data: "{{best_products}}"
+            title: "Top 10 Best Sellers"
+          - type: "pie"
+            data: "{{revenue_data}}"
+            title: "Revenue by Category"
+          - type: "line"
+            data: "{{profit_data}}"
+            title: "Daily Profit Trend"
+        output: "chart_urls"
+      
+      - step: "compile_report"
+        tool: "custom_report_builder"
+        template: "sales_analysis_template"
+        inputs:
+          period: "{{inputs.period}}"
+          date_range: "{{period_start}} - {{period_end}}"
+          best_sellers: "{{best_products}}"
+          slow_movers: "{{slow_products}}"
+          total_revenue: "{{revenue_data.total}}"
+          total_profit: "{{profit_data.total}}"
+          charts: "{{chart_urls}}"
+        output: "report_document"
+      
+      - step: "save_report"
+        tool: "drive_v1_file_create"
+        params:
+          data:
+            name: "Sales_Report_{{inputs.period}}_{{period_end}}"
+            type: "docx"
+            folder_token: "{{env.REPORTS_FOLDER}}"
+            content: "{{report_document}}"
+
+  # ========================================
+  # 5. 緊急在庫切れ対応
+  # ========================================
+  emergency_stockout_response:
+    description: "在庫切れ緊急対応ワークフロー"
+    trigger: "manual | alert | api"
+    priority: "high"
+    inputs:
+      - name: "product_id"
+        type: "string"
+        required: true
+      - name: "affected_orders"
+        type: "array"
+        required: true
+    
+    workflow:
+      - step: "assess_impact"
+        tool: "custom_analyzer"
+        analyzer: "stockout_impact"
+        inputs:
+          product_id: "{{inputs.product_id}}"
+          orders: "{{inputs.affected_orders}}"
+        outputs:
+          customer_count: "affected_customers"
+          revenue_impact: "lost_revenue"
+          alternatives: "substitute_products"
+      
+      - step: "notify_stakeholders"
+        tool: "im_v1_message_create"
+        parallel: true
+        targets:
+          - chat_id: "{{env.MANAGEMENT_CHAT}}"
+            template: "stockout_alert_management"
+          - chat_id: "{{env.SALES_CHAT}}"
+            template: "stockout_alert_sales"
+          - chat_id: "{{env.CS_CHAT}}"
+            template: "stockout_alert_customer_service"
+      
+      - step: "create_emergency_po"
+        tool: "workflow"
+        workflow: "auto_create_purchase_order"
+        params:
+          product_id: "{{inputs.product_id}}"
+          auto_approve: true
+          priority: "urgent"
+          note: "緊急在庫切れ対応"
+      
+      - step: "customer_notification"
+        tool: "custom_batch_processor"
+        processor: "customer_notifier"
+        inputs:
+          customers: "{{affected_customers}}"
+          product: "{{inputs.product_id}}"
+          alternatives: "{{substitute_products}}"
+          template: "stockout_customer_notification"
+      
+      - step: "create_incident_report"
+        tool: "bitable_v1_appTableRecord_create"
+        params:
+          path:
+            app_token: "{{base_app_token}}"
+            table_id: "tbl_incident_log"
+          data:
+            fields:
+              incident_type: "stockout"
+              product: "{{inputs.product_id}}"
+              impact: "{{affected_customers}} customers, ¥{{lost_revenue}}"
+              actions_taken: "{{workflow_log}}"
+              timestamp: "{{current_timestamp}}"
+
+# エラーハンドリング定義
+error_handlers:
+  default:
+    retry_count: 3
+    retry_delay: 5
+    notification_channel: "{{env.ERROR_NOTIFICATION_CHAT}}"
+    
+  critical:
+    retry_count: 1
+    escalation: "immediate"
+    notification_channels:
+      - "{{env.ERROR_NOTIFICATION_CHAT}}"
+      - "{{env.MANAGEMENT_CHAT}}"
+
+# スケジュール定義
+schedules:
+  daily_operations:
+    - command: "daily_inventory_check"
+      time: "09:00"
+      timezone: "Asia/Tokyo"
+    
+    - command: "auto_create_purchase_order"
+      time: "10:00"
+      timezone: "Asia/Tokyo"
+      conditions:
+        - day_of_week: ["mon", "wed", "fri"]
+  
+  weekly_reports:
+    - command: "sales_analysis_report"
+      time: "09:00"
+      day: "monday"
+      timezone: "Asia/Tokyo"
+      params:
+        period: "weekly"
+
+# 権限設定
+permissions:
+  daily_inventory_check:
+    - role: "inventory_staff"
+    - role: "manager"
+    - role: "admin"
+  
+  auto_create_purchase_order:
+    - role: "purchasing_staff"
+    - role: "manager"
+    - role: "admin"
+  
+  inventory_adjustment:
+    - role: "warehouse_staff"
+    - role: "manager"
+    - role: "admin"
+  
+  emergency_stockout_response:
+    - role: "all_staff"

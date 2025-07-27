@@ -55,11 +55,17 @@ export class LarkMcpTool {
     const isZH = options.toolsOptions?.language === 'zh';
 
     const filterOptions = {
-      allowTools: defaultToolNames,
+      allowTools: options.toolsOptions?.allowTools || [], // Empty array to enable all tools
       tokenMode: this.tokenMode,
       ...options.toolsOptions,
     };
-    this.allTools = filterTools(isZH ? AllToolsZh : AllTools, filterOptions);
+    // Enable both English and Chinese tools for maximum coverage
+    const allToolsCombined = [...AllTools, ...AllToolsZh];
+    // Remove duplicates by tool name (keep first occurrence)
+    const uniqueTools = allToolsCombined.filter((tool, index, arr) => 
+      arr.findIndex(t => t.name === tool.name) === index
+    );
+    this.allTools = filterTools(uniqueTools, filterOptions);
   }
 
   /**

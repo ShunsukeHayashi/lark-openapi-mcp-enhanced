@@ -3,6 +3,7 @@ import { imBuiltinToolName, imBuiltinTools } from './im/buildin';
 import { systemBuiltinToolName, systemBuiltinTools } from './system/builtin';
 import { GenesisToolName, genesisTools } from './genesis';
 import { CompleteToolName, completeTools } from './complete/all-functions';
+import { bitableBuiltinToolName, bitableBuiltinTools } from './bitable/builtin';
 
 export const BuiltinTools = [
   ...docxBuiltinTools,
@@ -10,6 +11,7 @@ export const BuiltinTools = [
   ...systemBuiltinTools,
   ...genesisTools,
   ...completeTools,
+  ...bitableBuiltinTools,
 ];
 
 export type BuiltinToolName =
@@ -17,4 +19,5 @@ export type BuiltinToolName =
   | imBuiltinToolName
   | systemBuiltinToolName
   | GenesisToolName
-  | CompleteToolName;
+  | CompleteToolName
+  | bitableBuiltinToolName;

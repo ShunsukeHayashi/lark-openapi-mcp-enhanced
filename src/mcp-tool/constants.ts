@@ -45,6 +45,24 @@ export enum PresetName {
    * Complete set of all Lark functions
    */
   COMPLETE_ALL = 'preset.complete.all',
+  
+  // Custom Workflow Presets
+  /**
+   * HR automation and employee lifecycle management
+   */
+  HR_AUTOMATION = 'preset.hr.automation',
+  /**
+   * Approval workflow and process automation
+   */
+  APPROVAL_AUTOMATION = 'preset.approval.automation',
+  /**
+   * Business intelligence and analytics automation
+   */
+  BUSINESS_ANALYTICS = 'preset.business.analytics',
+  /**
+   * Complete business automation suite with custom workflows
+   */
+  BUSINESS_SUITE = 'preset.business.suite',
 }
 
 // Common tool names used across multiple presets
@@ -87,13 +105,18 @@ export const presetBaseCommonToolNames: ToolName[] = [
   'bitable.v1.appTable.create',
   'bitable.v1.appTable.list',
   'bitable.v1.appTableField.list',
+  'bitable.v1.appTableField.create',
   COMMON_TOOLS.RECORD_SEARCH,
+  'bitable.v1.appTableView.create',
+  'bitable.v1.appTableView.patch',
 ];
 
 export const presetBaseToolNames: ToolName[] = [
   ...presetBaseCommonToolNames,
   'bitable.v1.appTableRecord.create',
   'bitable.v1.appTableRecord.update',
+  'bitable.builtin.createEmergencyOrderView',
+  'bitable.builtin.searchEmergencyOrders',
 ];
 
 export const presetBaseRecordBatchToolNames: ToolName[] = [
@@ -165,6 +188,103 @@ export const presetCompleteToolNames: ToolName[] = [
   ...presetCalendarToolNames,
 ];
 
+// Custom Workflow Preset Definitions
+export const presetHRAutomationToolNames: ToolName[] = [
+  // Custom HR workflow
+  'employee.onboarding.complete',
+  
+  // Supporting HR tools
+  'corehr.v1.employee.create',
+  'corehr.v1.employee.update',
+  'hire.v1.application.update',
+  'contact.v3.user.batchGetId',
+  'contact.v3.user.list',
+  
+  // Access management
+  'drive.v1.permissionMember.create',
+  'drive.v1.permissionMember.list',
+  'bitable.v1.appRole.create',
+  'bitable.v1.appRoleMember.create',
+  
+  // Communication
+  'im.v1.message.create',
+  'im.v1.chatMembers.create',
+  
+  // Data management
+  'bitable.v1.appTableRecord.create',
+  'bitable.v1.appTableRecord.search',
+  'bitable.v1.appTableRecord.update',
+];
+
+export const presetApprovalAutomationToolNames: ToolName[] = [
+  // Custom approval workflow
+  'approval.smart_router.process',
+  
+  // Approval system tools
+  'approval.v4.instance.create',
+  'approval.v4.instance.approve',
+  'approval.v4.instance.reject',
+  'approval.v4.instance.cancel',
+  
+  // User management for routing
+  'contact.v3.user.list',
+  'contact.v3.user.batchGetId',
+  'contact.v3.department.list',
+  
+  // Notifications
+  'im.v1.message.create',
+  'im.v1.chat.create',
+  
+  // Data tracking
+  'bitable.v1.appTableRecord.create',
+  'bitable.v1.appTableRecord.search',
+  'bitable.v1.appTableRecord.update',
+];
+
+export const presetBusinessAnalyticsToolNames: ToolName[] = [
+  // Custom BI workflow
+  'business.intelligence.suite.analyze',
+  
+  // Data analysis tools
+  'bitable.v1.appTableRecord.search',
+  'bitable.v1.appTable.list',
+  'search.v2.dataSearch',
+  
+  // AI and analytics
+  'aily.v1.analysis.generate',
+  'aily.v1.content.generate',
+  
+  // Report generation
+  'docx.v1.document.create',
+  'docx.v1.document.update',
+  'sheets.v3.spreadsheet.create',
+  
+  // Distribution
+  'im.v1.message.create',
+  'drive.v1.permissionMember.create',
+];
+
+export const presetBusinessSuiteToolNames: ToolName[] = [
+  // All custom workflows
+  'employee.onboarding.complete',
+  'approval.smart_router.process',
+  'business.intelligence.suite.analyze',
+  
+  // Comprehensive supporting tools
+  ...presetHRAutomationToolNames.filter(tool => !tool.includes('employee.onboarding')),
+  ...presetApprovalAutomationToolNames.filter(tool => !tool.includes('approval.smart_router')),
+  ...presetBusinessAnalyticsToolNames.filter(tool => !tool.includes('business.intelligence')),
+  
+  // Additional enterprise tools
+  'admin.v1.audit.log',
+  'security_and_compliance.v1.policy.check',
+  'tenant.v2.tenant.get',
+  'performance.v1.review.create',
+  'okr.v1.objective.create',
+  'task.v2.task.create',
+  'calendar.v4.calendarEvent.create',
+];
+
 export const presetTools: Record<PresetName, ToolName[]> = {
   [PresetName.LIGHT]: presetLightToolNames,
   [PresetName.DEFAULT]: defaultToolNames,
@@ -176,4 +296,10 @@ export const presetTools: Record<PresetName, ToolName[]> = {
   [PresetName.CALENDAR_DEFAULT]: presetCalendarToolNames,
   [PresetName.GENESIS_DEFAULT]: presetGenesisToolNames,
   [PresetName.COMPLETE_ALL]: presetCompleteToolNames,
+  
+  // Custom Workflow Presets
+  [PresetName.HR_AUTOMATION]: presetHRAutomationToolNames,
+  [PresetName.APPROVAL_AUTOMATION]: presetApprovalAutomationToolNames,
+  [PresetName.BUSINESS_ANALYTICS]: presetBusinessAnalyticsToolNames,
+  [PresetName.BUSINESS_SUITE]: presetBusinessSuiteToolNames,
 };

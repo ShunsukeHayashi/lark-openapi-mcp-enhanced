@@ -1,0 +1,27 @@
+{
+  "name": "lark-emergency-order-dashboard",
+  "version": "1.0.0",
+  "description": "GCP Serverless dashboard for Lark emergency order monitoring",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "deploy:update": "gcloud functions deploy updateEmergencyOrderCache --runtime nodejs20 --trigger-topic emergency-order-update --entry-point updateEmergencyOrderCache --source ./dist --region asia-northeast1",
+    "deploy:view": "gcloud functions deploy viewEmergencyOrderDashboard --runtime nodejs20 --trigger-http --allow-unauthenticated --entry-point viewEmergencyOrderDashboard --source ./dist --region asia-northeast1",
+    "deploy:all": "npm run build && npm run deploy:update && npm run deploy:view",
+    "create-scheduler": "gcloud scheduler jobs create pubsub emergency-order-scheduler --schedule='0 * * * *' --topic=emergency-order-update --location=asia-northeast1 --message-body='{}'",
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "dependencies": {
+    "@google-cloud/functions-framework": "^3.4.0",
+    "@google-cloud/firestore": "^7.1.0",
+    "@google-cloud/secret-manager": "^5.0.1",
+    "axios": "^1.6.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

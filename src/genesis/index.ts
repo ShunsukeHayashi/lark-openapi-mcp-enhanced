@@ -92,12 +92,14 @@ export class GenesisArchitect {
     enableLogging?: boolean;
     language?: SupportedLanguage;
     optimizationConfig?: Partial<OptimizationConfig>;
+    rateLimitDelay?: number;
   }) {
     this.promptEngine = new GenesisPromptEngine({
       geminiApiKey: config.geminiApiKey,
-      maxRetries: config.maxRetries || 3,
-      timeoutMs: config.timeoutMs || 30000,
+      maxRetries: config.maxRetries || 5,
+      timeoutMs: config.timeoutMs || 60000,
       enableLogging: config.enableLogging !== false,
+      rateLimitDelay: config.rateLimitDelay || 3000, // 3 second delay between API calls
     });
 
     this.dataExtractor = StructuredDataExtractor;

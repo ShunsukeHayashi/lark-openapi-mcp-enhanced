@@ -63,8 +63,8 @@ export class GeminiClient {
     this.config = {
       model: 'gemini-1.5-flash',
       baseURL: 'https://generativelanguage.googleapis.com',
-      maxRetries: 3,
-      timeoutMs: 30000,
+      maxRetries: 5, // Increased retries for rate limiting
+      timeoutMs: 60000, // Increased timeout for rate limited requests
       ...config,
     };
 
@@ -165,12 +165,17 @@ export class GeminiClient {
           throw error;
         }
 
-        // Handle rate limit errors with backoff
-        if (error.response?.status === 429 && attempt < this.config.maxRetries - 1) {
-          const delay = Math.pow(2, attempt + 1) * 1000; // 指数バックオフ
-          await new Promise((resolve) => setTimeout(resolve, delay));
+        // Handle rate limit errors with longer backoff
+        if (error.response?.status === 429 || error.message?.includes('rate limit')) {
+          if (attempt < this.config.maxRetries - 1) {
+            const delay = Math.pow(2, attempt + 2) * 2000; // Longer exponential backoff for rate limits
+            console.log(`Rate limit hit, retrying in ${delay}ms...`);
+            await new Promise((resolve) => setTimeout(resolve, delay));
+          } else {
+            throw new Error('Gemini API rate limit exceeded');
+          }
         } else if (attempt < this.config.maxRetries - 1) {
-          const delay = Math.pow(2, attempt + 1) * 1000; // 指数バックオフ
+          const delay = Math.pow(2, attempt + 1) * 1000; // Standard exponential backoff
           await new Promise((resolve) => setTimeout(resolve, delay));
         }
       }

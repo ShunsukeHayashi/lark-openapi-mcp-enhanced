@@ -32,7 +32,6 @@ module.exports = {
     '/node_modules/',
     '/dist/',
     '\\.disabled',
-    'mobi',
-    'simple-coordinator\\.test\\.ts'
+    'mobi'
   ]
 };

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>フォーム送信内容</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #334155 100%);
+            min-height: 100vh;
+            color: #E2E8F0;
+            overflow-x: hidden;
+        }
+        
+        /* 背景のアニメーション効果 */
+        .bg-pattern {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            opacity: 0.1;
+            background-image: 
+                radial-gradient(circle at 20% 80%, #3B82F6 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, #8B5CF6 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, #10B981 0%, transparent 50%);
+        }
+        
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* ヘッダー */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60A5FA 0%, #A78BFA 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            animation: glow 3s ease-in-out infinite;
+        }
+        
+        @keyframes glow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            color: #94A3B8;
+        }
+        
+        /* カードレイアウト */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .card {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            animation: slideIn 0.6s ease-out;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(96, 165, 250, 0.3);
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .field-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .field-label {
+            font-size: 0.875rem;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+        
+        .field-value {
+            font-size: 1.125rem;
+            color: #F1F5F9;
+            word-wrap: break-word;
+            line-height: 1.6;
+        }
+        
+        .field-value.empty {
+            color: #64748B;
+            font-style: italic;
+        }
+        
+        /* 緊急度バッジ */
+        .urgency-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .urgency-high {
+            background: rgba(239, 68, 68, 0.2);
+            color: #FCA5A5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        .urgency-medium {
+            background: rgba(245, 158, 11, 0.2);
+            color: #FCD34D;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        
+        .urgency-low {
+            background: rgba(34, 197, 94, 0.2);
+            color: #86EFAC;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+        
+        /* メタデータセクション */
+        .metadata-section {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 3rem;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+        
+        .metadata-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+        
+        .meta-item {
+            text-align: center;
+        }
+        
+        .meta-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60A5FA 0%, #A78BFA 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        
+        .meta-label {
+            color: #94A3B8;
+            font-size: 0.875rem;
+        }
+        
+        /* ローディング */
+        .loading {
+            text-align: center;
+            padding: 4rem;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(96, 165, 250, 0.3);
+            border-top-color: #60A5FA;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 2rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .card-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-pattern"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>お問い合わせ詳細</h1>
+            <p>送信されたフォームの内容を確認できます</p>
+        </div>
+        
+        <div id="content">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <p>データを読み込んでいます...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // サーバーサイドから渡されたデータ
+        const recordId = <?= JSON.stringify(recordId) ?>;
+        const data = <?= JSON.stringify(data) ?>;
+        
+        // フィールドアイコンマッピング
+        const fieldIcons = {
+            'お問い合わせID': '🆔',
+            '氏名': '👤',
+            'メールアドレス': '📧',
+            '電話番号': '📱',
+            '部署': '🏢',
+            '問い合わせ種別': '📋',
+            '内容': '💬',
+            '緊急度': '🚨'
+        };
+        
+        // フィールドの表示名マッピング
+        const fieldLabels = {
+            'お問い合わせID': 'お問い合わせID',
+            '氏名': 'お名前',
+            'メールアドレス': 'メールアドレス',
+            '電話番号': '電話番号',
+            '部署': '部署',
+            '問い合わせ種別': 'お問い合わせ種別',
+            '内容': 'お問い合わせ内容',
+            '緊急度': '緊急度'
+        };
+        
+        // データを整形して表示
+        function displayData() {
+            const contentDiv = document.getElementById('content');
+            
+            if (!data || Object.keys(data).length === 0) {
+                contentDiv.innerHTML = '<div class="loading"><p>データが見つかりませんでした</p></div>';
+                return;
+            }
+            
+            let cardsHtml = '<div class="card-grid">';
+            let metadataFields = {};
+            
+            // フィールドを表示
+            Object.entries(data).forEach(([key, value]) => {
+                const label = fieldLabels[key] || key;
+                const icon = fieldIcons[key] || '📄';
+                
+                // メタデータフィールドは別扱い
+                if (key.includes('Created') || key.includes('作成') || key.includes('Modified') || key.includes('更新')) {
+                    metadataFields[key] = value;
+                    return;
+                }
+                
+                let displayValue = formatFieldValue(value, key);
+                
+                cardsHtml += `
+                    <div class="card">
+                        <div class="field-icon">${icon}</div>
+                        <div class="field-label">${label}</div>
+                        <div class="field-value">${displayValue}</div>
+                    </div>
+                `;
+            });
+            
+            cardsHtml += '</div>';
+            
+            // メタデータセクション
+            let metadataHtml = '<div class="metadata-section"><div class="metadata-grid">';
+            
+            // 作成日時
+            if (metadataFields['Created time'] || metadataFields['作成日時']) {
+                const createdTime = metadataFields['Created time'] || metadataFields['作成日時'];
+                metadataHtml += `
+                    <div class="meta-item">
+                        <div class="meta-value">${formatDate(createdTime)}</div>
+                        <div class="meta-label">受付日時</div>
+                    </div>
+                `;
+            }
+            
+            // レコードID
+            metadataHtml += `
+                <div class="meta-item">
+                    <div class="meta-value">${recordId.substring(0, 10)}</div>
+                    <div class="meta-label">受付番号</div>
+                </div>
+            `;
+            
+            // ステータス
+            metadataHtml += `
+                <div class="meta-item">
+                    <div class="meta-value">✅</div>
+                    <div class="meta-label">ステータス: 受付済み</div>
+                </div>
+            `;
+            
+            metadataHtml += '</div></div>';
+            
+            contentDiv.innerHTML = cardsHtml + metadataHtml;
+        }
+        
+        // フィールド値のフォーマット
+        function formatFieldValue(value, fieldName) {
+            if (value === null || value === undefined || value === '') {
+                return '<span class="empty">未入力</span>';
+            }
+            
+            // 配列の場合
+            if (Array.isArray(value)) {
+                if (value.length === 0) {
+                    return '<span class="empty">未入力</span>';
+                }
+                if (typeof value[0] === 'object') {
+                    return value.map(v => v.name || v.text || v.id || JSON.stringify(v)).join(', ');
+                }
+                return value.join(', ');
+            }
+            
+            // 緊急度の場合は特別な表示
+            if (fieldName === '緊急度') {
+                const urgencyClass = {
+                    '高': 'urgency-high',
+                    '中': 'urgency-medium',
+                    '低': 'urgency-low'
+                }[value] || '';
+                
+                return `<span class="urgency-badge ${urgencyClass}">${value}</span>`;
+            }
+            
+            // オブジェクトの場合
+            if (typeof value === 'object') {
+                return JSON.stringify(value, null, 2);
+            }
+            
+            return value;
+        }
+        
+        // 日付フォーマット
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('ja-JP', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
+        }
+        
+        // ページ読み込み時にデータを表示
+        window.onload = function() {
+            setTimeout(displayData, 800);
+        };
+    </script>
+</body>
+</html>

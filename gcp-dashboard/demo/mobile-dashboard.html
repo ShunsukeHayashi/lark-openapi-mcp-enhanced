@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>🚨 緊急注文ダッシュボード</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            touch-action: manipulation;
+        }
+        
+        /* モバイル最適化コンテナ */
+        .mobile-container {
+            min-height: 100vh;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        
+        /* ヘッダー */
+        .header {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 12px 16px;
+        }
+        
+        .header h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .last-update {
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+        
+        /* コンテンツエリア */
+        .content {
+            padding: 16px;
+        }
+        
+        /* メトリクスカード - 横スクロール対応 */
+        .metrics-scroll {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 0 -16px;
+            padding: 0 16px;
+        }
+        
+        .metrics {
+            display: flex;
+            gap: 12px;
+            padding-bottom: 4px;
+            min-width: fit-content;
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            min-width: 140px;
+            flex-shrink: 0;
+        }
+        
+        .metric-card.emergency {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe0e0 100%);
+            border: 1px solid #ffcccc;
+        }
+        
+        .metric-title {
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+        
+        .metric-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #212529;
+            line-height: 1;
+        }
+        
+        .metric-value.emergency { color: #dc3545; }
+        .metric-value.warning { color: #fd7e14; }
+        
+        /* セクションタイトル */
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 24px 0 16px 0;
+            color: #212529;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* チャート */
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 16px;
+            height: 250px;
+            position: relative;
+        }
+        
+        /* タブナビゲーション */
+        .tab-nav {
+            display: flex;
+            background: white;
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6c757d;
+            border-radius: 8px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .tab-button.active {
+            background: #0d6efd;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* 商品リスト - カード形式 */
+        .product-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid #dee2e6;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .product-card.critical {
+            border-left-color: #dc3545;
+            background: linear-gradient(to right, #fff5f5 0%, #ffffff 100%);
+        }
+        
+        .product-card.warning {
+            border-left-color: #fd7e14;
+        }
+        
+        .product-card:active {
+            transform: scale(0.98);
+        }
+        
+        .product-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            color: #212529;
+        }
+        
+        .product-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 0.75rem;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .info-label {
+            color: #6c757d;
+        }
+        
+        .info-value {
+            font-weight: 600;
+            color: #212529;
+        }
+        
+        /* バッジ */
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        .badge-danger { 
+            background-color: #dc3545; 
+            color: white; 
+        }
+        
+        .badge-warning { 
+            background-color: #fd7e14; 
+            color: white; 
+        }
+        
+        /* フローティングアクションボタン */
+        .fab {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            background: #0d6efd;
+            color: white;
+            border-radius: 50%;
+            border: none;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.4);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: transform 0.2s;
+        }
+        
+        .fab:active {
+            transform: scale(0.9);
+        }
+        
+        /* ローディング */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #0d6efd;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* プルダウンリフレッシュ */
+        .pull-to-refresh {
+            position: fixed;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            transition: top 0.3s;
+            z-index: 90;
+        }
+        
+        .pull-to-refresh.show {
+            top: 70px;
+        }
+        
+        /* エラーメッセージ */
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 16px 0;
+            font-size: 0.875rem;
+        }
+        
+        /* iPad対応 */
+        @media (min-width: 768px) {
+            .content {
+                max-width: 768px;
+                margin: 0 auto;
+            }
+            
+            .metrics {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .product-list {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* ダークモード対応 */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #1a1a1a;
+                color: #e0e0e0;
+            }
+            
+            .header, .metric-card, .chart-container, .tab-nav, .product-card {
+                background: #2a2a2a;
+            }
+            
+            .product-card.critical {
+                background: linear-gradient(to right, #3a2020 0%, #2a2a2a 100%);
+            }
+            
+            .metric-title, .info-label {
+                color: #a0a0a0;
+            }
+            
+            .product-name, .info-value {
+                color: #e0e0e0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <!-- プルダウンリフレッシュインジケーター -->
+        <div class="pull-to-refresh" id="pullRefresh">
+            <div class="spinner"></div>
+        </div>
+        
+        <!-- ヘッダー -->
+        <div class="header">
+            <h1>🚨 緊急注文ダッシュボード</h1>
+            <div class="last-update">最終更新: <span id="lastUpdate">読み込み中...</span></div>
+        </div>
+        
+        <!-- コンテンツ -->
+        <div class="content">
+            <!-- メトリクス -->
+            <div class="metrics-scroll">
+                <div class="metrics" id="metricsContainer">
+                    <div class="metric-card">
+                        <div class="metric-title">総商品数</div>
+                        <div class="metric-value" id="totalProducts">-</div>
+                    </div>
+                    <div class="metric-card emergency">
+                        <div class="metric-title">緊急発注</div>
+                        <div class="metric-value emergency" id="emergencyCount">-</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">発注待ち</div>
+                        <div class="metric-value warning" id="pendingOrders">-</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">7日以内</div>
+                        <div class="metric-value emergency" id="critical7Days">-</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- タブナビゲーション -->
+            <div class="section-title">📊 データ分析</div>
+            <div class="tab-nav">
+                <button class="tab-button active" onclick="switchTab('chart')">グラフ</button>
+                <button class="tab-button" onclick="switchTab('list')">商品リスト</button>
+            </div>
+            
+            <!-- グラフタブ -->
+            <div class="tab-content active" id="chartTab">
+                <div class="chart-container">
+                    <canvas id="stockoutChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="topSellersChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- リストタブ -->
+            <div class="tab-content" id="listTab">
+                <div class="section-title">⚠️ 緊急対応商品</div>
+                <div class="product-list" id="criticalProductsList">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- フローティングアクションボタン -->
+        <button class="fab" onclick="refreshData()">🔄</button>
+    </div>
+
+    <script>
+        // グローバル変数
+        let dashboardData = null;
+        let stockoutChart = null;
+        let topSellersChart = null;
+        let isRefreshing = false;
+        
+        // タブ切り替え
+        function switchTab(tabName) {
+            // タブボタンの更新
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // タブコンテンツの更新
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        }
+        
+        // データ取得関数
+        async function fetchDashboardData() {
+            try {
+                // ローカルサーバーまたはモックデータ
+                const response = await fetch('/api/dashboard-data').catch(() => null);
+                
+                if (response && response.ok) {
+                    return await response.json();
+                } else {
+                    // モックデータ（デモ用）
+                    return {
+                        totalProducts: 1234,
+                        emergencyCount: 56,
+                        pendingOrdersCount: 23,
+                        stockoutGroups: {
+                            critical_7days: 12,
+                            warning_14days: 18,
+                            caution_30days: 26,
+                            normal: 178
+                        },
+                        topSellers: [
+                            { name: 'プレミアムコーヒー豆', sales: 450, stock: 15, stockoutDays: 2 },
+                            { name: 'チョコレートギフト', sales: 420, stock: 30, stockoutDays: 5 },
+                            { name: 'オーガニック紅茶', sales: 380, stock: 8, stockoutDays: 3 },
+                            { name: 'スペシャルティ緑茶', sales: 320, stock: 120, stockoutDays: 35 },
+                            { name: 'アーモンドクッキー', sales: 280, stock: 45, stockoutDays: 8 }
+                        ],
+                        criticalProducts: [
+                            { name: 'プレミアムコーヒー豆 1kg', stockoutDays: 2, currentStock: 15, orderRemaining: 50, sales30Days: 380 },
+                            { name: 'オーガニック紅茶セット', stockoutDays: 3, currentStock: 8, orderRemaining: 0, sales30Days: 250 },
+                            { name: 'チョコレートギフトボックス', stockoutDays: 5, currentStock: 30, orderRemaining: 100, sales30Days: 420 },
+                            { name: '手作りクッキー詰め合わせ', stockoutDays: 6, currentStock: 45, orderRemaining: 0, sales30Days: 180 },
+                            { name: '季節限定ジャムセット', stockoutDays: 7, currentStock: 22, orderRemaining: 75, sales30Days: 165 }
+                        ],
+                        lastUpdated: new Date().toISOString()
+                    };
+                }
+            } catch (error) {
+                console.error('Failed to fetch data:', error);
+                return null;
+            }
+        }
+        
+        // UIの更新
+        function updateUI(data) {
+            if (!data) return;
+            
+            // メトリクスの更新
+            document.getElementById('totalProducts').textContent = data.totalProducts.toLocaleString();
+            document.getElementById('emergencyCount').textContent = data.emergencyCount.toLocaleString();
+            document.getElementById('pendingOrders').textContent = data.pendingOrdersCount.toLocaleString();
+            document.getElementById('critical7Days').textContent = (data.stockoutGroups.critical_7days || 0).toLocaleString();
+            
+            // 最終更新時刻
+            document.getElementById('lastUpdate').textContent = new Date(data.lastUpdated).toLocaleString('ja-JP', {
+                month: 'numeric',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            // グラフの更新
+            updateCharts(data);
+            
+            // 商品リストの更新
+            updateProductList(data.criticalProducts);
+        }
+        
+        // グラフの更新
+        function updateCharts(data) {
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 10,
+                            font: { size: 11 }
+                        }
+                    }
+                }
+            };
+            
+            // 在庫切れ予測分布
+            const stockoutCtx = document.getElementById('stockoutChart').getContext('2d');
+            if (stockoutChart) stockoutChart.destroy();
+            
+            stockoutChart = new Chart(stockoutCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['7日以内', '14日以内', '30日以内', '30日以上'],
+                    datasets: [{
+                        data: [
+                            data.stockoutGroups.critical_7days || 0,
+                            data.stockoutGroups.warning_14days || 0,
+                            data.stockoutGroups.caution_30days || 0,
+                            data.stockoutGroups.normal || 0
+                        ],
+                        backgroundColor: ['#dc3545', '#fd7e14', '#ffc107', '#28a745'],
+                        borderWidth: 0
+                    }]
+                },
+                options: chartOptions
+            });
+            
+            // 売上TOP5（モバイル用に5件に削減）
+            const topSellersCtx = document.getElementById('topSellersChart').getContext('2d');
+            if (topSellersChart) topSellersChart.destroy();
+            
+            const top5 = data.topSellers.slice(0, 5);
+            topSellersChart = new Chart(topSellersCtx, {
+                type: 'bar',
+                data: {
+                    labels: top5.map(p => p.name.length > 10 ? p.name.substring(0, 10) + '...' : p.name),
+                    datasets: [{
+                        label: '30日販売数',
+                        data: top5.map(p => p.sales),
+                        backgroundColor: top5.map(p => 
+                            p.stockoutDays <= 7 ? '#dc3545' : 
+                            p.stockoutDays <= 14 ? '#fd7e14' : 
+                            p.stockoutDays <= 30 ? '#ffc107' : '#0d6efd'
+                        ),
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    indexAxis: 'y',
+                    plugins: {
+                        ...chartOptions.plugins,
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { size: 10 } }
+                        },
+                        y: {
+                            grid: { display: false },
+                            ticks: { font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 商品リストの更新
+        function updateProductList(products) {
+            const listContainer = document.getElementById('criticalProductsList');
+            
+            if (!products || products.length === 0) {
+                listContainer.innerHTML = '<div class="error-message">緊急対応が必要な商品はありません</div>';
+                return;
+            }
+            
+            listContainer.innerHTML = products.map(product => {
+                const urgencyClass = product.stockoutDays <= 3 ? 'critical' : 'warning';
+                const statusBadge = product.stockoutDays <= 3 ? 
+                    '<span class="badge badge-danger">至急対応</span>' : 
+                    '<span class="badge badge-warning">要対応</span>';
+                
+                return `
+                    <div class="product-card ${urgencyClass}">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-info">
+                            <div class="info-item">
+                                <span class="info-label">在庫切れ:</span>
+                                <span class="info-value">${product.stockoutDays}日</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">現在庫:</span>
+                                <span class="info-value">${product.currentStock}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">発注残:</span>
+                                <span class="info-value">${product.orderRemaining || '-'}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">30日販売:</span>
+                                <span class="info-value">${product.sales30Days}</span>
+                            </div>
+                        </div>
+                        <div style="margin-top: 8px;">${statusBadge}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // データのリフレッシュ
+        async function refreshData() {
+            if (isRefreshing) return;
+            
+            isRefreshing = true;
+            const pullRefresh = document.getElementById('pullRefresh');
+            pullRefresh.classList.add('show');
+            
+            try {
+                const data = await fetchDashboardData();
+                if (data) {
+                    dashboardData = data;
+                    updateUI(data);
+                }
+            } finally {
+                setTimeout(() => {
+                    pullRefresh.classList.remove('show');
+                    isRefreshing = false;
+                }, 500);
+            }
+        }
+        
+        // プルダウンリフレッシュの実装
+        let startY = 0;
+        let pulling = false;
+        
+        document.addEventListener('touchstart', (e) => {
+            if (window.scrollY === 0) {
+                startY = e.touches[0].pageY;
+                pulling = true;
+            }
+        });
+        
+        document.addEventListener('touchmove', (e) => {
+            if (!pulling) return;
+            
+            const y = e.touches[0].pageY;
+            const diff = y - startY;
+            
+            if (diff > 100 && !isRefreshing) {
+                refreshData();
+                pulling = false;
+            }
+        });
+        
+        document.addEventListener('touchend', () => {
+            pulling = false;
+        });
+        
+        // 初期化
+        document.addEventListener('DOMContentLoaded', async () => {
+            await refreshData();
+            
+            // 自動更新（1分ごと）
+            setInterval(refreshData, 60000);
+        });
+        
+        // PWA対応
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

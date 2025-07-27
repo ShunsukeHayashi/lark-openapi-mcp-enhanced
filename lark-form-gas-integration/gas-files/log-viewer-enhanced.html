@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ログビューアー</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+            min-height: 100vh;
+            color: #E2E8F0;
+        }
+        
+        /* ヘッダー */
+        .header {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            padding: 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60A5FA 0%, #A78BFA 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.5);
+        }
+        
+        .btn-secondary {
+            background: rgba(148, 163, 184, 0.1);
+            color: #E2E8F0;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(148, 163, 184, 0.2);
+        }
+        
+        /* 統計カード */
+        .stats-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(96, 165, 250, 0.3);
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60A5FA 0%, #A78BFA 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #94A3B8;
+            font-size: 0.875rem;
+        }
+        
+        /* ログテーブル */
+        .log-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem 2rem;
+        }
+        
+        .log-wrapper {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        
+        .log-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .log-table th {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #94A3B8;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .log-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            font-size: 0.875rem;
+        }
+        
+        .log-table tr:hover {
+            background: rgba(96, 165, 250, 0.05);
+        }
+        
+        /* ステータスバッジ */
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-success {
+            background: rgba(34, 197, 94, 0.2);
+            color: #86EFAC;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+        
+        .status-error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #FCA5A5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        /* 緊急度 */
+        .urgency-high {
+            color: #FCA5A5;
+            font-weight: 600;
+        }
+        
+        .urgency-medium {
+            color: #FCD34D;
+            font-weight: 600;
+        }
+        
+        .urgency-low {
+            color: #86EFAC;
+            font-weight: 600;
+        }
+        
+        /* ローディング */
+        .loading {
+            text-align: center;
+            padding: 4rem;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(96, 165, 250, 0.3);
+            border-top-color: #60A5FA;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .log-wrapper {
+                overflow-x: auto;
+            }
+            
+            .log-table {
+                min-width: 800px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>📊 ログビューアー</h1>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="refreshLogs()">
+                    🔄 更新
+                </button>
+                <a href="<?= spreadsheetUrl ?>" target="_blank" class="btn btn-secondary">
+                    📈 スプレッドシート
+                </a>
+                <button class="btn btn-secondary" onclick="exportToCSV()">
+                    📥 エクスポート
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="stats-container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-value" id="totalCount">0</div>
+                <div class="stat-label">総送信数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-value" id="todayCount">0</div>
+                <div class="stat-label">本日の送信数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🚨</div>
+                <div class="stat-value" id="highUrgencyCount">0</div>
+                <div class="stat-label">緊急度「高」</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-value" id="errorCount">0</div>
+                <div class="stat-label">エラー</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="log-container">
+        <div class="log-wrapper">
+            <div id="logContent">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>ログを読み込んでいます...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // ページ読み込み時にログを取得
+        window.onload = function() {
+            loadLogs();
+        };
+        
+        function loadLogs() {
+            google.script.run.withSuccessHandler(displayLogs)
+                .withFailureHandler(showError)
+                .getLogViewerHtml();
+        }
+        
+        function displayLogs(html) {
+            document.getElementById('logContent').innerHTML = html;
+            enhanceTable();
+            updateStats();
+        }
+        
+        function enhanceTable() {
+            // テーブルのスタイルを強化
+            const table = document.querySelector('.log-table');
+            if (!table) return;
+            
+            // ステータスセルの強化
+            const rows = table.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                
+                // ステータスカラム（10番目）
+                if (cells[9]) {
+                    const status = cells[9].textContent;
+                    if (status === 'SUCCESS') {
+                        cells[9].innerHTML = '<span class="status-badge status-success">成功</span>';
+                    } else if (status.includes('ERROR')) {
+                        cells[9].innerHTML = '<span class="status-badge status-error">エラー</span>';
+                    }
+                }
+                
+                // 緊急度カラム（9番目）
+                if (cells[8]) {
+                    const urgency = cells[8].textContent;
+                    if (urgency === '高') {
+                        cells[8].className = 'urgency-high';
+                    } else if (urgency === '中') {
+                        cells[8].className = 'urgency-medium';
+                    } else if (urgency === '低') {
+                        cells[8].className = 'urgency-low';
+                    }
+                }
+            });
+        }
+        
+        function showError(error) {
+            document.getElementById('logContent').innerHTML = 
+                '<div class="loading"><p style="color: #FCA5A5;">エラーが発生しました: ' + error.message + '</p></div>';
+        }
+        
+        function refreshLogs() {
+            document.getElementById('logContent').innerHTML = 
+                '<div class="loading"><div class="loading-spinner"></div><p>ログを更新しています...</p></div>';
+            loadLogs();
+        }
+        
+        function updateStats() {
+            const table = document.querySelector('.log-table');
+            if (!table) return;
+            
+            const rows = table.querySelectorAll('tbody tr');
+            let totalCount = rows.length;
+            let todayCount = 0;
+            let highUrgencyCount = 0;
+            let errorCount = 0;
+            
+            const today = new Date().toDateString();
+            
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                
+                // 日付チェック
+                const dateCell = cells[0];
+                if (dateCell && new Date(dateCell.textContent).toDateString() === today) {
+                    todayCount++;
+                }
+                
+                // 緊急度チェック
+                const urgencyCell = cells[8];
+                if (urgencyCell && urgencyCell.textContent === '高') {
+                    highUrgencyCount++;
+                }
+                
+                // ステータスチェック
+                const statusCell = cells[9];
+                if (statusCell && statusCell.textContent !== 'SUCCESS') {
+                    errorCount++;
+                }
+            });
+            
+            // アニメーションでカウントアップ
+            animateValue('totalCount', 0, totalCount, 1000);
+            animateValue('todayCount', 0, todayCount, 1000);
+            animateValue('highUrgencyCount', 0, highUrgencyCount, 1000);
+            animateValue('errorCount', 0, errorCount, 1000);
+        }
+        
+        function animateValue(id, start, end, duration) {
+            const element = document.getElementById(id);
+            const range = end - start;
+            const increment = range / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= end) {
+                    current = end;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(current);
+            }, 16);
+        }
+        
+        function exportToCSV() {
+            const table = document.querySelector('.log-table');
+            if (!table) {
+                alert('エクスポートするデータがありません');
+                return;
+            }
+            
+            let csv = [];
+            const rows = table.querySelectorAll('tr');
+            
+            rows.forEach(row => {
+                const cols = row.querySelectorAll('td, th');
+                const rowData = Array.from(cols).map(col => 
+                    '"' + col.textContent.replace(/"/g, '""') + '"'
+                );
+                csv.push(rowData.join(','));
+            });
+            
+            const csvContent = '\uFEFF' + csv.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'form_logs_' + new Date().toISOString().slice(0, 10) + '.csv';
+            link.click();
+        }
+    </script>
+</body>
+</html>

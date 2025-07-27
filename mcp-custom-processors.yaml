@@ -1,0 +1,349 @@
+# MCP Custom Processors Definition
+# カスタムプロセッサー定義
+
+version: "1.0"
+metadata:
+  description: "Custom processors for EC operation workflows"
+  created: "2025-01-18"
+
+# カスタムプロセッサー定義
+processors:
+  # ========================================
+  # 在庫分析プロセッサー
+  # ========================================
+  inventory_analyzer:
+    description: "在庫レベルを分析し分類"
+    inputs:
+      products:
+        type: "array"
+        schema:
+          fields:
+            📊現在庫: "integer"
+            📈30日販売数: "integer"
+      threshold:
+        type: "integer"
+        default: 30
+    
+    logic: |
+      function analyze(products, threshold) {
+        const results = {
+          critical: [],
+          warning: [],
+          normal: [],
+          excess: []
+        };
+        
+        products.forEach(product => {
+          const stock = product.fields['📊現在庫'] || 0;
+          const monthlySales = product.fields['📈30日販売数 (数値)'] || 0;
+          const dailySales = monthlySales / 30;
+          const daysOfStock = dailySales > 0 ? stock / dailySales : 999;
+          
+          const item = {
+            name: product.fields['📝商品名'][0].text,
+            stock: stock,
+            sales: monthlySales,
+            daysOfStock: Math.round(daysOfStock),
+            record_id: product.record_id
+          };
+          
+          if (daysOfStock < 7) {
+            results.critical.push(item);
+          } else if (daysOfStock < 14) {
+            results.warning.push(item);
+          } else if (daysOfStock < threshold) {
+            results.normal.push(item);
+          } else {
+            results.excess.push(item);
+          }
+        });
+        
+        return results;
+      }
+    
+    outputs:
+      critical:
+        type: "array"
+        description: "7日以内に在庫切れリスクのある商品"
+      warning:
+        type: "array"
+        description: "14日以内に要注意の商品"
+      normal:
+        type: "array"
+        description: "正常在庫レベルの商品"
+      excess:
+        type: "array"
+        description: "過剰在庫の商品"
+
+  # ========================================
+  # 発注数量計算プロセッサー
+  # ========================================
+  order_calculator:
+    description: "最適な発注数量を計算"
+    inputs:
+      items:
+        type: "array"
+      rules:
+        type: "object"
+        properties:
+          category_a_months: "integer"
+          category_b_months: "integer"
+          category_c_months: "integer"
+    
+    logic: |
+      function calculate(items, rules) {
+        const MIN_ORDER_UNITS = {
+          'A': 50,
+          'B': 30,
+          'C': 10
+        };
+        
+        return items.map(item => {
+          const monthlySales = item.fields['📈30日販売数 (数値)'] || 0;
+          const currentStock = item.fields['📊現在庫'] || 0;
+          const pendingOrders = parseInt(item.fields['📦発注残数 (数値)']?.[0]?.text || '0');
+          const unitCost = item.fields['💸原価 (通貨)'] || 0;
+          
+          // カテゴリ判定
+          const category = monthlySales >= 30 ? 'A' : 
+                          monthlySales >= 10 ? 'B' : 'C';
+          
+          // 目標在庫月数
+          const targetMonths = {
+            'A': rules.category_a_months,
+            'B': rules.category_b_months,
+            'C': rules.category_c_months
+          };
+          
+          // 発注数量計算
+          const targetStock = monthlySales * targetMonths[category];
+          const orderQty = Math.max(0, targetStock - currentStock - pendingOrders);
+          
+          // 最小発注単位で調整
+          const minUnit = MIN_ORDER_UNITS[category];
+          const adjustedQty = Math.ceil(orderQty / minUnit) * minUnit;
+          
+          return {
+            record_id: item.record_id,
+            product_name: item.fields['📝商品名'][0].text,
+            category: category,
+            current_stock: currentStock,
+            monthly_sales: monthlySales,
+            pending_orders: pendingOrders,
+            target_stock: targetStock,
+            order_quantity: adjustedQty,
+            unit_cost: unitCost,
+            total_cost: adjustedQty * unitCost,
+            reason: `在庫${currentStock}個, 月販${monthlySales}個, ${category}級品`
+          };
+        }).filter(item => item.order_quantity > 0);
+      }
+    
+    outputs:
+      type: "array"
+      description: "発注提案リスト"
+
+  # ========================================
+  # 日付計算プロセッサー
+  # ========================================
+  date_calculator:
+    description: "期間に基づいて日付範囲を計算"
+    inputs:
+      period:
+        type: "enum"
+        values: ["daily", "weekly", "monthly", "quarterly", "yearly"]
+      target_date:
+        type: "date"
+    
+    logic: |
+      function calculateDateRange(period, targetDate) {
+        const date = new Date(targetDate);
+        let startDate, endDate;
+        
+        switch(period) {
+          case 'daily':
+            startDate = new Date(date);
+            endDate = new Date(date);
+            break;
+            
+          case 'weekly':
+            const dayOfWeek = date.getDay();
+            startDate = new Date(date);
+            startDate.setDate(date.getDate() - dayOfWeek + 1); // Monday
+            endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + 6); // Sunday
+            break;
+            
+          case 'monthly':
+            startDate = new Date(date.getFullYear(), date.getMonth(), 1);
+            endDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+            break;
+            
+          case 'quarterly':
+            const quarter = Math.floor(date.getMonth() / 3);
+            startDate = new Date(date.getFullYear(), quarter * 3, 1);
+            endDate = new Date(date.getFullYear(), quarter * 3 + 3, 0);
+            break;
+            
+          case 'yearly':
+            startDate = new Date(date.getFullYear(), 0, 1);
+            endDate = new Date(date.getFullYear(), 11, 31);
+            break;
+        }
+        
+        return {
+          start_date: startDate.toISOString().split('T')[0],
+          end_date: endDate.toISOString().split('T')[0]
+        };
+      }
+    
+    outputs:
+      start_date:
+        type: "date"
+        description: "期間開始日"
+      end_date:
+        type: "date"
+        description: "期間終了日"
+
+  # ========================================
+  # 在庫影響分析プロセッサー
+  # ========================================
+  stockout_impact:
+    description: "在庫切れの影響を分析"
+    inputs:
+      product_id:
+        type: "string"
+      orders:
+        type: "array"
+    
+    logic: |
+      function analyzeImpact(productId, orders) {
+        // 影響を受ける顧客の集計
+        const uniqueCustomers = new Set();
+        let totalRevenueLoss = 0;
+        
+        orders.forEach(order => {
+          if (order.items.some(item => item.product_id === productId)) {
+            uniqueCustomers.add(order.customer_id);
+            const item = order.items.find(i => i.product_id === productId);
+            totalRevenueLoss += item.quantity * item.unit_price;
+          }
+        });
+        
+        // 代替商品の検索ロジック（簡略版）
+        const substitutes = findSubstituteProducts(productId);
+        
+        return {
+          affected_customers: Array.from(uniqueCustomers),
+          customer_count: uniqueCustomers.size,
+          revenue_impact: totalRevenueLoss,
+          substitute_products: substitutes
+        };
+      }
+      
+      function findSubstituteProducts(productId) {
+        // カテゴリや属性に基づいて代替商品を検索
+        // 実際の実装では、商品マスタから類似商品を検索
+        return [
+          { id: 'alt1', name: '代替商品1', stock: 50 },
+          { id: 'alt2', name: '代替商品2', stock: 30 }
+        ];
+      }
+
+# バリデーター定義
+validators:
+  inventory_adjustment:
+    description: "在庫調整の妥当性を検証"
+    rules:
+      - name: "negative_stock_check"
+        condition: |
+          (adjustment_type === "decrease" || adjustment_type === "transfer") 
+          && quantity > current_stock
+        error: "在庫数量が不足しています"
+      
+      - name: "quantity_range_check"
+        condition: |
+          quantity <= 0 || quantity > 10000
+        error: "調整数量は1～10000の範囲で指定してください"
+      
+      - name: "reason_required"
+        condition: |
+          !reason || reason.trim().length < 5
+        error: "調整理由を5文字以上で入力してください"
+
+# フォーマッター定義
+formatters:
+  inventory_daily_report:
+    template: |
+      📊 在庫管理日次レポート
+      日付: {{date}}
+      
+      🚨 緊急対応必要 ({{critical.length}}件)
+      {{#each critical}}
+      ・{{name}}: 在庫{{stock}}個 ({{daysOfStock}}日分)
+      {{/each}}
+      
+      ⚠️ 要注意商品 ({{warning.length}}件)
+      {{#each warning}}
+      ・{{name}}: 在庫{{stock}}個 ({{daysOfStock}}日分)
+      {{/each}}
+      
+      📦 過剰在庫 ({{excess.length}}件)
+      {{#each excess}}
+      ・{{name}}: 在庫{{stock}}個 (月販{{sales}}個)
+      {{/each}}
+      
+      📈 サマリー
+      ・全商品数: {{total_products}}
+      ・適正在庫率: {{healthy_percentage}}%
+      ・要対応商品: {{action_required}}件
+
+  purchase_order_summary:
+    template: |
+      📋 発注書サマリー
+      発注番号: {{po_number}}
+      発注日: {{order_date}}
+      
+      商品情報:
+      ・商品名: {{product_name}}
+      ・発注数量: {{quantity}}個
+      ・単価: ¥{{unit_price}}
+      ・合計: ¥{{total_amount}}
+      
+      納期: {{delivery_date}}
+      支払条件: {{payment_terms}}
+      
+      備考: {{notes}}
+
+# ユーティリティ関数
+utilities:
+  generate_po_number:
+    description: "発注番号を生成"
+    logic: |
+      function generatePONumber() {
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const sequence = String(Math.floor(Math.random() * 100)).padStart(2, '0');
+        return `PO-${year}${month}${day}${sequence}`;
+      }
+  
+  add_days:
+    description: "日付に日数を加算"
+    logic: |
+      function addDays(dateStr, days) {
+        const date = new Date(dateStr);
+        date.setDate(date.getDate() + days);
+        return date.toISOString().split('T')[0];
+      }
+  
+  format_currency:
+    description: "通貨フォーマット"
+    logic: |
+      function formatCurrency(amount, currency = 'JPY') {
+        return new Intl.NumberFormat('ja-JP', {
+          style: 'currency',
+          currency: currency
+        }).format(amount);
+      }

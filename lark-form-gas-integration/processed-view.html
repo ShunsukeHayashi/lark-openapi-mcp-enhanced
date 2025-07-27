@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>処理結果</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans JP', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            max-width: 800px;
+            width: 100%;
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .status-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+        }
+        
+        .status-completed { background: #4CAF50; }
+        .status-escalated { background: #FF9800; }
+        .status-queued { background: #2196F3; }
+        .status-error { background: #F44336; }
+        
+        h1 {
+            font-size: 2.2em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .info-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 4px solid #667eea;
+            transition: transform 0.3s ease;
+        }
+        
+        .info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .info-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .info-value {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .result-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .result-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .result-content {
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        .timeline {
+            margin: 30px 0;
+        }
+        
+        .timeline-item {
+            display: flex;
+            align-items: start;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .timeline-icon {
+            width: 40px;
+            height: 40px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-right: 20px;
+        }
+        
+        .timeline-content {
+            flex: 1;
+            padding-bottom: 20px;
+            border-left: 2px solid #e0e0e0;
+            padding-left: 20px;
+            margin-left: -22px;
+        }
+        
+        .timeline-item:last-child .timeline-content {
+            border-left: none;
+        }
+        
+        .timeline-time {
+            font-size: 0.85em;
+            color: #999;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-text {
+            color: #333;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-size: 1em;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        @media (max-width: 600px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="status-icon" id="statusIcon">
+                ⏳
+            </div>
+            <h1>処理結果</h1>
+            <p class="subtitle" id="subtitle">処理が完了しました</p>
+        </div>
+        
+        <div class="content">
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-label">問い合わせ番号</div>
+                    <div class="info-value" id="inquiryNumber">-</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">処理ステータス</div>
+                    <div class="info-value" id="processStatus">-</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">処理時間</div>
+                    <div class="info-value" id="processingTime">-</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">処理担当</div>
+                    <div class="info-value" id="processedBy">-</div>
+                </div>
+            </div>
+            
+            <div class="result-section">
+                <h2 class="result-title">処理結果詳細</h2>
+                <div class="result-content" id="resultContent">
+                    <p>処理結果を読み込んでいます...</p>
+                </div>
+            </div>
+            
+            <div class="timeline">
+                <h3 style="margin-bottom: 20px; color: #333;">処理履歴</h3>
+                <div id="timelineContainer">
+                    <!-- タイムラインアイテムが動的に追加されます -->
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="viewDetails()">
+                    📋 詳細を確認
+                </button>
+                <button class="btn btn-secondary" onclick="goBack()">
+                    ↩️ 一覧に戻る
+                </button>
+                <button class="btn btn-secondary" onclick="downloadReport()">
+                    📥 レポートをダウンロード
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // URLパラメータを取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const recordId = urlParams.get('recordId');
+        
+        // ページ読み込み時にデータを取得
+        window.onload = function() {
+            if (recordId) {
+                loadProcessingResult();
+            } else {
+                // テスト用のデータを表示
+                displayTestData();
+            }
+        };
+        
+        function loadProcessingResult() {
+            // GASから処理結果を取得
+            if (window.google && window.google.script) {
+                google.script.run
+                    .withSuccessHandler(displayResult)
+                    .withFailureHandler(showError)
+                    .getProcessingResult(recordId);
+            } else {
+                // テスト用のデータを表示
+                displayTestData();
+            }
+        }
+        
+        function displayTestData() {
+            // URLパラメータからデータを構築
+            const result = {
+                status: 'completed',
+                inquiryNumber: recordId || 'EST-' + new Date().toISOString().slice(0, 10).replace(/-/g, ''),
+                processingTime: 1500,
+                processedBy: 'システム自動処理',
+                message: '塗装見積もり処理が完了しました',
+                estimation: {
+                    total: 1500000,
+                    breakdown: {
+                        paintCost: { label: '塗料費', amount: 375000 },
+                        laborCost: { label: '施工費', amount: 225000 },
+                        scaffoldingCost: { label: '足場費用', amount: 120000 },
+                        miscCost: { label: '諸経費', amount: 60000 }
+                    }
+                },
+                timeline: [
+                    {
+                        time: new Date(Date.now() - 60000).toISOString(),
+                        action: 'フォーム送信',
+                        icon: '📝'
+                    },
+                    {
+                        time: new Date(Date.now() - 30000).toISOString(),
+                        action: '処理開始',
+                        icon: '▶️'
+                    },
+                    {
+                        time: new Date().toISOString(),
+                        action: '処理完了',
+                        icon: '✅'
+                    }
+                ]
+            };
+            
+            displayResult(result);
+        }
+        
+        function displayResult(result) {
+            // ステータスアイコンの更新
+            const statusIcon = document.getElementById('statusIcon');
+            const statusMap = {
+                'completed': '✅',
+                'escalated': '⚡',
+                'queued': '📋',
+                'error': '❌'
+            };
+            statusIcon.textContent = statusMap[result.status] || '✓';
+            statusIcon.className = 'status-icon status-' + result.status;
+            
+            // 基本情報の表示
+            document.getElementById('inquiryNumber').textContent = result.inquiryNumber || recordId;
+            document.getElementById('processStatus').textContent = getStatusText(result.status);
+            document.getElementById('processingTime').textContent = formatTime(result.processingTime);
+            document.getElementById('processedBy').textContent = result.processedBy || 'システム';
+            
+            // 結果詳細の表示
+            const resultContent = document.getElementById('resultContent');
+            resultContent.innerHTML = formatResultContent(result);
+            
+            // タイムラインの表示
+            displayTimeline(result.timeline || []);
+        }
+        
+        function getStatusText(status) {
+            const statusTexts = {
+                'completed': '完了',
+                'escalated': 'エスカレーション済み',
+                'queued': 'キューに追加',
+                'auto_responded': '自動返信済み',
+                'error': 'エラー'
+            };
+            return statusTexts[status] || status;
+        }
+        
+        function formatTime(milliseconds) {
+            if (!milliseconds) return '-';
+            const seconds = Math.floor(milliseconds / 1000);
+            return `${seconds}秒`;
+        }
+        
+        function formatResultContent(result) {
+            let html = '<div>';
+            
+            // 塗装見積もりの結果を表示
+            if (result.estimation && result.estimation.total) {
+                html += `
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                        <h3 style="color: #2c3e50; margin-bottom: 15px;">🎨 塗装見積もり結果</h3>
+                        <div style="font-size: 24px; font-weight: bold; color: #27ae60; margin-bottom: 20px;">
+                            合計金額: ¥${result.estimation.total.toLocaleString()}
+                        </div>
+                `;
+                
+                if (result.estimation.breakdown) {
+                    html += '<div style="margin-top: 15px;"><h4 style="color: #34495e; margin-bottom: 10px;">内訳</h4><ul style="list-style: none; padding: 0;">';
+                    Object.values(result.estimation.breakdown).forEach(item => {
+                        html += `<li style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #ecf0f1;">
+                            <span>${item.label}</span>
+                            <span style="font-weight: bold;">¥${item.amount.toLocaleString()}</span>
+                        </li>`;
+                    });
+                    html += '</ul></div>';
+                }
+                
+                html += '</div>';
+            }
+            
+            if (result.status === 'escalated') {
+                html += `
+                    <p><strong>エスカレーション先:</strong> ${result.notifiedTo || '管理者'}</p>
+                    <p><strong>理由:</strong> 緊急度が高いため、優先対応が必要です</p>
+                `;
+            } else if (result.status === 'auto_responded') {
+                html += `
+                    <p><strong>送信済みテンプレート:</strong> ${result.template}</p>
+                    <p><strong>送信先:</strong> ${result.sentTo}</p>
+                `;
+            } else if (result.status === 'queued') {
+                html += `
+                    <p><strong>予想応答時間:</strong> ${result.estimatedResponseTime}</p>
+                    <p><strong>キュー位置:</strong> ${result.queuePosition || '-'}</p>
+                `;
+            }
+            
+            html += `<p style="margin-top: 15px;">${result.message}</p>`;
+            html += '</div>';
+            
+            return html;
+        }
+        
+        function displayTimeline(timeline) {
+            const container = document.getElementById('timelineContainer');
+            container.innerHTML = '';
+            
+            const defaultTimeline = [
+                { time: new Date(), action: 'ボタンクリック', icon: '🖱️' },
+                { time: new Date(), action: '処理開始', icon: '▶️' },
+                { time: new Date(), action: '処理完了', icon: '✅' }
+            ];
+            
+            const items = timeline.length > 0 ? timeline : defaultTimeline;
+            
+            items.forEach(item => {
+                const timelineItem = document.createElement('div');
+                timelineItem.className = 'timeline-item';
+                timelineItem.innerHTML = `
+                    <div class="timeline-icon">${item.icon || '•'}</div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">${formatDateTime(item.time)}</div>
+                        <div class="timeline-text">${item.action}</div>
+                    </div>
+                `;
+                container.appendChild(timelineItem);
+            });
+        }
+        
+        function formatDateTime(date) {
+            if (!date) return '-';
+            const d = new Date(date);
+            return d.toLocaleString('ja-JP');
+        }
+        
+        function showError(error) {
+            const resultContent = document.getElementById('resultContent');
+            resultContent.innerHTML = `<p style="color: #f44336;">エラーが発生しました: ${error.message}</p>`;
+        }
+        
+        function viewDetails() {
+            if (recordId) {
+                window.location.href = `?recordId=${recordId}`;
+            }
+        }
+        
+        function goBack() {
+            window.location.href = 'https://f82jyx0mblu.jp.larksuite.com/base/U38Xbik32acfCBsEbmmjm0NupRe?table=tblThLsJNrlldIb1';
+        }
+        
+        function downloadReport() {
+            alert('レポートのダウンロード機能は準備中です');
+        }
+        
+        // テスト用のダミーデータ（実際の実装では削除）
+        if (!window.google || !window.google.script) {
+            setTimeout(() => {
+                displayResult({
+                    status: 'escalated',
+                    inquiryNumber: 'CS-250118-BRH7jh',
+                    processingTime: 1234,
+                    processedBy: 'システム自動処理',
+                    message: '緊急度が高いため、管理者にエスカレーションしました',
+                    notifiedTo: 'admin@example.com',
+                    timeline: [
+                        { time: new Date(), action: 'ボタンクリック', icon: '🖱️' },
+                        { time: new Date(), action: '処理開始', icon: '▶️' },
+                        { time: new Date(), action: '緊急度判定: 高', icon: '🚨' },
+                        { time: new Date(), action: 'エスカレーション完了', icon: '⚡' }
+                    ]
+                });
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

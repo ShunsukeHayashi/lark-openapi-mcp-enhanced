@@ -32,9 +32,13 @@ This is the Feishu/Lark official OpenAPI MCP (Model Context Protocol) tool desig
 - **Rate Limiting:** Built-in rate limiting to prevent API quota exhaustion
 - Supports multiple configuration methods, adapting to different usage scenarios
 
-## Tool List
+## Documentation
 
-A complete list of all supported Feishu/Lark tools can be found in [tools.md](./docs/tools-en.md), where tools are categorized by project and version with descriptions.
+- **[API Reference](./docs/API-REFERENCE.md)** - Complete API documentation for programmatic usage
+- **[Built-in Tools Guide](./docs/BUILTIN-TOOLS.md)** - Documentation for all custom built-in tools
+- **[Rate Limiting Guide](./docs/RATE-LIMITING.md)** - Comprehensive rate limiting documentation
+- **[Tool List](./docs/tools-en.md)** - Auto-generated list of all available Feishu/Lark API tools
+- **[中文工具列表](./docs/tools-zh.md)** - Chinese version of the tool list
 
 ## Preparation
 

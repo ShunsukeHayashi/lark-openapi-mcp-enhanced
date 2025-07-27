@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>送信完了 - フォーム確認</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .field-group {
+            margin-bottom: 30px;
+            animation: fadeIn 0.8s ease-out forwards;
+            opacity: 0;
+        }
+        
+        .field-group:nth-child(1) { animation-delay: 0.1s; }
+        .field-group:nth-child(2) { animation-delay: 0.2s; }
+        .field-group:nth-child(3) { animation-delay: 0.3s; }
+        .field-group:nth-child(4) { animation-delay: 0.4s; }
+        .field-group:nth-child(5) { animation-delay: 0.5s; }
+        
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+        
+        .field-label {
+            font-size: 0.9em;
+            color: #667eea;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        
+        .field-value {
+            font-size: 1.1em;
+            color: #333;
+            padding: 15px;
+            background: #f7f8fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            word-wrap: break-word;
+        }
+        
+        .field-value.empty {
+            color: #999;
+            font-style: italic;
+        }
+        
+        .metadata {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+        }
+        
+        .meta-item {
+            text-align: center;
+        }
+        
+        .meta-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .meta-value {
+            font-size: 1.2em;
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 500;
+            background: #4caf50;
+            color: white;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(102, 126, 234, 0.3);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px;
+            text-align: center;
+        }
+        
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .metadata {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>送信内容の確認</h1>
+            <p>フォームで送信された内容を表示しています</p>
+        </div>
+        
+        <div class="content" id="content">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <p style="margin-top: 20px; color: #666;">データを読み込んでいます...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // サーバーサイドから渡されたデータ
+        const recordId = <?= JSON.stringify(recordId) ?>;
+        const data = <?= JSON.stringify(data) ?>;
+        
+        // フィールドの表示名マッピング
+        const fieldLabels = {
+            'お問い合わせID': 'お問い合わせID',
+            '氏名': 'お名前',
+            'Name': 'お名前',
+            'メールアドレス': 'メールアドレス',
+            'Email': 'メールアドレス',
+            '電話番号': '電話番号',
+            'Phone': '電話番号',
+            '部署': '部署',
+            'Department': '部署',
+            '問い合わせ種別': 'お問い合わせ種別',
+            '内容': 'お問い合わせ内容',
+            'Content': 'お問い合わせ内容',
+            '緊急度': '緊急度',
+            'Priority': '緊急度',
+            'Created by': '作成者',
+            '作成者': '作成者',
+            'Created time': '作成日時',
+            '作成日時': '作成日時',
+            'Last modified by': '最終更新者',
+            '最終更新者': '最終更新者',
+            'Last modified time': '最終更新日時',
+            '最終更新日時': '最終更新日時'
+        };
+        
+        // データを整形して表示
+        function displayData() {
+            const contentDiv = document.getElementById('content');
+            
+            if (!data || Object.keys(data).length === 0) {
+                contentDiv.innerHTML = '<div class="error-message">データが見つかりませんでした</div>';
+                return;
+            }
+            
+            let html = '';
+            let metadataHtml = '<div class="metadata">';
+            
+            // フィールドを表示
+            Object.entries(data).forEach(([key, value]) => {
+                const label = fieldLabels[key] || key;
+                
+                // メタデータフィールドは別扱い
+                if (key === 'Created by' || key === '作成者' || key === 'Created time' || key === '作成日時') {
+                    let displayValue = value;
+                    
+                    // 作成者の場合、配列から名前を取得
+                    if ((key === 'Created by' || key === '作成者') && Array.isArray(value) && value.length > 0) {
+                        displayValue = value[0].name || value[0].id || '不明';
+                    }
+                    
+                    // 日時の場合、フォーマット
+                    if ((key === 'Created time' || key === '作成日時') && value) {
+                        const date = new Date(value);
+                        displayValue = date.toLocaleString('ja-JP');
+                    }
+                    
+                    metadataHtml += `
+                        <div class="meta-item">
+                            <div class="meta-label">${label}</div>
+                            <div class="meta-value">${displayValue}</div>
+                        </div>
+                    `;
+                } else {
+                    // 通常のフィールド
+                    let displayValue = value;
+                    
+                    // 配列の場合
+                    if (Array.isArray(value)) {
+                        if (value.length === 0) {
+                            displayValue = '<span class="empty">未入力</span>';
+                        } else if (typeof value[0] === 'object') {
+                            displayValue = value.map(v => v.name || v.text || v.id || JSON.stringify(v)).join(', ');
+                        } else {
+                            displayValue = value.join(', ');
+                        }
+                    } else if (value === null || value === undefined || value === '') {
+                        displayValue = '<span class="empty">未入力</span>';
+                    } else if (typeof value === 'object') {
+                        displayValue = JSON.stringify(value, null, 2);
+                    }
+                    
+                    html += `
+                        <div class="field-group">
+                            <div class="field-label">${label}</div>
+                            <div class="field-value">${displayValue}</div>
+                        </div>
+                    `;
+                }
+            });
+            
+            // ステータスバッジを追加
+            metadataHtml += `
+                <div class="meta-item">
+                    <div class="meta-label">ステータス</div>
+                    <div class="meta-value">
+                        <span class="status-badge">送信完了</span>
+                    </div>
+                </div>
+            `;
+            
+            metadataHtml += '</div>';
+            
+            // レコードIDを追加
+            html += `
+                <div class="field-group" style="margin-top: 40px;">
+                    <div class="field-label">レコードID</div>
+                    <div class="field-value" style="font-family: monospace; font-size: 0.9em;">${recordId}</div>
+                </div>
+            `;
+            
+            contentDiv.innerHTML = html + metadataHtml;
+        }
+        
+        // ページ読み込み時にデータを表示
+        window.onload = function() {
+            setTimeout(displayData, 500); // ローディング表示のために少し遅延
+        };
+    </script>
+</body>
+</html>

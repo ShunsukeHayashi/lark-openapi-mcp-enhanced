@@ -1,0 +1,59 @@
+{
+  "mcpServers": {
+    "lark-base": {
+      "command": "bash",
+      "args": [
+        "/Users/shunsuke/Dev/lark-openapi-mcp-enhanced/bundles/start-bundle.sh",
+        "base"
+      ],
+      "env": {
+        "APP_ID": "your_app_id",
+        "APP_SECRET": "your_app_secret"
+      }
+    },
+    "lark-docs": {
+      "command": "bash",
+      "args": [
+        "/Users/shunsuke/Dev/lark-openapi-mcp-enhanced/bundles/start-bundle.sh",
+        "docs"
+      ],
+      "env": {
+        "APP_ID": "your_app_id",
+        "APP_SECRET": "your_app_secret"
+      }
+    },
+    "lark-collab": {
+      "command": "bash",
+      "args": [
+        "/Users/shunsuke/Dev/lark-openapi-mcp-enhanced/bundles/start-bundle.sh",
+        "collab"
+      ],
+      "env": {
+        "APP_ID": "your_app_id",
+        "APP_SECRET": "your_app_secret"
+      }
+    },
+    "lark-admin": {
+      "command": "bash",
+      "args": [
+        "/Users/shunsuke/Dev/lark-openapi-mcp-enhanced/bundles/start-bundle.sh",
+        "admin"
+      ],
+      "env": {
+        "APP_ID": "your_app_id",
+        "APP_SECRET": "your_app_secret"
+      }
+    },
+    "lark-genesis": {
+      "command": "bash",
+      "args": [
+        "/Users/shunsuke/Dev/lark-openapi-mcp-enhanced/bundles/start-bundle.sh",
+        "genesis"
+      ],
+      "env": {
+        "APP_ID": "your_app_id",
+        "APP_SECRET": "your_app_secret"
+      }
+    }
+  }
+}

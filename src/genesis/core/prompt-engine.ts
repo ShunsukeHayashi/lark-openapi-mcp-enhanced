@@ -30,6 +30,7 @@ export interface PromptEngineConfig {
   maxRetries: number;
   timeoutMs: number;
   enableLogging: boolean;
+  rateLimitDelay?: number; // Delay between requests to avoid rate limits
 }
 
 /**
@@ -505,7 +506,10 @@ export class GenesisPromptEngine {
   private geminiClient: GeminiClient;
 
   constructor(config: PromptEngineConfig) {
-    this.config = config;
+    this.config = {
+      rateLimitDelay: 2000, // Default 2 second delay between API calls
+      ...config,
+    };
     this.geminiClient = new GeminiClient({
       apiKey: this.config.geminiApiKey,
       maxRetries: this.config.maxRetries,
@@ -538,6 +542,12 @@ export class GenesisPromptEngine {
         context.results[command.id] = result;
 
         this.log(`Completed ${command.id} successfully`);
+        
+        // Add delay between API calls to prevent rate limiting
+        if (this.config.rateLimitDelay && i < COMMAND_STACK.length - 1) {
+          this.log(`Rate limit delay: waiting ${this.config.rateLimitDelay}ms before next command`);
+          await new Promise(resolve => setTimeout(resolve, this.config.rateLimitDelay));
+        }
       } catch (error) {
         this.log(`Error in ${command.id}: ${error}`);
         throw new Error(`Command ${command.id} failed: ${error}`);

@@ -2,6 +2,8 @@
  * Complete set of prompts for all Lark/Feishu functions
  * Provides guided templates for using all API capabilities
  */
+import { z } from 'zod';
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 export const completePrompts = [
   // ========== User Management Prompts ==========
@@ -806,13 +808,26 @@ genesis.builtin.optimize_base
 /**
  * Register complete prompts with MCP server
  */
-export function registerCompletePrompts(server: any): void {
+export function registerCompletePrompts(server: McpServer): void {
   for (const prompt of completePrompts) {
-    server.prompt(prompt.name, prompt.description, prompt.arguments, ({ arguments: args }: any) => {
+    // Convert old arguments format to Zod schema
+    const argsSchema: Record<string, any> = {};
+    
+    for (const arg of prompt.arguments) {
+      if (arg.required) {
+        argsSchema[arg.name] = z.string().describe(arg.description);
+      } else {
+        argsSchema[arg.name] = z.string().optional().describe(arg.description);
+      }
+    }
+
+    server.prompt(prompt.name, prompt.description, argsSchema, ({ arguments: args }: any) => {
       // Replace template variables with actual values
       let content = prompt.template;
       for (const [key, value] of Object.entries(args)) {
-        content = content.replace(new RegExp(`{{${key}}}`, 'g'), value as string);
+        if (value !== undefined) {
+          content = content.replace(new RegExp(`{{${key}}}`, 'g'), value as string);
+        }
       }
 
       return {
